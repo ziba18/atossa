@@ -10,8 +10,6 @@ export default function ProfileLayout() {
       <Stack.Screen name="connected-accounts" />
       <Stack.Screen name="add-connection" />
       <Stack.Screen name="health-integrations" />
-      <Stack.Screen name="subscription" />
-      <Stack.Screen name="donate" />
     </Stack>
   );
 }

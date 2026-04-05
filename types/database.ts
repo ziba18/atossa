@@ -2,7 +2,6 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 
 export type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy' | 'very_heavy';
 export type CycleRegularity = 'regular' | 'irregular' | 'unknown';
-export type SubscriptionTier = 'free' | 'premium';
 export type RiskLevel = 'low' | 'moderate' | 'high' | 'very_high';
 export type AlertSeverity = 'info' | 'warning' | 'critical' | 'emergency';
 export type ContentType = 'article' | 'video' | 'infographic';
@@ -18,8 +17,6 @@ export interface Profile {
   average_cycle_length: number;
   average_period_length: number;
   cycle_regularity: CycleRegularity;
-  subscription_tier: SubscriptionTier;
-  revenuecat_customer_id: string | null;
   onboarding_complete: boolean;
   timezone: string;
   dark_mode: boolean;
@@ -143,33 +140,6 @@ export interface EducationContent {
   view_count: number;
   created_at: string;
   updated_at: string;
-}
-
-export interface Subscription {
-  id: string;
-  user_id: string;
-  tier: 'free' | 'premium_monthly' | 'premium_annual';
-  status: 'active' | 'expired' | 'cancelled' | 'trial';
-  started_at: string;
-  expires_at: string | null;
-  revenuecat_product_id: string | null;
-  revenuecat_transaction_id: string | null;
-  store: 'app_store' | 'play_store' | 'web' | 'promotional' | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Donation {
-  id: string;
-  donor_user_id: string | null;
-  amount_cents: number;
-  currency: string;
-  stripe_payment_intent_id: string | null;
-  status: 'pending' | 'completed' | 'failed' | 'refunded';
-  campaign: string;
-  message: string | null;
-  is_anonymous: boolean;
-  created_at: string;
 }
 
 export interface CyclePrediction {

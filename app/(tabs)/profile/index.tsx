@@ -46,12 +46,6 @@ export default function ProfileScreen() {
           {user?.email && (
             <Text style={styles.email}>{user.email}</Text>
           )}
-          <View style={styles.heroBadgeRow}>
-            <Badge
-              label={profile?.subscription_tier === 'premium' ? '✨ Premium' : 'Free Plan'}
-              variant={profile?.subscription_tier === 'premium' ? 'whiskey' : 'neutral'}
-            />
-          </View>
         </LinearGradient>
 
         {/* Account info card */}
@@ -96,19 +90,6 @@ export default function ProfileScreen() {
             <MenuItem emoji="🔗" label="Connected Accounts" onPress={() => router.push('/(tabs)/profile/connected-accounts' as any)} />
             <MenuItem emoji="🚨" label="Emergency Contacts" onPress={() => router.push('/(tabs)/profile/emergency-contacts' as any)} />
             <MenuItem emoji="📱" label="Health Integrations" onPress={() => router.push('/(tabs)/profile/health-integrations' as any)} />
-          </Card>
-        </View>
-
-        <View style={styles.menuSection}>
-          <Text style={styles.sectionTitle}>Support & Give Back</Text>
-          <Card noPadding>
-            <MenuItem
-              emoji="✨"
-              label="Upgrade to Premium"
-              onPress={() => router.push('/(tabs)/profile/subscription' as any)}
-              badge={profile?.subscription_tier === 'free' ? 'Upgrade' : undefined}
-            />
-            <MenuItem emoji="💝" label="Donate Period Products" onPress={() => router.push('/(tabs)/profile/donate' as any)} />
           </Card>
         </View>
 
