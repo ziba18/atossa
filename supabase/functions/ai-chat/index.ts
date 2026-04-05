@@ -55,7 +55,6 @@ serve(async (req) => {
           error: 'Daily message limit reached',
           message_count,
           daily_limit,
-          upgrade_hint: 'Upgrade to Premium for 50 messages/day.',
         }),
         {
           status: 429,

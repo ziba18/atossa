@@ -50,7 +50,6 @@ export function ContentCard({ content }: Props) {
             label={content.category.replace('_', ' ')}
             variant={CATEGORY_COLORS[content.category] ?? 'cherry'}
           />
-          {content.is_premium && <Badge label="Premium" variant="whiskey" />}
         </View>
         <Text style={styles.title} numberOfLines={2}>{content.title}</Text>
         {content.reading_time_minutes && (

@@ -40,7 +40,6 @@ export default function VideoScreen() {
         <View style={styles.info}>
           <Text style={styles.title}>{video?.title}</Text>
           <View style={styles.badges}>
-            {video?.is_premium && <Badge label="Premium" variant="whiskey" />}
             <Badge label={video?.category?.replace('_', ' ') ?? ''} variant="cherry" />
           </View>
         </View>

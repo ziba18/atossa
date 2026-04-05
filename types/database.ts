@@ -134,7 +134,6 @@ export interface EducationContent {
   video_url: string | null;
   thumbnail_url: string | null;
   reading_time_minutes: number | null;
-  is_premium: boolean;
   is_published: boolean;
   tags: string[];
   view_count: number;
