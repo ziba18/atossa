@@ -9,6 +9,7 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Header } from '../../../components/layout/Header';
 import { EmptyState } from '../../../components/ui/EmptyState';
+import { Icon } from '../../../components/ui/Icon';
 import type { EmergencyContact } from '../../../types/database';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
@@ -67,7 +68,7 @@ export default function EmergencyContactsScreen() {
         data={contacts}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<EmptyState emoji="📞" title="No emergency contacts" subtitle="Add someone who should be alerted if you're in danger." />}
+        ListEmptyComponent={<EmptyState iconName="shield" title="No emergency contacts" subtitle="Add someone who should be alerted if you're in danger." />}
         ListHeaderComponent={
           showForm ? (
             <Card style={styles.form}>
@@ -93,7 +94,7 @@ export default function EmergencyContactsScreen() {
                 {item.relationship && <Text style={styles.contactRel}>{item.relationship}</Text>}
               </View>
               <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteBtn}>
-                <Text style={styles.deleteText}>✕</Text>
+                <Icon name="x" size={18} color={Colors.textMuted} />
               </TouchableOpacity>
             </View>
           </Card>
@@ -118,5 +119,4 @@ const styles = StyleSheet.create({
   contactPhone: { fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: 2 },
   contactRel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2 },
   deleteBtn: { padding: Spacing.sm },
-  deleteText: { fontSize: 18, color: Colors.error },
 });

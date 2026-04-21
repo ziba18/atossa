@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import type { EducationContent } from '../../types/database';
+import { Icon } from '../ui/Icon';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
 import { Badge } from '../ui/Badge';
@@ -39,9 +40,11 @@ export function ContentCard({ content }: Props) {
         <Image source={{ uri: content.thumbnail_url }} style={styles.thumbnail} />
       ) : (
         <View style={styles.thumbnailPlaceholder}>
-          <Text style={styles.typeIcon}>
-            {content.content_type === 'video' ? '▶️' : '📄'}
-          </Text>
+          <Icon
+            name={content.content_type === 'video' ? 'play' : 'file-text'}
+            size={36}
+            color={Colors.cherry}
+          />
         </View>
       )}
       <View style={styles.info}>
@@ -53,7 +56,10 @@ export function ContentCard({ content }: Props) {
         </View>
         <Text style={styles.title} numberOfLines={2}>{content.title}</Text>
         {content.reading_time_minutes && (
-          <Text style={styles.meta}>📖 {content.reading_time_minutes} min read</Text>
+          <View style={styles.metaRow}>
+            <Icon name="clock" size={12} color={Colors.textMuted} />
+            <Text style={styles.meta}>{content.reading_time_minutes} min read</Text>
+          </View>
         )}
       </View>
     </TouchableOpacity>
@@ -77,14 +83,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  typeIcon: { fontSize: 36 },
   info: { padding: Spacing.md },
   badgeRow: { flexDirection: 'row', gap: Spacing.xs, marginBottom: Spacing.xs },
   title: {
     fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textPrimary,
     lineHeight: 22,
   },
-  meta: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: Spacing.xs },
+  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: Spacing.xs },
+  meta: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
 });

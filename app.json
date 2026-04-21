@@ -69,7 +69,9 @@
           "contactsPermission": "Atossa needs access to your contacts for emergency alerts."
         }
       ],
-      "expo-av"
+      "expo-av",
+      "expo-apple-authentication",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

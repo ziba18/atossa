@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SafeScreen } from '../../components/layout/SafeScreen';
 import { Header } from '../../components/layout/Header';
+import { Icon } from '../../components/ui/Icon';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../constants/theme';
 
@@ -73,7 +75,7 @@ export default function LoginScreen() {
             placeholder="Your password"
             rightIcon={
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Text style={styles.toggle}>{showPassword ? '🙈' : '👁️'}</Text>
+                <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} color={Colors.textMuted} />
               </TouchableOpacity>
             }
           />
@@ -90,6 +92,8 @@ export default function LoginScreen() {
               <Text style={styles.registerLink}>Sign up</Text>
             </TouchableOpacity>
           </View>
+
+          <SocialAuthButtons />
         </View>
       </SafeScreen>
     </KeyboardAvoidingView>
@@ -98,12 +102,11 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: Spacing.xl },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl },
-  toggle: { fontSize: 18 },
+  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl },
   forgotBtn: { alignSelf: 'flex-end', marginBottom: Spacing.lg, marginTop: -Spacing.sm },
-  forgotText: { fontSize: FontSize.sm, color: Colors.cherry },
+  forgotText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.cherry },
   loginBtn: { marginBottom: Spacing.xl },
   registerRow: { flexDirection: 'row', justifyContent: 'center' },
-  registerText: { fontSize: FontSize.md, color: Colors.textMuted },
-  registerLink: { fontSize: FontSize.md, color: Colors.cherry, fontWeight: FontWeight.semibold },
+  registerText: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
+  registerLink: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
 });

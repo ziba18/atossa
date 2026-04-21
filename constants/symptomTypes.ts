@@ -19,26 +19,28 @@ export type SymptomType =
   | 'excessive_hair_growth'
   | 'custom';
 
-export const SYMPTOM_META: Record<SymptomType, { label: string; emoji: string; category: string }> = {
-  cramps:               { label: 'Cramps',              emoji: '😣', category: 'physical' },
-  bloating:             { label: 'Bloating',             emoji: '🫧', category: 'physical' },
-  headache:             { label: 'Headache',             emoji: '🤕', category: 'physical' },
-  mood_swings:          { label: 'Mood Swings',          emoji: '🎭', category: 'emotional' },
-  acne:                 { label: 'Acne',                 emoji: '😖', category: 'skin' },
-  fatigue:              { label: 'Fatigue',              emoji: '😴', category: 'physical' },
-  breast_tenderness:    { label: 'Breast Tenderness',    emoji: '🌸', category: 'physical' },
-  back_pain:            { label: 'Back Pain',            emoji: '🔙', category: 'physical' },
-  nausea:               { label: 'Nausea',               emoji: '🤢', category: 'physical' },
-  dizziness:            { label: 'Dizziness',            emoji: '💫', category: 'physical' },
-  spotting:             { label: 'Spotting',             emoji: '🩸', category: 'cycle' },
-  discharge:            { label: 'Discharge',            emoji: '💧', category: 'cycle' },
-  hot_flashes:          { label: 'Hot Flashes',          emoji: '🔥', category: 'physical' },
-  insomnia:             { label: 'Insomnia',             emoji: '🌙', category: 'sleep' },
-  anxiety:              { label: 'Anxiety',              emoji: '😰', category: 'emotional' },
-  depression:           { label: 'Depression',           emoji: '😔', category: 'emotional' },
-  hair_loss:            { label: 'Hair Loss',            emoji: '💇', category: 'skin' },
-  excessive_hair_growth:{ label: 'Excess Hair Growth',   emoji: '🌿', category: 'skin' },
-  custom:               { label: 'Custom',               emoji: '✏️', category: 'other' },
+import type { IconName } from '../components/ui/Icon';
+
+export const SYMPTOM_META: Record<SymptomType, { label: string; icon: IconName; category: string }> = {
+  cramps:               { label: 'Cramps',              icon: 'activity',    category: 'physical' },
+  bloating:             { label: 'Bloating',             icon: 'activity',    category: 'physical' },
+  headache:             { label: 'Headache',             icon: 'brain',       category: 'physical' },
+  mood_swings:          { label: 'Mood Swings',          icon: 'sparkles',    category: 'emotional' },
+  acne:                 { label: 'Acne',                 icon: 'eye',         category: 'skin' },
+  fatigue:              { label: 'Fatigue',              icon: 'zap',         category: 'physical' },
+  breast_tenderness:    { label: 'Breast Tenderness',    icon: 'heart',       category: 'physical' },
+  back_pain:            { label: 'Back Pain',            icon: 'activity',    category: 'physical' },
+  nausea:               { label: 'Nausea',               icon: 'alert-circle',category: 'physical' },
+  dizziness:            { label: 'Dizziness',            icon: 'refresh',     category: 'physical' },
+  spotting:             { label: 'Spotting',             icon: 'droplets',    category: 'cycle' },
+  discharge:            { label: 'Discharge',            icon: 'droplet',     category: 'cycle' },
+  hot_flashes:          { label: 'Hot Flashes',          icon: 'thermometer', category: 'physical' },
+  insomnia:             { label: 'Insomnia',             icon: 'clock',       category: 'sleep' },
+  anxiety:              { label: 'Anxiety',              icon: 'brain',       category: 'emotional' },
+  depression:           { label: 'Depression',           icon: 'heart',       category: 'emotional' },
+  hair_loss:            { label: 'Hair Loss',            icon: 'user',        category: 'skin' },
+  excessive_hair_growth:{ label: 'Excess Hair Growth',   icon: 'leaf',        category: 'skin' },
+  custom:               { label: 'Custom',               icon: 'pencil',      category: 'other' },
 };
 
 // Symptoms that may indicate PCOS when frequent

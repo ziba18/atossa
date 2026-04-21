@@ -59,14 +59,14 @@ export default function Step4Notifications() {
 
 const styles = StyleSheet.create({
   progress: { marginBottom: Spacing.xl },
-  step: { fontSize: FontSize.sm, color: Colors.textMuted, marginBottom: Spacing.xs },
+  step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xs },
   progressBar: { height: 4, backgroundColor: Colors.border, borderRadius: 2 },
   fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-  title: { fontSize: 26, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+  title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
+  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border },
   rowText: { flex: 1, marginRight: Spacing.md },
-  rowLabel: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary },
-  rowDesc: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
+  rowLabel: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
+  rowDesc: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
   btn: { marginTop: Spacing.xxl },
 });

@@ -47,7 +47,7 @@ export default function ConnectedAccountsScreen() {
         data={connections}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<EmptyState emoji="🔗" title="No connections yet" subtitle="Invite a partner or parent to keep an eye on your health." />}
+        ListEmptyComponent={<EmptyState iconName="link" title="No connections yet" subtitle="Invite a partner or parent to keep an eye on your health." />}
         ListHeaderComponent={
           <Button label="+ Invite Someone" onPress={() => router.push('/(tabs)/profile/add-connection' as any)} variant="outline" fullWidth style={styles.addBtn} />
         }

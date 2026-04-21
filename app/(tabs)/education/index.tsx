@@ -70,7 +70,7 @@ export default function EducationScreen() {
         <>
           {ListHeader}
           <EmptyState
-            emoji="📚"
+            iconName="book-open"
             title="No content yet"
             subtitle="Check back soon for articles and videos."
           />
@@ -101,11 +101,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: FontSize.xxxl,
-    fontWeight: FontWeight.bold,
+    fontFamily: 'CormorantGaramond_600SemiBold',
     color: Colors.textPrimary,
   },
   subtitle: {
     fontSize: FontSize.sm,
+    fontFamily: 'Jost_400Regular',
     color: Colors.textMuted,
     marginTop: 2,
   },
@@ -117,6 +118,7 @@ const styles = StyleSheet.create({
   },
   countText: {
     fontSize: FontSize.xs,
+    fontFamily: 'Jost_400Regular',
     color: Colors.textMuted,
     textTransform: 'capitalize',
   },

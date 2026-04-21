@@ -9,6 +9,7 @@ import { Header } from '../../../components/layout/Header';
 import { Card } from '../../../components/ui/Card';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
+import { Icon } from '../../../components/ui/Icon';
 import type { HealthMetric } from '../../../types/database';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
@@ -39,7 +40,7 @@ export default function HealthTrendsScreen() {
   const chartConfig = {
     backgroundGradientFrom: Colors.surface,
     backgroundGradientTo: Colors.surface,
-    color: (opacity = 1) => `rgba(220, 20, 60, ${opacity})`,
+    color: (opacity = 1) => `rgba(57, 5, 23, ${opacity})`,
     labelColor: () => Colors.textSecondary,
     strokeWidth: 2,
     propsForDots: { r: '4', strokeWidth: '2', stroke: Colors.cherry },
@@ -51,7 +52,10 @@ export default function HealthTrendsScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         {weightData.length >= 2 ? (
           <Card style={styles.chartCard}>
-            <Text style={styles.chartTitle}>⚖️ Weight Trend (kg)</Text>
+            <View style={styles.chartHeader}>
+              <Icon name="trending-up" size={18} color={Colors.cherry} />
+              <Text style={styles.chartTitle}>Weight Trend (kg)</Text>
+            </View>
             <LineChart
               data={{
                 labels: weightData.map((d) => formatShortDate(d.recorded_at.split('T')[0])),
@@ -65,12 +69,15 @@ export default function HealthTrendsScreen() {
             />
           </Card>
         ) : (
-          <EmptyState emoji="⚖️" title="No weight data yet" subtitle="Log your weight in the Track tab to see trends here." />
+          <EmptyState iconName="trending-up" title="No weight data yet" subtitle="Log your weight in the Track tab to see trends here." />
         )}
 
         {bpData.length >= 2 ? (
           <Card style={styles.chartCard}>
-            <Text style={styles.chartTitle}>❤️ Blood Pressure Trend (mmHg)</Text>
+            <View style={styles.chartHeader}>
+              <Icon name="heart-pulse" size={18} color={Colors.cherry} />
+              <Text style={styles.chartTitle}>Blood Pressure Trend (mmHg)</Text>
+            </View>
             <LineChart
               data={{
                 labels: bpData.map((d) => formatShortDate(d.recorded_at.split('T')[0])),
@@ -84,7 +91,7 @@ export default function HealthTrendsScreen() {
             />
           </Card>
         ) : (
-          <EmptyState emoji="❤️" title="No BP data yet" subtitle="Log blood pressure in the Track tab to see trends here." />
+          <EmptyState iconName="heart-pulse" title="No BP data yet" subtitle="Log blood pressure in the Track tab to see trends here." />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -94,6 +101,7 @@ export default function HealthTrendsScreen() {
 const styles = StyleSheet.create({
   container: { padding: Spacing.md },
   chartCard: { marginBottom: Spacing.md },
-  chartTitle: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary, marginBottom: Spacing.sm },
+  chartHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.sm },
+  chartTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
   chart: { borderRadius: 12, marginLeft: -Spacing.md },
 });

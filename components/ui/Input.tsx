@@ -5,36 +5,36 @@ import {
   TextInput,
   TextInputProps,
   StyleSheet,
-  TouchableOpacity,
+  ViewStyle,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
 
+// Matches web Input: rounded-xl, h-10, border-gray-200 → focus:ring-cherry, label text-sm
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
   hint?: string;
   rightIcon?: React.ReactNode;
-  darkMode?: boolean;
+  containerStyle?: ViewStyle;
 }
 
-export function Input({ label, error, hint, rightIcon, darkMode, style, ...props }: InputProps) {
+export function Input({ label, error, hint, rightIcon, containerStyle, style, ...props }: InputProps) {
   const [focused, setFocused] = useState(false);
 
   return (
-    <View style={styles.container}>
-      {label && <Text style={[styles.label, darkMode && styles.labelDark]}>{label}</Text>}
-      <View
-        style={[
-          styles.inputWrapper,
-          focused && styles.focused,
-          !!error && styles.errorBorder,
-          darkMode && styles.inputWrapperDark,
-        ]}
-      >
+    <View style={[styles.container, containerStyle]}>
+      {label && (
+        <Text style={styles.label}>{label}</Text>
+      )}
+      <View style={[
+        styles.inputWrapper,
+        focused && styles.focused,
+        !!error && styles.errorBorder,
+      ]}>
         <TextInput
-          style={[styles.input, darkMode && styles.inputDark, style]}
-          placeholderTextColor={darkMode ? Colors.textMutedDark : Colors.textMuted}
+          style={[styles.input, style]}
+          placeholderTextColor={Colors.textMuted}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           {...props}
@@ -44,7 +44,7 @@ export function Input({ label, error, hint, rightIcon, darkMode, style, ...props
       {error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : hint ? (
-        <Text style={[styles.hint, darkMode && styles.hintDark]}>{hint}</Text>
+        <Text style={styles.hint}>{hint}</Text>
       ) : null}
     </View>
   );
@@ -55,37 +55,38 @@ const styles = StyleSheet.create({
   label: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.medium,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.xs,
+    fontFamily: 'Jost_500Medium',
+    color: Colors.textSecondary,   // #6b7280 — matches web text-gray-700
+    marginBottom: 6,
   },
-  labelDark: { color: Colors.textSecondaryDark },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    borderRadius: Radius.md,
-    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',         // gray-200 — matches web border-gray-200
+    borderRadius: Radius.md,        // rounded-xl — 12px
+    backgroundColor: Colors.surface,  // #FFFFFF bg-white
     paddingHorizontal: Spacing.md,
-    minHeight: 52,
+    minHeight: 44,
   },
-  inputWrapperDark: {
-    backgroundColor: Colors.surfaceDark,
-    borderColor: Colors.borderDark,
+  focused: {
+    borderWidth: 2,
+    borderColor: Colors.cherry,     // focus:ring-cherry (#390517)
   },
-  focused: { borderColor: Colors.cherry },
-  errorBorder: { borderColor: Colors.error },
+  errorBorder: {
+    borderColor: '#f87171',
+  },
   input: {
     flex: 1,
     fontSize: FontSize.md,
-    color: Colors.textPrimary,
+    fontFamily: 'Jost_400Regular',
+    color: Colors.textPrimary,      // #1a1a1a
     paddingVertical: Spacing.sm,
   },
-  inputDark: { color: Colors.textPrimaryDark },
   rightIcon: { marginLeft: Spacing.sm },
   errorText: {
     fontSize: FontSize.xs,
-    color: Colors.error,
+    color: '#ef4444',
     marginTop: Spacing.xs,
   },
   hint: {
@@ -93,5 +94,4 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     marginTop: Spacing.xs,
   },
-  hintDark: { color: Colors.textMutedDark },
 });

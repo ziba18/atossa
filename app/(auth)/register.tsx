@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Header } from '../../components/layout/Header';
@@ -81,6 +82,8 @@ export default function RegisterScreen() {
           <Text style={styles.terms}>
             By signing up, you agree to our Terms of Service and Privacy Policy.
           </Text>
+
+          <SocialAuthButtons />
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -89,10 +92,10 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: Spacing.xl, paddingTop: Spacing.lg },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl },
+  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl },
   btn: { marginTop: Spacing.md, marginBottom: Spacing.xl },
   loginRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: Spacing.lg },
-  loginText: { fontSize: FontSize.md, color: Colors.textMuted },
-  loginLink: { fontSize: FontSize.md, color: Colors.cherry, fontWeight: FontWeight.semibold },
-  terms: { fontSize: FontSize.xs, color: Colors.textMuted, textAlign: 'center', lineHeight: 18 },
+  loginText: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
+  loginLink: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+  terms: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, textAlign: 'center', lineHeight: 18 },
 });

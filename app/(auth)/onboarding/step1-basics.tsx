@@ -86,12 +86,12 @@ export default function Step1Basics() {
 
 const styles = StyleSheet.create({
   progress: { marginBottom: Spacing.xl },
-  step: { fontSize: FontSize.sm, color: Colors.textMuted, marginBottom: Spacing.xs },
+  step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xs },
   progressBar: { height: 4, backgroundColor: Colors.border, borderRadius: 2 },
   progressFill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-  title: { fontSize: 26, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-  label: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
+  title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
+  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+  label: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
   option: {
     paddingHorizontal: Spacing.md,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
   },
   optionSelected: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
-  optionText: { fontSize: FontSize.sm, color: Colors.textSecondary },
-  optionTextSelected: { color: Colors.white, fontWeight: FontWeight.semibold },
+  optionText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
+  optionTextSelected: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
   btn: { marginTop: Spacing.xxl },
 });

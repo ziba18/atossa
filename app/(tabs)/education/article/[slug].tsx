@@ -44,9 +44,11 @@ const styles = StyleSheet.create({
 });
 
 const markdownStyles = {
-  body: { fontSize: FontSize.md, color: Colors.textPrimary, lineHeight: 26 },
-  heading1: { fontSize: 26, fontWeight: '700' as const, color: Colors.cherry, marginBottom: Spacing.md },
-  heading2: { fontSize: 20, fontWeight: '600' as const, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  link: { color: Colors.cherry },
-  strong: { fontWeight: '700' as const },
+  body: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textPrimary, lineHeight: 26 },
+  heading1: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.cherry, marginBottom: Spacing.md },
+  heading2: { fontSize: 22, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
+  heading3: { fontSize: 18, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.xs },
+  link: { color: Colors.cherry, fontFamily: 'Jost_500Medium' },
+  strong: { fontFamily: 'Jost_600SemiBold' },
+  paragraph: { fontFamily: 'Jost_400Regular', lineHeight: 26 },
 };

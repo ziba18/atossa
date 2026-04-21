@@ -52,11 +52,11 @@ export default function Step3Symptoms() {
 
 const styles = StyleSheet.create({
   progress: { marginBottom: Spacing.xl },
-  step: { fontSize: FontSize.sm, color: Colors.textMuted, marginBottom: Spacing.xs },
+  step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xs },
   progressBar: { height: 4, backgroundColor: Colors.border, borderRadius: 2 },
   fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-  title: { fontSize: 26, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+  title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
+  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
   chips: { flexDirection: 'row', flexWrap: 'wrap' },
   btn: { marginTop: Spacing.xl },
 });

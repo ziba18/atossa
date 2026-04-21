@@ -50,7 +50,7 @@ export async function schedulePeriodReminder(
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: '🩸 Period Coming Soon',
+        title: 'Period Coming Soon',
         body: `Your period is expected in ${daysBeforeReminder} days. Stock up on supplies!`,
         data: { type: 'period_upcoming' },
       },

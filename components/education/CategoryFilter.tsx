@@ -54,6 +54,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
   },
   chipActive: { backgroundColor: Colors.cherry },
-  label: { fontSize: FontSize.sm, color: Colors.textSecondary, fontWeight: FontWeight.medium },
-  labelActive: { color: Colors.white, fontWeight: FontWeight.semibold },
+  label: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textSecondary },
+  labelActive: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
 });

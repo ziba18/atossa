@@ -3,7 +3,8 @@ import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextS
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+// Matches web button variants: primary=#390517, secondary=cherry-lighter, outline, ghost, danger
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 type Size = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -35,7 +36,7 @@ export function Button({
     <TouchableOpacity
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.8}
+      activeOpacity={0.75}
       style={[
         styles.base,
         styles[variant],
@@ -61,7 +62,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.md,        // rounded-xl — 12px
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -69,27 +70,52 @@ const styles = StyleSheet.create({
   fullWidth: { width: '100%' },
   disabled: { opacity: 0.45 },
 
-  // Variants
-  primary: { backgroundColor: Colors.cherry },
-  secondary: { backgroundColor: Colors.emerald },
-  outline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: Colors.cherry },
-  ghost: { backgroundColor: Colors.cherryLighter },
-  danger: { backgroundColor: Colors.cherryDark },
+  // Variants — exact match to web
+  primary: {
+    backgroundColor: Colors.cherry,  // #390517 dark burgundy
+    shadowColor: Colors.cherry,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  secondary: {
+    backgroundColor: Colors.cherryLighter,  // #F2E6EA
+  },
+  outline: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: Colors.cherry,             // #390517
+  },
+  ghost: {
+    backgroundColor: Colors.cherryLighter,  // light tint
+  },
+  danger: {
+    backgroundColor: '#dc2626',
+  },
+  success: {
+    backgroundColor: Colors.emerald,
+  },
 
-  // Sizes
+  // Sizes — h-8/h-10/h-12 matching web
   size_sm: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 2, minHeight: 36 },
-  size_md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 4, minHeight: 48 },
-  size_lg: { paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, minHeight: 56 },
+  size_md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 4, minHeight: 44 },
+  size_lg: { paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, minHeight: 52 },
 
   // Text
-  text: { fontWeight: FontWeight.semibold, letterSpacing: 0.3 },
+  text: {
+    fontWeight: FontWeight.semibold,
+    letterSpacing: 0.3,
+    fontFamily: 'Jost_600SemiBold',
+  },
   text_primary: { color: Colors.white },
-  text_secondary: { color: Colors.white },
+  text_secondary: { color: Colors.cherry },
   text_outline: { color: Colors.cherry },
   text_ghost: { color: Colors.cherry },
   text_danger: { color: Colors.white },
+  text_success: { color: Colors.white },
 
   textSize_sm: { fontSize: FontSize.sm },
-  textSize_md: { fontSize: FontSize.md },
-  textSize_lg: { fontSize: FontSize.lg },
+  textSize_md: { fontSize: FontSize.sm },
+  textSize_lg: { fontSize: FontSize.md },
 });

@@ -6,19 +6,20 @@ import { supabase } from '../../../lib/supabase';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Header } from '../../../components/layout/Header';
+import { Icon, type IconName } from '../../../components/ui/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
-const METRIC_OPTIONS = [
-  { type: 'weight', label: 'Weight', unit: 'kg', emoji: '⚖️', placeholder: '60.5' },
-  { type: 'blood_pressure_systolic', label: 'BP Systolic', unit: 'mmHg', emoji: '❤️', placeholder: '120' },
-  { type: 'blood_pressure_diastolic', label: 'BP Diastolic', unit: 'mmHg', emoji: '💙', placeholder: '80' },
-  { type: 'heart_rate', label: 'Heart Rate', unit: 'bpm', emoji: '💓', placeholder: '72' },
-  { type: 'testosterone', label: 'Testosterone', unit: 'ng/dL', emoji: '🧬', placeholder: '25' },
-  { type: 'lh', label: 'LH', unit: 'mIU/mL', emoji: '🔬', placeholder: '5' },
-  { type: 'fsh', label: 'FSH', unit: 'mIU/mL', emoji: '🔬', placeholder: '7' },
-  { type: 'blood_glucose', label: 'Blood Glucose', unit: 'mg/dL', emoji: '🩸', placeholder: '85' },
+const METRIC_OPTIONS: { type: string; label: string; unit: string; icon: IconName; placeholder: string }[] = [
+  { type: 'weight', label: 'Weight', unit: 'kg', icon: 'trending-up', placeholder: '60.5' },
+  { type: 'blood_pressure_systolic', label: 'BP Systolic', unit: 'mmHg', icon: 'heart-pulse', placeholder: '120' },
+  { type: 'blood_pressure_diastolic', label: 'BP Diastolic', unit: 'mmHg', icon: 'activity', placeholder: '80' },
+  { type: 'heart_rate', label: 'Heart Rate', unit: 'bpm', icon: 'heart-pulse', placeholder: '72' },
+  { type: 'testosterone', label: 'Testosterone', unit: 'ng/dL', icon: 'dna', placeholder: '25' },
+  { type: 'lh', label: 'LH', unit: 'mIU/mL', icon: 'eye', placeholder: '5' },
+  { type: 'fsh', label: 'FSH', unit: 'mIU/mL', icon: 'eye', placeholder: '7' },
+  { type: 'blood_glucose', label: 'Blood Glucose', unit: 'mg/dL', icon: 'droplet', placeholder: '85' },
 ];
 
 export default function LogMetricsScreen() {
@@ -53,7 +54,9 @@ export default function LogMetricsScreen() {
         <Text style={styles.subtitle}>Enter any metrics you've measured. Leave blank to skip.</Text>
         {METRIC_OPTIONS.map((m) => (
           <View key={m.type} style={styles.metricRow}>
-            <Text style={styles.metricEmoji}>{m.emoji}</Text>
+            <View style={styles.metricIcon}>
+              <Icon name={m.icon} size={24} color={Colors.cherry} />
+            </View>
             <View style={styles.metricInput}>
               <Input
                 label={`${m.label} (${m.unit})`}
@@ -73,9 +76,9 @@ export default function LogMetricsScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: Spacing.md },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
   metricRow: { flexDirection: 'row', alignItems: 'flex-end', gap: Spacing.sm },
-  metricEmoji: { fontSize: 28, marginBottom: Spacing.md + 4 },
+  metricIcon: { marginBottom: Spacing.md + 4 },
   metricInput: { flex: 1 },
   btn: { marginTop: Spacing.md },
 });

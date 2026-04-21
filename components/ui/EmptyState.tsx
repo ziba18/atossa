@@ -3,19 +3,22 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../constants/theme';
 import { Button } from './Button';
+import { Icon, type IconName } from './Icon';
 
 interface EmptyStateProps {
-  emoji?: string;
+  iconName?: IconName;
   title: string;
   subtitle?: string;
   actionLabel?: string;
   onAction?: () => void;
 }
 
-export function EmptyState({ emoji = '🌸', title, subtitle, actionLabel, onAction }: EmptyStateProps) {
+export function EmptyState({ iconName = 'flower', title, subtitle, actionLabel, onAction }: EmptyStateProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.emoji}>{emoji}</Text>
+      <View style={styles.iconWrap}>
+        <Icon name={iconName} size={48} color={Colors.textMuted} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       {actionLabel && onAction && (
@@ -31,16 +34,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: Spacing.xxl,
   },
-  emoji: { fontSize: 48, marginBottom: Spacing.md },
+  iconWrap: { marginBottom: Spacing.md },
   title: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.semibold,
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textPrimary,
     textAlign: 'center',
     marginBottom: Spacing.sm,
   },
   subtitle: {
     fontSize: FontSize.md,
+    fontFamily: 'Jost_400Regular',
     color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: 22,

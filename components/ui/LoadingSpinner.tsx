@@ -11,7 +11,7 @@ interface LoadingSpinnerProps {
 export function LoadingSpinner({ message, fullScreen = false }: LoadingSpinnerProps) {
   return (
     <View style={[styles.container, fullScreen && styles.fullScreen]}>
-      <ActivityIndicator size="large" color={Colors.cherry} />
+      <ActivityIndicator size="large" color={Colors.whiskey} />
       {message && <Text style={styles.message}>{message}</Text>}
     </View>
   );
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   message: {
     marginTop: Spacing.md,
     fontSize: FontSize.md,
+    fontFamily: 'Jost_400Regular',
     color: Colors.textSecondary,
   },
 });

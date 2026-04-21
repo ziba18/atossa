@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Alert } from 'react-native';
+import { Icon } from '../ui/Icon';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Shadow, Spacing } from '../../constants/theme';
 import { sendEmergencyAlert } from '../../lib/emergency';
@@ -41,7 +42,7 @@ export function EmergencyButton({ emergencyContacts }: Props) {
         style={styles.button}
         activeOpacity={0.85}
       >
-        <Text style={styles.icon}>🚨</Text>
+        <Icon name="shield" size={20} color={Colors.white} />
         <Text style={styles.label}>Emergency</Text>
       </TouchableOpacity>
 
@@ -58,7 +59,7 @@ export function EmergencyButton({ emergencyContacts }: Props) {
               disabled={sending}
             >
               <Text style={styles.confirmText}>
-                {sending ? 'Sending...' : '🚨 Yes, Send Alert'}
+                {sending ? 'Sending...' : 'Yes, Send Alert'}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setShowConfirm(false)} style={styles.cancelBtn}>
@@ -82,7 +83,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     ...Shadow.md,
   },
-  icon: { fontSize: 20 },
   label: { color: Colors.white, fontWeight: FontWeight.bold, fontSize: FontSize.md },
   overlay: {
     flex: 1,

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Button } from '../../components/ui/Button';
+import { Icon, type IconName } from '../../components/ui/Icon';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,14 +30,14 @@ export default function WelcomeScreen() {
           </View>
 
           <View style={styles.features}>
-            {[
-              { emoji: '📅', text: 'Track your cycle & symptoms' },
-              { emoji: '🔮', text: 'Predict irregular periods with AI' },
-              { emoji: '🩺', text: 'Detect PCOS & health risks' },
-              { emoji: '🚨', text: 'Emergency alerts for loved ones' },
-            ].map((f) => (
+            {([
+              { icon: 'calendar', text: 'Track your cycle & symptoms' },
+              { icon: 'sparkles', text: 'Predict irregular periods with AI' },
+              { icon: 'stethoscope', text: 'Detect PCOS & health risks' },
+              { icon: 'bell', text: 'Emergency alerts for loved ones' },
+            ] as { icon: IconName; text: string }[]).map((f) => (
               <View key={f.text} style={styles.featureRow}>
-                <Text style={styles.featureEmoji}>{f.emoji}</Text>
+                <Icon name={f.icon} size={24} color={Colors.white} />
                 <Text style={styles.featureText}>{f.text}</Text>
               </View>
             ))}
@@ -80,13 +81,14 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.4)',
   },
   appName: {
-    fontSize: 48,
-    fontWeight: FontWeight.bold,
+    fontSize: 52,
+    fontFamily: 'CormorantGaramond_600SemiBold',
     color: Colors.white,
-    letterSpacing: 2,
+    letterSpacing: 3,
   },
   tagline: {
     fontSize: FontSize.lg,
+    fontFamily: 'Jost_400Regular',
     color: 'rgba(255,255,255,0.85)',
     textAlign: 'center',
     marginTop: Spacing.sm,
@@ -94,8 +96,7 @@ const styles = StyleSheet.create({
   },
   features: { gap: Spacing.md },
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
-  featureEmoji: { fontSize: 24, width: 36 },
-  featureText: { fontSize: FontSize.md, color: Colors.white, flex: 1 },
+  featureText: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.white, flex: 1 },
   buttons: { gap: Spacing.sm },
   primaryBtn: { backgroundColor: Colors.white },
   secondaryBtn: { backgroundColor: 'rgba(255,255,255,0.15)' },

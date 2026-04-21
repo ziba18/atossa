@@ -8,6 +8,7 @@ import { FlowIntensitySelector } from '../../../components/tracking/FlowIntensit
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Header } from '../../../components/layout/Header';
+import { Icon } from '../../../components/ui/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { FlowIntensity } from '../../../types/database';
 import { Colors } from '../../../constants/colors';
@@ -149,9 +150,12 @@ export default function LogPeriodScreen() {
         {/* Summary row */}
         <View style={styles.summaryRow}>
           {periodDays ? (
-            <Text style={styles.summaryText}>
-              🩸 {periodDays} day{periodDays !== 1 ? 's' : ''} selected
-            </Text>
+            <View style={styles.summaryContent}>
+              <Icon name="droplets" size={16} color={Colors.cherry} />
+              <Text style={styles.summaryText}>
+                {periodDays} day{periodDays !== 1 ? 's' : ''} selected
+              </Text>
+            </View>
           ) : startDate ? (
             <Text style={styles.summaryHint}>
               {selecting === 'end' ? 'Now tap an end date on the calendar' : 'Tap a date to change start'}
@@ -234,7 +238,7 @@ const styles = StyleSheet.create({
   },
   dateCardLabel: {
     fontSize: FontSize.xs,
-    fontWeight: FontWeight.semibold,
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -242,12 +246,12 @@ const styles = StyleSheet.create({
   },
   dateCardValue: {
     fontSize: FontSize.sm,
-    fontWeight: FontWeight.semibold,
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textPrimary,
   },
   dateCardPlaceholder: {
     color: Colors.textMuted,
-    fontWeight: FontWeight.regular,
+    fontFamily: 'Jost_400Regular',
   },
   dateSeparator: { alignItems: 'center' },
   dateSeparatorText: { fontSize: FontSize.lg, color: Colors.textMuted },
@@ -259,9 +263,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
     minHeight: 20,
   },
-  summaryText: { fontSize: FontSize.sm, color: Colors.cherry, fontWeight: FontWeight.semibold },
-  summaryHint: { fontSize: FontSize.sm, color: Colors.textMuted },
-  clearText: { fontSize: FontSize.sm, color: Colors.cherry, fontWeight: FontWeight.semibold },
+  summaryContent: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  summaryText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+  summaryHint: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
+  clearText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
 
   calendar: {
     borderRadius: Radius.lg,
@@ -273,7 +278,7 @@ const styles = StyleSheet.create({
   section: { marginTop: Spacing.lg },
   label: {
     fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textPrimary,
     marginBottom: Spacing.sm,
   },

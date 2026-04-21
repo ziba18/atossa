@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { FlowIntensity } from '../../types/database';
+import { Icon } from '../ui/Icon';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
 
-const FLOW_OPTIONS: { value: FlowIntensity; label: string; emoji: string; color: string }[] = [
-  { value: 'spotting',   label: 'Spotting',    emoji: '💧', color: Colors.cherryLighter },
-  { value: 'light',      label: 'Light',       emoji: '🩸', color: '#FFCCD5' },
-  { value: 'medium',     label: 'Medium',      emoji: '🩸', color: '#FF8FA3' },
-  { value: 'heavy',      label: 'Heavy',       emoji: '🩸', color: Colors.cherry },
-  { value: 'very_heavy', label: 'Very Heavy',  emoji: '🩸', color: Colors.cherryDark },
+const FLOW_OPTIONS: { value: FlowIntensity; label: string; iconColor: string; color: string }[] = [
+  { value: 'spotting',   label: 'Spotting',   iconColor: Colors.cherry, color: Colors.cherryLighter },
+  { value: 'light',      label: 'Light',      iconColor: Colors.cherry, color: '#FFCCD5' },
+  { value: 'medium',     label: 'Medium',     iconColor: Colors.cherry, color: '#FF8FA3' },
+  { value: 'heavy',      label: 'Heavy',      iconColor: Colors.white, color: Colors.cherry },
+  { value: 'very_heavy', label: 'Very Heavy', iconColor: Colors.white, color: Colors.cherryDark },
 ];
 
 interface Props {
@@ -35,7 +36,7 @@ export function FlowIntensitySelector({ value, onChange }: Props) {
               ]}
               activeOpacity={0.8}
             >
-              <Text style={styles.emoji}>{opt.emoji}</Text>
+              <Icon name="droplet" size={18} color={selected ? opt.iconColor : Colors.cherry} />
               <Text style={[styles.optionLabel, selected && styles.selectedLabel]}>
                 {opt.label}
               </Text>
@@ -50,7 +51,7 @@ export function FlowIntensitySelector({ value, onChange }: Props) {
 const styles = StyleSheet.create({
   label: {
     fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textPrimary,
     marginBottom: Spacing.sm,
   },
@@ -62,7 +63,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
   },
   selectedOption: { borderWidth: 2, borderColor: Colors.cherryDark },
-  emoji: { fontSize: 18, marginBottom: 2 },
-  optionLabel: { fontSize: FontSize.xs, color: Colors.textSecondary, textAlign: 'center' },
-  selectedLabel: { color: Colors.white, fontWeight: FontWeight.semibold },
+  optionLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, textAlign: 'center' },
+  selectedLabel: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
 });

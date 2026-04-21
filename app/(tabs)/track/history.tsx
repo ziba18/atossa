@@ -24,7 +24,7 @@ export default function HistoryScreen() {
         data={cycleLogs}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<EmptyState emoji="📅" title="No logs yet" subtitle="Start logging your period to see history here." />}
+        ListEmptyComponent={<EmptyState iconName="calendar" title="No logs yet" subtitle="Start logging your period to see history here." />}
         renderItem={({ item }) => (
           <Card style={styles.card}>
             <View style={styles.row}>
@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   list: { padding: Spacing.md },
   card: { marginBottom: Spacing.sm },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  date: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary },
-  sub: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
+  date: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
+  sub: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
   badges: { flexDirection: 'row', gap: 4, flexWrap: 'wrap', maxWidth: '50%' },
-  notes: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: Spacing.sm, fontStyle: 'italic' },
+  notes: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: Spacing.sm, fontStyle: 'italic' },
 });

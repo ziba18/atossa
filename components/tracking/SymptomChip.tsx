@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import type { SymptomType } from '../../constants/symptomTypes';
 import { SYMPTOM_META } from '../../constants/symptomTypes';
+import { Icon } from '../ui/Icon';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
 
@@ -19,7 +20,7 @@ export function SymptomChip({ type, selected = false, onPress }: Props) {
       activeOpacity={0.8}
       style={[styles.chip, selected && styles.chipSelected]}
     >
-      <Text style={styles.emoji}>{meta.emoji}</Text>
+      <Icon name={meta.icon} size={14} color={selected ? Colors.white : Colors.textSecondary} />
       <Text style={[styles.label, selected && styles.labelSelected]}>{meta.label}</Text>
     </TouchableOpacity>
   );
@@ -37,7 +38,6 @@ const styles = StyleSheet.create({
     margin: Spacing.xs / 2,
   },
   chipSelected: { backgroundColor: Colors.cherry },
-  emoji: { fontSize: 14 },
-  label: { fontSize: FontSize.sm, color: Colors.textSecondary, fontWeight: FontWeight.medium },
-  labelSelected: { color: Colors.white },
+  label: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textSecondary },
+  labelSelected: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
 });

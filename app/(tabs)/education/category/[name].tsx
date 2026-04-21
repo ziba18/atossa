@@ -32,7 +32,7 @@ export default function CategoryScreen() {
         data={content}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<EmptyState emoji="📚" title="No content yet" subtitle="Check back soon!" />}
+        ListEmptyComponent={<EmptyState iconName="book-open" title="No content yet" subtitle="Check back soon!" />}
         renderItem={({ item }) => <ContentCard content={item} />}
       />
     </SafeAreaView>

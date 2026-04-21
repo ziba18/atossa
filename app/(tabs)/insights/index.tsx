@@ -9,6 +9,7 @@ import { Card } from '../../../components/ui/Card';
 import { PCOSRiskCard } from '../../../components/alerts/PCOSRiskCard';
 import { Badge } from '../../../components/ui/Badge';
 import type { PCOSAssessment } from '../../../types/database';
+import { Icon, type IconName } from '../../../components/ui/Icon';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 import { formatDisplayDate } from '../../../algorithms/dateHelpers';
@@ -83,12 +84,12 @@ export default function InsightsScreen() {
 
         {/* Navigation cards */}
         <View style={styles.navRow}>
-          {[
-            { emoji: '📊', label: 'Health Trends', route: '/(tabs)/insights/health-trends' },
-            { emoji: '🩺', label: 'PCOS Assessment', route: '/(tabs)/insights/pcos-assessment' },
-          ].map((item) => (
+          {([
+            { icon: 'bar-chart', label: 'Health Trends', route: '/(tabs)/insights/health-trends' },
+            { icon: 'stethoscope', label: 'PCOS Assessment', route: '/(tabs)/insights/pcos-assessment' },
+          ] as { icon: IconName; label: string; route: string }[]).map((item) => (
             <TouchableOpacity key={item.label} onPress={() => router.push(item.route as any)} style={styles.navCard}>
-              <Text style={styles.navEmoji}>{item.emoji}</Text>
+              <Icon name={item.icon} size={32} color={Colors.cherry} />
               <Text style={styles.navLabel}>{item.label}</Text>
             </TouchableOpacity>
           ))}
@@ -100,16 +101,16 @@ export default function InsightsScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: Spacing.md },
-  title: { fontSize: FontSize.xxxl, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginBottom: Spacing.lg },
+  title: { fontSize: FontSize.xxxl, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.lg },
   predCard: { marginBottom: Spacing.md, gap: Spacing.sm },
-  sectionLabel: { fontSize: FontSize.sm, color: Colors.textMuted, fontWeight: FontWeight.medium },
-  bigDate: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.cherry },
+  sectionLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textMuted },
+  bigDate: { fontSize: FontSize.xxl, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.cherry },
   row: { flexDirection: 'row', gap: Spacing.xs },
   statsCard: { marginBottom: Spacing.md },
   statsRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: Spacing.sm },
   stat: { alignItems: 'center' },
-  statValue: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.textPrimary },
-  statLabel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2 },
+  statValue: { fontSize: FontSize.xxl, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary },
+  statLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
   navRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.sm },
   navCard: {
     flex: 1,
@@ -120,6 +121,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  navEmoji: { fontSize: 32, marginBottom: Spacing.sm },
-  navLabel: { fontSize: FontSize.sm, fontWeight: FontWeight.semibold, color: Colors.textSecondary, textAlign: 'center' },
+  navLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textSecondary, textAlign: 'center', marginTop: Spacing.sm },
 });

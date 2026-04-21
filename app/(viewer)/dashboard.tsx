@@ -48,7 +48,7 @@ export default function ViewerDashboard() {
   if (connections.length === 0) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
-        <EmptyState emoji="🔗" title="No connections" subtitle="You haven't been connected to anyone's Atossa account yet." />
+        <EmptyState iconName="link" title="No connections" subtitle="You haven't been connected to anyone's Atossa account yet." />
       </SafeAreaView>
     );
   }

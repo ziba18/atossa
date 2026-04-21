@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { SafeScreen } from '../../components/layout/SafeScreen';
 import { Header } from '../../components/layout/Header';
+import { Icon } from '../../components/ui/Icon';
 import { Colors } from '../../constants/colors';
 import { FontSize, Spacing } from '../../constants/theme';
 
@@ -28,7 +29,9 @@ export default function ForgotPasswordScreen() {
       <View style={styles.container}>
         {sent ? (
           <View style={styles.sentContainer}>
-            <Text style={styles.sentEmoji}>📬</Text>
+            <View style={styles.sentIconWrap}>
+              <Icon name="send" size={64} color={Colors.cherry} />
+            </View>
             <Text style={styles.sentTitle}>Check your inbox</Text>
             <Text style={styles.sentBody}>
               We sent a password reset link to {email}. Check your email and follow the instructions.
@@ -57,9 +60,9 @@ export default function ForgotPasswordScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: Spacing.xl },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
   sentContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  sentEmoji: { fontSize: 64, marginBottom: Spacing.lg },
-  sentTitle: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary, marginBottom: Spacing.sm },
-  sentBody: { fontSize: FontSize.md, color: Colors.textMuted, textAlign: 'center', lineHeight: 22 },
+  sentIconWrap: { marginBottom: Spacing.lg },
+  sentTitle: { fontSize: 24, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
+  sentBody: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, textAlign: 'center', lineHeight: 22 },
 });
