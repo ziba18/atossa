@@ -8,7 +8,7 @@ import { useAlertStore } from '../../../stores/alertStore';
 import { Card } from '../../../components/ui/Card';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing, Shadow, Radius } from '../../../constants/theme';
+import { FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
 import { formatDisplayDate } from '../../../algorithms/dateHelpers';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { differenceInDays, parseISO } from 'date-fns';
@@ -31,8 +31,8 @@ const SEASONS: Record<CycleSeason, {
   winter: {
     name: 'Inner Winter',
     phase: 'Menstruation',
-    gradientColors: ['#2a0310', '#390517', '#1a020b'],
-    textAccent: '#e8a0b0',
+    gradientColors: ['#F8EDED', '#F2E4E4', '#EDD8D8'] as [string, string, string],
+    textAccent: '#C76E72',
     icon: 'sparkles',
     tagline: 'Rest, reflect & release',
     energy: ['Introspective', 'Intuitive', 'Honest'],
@@ -43,8 +43,8 @@ const SEASONS: Record<CycleSeason, {
   spring: {
     name: 'Inner Spring',
     phase: 'Follicular',
-    gradientColors: ['#0a1f1c', '#16302B', '#0d261f'],
-    textAccent: '#7dcfad',
+    gradientColors: ['#EBF5EB', '#E2F0E2', '#D8EBD8'] as [string, string, string],
+    textAccent: '#5E9E6A',
     icon: 'leaf',
     tagline: 'Rising energy & fresh beginnings',
     energy: ['Creative', 'Optimistic', 'Curious'],
@@ -55,8 +55,8 @@ const SEASONS: Record<CycleSeason, {
   summer: {
     name: 'Inner Summer',
     phase: 'Ovulation',
-    gradientColors: ['#4a3010', '#7A5A2A', '#A38560'],
-    textAccent: '#f5d480',
+    gradientColors: ['#FAF6E4', '#F5F0D5', '#F0EAC4'] as [string, string, string],
+    textAccent: '#8A7020',
     icon: 'zap',
     tagline: 'Radiant, magnetic & powerful',
     energy: ['Confident', 'Magnetic', 'Communicative'],
@@ -67,8 +67,8 @@ const SEASONS: Record<CycleSeason, {
   autumn: {
     name: 'Inner Autumn',
     phase: 'Luteal',
-    gradientColors: ['#2a1508', '#4a2510', '#3d1e0a'],
-    textAccent: '#e0956a',
+    gradientColors: ['#F0EEFB', '#E8E4F5', '#E0DAEE'] as [string, string, string],
+    textAccent: '#7A6EA0',
     icon: 'flower',
     tagline: 'Focused, grounded & reflective',
     energy: ['Analytical', 'Detail-oriented', 'Nesting'],
@@ -140,9 +140,9 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.screen}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* ── Hero: dark burgundy-to-forest gradient (matches web cycle card) ─ */}
+        {/* ── Hero: soft pastel gradient ── */}
         <LinearGradient
-          colors={['#390517', '#03110D']}
+          colors={['#EDE4DC', '#F5EDE5']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={styles.hero}
         >
@@ -159,17 +159,25 @@ export default function HomeScreen() {
                 </Text>
               </View>
             </View>
-            <TouchableOpacity
-              onPress={() => router.push('/(tabs)/home/notifications' as any)}
-              style={styles.bellBtn}
-            >
-              <Icon name="bell" size={24} color={Colors.white} />
-              {unreadCount > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{unreadCount}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/home/notifications' as any)}
+                style={styles.bellBtn}
+              >
+                <Icon name="bell" size={24} color={Colors.textSecondary} />
+                {unreadCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{unreadCount}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/profile' as any)}
+                style={styles.profileBtn}
+              >
+                <Icon name="user" size={22} color={Colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Prediction */}
@@ -272,26 +280,6 @@ export default function HomeScreen() {
             </Card>
           )}
 
-          {/* ── Quick Log ──────────────────────────────────────────────────── */}
-          <Text style={styles.sectionTitle}>Quick Log</Text>
-          <View style={styles.quickRow}>
-            {([
-              { icon: 'droplets', label: 'Log Period', route: '/(tabs)/track/log-period' },
-              { icon: 'activity', label: 'Symptoms', route: '/(tabs)/track/log-symptoms' },
-              { icon: 'clipboard-list', label: 'Health Log', route: '/(tabs)/track/log-health' },
-            ] as { icon: IconName; label: string; route: string }[]).map((item) => (
-              <TouchableOpacity
-                key={item.label}
-                onPress={() => router.push(item.route as any)}
-                style={styles.quickBtn}
-                activeOpacity={0.8}
-              >
-                <Icon name={item.icon} size={28} color={Colors.cherry} />
-                <Text style={styles.quickLabel}>{item.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
           {/* ── Recent alerts ──────────────────────────────────────────────── */}
           {alerts.filter((a) => !a.is_read).slice(0, 3).map((alert) => (
             <View key={alert.id} style={[
@@ -314,7 +302,7 @@ export default function HomeScreen() {
                 Log your first period to get personalized predictions and insights
               </Text>
               <TouchableOpacity
-                onPress={() => router.push('/(tabs)/track/log-period' as any)}
+                onPress={() => router.push('/(tabs)/cycle' as any)}
                 style={styles.emptyBtn}
                 activeOpacity={0.8}
               >
@@ -338,10 +326,19 @@ const styles = StyleSheet.create({
   headerLogo: { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)' },
   greeting: {
     fontSize: FontSize.lg, fontWeight: FontWeight.bold,
-    fontFamily: 'Jost_600SemiBold', color: Colors.white,
+    fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary,
   },
-  heroDate: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.7)', marginTop: 2 },
+  heroDate: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, marginTop: 2 },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
   bellBtn: { position: 'relative', padding: Spacing.xs },
+  profileBtn: {
+    padding: Spacing.xs,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    borderRadius: 20,
+    width: 36, height: 36,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: 'rgba(180,150,140,0.2)',
+  },
   badge: {
     position: 'absolute', top: 0, right: 0,
     backgroundColor: Colors.whiskey, borderRadius: 99,
@@ -351,21 +348,21 @@ const styles = StyleSheet.create({
 
   // Prediction card in hero
   predCard: {
-    backgroundColor: 'rgba(163,133,96,0.12)',
+    backgroundColor: 'rgba(255,255,255,0.75)',
     borderRadius: 16, padding: Spacing.md, marginTop: Spacing.lg,
-    borderWidth: 1, borderColor: 'rgba(163,133,96,0.2)',
+    borderWidth: 1, borderColor: 'rgba(180,150,140,0.2)',
   },
-  predLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.whiskey, marginBottom: 4 },
-  predValue: { fontSize: FontSize.display, fontWeight: FontWeight.bold, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.white, lineHeight: 44 },
-  predSub: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.6)', marginTop: 4 },
+  predLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.cherry, marginBottom: 4 },
+  predValue: { fontSize: FontSize.display, fontWeight: FontWeight.bold, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, lineHeight: 44 },
+  predSub: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, marginTop: 4 },
   predMetaRow: {
     flexDirection: 'row', marginTop: Spacing.md, paddingTop: Spacing.md,
-    borderTopWidth: 1, borderTopColor: 'rgba(163,133,96,0.2)',
+    borderTopWidth: 1, borderTopColor: 'rgba(180,150,140,0.2)',
   },
   predMeta: { flex: 1 },
-  predMetaDivider: { width: 1, backgroundColor: 'rgba(163,133,96,0.2)', marginHorizontal: Spacing.sm },
-  predMetaLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.5)' },
-  predMetaValue: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.white, marginTop: 2 },
+  predMetaDivider: { width: 1, backgroundColor: 'rgba(180,150,140,0.2)', marginHorizontal: Spacing.sm },
+  predMetaLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
+  predMetaValue: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, marginTop: 2 },
 
   content: { padding: Spacing.md, gap: Spacing.md },
 
@@ -374,15 +371,15 @@ const styles = StyleSheet.create({
   seasonTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.sm },
   seasonLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   seasonName: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', fontWeight: FontWeight.semibold, letterSpacing: 0.5 },
-  seasonPhase: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.45)', marginTop: 2 },
+  seasonPhase: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(42,28,24,0.5)', marginTop: 2 },
   cycleDayBox: {
-    backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 10,
     paddingHorizontal: Spacing.sm, paddingVertical: Spacing.xs, alignItems: 'flex-end',
   },
-  cycleDayLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.45)' },
+  cycleDayLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(42,28,24,0.5)' },
   cycleDayValue: { fontSize: FontSize.xl, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.bold },
   cycleDayMax: { fontSize: FontSize.xs, opacity: 0.55 },
-  seasonTagline: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: 'rgba(255,255,255,0.75)', marginBottom: Spacing.md },
+  seasonTagline: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: 'rgba(42,28,24,0.65)', marginBottom: Spacing.md },
   energyRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs, marginBottom: Spacing.md },
   energyPill: {
     borderRadius: 99, paddingHorizontal: Spacing.sm, paddingVertical: 4,
@@ -390,38 +387,20 @@ const styles = StyleSheet.create({
   },
   energyText: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium', fontWeight: FontWeight.medium },
   seasonInfoBox: {
-    backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 12, marginBottom: Spacing.md,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: 12, padding: 12, marginBottom: Spacing.md,
+    borderWidth: 1, borderColor: 'rgba(180,150,140,0.15)',
   },
   seasonInfoRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm },
-  siRowBorder: { paddingTop: 10, marginTop: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.07)' },
-  siLabel: { fontSize: 9, fontFamily: 'Jost_600SemiBold', color: 'rgba(255,255,255,0.35)', letterSpacing: 0.8, marginBottom: 2 },
-  siValue: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.85)', lineHeight: 18 },
+  siRowBorder: { paddingTop: 10, marginTop: 10, borderTopWidth: 1, borderTopColor: 'rgba(180,150,140,0.15)' },
+  siLabel: { fontSize: 9, fontFamily: 'Jost_600SemiBold', color: 'rgba(42,28,24,0.4)', letterSpacing: 0.8, marginBottom: 2 },
+  siValue: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: 'rgba(42,28,24,0.75)', lineHeight: 18 },
   affirmation: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold_Italic', opacity: 0.85 },
 
-  // Fertile window — forest green tint
-  fertileCard: { backgroundColor: Colors.forestLighter, borderColor: 'rgba(22,48,43,0.25)' },
+  // Fertile window — sage green tint
+  fertileCard: { backgroundColor: Colors.forestLighter, borderColor: 'rgba(93,158,106,0.2)' },
   fertileHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
   fertileTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.bold, color: Colors.forest },
   fertileDate: { fontSize: FontSize.lg, fontFamily: 'Jost_500Medium', fontWeight: FontWeight.semibold, color: Colors.forest, marginTop: 4 },
-
-  // Section title
-  sectionTitle: {
-    fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold',
-    fontWeight: FontWeight.semibold, color: Colors.textPrimary, letterSpacing: 0.02,
-  },
-
-  // Quick Log
-  quickRow: { flexDirection: 'row', gap: Spacing.sm },
-  quickBtn: {
-    flex: 1, backgroundColor: Colors.surface, borderRadius: 16,
-    padding: Spacing.md, alignItems: 'center',
-    borderWidth: 1, borderColor: Colors.border, ...Shadow.sm,
-  },
-  quickLabel: {
-    fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
-    fontWeight: FontWeight.semibold, color: Colors.textSecondary, textAlign: 'center', marginTop: Spacing.xs,
-  },
 
   // Alert banners
   alertBanner: {
@@ -430,8 +409,8 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(163,133,96,0.3)',
   },
   alertEmergency: { backgroundColor: Colors.cherryLighter, borderColor: 'rgba(57,5,23,0.2)' },
-  alertTitle: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.semibold, color: Colors.whiskeyDark },
-  alertBody: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.whiskeyDark, marginTop: 2, opacity: 0.8 },
+  alertTitle: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.semibold, color: Colors.textSecondary },
+  alertBody: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
 
   // Empty CTA
   emptyCard: { alignItems: 'center', paddingVertical: Spacing.xl },

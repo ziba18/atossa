@@ -3,13 +3,11 @@ import {
   View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity,
   Modal, TextInput, NativeSyntheticEvent, NativeScrollEvent, Dimensions,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '../../../stores/authStore';
 import { supabase } from '../../../lib/supabase';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
-import { Header } from '../../../components/layout/Header';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -103,7 +101,6 @@ const COMMON_MEDICATIONS = [
   'Metronidazole', 'Fluconazole', 'Doxycycline', 'Amoxicillin',
 ];
 
-// ── Label lookup maps (used when reconstructing saved data) ───────────────────
 const SYMPTOM_LABELS: Record<string, string> = Object.fromEntries(
   SYMPTOM_CATEGORIES.flatMap((cat) => cat.symptoms.map((s) => [s.value, s.label])),
 );
@@ -130,18 +127,15 @@ const BODY_REGION_LABELS: Record<string, string> = {
 
 const BODY_REGION_IDS = new Set(Object.keys(BODY_REGION_LABELS));
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 interface Medication { name: string; dosage: string; unit: string; notes: string }
 interface SymptomEntry {
   value: string;
   label: string;
-  severity: number;   // 0 = no severity noted, 1-10
+  severity: number;
   notes: string;
 }
 
-// ── Screen ────────────────────────────────────────────────────────────────────
-export default function LogHealthScreen() {
-  const router = useRouter();
+export default function HealthLogScreen() {
   const user = useAuthStore((s) => s.user);
 
   const [page, setPage] = useState(0);
@@ -149,22 +143,18 @@ export default function LogHealthScreen() {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
-  // Page 1 — Medications
   const [medications, setMedications] = useState<Medication[]>([]);
   const [showMedForm, setShowMedForm] = useState(false);
   const [newMed, setNewMed] = useState<Medication>({ name: '', dosage: '', unit: 'mg', notes: '' });
   const [medSuggestions, setMedSuggestions] = useState<string[]>([]);
 
-  // Page 2 — Symptoms (body map + general symptoms)
   const [painEntries, setPainEntries] = useState<PainEntry[]>([]);
   const [symptomEntries, setSymptomEntries] = useState<Record<string, SymptomEntry>>({});
 
-  // Symptom severity modal state
   const [modalSymptom, setModalSymptom] = useState<{ value: string; label: string; color: string } | null>(null);
   const [modalSeverity, setModalSeverity] = useState(5);
   const [modalNotes, setModalNotes] = useState('');
 
-  // Page 3 — Notes
   const [notes, setNotes] = useState('');
 
   const selectedSymptomCount = Object.keys(symptomEntries).length;
@@ -175,7 +165,6 @@ export default function LogHealthScreen() {
     (async () => {
       const todayStr = today();
 
-      // Medications from health_metrics
       const { data: medsData } = await supabase
         .from('health_metrics')
         .select('*')
@@ -196,7 +185,6 @@ export default function LogHealthScreen() {
         }));
       }
 
-      // Symptoms + pain entries from symptom_logs
       const { data: sympData } = await supabase
         .from('symptom_logs')
         .select('*')
@@ -236,7 +224,6 @@ export default function LogHealthScreen() {
     })();
   }, [user?.id]);
 
-  // ── Navigation ──────────────────────────────────────────────────────────────
   const goToPage = (p: number) => {
     const clamped = Math.max(0, Math.min(TOTAL_PAGES - 1, p));
     scrollRef.current?.scrollTo({ x: clamped * SCREEN_WIDTH, animated: true });
@@ -248,7 +235,6 @@ export default function LogHealthScreen() {
     setPage(p);
   };
 
-  // ── Medication helpers ──────────────────────────────────────────────────────
   const handleMedNameChange = (v: string) => {
     setNewMed((p) => ({ ...p, name: v }));
     if (v.trim().length > 0) {
@@ -267,7 +253,6 @@ export default function LogHealthScreen() {
     setShowMedForm(false);
   };
 
-  // ── Symptom modal ───────────────────────────────────────────────────────────
   const openSymptomModal = (item: { value: string; label: string }, color: string) => {
     const existing = symptomEntries[item.value];
     setModalSymptom({ ...item, color });
@@ -299,10 +284,9 @@ export default function LogHealthScreen() {
     setModalSymptom(null);
   };
 
-  // ── Save ────────────────────────────────────────────────────────────────────
   const handleSave = async () => {
     const hasData = medications.length > 0 || painEntries.length > 0 || selectedSymptomCount > 0;
-    if (!hasData) { Alert.alert('Nothing to save', 'Go back and log at least one item.'); return; }
+    if (!hasData) { Alert.alert('Nothing to save', 'Log at least one item first.'); return; }
     if (!user) return;
 
     setLoading(true);
@@ -310,7 +294,6 @@ export default function LogHealthScreen() {
     const todayStr = today();
     const errors: string[] = [];
 
-    // Delete today's existing records before reinserting (overwrite pattern)
     await supabase.from('health_metrics')
       .delete()
       .eq('user_id', user.id)
@@ -323,7 +306,6 @@ export default function LogHealthScreen() {
       .eq('user_id', user.id)
       .eq('logged_date', todayStr);
 
-    // Medications
     if (medications.length > 0) {
       const { error } = await supabase.from('health_metrics').insert(
         medications.map((m) => ({
@@ -339,7 +321,6 @@ export default function LogHealthScreen() {
       if (error) errors.push('medications');
     }
 
-    // Symptoms — body map pain entries + general symptom entries
     const symptomRows = [
       ...painEntries.map((entry) => ({
         user_id: user.id, logged_date: todayStr, logged_time: recordedAt,
@@ -370,7 +351,7 @@ export default function LogHealthScreen() {
       if (painEntries.length > 0) parts.push(`${painEntries.length} pain area${painEntries.length !== 1 ? 's' : ''}`);
       if (selectedSymptomCount > 0) parts.push(`${selectedSymptomCount} symptom${selectedSymptomCount !== 1 ? 's' : ''}`);
       Alert.alert('Saved!', `Logged: ${parts.join(', ')}.`, [
-        { text: 'Done', onPress: () => router.back() },
+        { text: 'Done', onPress: () => goToPage(0) },
       ]);
     }
   };
@@ -378,7 +359,6 @@ export default function LogHealthScreen() {
   const isReviewPage = page === TOTAL_PAGES - 1;
   const isFirstPage = page === 0;
 
-  // Summary for review page
   const summaryItems = [
     medications.length > 0 && {
       icon: 'pill' as IconName,
@@ -404,7 +384,13 @@ export default function LogHealthScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <Header title="Health Log" showBack />
+      {/* Title header (no back button — this is a tab) */}
+      <View style={styles.titleBar}>
+        <Text style={styles.titleBarText}>Health Log</Text>
+        <Text style={styles.titleBarDate}>
+          {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+        </Text>
+      </View>
 
       <View
         style={{ flex: 1 }}
@@ -432,9 +418,7 @@ export default function LogHealthScreen() {
             style={{ height: carouselHeight }}
           >
 
-            {/* ══════════════════════════════════════
-                PAGE 1 — Medications
-            ══════════════════════════════════════ */}
+            {/* PAGE 1 — Medications */}
             <View style={[styles.page, { width: SCREEN_WIDTH, height: carouselHeight }]}>
               <LinearGradient
                 colors={['#C76E72', '#A05558']}
@@ -548,9 +532,7 @@ export default function LogHealthScreen() {
               </ScrollView>
             </View>
 
-            {/* ══════════════════════════════════════
-                PAGE 2 — Symptoms (body map + chips)
-            ══════════════════════════════════════ */}
+            {/* PAGE 2 — Symptoms */}
             <View style={[styles.page, { width: SCREEN_WIDTH, height: carouselHeight }]}>
               <LinearGradient
                 colors={['#9B8EC4', '#7A6EA0']}
@@ -572,15 +554,12 @@ export default function LogHealthScreen() {
               </LinearGradient>
 
               <ScrollView contentContainerStyle={styles.pageContent} showsVerticalScrollIndicator={false} nestedScrollEnabled>
-
-                {/* ── Body map ── */}
                 <View style={styles.bodySection}>
                   <Text style={styles.bodySectionTitle}>Pain by Location</Text>
                   <Text style={styles.bodySectionSub}>Tap any region on the body to log pain and intensity</Text>
                   <BodyPainMap value={painEntries} onChange={setPainEntries} />
                 </View>
 
-                {/* ── Divider ── */}
                 <View style={styles.sectionDivider}>
                   <View style={styles.dividerLine} />
                   <Text style={styles.dividerLabel}>General Symptoms</Text>
@@ -590,7 +569,6 @@ export default function LogHealthScreen() {
                   Tap a symptom to log it — you can also add pain level and notes
                 </Text>
 
-                {/* ── Symptom categories ── */}
                 {SYMPTOM_CATEGORIES.map((cat) => {
                   const catCount = cat.symptoms.filter((s) => !!symptomEntries[s.value]).length;
                   return (
@@ -636,9 +614,7 @@ export default function LogHealthScreen() {
               </ScrollView>
             </View>
 
-            {/* ══════════════════════════════════════
-                PAGE 3 — Review & Save
-            ══════════════════════════════════════ */}
+            {/* PAGE 3 — Review & Save */}
             <View style={[styles.page, { width: SCREEN_WIDTH, height: carouselHeight }]}>
               <LinearGradient
                 colors={['#8DBF8A', '#5E9E6A']}
@@ -736,7 +712,7 @@ export default function LogHealthScreen() {
         </View>
       </View>
 
-      {/* ── Symptom severity modal ── */}
+      {/* Symptom severity modal */}
       {modalSymptom && (
         <Modal visible transparent animationType="slide" onRequestClose={() => setModalSymptom(null)}>
           <TouchableOpacity
@@ -757,7 +733,6 @@ export default function LogHealthScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Severity selector */}
             <Text style={styles.modalSectionLabel}>PAIN / SEVERITY LEVEL</Text>
             <View style={styles.severityRow}>
               {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => {
@@ -785,7 +760,6 @@ export default function LogHealthScreen() {
               {modalSeverity <= 3 ? 'Mild' : modalSeverity <= 6 ? 'Moderate' : 'Severe'} · Level {modalSeverity}/10
             </Text>
 
-            {/* Notes */}
             <Text style={styles.modalSectionLabel}>NOTES (OPTIONAL)</Text>
             <TextInput
               value={modalNotes}
@@ -797,7 +771,6 @@ export default function LogHealthScreen() {
               style={styles.modalNotesInput}
             />
 
-            {/* Actions */}
             <View style={styles.modalActions}>
               <TouchableOpacity
                 style={[styles.modalSaveBtn, { backgroundColor: modalSymptom.color }]}
@@ -821,9 +794,27 @@ export default function LogHealthScreen() {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: Colors.background },
+
+  titleBar: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: Spacing.sm,
+  },
+  titleBarText: {
+    fontSize: FontSize.xxl,
+    fontFamily: 'CormorantGaramond_600SemiBold',
+    color: Colors.textPrimary,
+  },
+  titleBarDate: {
+    fontSize: FontSize.sm,
+    fontFamily: 'Jost_400Regular',
+    color: Colors.textMuted,
+  },
 
   dotsRow: {
     flexDirection: 'row',
@@ -877,7 +868,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted, textAlign: 'center', lineHeight: 20,
   },
 
-  // Medications
   medItem: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: Colors.surface, borderRadius: Radius.md,
@@ -921,15 +911,12 @@ const styles = StyleSheet.create({
   },
   addMedBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
 
-  // Symptoms page
   bodySection: {
     backgroundColor: Colors.surface, borderRadius: Radius.lg,
     borderWidth: 1, borderColor: Colors.border,
     padding: Spacing.md, marginBottom: Spacing.md,
   },
-  bodySectionTitle: {
-    fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary,
-  },
+  bodySectionTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
   bodySectionSub: {
     fontSize: FontSize.xs, fontFamily: 'Jost_400Regular',
     color: Colors.textMuted, marginTop: 2, marginBottom: Spacing.md,
@@ -974,7 +961,6 @@ const styles = StyleSheet.create({
   },
   severityBadgeText: { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: Colors.white },
 
-  // Review
   summaryRow: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: Colors.surface, borderRadius: Radius.lg,
@@ -999,7 +985,6 @@ const styles = StyleSheet.create({
   notesInput: { marginTop: Spacing.sm },
   saveBtn: { marginTop: Spacing.md },
 
-  // Nav
   navRow: {
     height: 64, flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between', paddingHorizontal: Spacing.md,
@@ -1018,7 +1003,6 @@ const styles = StyleSheet.create({
   pageCounter: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
   pageCounterOf: { fontFamily: 'Jost_400Regular', color: Colors.textMuted },
 
-  // Symptom modal
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(42,28,24,0.4)' },
   modalSheet: {
     backgroundColor: Colors.surface,

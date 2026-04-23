@@ -7,6 +7,8 @@ import React from 'react';
 import Svg, { Path, Circle, Line, Rect } from 'react-native-svg';
 
 export type IconName =
+  | 'headphones'
+  | 'music'
   | 'activity'
   | 'alert-circle'
   | 'arrow-left'
@@ -78,6 +80,18 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = 2 
 
   const renderInner = () => {
     switch (name) {
+
+      case 'headphones':
+        return <Path {...shared} d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" />;
+
+      case 'music':
+        return (
+          <>
+            <Path {...shared} d="M9 18V5l12-2v13" />
+            <Circle {...shared} cx="6" cy="18" r="3" />
+            <Circle {...shared} cx="18" cy="16" r="3" />
+          </>
+        );
 
       case 'activity':
         return <Path {...shared} d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />;

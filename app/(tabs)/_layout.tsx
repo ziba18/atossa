@@ -1,42 +1,50 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { ChatWidget } from '../../components/chat/ChatWidget';
 import { Icon, type IconName } from '../../components/ui/Icon';
 
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
   return (
-    <View style={focused ? styles.iconActive : styles.iconInactive}>
-      <Icon
-        name={name}
-        size={focused ? 22 : 20}
-        color={focused ? Colors.whiskey : 'rgba(224, 224, 224, 0.45)'}
-      />
+    <View style={styles.iconWrapper}>
+      <View style={focused ? styles.iconActive : styles.iconInactive}>
+        <Icon
+          name={name}
+          size={focused ? 22 : 20}
+          color={focused ? Colors.cherry : 'rgba(160, 144, 128, 0.55)'}
+        />
+      </View>
     </View>
   );
 }
 
 export default function TabsLayout() {
   return (
-    <View style={{ flex: 1 }}>
-      <Tabs
+    <Tabs
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: Colors.forestDark,
-            borderTopColor: 'rgba(163, 133, 96, 0.2)',
+            backgroundColor: '#FFFFFF',
+            borderTopColor: 'rgba(180, 150, 140, 0.18)',
             borderTopWidth: 1,
             height: 82,
             paddingBottom: 18,
             paddingTop: 8,
           },
-          tabBarActiveTintColor: Colors.whiskey,
-          tabBarInactiveTintColor: 'rgba(224, 224, 224, 0.45)',
+          tabBarActiveTintColor: Colors.cherry,
+          tabBarInactiveTintColor: 'rgba(160, 144, 128, 0.55)',
           tabBarLabelStyle: {
             fontSize: 11,
             fontWeight: '600',
             letterSpacing: 0.3,
             fontFamily: 'Jost_600SemiBold',
+          },
+          tabBarIconStyle: {
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          tabBarItemStyle: {
+            alignItems: 'center',
+            justifyContent: 'center',
           },
         }}
       >
@@ -48,17 +56,17 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="track"
+          name="cycle"
           options={{
-            title: 'Track',
+            title: 'Cycle',
             tabBarIcon: ({ focused }) => <TabIcon name="droplets" focused={focused} />,
           }}
         />
         <Tabs.Screen
-          name="insights"
+          name="health"
           options={{
-            title: 'Insights',
-            tabBarIcon: ({ focused }) => <TabIcon name="bar-chart" focused={focused} />,
+            title: 'Health Log',
+            tabBarIcon: ({ focused }) => <TabIcon name="clipboard-list" focused={focused} />,
           }}
         />
         <Tabs.Screen
@@ -68,30 +76,32 @@ export default function TabsLayout() {
             tabBarIcon: ({ focused }) => <TabIcon name="book-open" focused={focused} />,
           }}
         />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: 'Profile',
-            tabBarIcon: ({ focused }) => <TabIcon name="user" focused={focused} />,
-          }}
-        />
-      </Tabs>
-
-      {/* Global floating chat widget — overlays all tabs */}
-      <ChatWidget />
-    </View>
+        {/* Hidden routes — display:none removes them from tab bar layout entirely */}
+        <Tabs.Screen name="track"    options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
+        <Tabs.Screen name="insights" options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
+        <Tabs.Screen name="profile"  options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
+    </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
+  iconWrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   iconActive: {
-    backgroundColor: 'rgba(163, 133, 96, 0.15)',
+    backgroundColor: 'rgba(199, 110, 114, 0.1)',
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   iconInactive: {
     paddingHorizontal: 8,
     paddingVertical: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

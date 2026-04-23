@@ -54,26 +54,26 @@ export const FontFamily = {
   displaySystem: 'Georgia',
 } as const;
 
-// ─── Shadows — warm cherry-tinted ────────────────────────────────────────────
+// ─── Shadows — soft warm ─────────────────────────────────────────────────────
 export const Shadow = {
   sm: {
-    shadowColor: '#390517',
+    shadowColor: '#A09080',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.07,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
   },
   md: {
-    shadowColor: '#390517',
+    shadowColor: '#A09080',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.10,
     shadowRadius: 8,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#390517',
+    shadowColor: '#A09080',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
+    shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 8,
   },
@@ -81,7 +81,7 @@ export const Shadow = {
 
 // ─── Themes ───────────────────────────────────────────────────────────────────
 export const lightTheme = {
-  background: Colors.background,      // #EFE5D2 — warm linen
+  background: Colors.background,      // #F5EDE5 — warm blush cream
   surface: Colors.surface,            // #FFFFFF
   surfaceElevated: Colors.surfaceElevated,
   text: Colors.textPrimary,
@@ -89,12 +89,12 @@ export const lightTheme = {
   textMuted: Colors.textMuted,
   border: Colors.border,
   borderStrong: Colors.borderStrong,
-  primary: Colors.cherry,             // #390517 dark burgundy
-  secondary: Colors.forest,           // #16302B dark green
-  accent: Colors.whiskey,             // #A38560 gold
-  tabBar: Colors.forestDark,          // #03110D
-  tabActive: Colors.whiskey,          // #A38560
-  tabInactive: 'rgba(224,224,224,0.45)',
+  primary: Colors.cherry,             // #C76E72 dusty rose
+  secondary: Colors.forest,           // #5E9E6A sage green
+  accent: Colors.gold,                // #9B8EC4 lavender
+  tabBar: Colors.forestDark,          // #FFFFFF
+  tabActive: Colors.cherry,           // #C76E72
+  tabInactive: 'rgba(160,144,128,0.55)',
   isDark: false,
 };
 

@@ -4,11 +4,11 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
-import { CycleCalendar } from '../../../components/calendar/CycleCalendar';
+import { CycleRing } from '../../../components/calendar/CycleRing';
 import { PhaseLegend } from '../../../components/calendar/PhaseLegend';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { FontSize, Spacing } from '../../../constants/theme';
 
 export default function TrackScreen() {
   const router = useRouter();
@@ -28,14 +28,13 @@ export default function TrackScreen() {
         </TouchableOpacity>
       </View>
 
-      <CycleCalendar cycleLogs={cycleLogs} prediction={prediction} />
+      <CycleRing cycleLogs={cycleLogs} prediction={prediction} />
       <PhaseLegend />
 
       <View style={styles.actions}>
         {([
-          { icon: 'activity', label: 'Log Symptoms', route: '/(tabs)/track/log-symptoms' },
           { icon: 'clipboard-list', label: 'Health Log', route: '/(tabs)/track/log-health' },
-          { icon: 'trending-up', label: 'Log Metrics', route: '/(tabs)/track/log-metrics' },
+          { icon: 'trending-up', label: 'Metrics', route: '/(tabs)/track/log-metrics' },
           { icon: 'scroll-text', label: 'History', route: '/(tabs)/track/history' },
         ] as { icon: IconName; label: string; route: string }[]).map((item) => (
           <TouchableOpacity key={item.label} onPress={() => router.push(item.route as any)} style={styles.action}>
