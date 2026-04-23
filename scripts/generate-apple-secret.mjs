@@ -1,18 +1,27 @@
 /**
  * Generates the Apple client secret JWT required by Supabase.
- * Run: node scripts/generate-apple-secret.mjs
+ *
+ * Usage:
+ *   APPLE_TEAM_ID=XXXXXXXXXX APPLE_KEY_ID=XXXXXXXXXX APPLE_P8_PATH=./AuthKey_XXXX.p8 \
+ *     node scripts/generate-apple-secret.mjs
+ *
+ * Or add these to your .env (never commit .env) and run with dotenv:
+ *   node -r dotenv/config scripts/generate-apple-secret.mjs
  */
 
 import { createSign } from 'crypto';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-// ── FILL THESE IN ──────────────────────────────────────────────────────────
-const TEAM_ID   = '5MZF6USVHW';           // your Apple Team ID
-const CLIENT_ID = 'com.attosa.app';        // your Bundle ID
-const KEY_ID    = '8LZ5S8FAGQ';   // 10-char Key ID from Apple Developer
-const P8_PATH   = './AuthKey_8LZ5S8FAGQ.p8'; // path to your downloaded .p8 file
-// ───────────────────────────────────────────────────────────────────────────
+const TEAM_ID   = process.env.APPLE_TEAM_ID;
+const CLIENT_ID = process.env.APPLE_CLIENT_ID   ?? 'com.attosa.app';
+const KEY_ID    = process.env.APPLE_KEY_ID;
+const P8_PATH   = process.env.APPLE_P8_PATH;
+
+if (!TEAM_ID || !KEY_ID || !P8_PATH) {
+  console.error('Missing required environment variables: APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_P8_PATH');
+  process.exit(1);
+}
 
 const privateKey = readFileSync(resolve(P8_PATH), 'utf8');
 

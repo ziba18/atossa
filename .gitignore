@@ -33,6 +33,11 @@ yarn-error.*
 # local env files
 .env
 .env*.local
+.env.production
+.env.staging
+
+# Claude Code project settings (may contain tokens/secrets)
+.claude/settings.local.json
 
 # typescript
 *.tsbuildinfo
