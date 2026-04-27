@@ -1,87 +1,83 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  View, Text, ScrollView, StyleSheet, TouchableOpacity,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
 import { useAlertStore } from '../../../stores/alertStore';
-import { Card } from '../../../components/ui/Card';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
+import { AuroraBackground } from '../../../components/layout/AuroraBackground';
 import { formatDisplayDate } from '../../../algorithms/dateHelpers';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { differenceInDays, parseISO } from 'date-fns';
+import { differenceInDays, parseISO, format } from 'date-fns';
 
-// ─── Inner Seasons (exact web SEASONS data) ───────────────────────────────────
+// ─── Inner Seasons ────────────────────────────────────────────────────────────
 type CycleSeason = 'winter' | 'spring' | 'summer' | 'autumn';
 
 const SEASONS: Record<CycleSeason, {
   name: string;
   phase: string;
-  gradientColors: [string, string, string];
-  textAccent: string;
+  phaseColor: string;
   icon: IconName;
   tagline: string;
   energy: string[];
-  power: string;
   selfCare: string;
   affirmation: string;
+  tipAccent: string;
 }> = {
   winter: {
-    name: 'Inner Winter',
+    name: 'Menstrual',
     phase: 'Menstruation',
-    gradientColors: ['#F8EDED', '#F2E4E4', '#EDD8D8'] as [string, string, string],
-    textAccent: '#C76E72',
-    icon: 'sparkles',
-    tagline: 'Rest, reflect & release',
+    phaseColor: Colors.roseDeep,
+    icon: 'droplet',
+    tagline: 'Rest, reflect & release.',
     energy: ['Introspective', 'Intuitive', 'Honest'],
-    power: 'Deep knowing & emotional clarity',
     selfCare: 'Warm baths · Gentle stretching · Journaling',
-    affirmation: '"I honor my body\'s wisdom and allow myself to rest."',
+    affirmation: '"I honour my body\'s wisdom and allow myself to rest."',
+    tipAccent: Colors.roseDeep,
   },
   spring: {
-    name: 'Inner Spring',
+    name: 'Follicular',
     phase: 'Follicular',
-    gradientColors: ['#EBF5EB', '#E2F0E2', '#D8EBD8'] as [string, string, string],
-    textAccent: '#5E9E6A',
+    phaseColor: Colors.matchaDeep,
     icon: 'leaf',
-    tagline: 'Rising energy & fresh beginnings',
+    tagline: 'Rising energy & fresh beginnings.',
     energy: ['Creative', 'Optimistic', 'Curious'],
-    power: 'Fresh ideas & unstoppable momentum',
     selfCare: 'Try something new · Start that project · Morning walks',
     affirmation: '"I am full of fresh energy and endless possibility."',
+    tipAccent: Colors.matchaDeep,
   },
   summer: {
-    name: 'Inner Summer',
+    name: 'Ovulation',
     phase: 'Ovulation',
-    gradientColors: ['#FAF6E4', '#F5F0D5', '#F0EAC4'] as [string, string, string],
-    textAccent: '#8A7020',
-    icon: 'zap',
-    tagline: 'Radiant, magnetic & powerful',
+    phaseColor: '#B08020',
+    icon: 'sparkles',
+    tagline: 'Radiant, magnetic & powerful.',
     energy: ['Confident', 'Magnetic', 'Communicative'],
-    power: 'Peak charisma & natural leadership',
     selfCare: 'Connect & collaborate · Dress up · Celebrate yourself',
     affirmation: '"I radiate warmth and confidence in everything I do."',
+    tipAccent: '#B08020',
   },
   autumn: {
-    name: 'Inner Autumn',
+    name: 'Luteal',
     phase: 'Luteal',
-    gradientColors: ['#F0EEFB', '#E8E4F5', '#E0DAEE'] as [string, string, string],
-    textAccent: '#7A6EA0',
+    phaseColor: Colors.skyDeep,
     icon: 'flower',
-    tagline: 'Focused, grounded & reflective',
+    tagline: 'Focused, grounded & reflective.',
     energy: ['Analytical', 'Detail-oriented', 'Nesting'],
-    power: 'Deep focus & sharp precision',
     selfCare: 'Finish projects · Cozy nights in · Nourishing meals',
     affirmation: '"I trust the rhythm of my body and honour every phase."',
+    tipAccent: Colors.skyDeep,
   },
 };
 
 function getCycleSeasonInfo(
   today: Date,
   cycleLogs: { period_start: string; period_end: string | null; period_length: number | null }[],
-  prediction: { next_period_start: string; fertile_window_start: string; fertile_window_end: string; predicted_cycle_length: number } | null,
+  prediction: { next_period_start: string | null; fertile_window_start: string | null; fertile_window_end: string | null; predicted_cycle_length: number | null } | null,
   defaultPeriodLength: number,
 ): { season: CycleSeason; cycleDay: number; cycleLength: number } | null {
   if (cycleLogs.length === 0) return null;
@@ -89,19 +85,22 @@ function getCycleSeasonInfo(
   const lastStart = parseISO(lastLog.period_start);
   const periodLen = lastLog.period_length ?? defaultPeriodLength;
   const cycleLength = prediction?.predicted_cycle_length ?? 28;
-  if (prediction) {
+  if (prediction?.next_period_start) {
     const nextPStart = parseISO(prediction.next_period_start);
     if (today >= nextPStart) {
       return { season: 'winter', cycleDay: differenceInDays(today, nextPStart) + 1, cycleLength };
     }
     const dayInCycle = differenceInDays(today, lastStart) + 1;
-    const fertileStart = parseISO(prediction.fertile_window_start);
-    const fertileEnd = parseISO(prediction.fertile_window_end);
     let season: CycleSeason;
-    if (dayInCycle <= periodLen) season = 'winter';
-    else if (today < fertileStart) season = 'spring';
-    else if (today <= fertileEnd) season = 'summer';
-    else season = 'autumn';
+    if (dayInCycle <= periodLen) {
+      season = 'winter';
+    } else if (prediction.fertile_window_start && today < parseISO(prediction.fertile_window_start)) {
+      season = 'spring';
+    } else if (prediction.fertile_window_end && today <= parseISO(prediction.fertile_window_end)) {
+      season = 'summer';
+    } else {
+      season = 'autumn';
+    }
     return { season, cycleDay: dayInCycle, cycleLength };
   }
   const dayInCycle = differenceInDays(today, lastStart) + 1;
@@ -110,6 +109,7 @@ function getCycleSeasonInfo(
 
 export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
   const { cycleLogs, prediction, fetchCycleLogs, fetchPrediction } = useCycleStore();
@@ -119,313 +119,441 @@ export default function HomeScreen() {
     if (user) { fetchCycleLogs(user.id); fetchPrediction(user.id); fetchAlerts(user.id); }
   }, [user]);
 
-  const greeting = () => {
-    const h = new Date().getHours();
+  const today = new Date();
+  const greeting = (() => {
+    const h = today.getHours();
     if (h < 12) return 'Good morning';
     if (h < 18) return 'Good afternoon';
     return 'Good evening';
-  };
+  })();
+  const firstName = profile?.display_name?.split(' ')[0] ?? '';
 
   const sortedLogs = [...cycleLogs].sort(
     (a, b) => new Date(a.period_start).getTime() - new Date(b.period_start).getTime()
   );
-  const today = new Date();
   const seasonInfo = getCycleSeasonInfo(today, sortedLogs, prediction, profile?.average_period_length ?? 5);
   const season = seasonInfo ? SEASONS[seasonInfo.season] : null;
+
   const daysUntilPeriod = prediction?.next_period_start
     ? differenceInDays(parseISO(prediction.next_period_start), today)
     : null;
 
-  return (
-    <SafeAreaView style={styles.screen}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+  const bottomPad = 68 + 12 + insets.bottom + 16;
 
-        {/* ── Hero: soft pastel gradient ── */}
-        <LinearGradient
-          colors={['#EDE4DC', '#F5EDE5']}
-          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-          style={styles.hero}
+  // ── Suggest cards ──────────────────────────────────────────────────────────
+  const suggestions = [
+    {
+      key: 'log',
+      icon: 'heart' as IconName,
+      title: 'Log your cycle',
+      body: season ? `In ${season.name} — ${season.tagline}` : 'Start tracking your period',
+      accent: Colors.roseDeep,
+      bg: 'rgba(203,117,117,0.12)',
+      onPress: () => router.push('/(tabs)/cycle/log-period' as any),
+    },
+    {
+      key: 'calendar',
+      icon: 'calendar' as IconName,
+      title: 'View calendar',
+      body: prediction?.next_period_start
+        ? `Next period ~${formatDisplayDate(prediction.next_period_start)}`
+        : 'Year-ahead cycle predictions',
+      accent: Colors.matchaDeep,
+      bg: 'rgba(78,158,90,0.10)',
+      onPress: () => router.push('/(tabs)/cycle/calendar' as any),
+    },
+    {
+      key: 'health',
+      icon: 'clipboard-list' as IconName,
+      title: 'Health log',
+      body: 'Record symptoms, mood & metrics for today',
+      accent: Colors.skyDeep,
+      bg: 'rgba(104,162,200,0.12)',
+      onPress: () => router.push('/(tabs)/health' as any),
+    },
+    {
+      key: 'learn',
+      icon: 'book-open' as IconName,
+      title: 'Read & learn',
+      body: season ? `Articles for the ${season.name} phase` : 'Evidence-based articles',
+      accent: '#9B88C4',
+      bg: 'rgba(155,136,196,0.12)',
+      onPress: () => router.push('/(tabs)/education' as any),
+    },
+  ];
+
+  return (
+    <View style={styles.screen}>
+      <AuroraBackground />
+
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomPad }]}
         >
-          {/* Top row */}
-          <View style={styles.heroTop}>
-            <View style={styles.heroLeft}>
-              <Image source={require('../../../assets/icon.png')} style={styles.headerLogo} />
-              <View>
-                <Text style={styles.greeting}>
-                  {greeting()}, {profile?.display_name?.split(' ')[0] ?? 'there'}
-                </Text>
-                <Text style={styles.heroDate}>
-                  {today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                </Text>
-              </View>
-            </View>
+
+          {/* ── Header ──────────────────────────────────────────────────── */}
+          <View style={styles.headerRow}>
+            <Text style={styles.dateSmallcaps}>
+              {format(today, 'EEEE, d MMMM').toUpperCase()}
+            </Text>
             <View style={styles.headerActions}>
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/home/notifications' as any)}
-                style={styles.bellBtn}
-              >
-                <Icon name="bell" size={24} color={Colors.textSecondary} />
-                {unreadCount > 0 && (
+              {unreadCount > 0 && (
+                <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/home/notifications' as any)}
+                  style={styles.bellBtn}
+                >
+                  <Icon name="bell" size={22} color={Colors.textSecondary} />
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>{unreadCount}</Text>
                   </View>
-                )}
-              </TouchableOpacity>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 onPress={() => router.push('/(tabs)/profile' as any)}
                 style={styles.profileBtn}
               >
-                <Icon name="user" size={22} color={Colors.textSecondary} />
+                <Icon name="user" size={20} color={Colors.textSecondary} />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Prediction */}
-          {prediction?.next_period_start && (
-            <View style={styles.predCard}>
-              <Text style={styles.predLabel}>Next period in</Text>
-              <Text style={styles.predValue}>
-                {daysUntilPeriod !== null && daysUntilPeriod > 0
-                  ? `${daysUntilPeriod} days`
-                  : daysUntilPeriod === 0 ? 'Today' : 'Due'}
+          <Text style={styles.greeting}>
+            {greeting}{firstName ? `, ${firstName}` : ''}.
+          </Text>
+          <Text style={styles.tagline}>You are exactly where you need to be.</Text>
+
+          {/* ── Hero glass card ──────────────────────────────────────────── */}
+          {season && seasonInfo ? (
+            <View style={styles.heroCard}>
+              <Text style={styles.smallcaps}>TODAY — DAY {seasonInfo.cycleDay} OF {seasonInfo.cycleLength}</Text>
+              <Text style={[styles.heroPhase, { color: season.phaseColor }]}>
+                {season.name} phase
               </Text>
-              <Text style={styles.predSub}>
-                Around {formatDisplayDate(prediction.next_period_start)}
-                {' · '}{Math.round(prediction.confidence_score ?? 0)}% confidence
-              </Text>
-              {prediction.next_ovulation && (
-                <View style={styles.predMetaRow}>
-                  <View style={styles.predMeta}>
-                    <Text style={styles.predMetaLabel}>Ovulation</Text>
-                    <Text style={styles.predMetaValue}>{formatDisplayDate(prediction.next_ovulation)}</Text>
-                  </View>
-                  <View style={styles.predMetaDivider} />
-                  <View style={styles.predMeta}>
-                    <Text style={styles.predMetaLabel}>Cycle length</Text>
-                    <Text style={styles.predMetaValue}>{prediction.predicted_cycle_length} days</Text>
-                  </View>
-                </View>
-              )}
-            </View>
-          )}
-        </LinearGradient>
+              <Text style={styles.heroTagline}>{season.tagline}</Text>
 
-        <View style={styles.content}>
-
-          {/* ── Inner Seasons Card ─────────────────────────────────────────── */}
-          {season && seasonInfo && (
-            <LinearGradient colors={season.gradientColors} style={styles.seasonCard}>
-              <View style={styles.seasonTopRow}>
-                <View style={styles.seasonLeft}>
-                  <Icon name={season.icon} size={28} color={season.textAccent} />
-                  <View>
-                    <Text style={[styles.seasonName, { color: season.textAccent }]}>
-                      {season.name}
-                    </Text>
-                    <Text style={styles.seasonPhase}>{season.phase} phase</Text>
-                  </View>
-                </View>
-                <View style={styles.cycleDayBox}>
-                  <Text style={styles.cycleDayLabel}>Cycle day</Text>
-                  <Text style={[styles.cycleDayValue, { color: season.textAccent }]}>
-                    {seasonInfo.cycleDay}
-                    <Text style={styles.cycleDayMax}>/{seasonInfo.cycleLength}</Text>
-                  </Text>
-                </View>
-              </View>
-
-              <Text style={styles.seasonTagline}>{season.tagline}</Text>
-
-              <View style={styles.energyRow}>
+              {/* Energy chips */}
+              <View style={styles.chipsRow}>
                 {season.energy.map((e) => (
-                  <View key={e} style={[styles.energyPill, { borderColor: season.textAccent + '50' }]}>
-                    <Text style={[styles.energyText, { color: season.textAccent }]}>{e}</Text>
+                  <View key={e} style={[styles.chip, { borderColor: season.phaseColor + '55' }]}>
+                    <Text style={[styles.chipText, { color: season.phaseColor }]}>{e}</Text>
                   </View>
                 ))}
               </View>
 
-              <View style={styles.seasonInfoBox}>
-                <View style={styles.seasonInfoRow}>
-                  <Icon name="zap" size={17} color="rgba(255,255,255,0.7)" />
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.siLabel}>TODAY'S POWER</Text>
-                    <Text style={styles.siValue}>{season.power}</Text>
-                  </View>
-                </View>
-                <View style={[styles.seasonInfoRow, styles.siRowBorder]}>
-                  <Icon name="flower" size={17} color="rgba(255,255,255,0.7)" />
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.siLabel}>SELF-CARE</Text>
-                    <Text style={styles.siValue}>{season.selfCare}</Text>
-                  </View>
-                </View>
+              {/* Self-care */}
+              <View style={styles.selfCareRow}>
+                <Icon name="leaf" size={14} color={Colors.textMuted} />
+                <Text style={styles.selfCareText}>{season.selfCare}</Text>
               </View>
 
-              <Text style={[styles.affirmation, { color: season.textAccent }]}>
+              <Text style={[styles.affirmation, { color: season.phaseColor }]}>
                 {season.affirmation}
               </Text>
-            </LinearGradient>
+
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/cycle' as any)}
+                style={styles.heroLink}
+              >
+                <Text style={[styles.heroLinkText, { color: season.phaseColor }]}>
+                  View full cycle
+                </Text>
+                <Icon name="arrow-right" size={14} color={season.phaseColor} />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.heroCard}>
+              <Text style={styles.smallcaps}>WELCOME</Text>
+              <Text style={styles.heroPhase}>Start your journey</Text>
+              <Text style={styles.heroTagline}>Log your first period to unlock personalized cycle insights.</Text>
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/cycle/log-period' as any)}
+                style={styles.heroCta}
+              >
+                <Text style={styles.heroCtaText}>Log first period</Text>
+              </TouchableOpacity>
+            </View>
           )}
 
-          {/* ── Fertile window ─────────────────────────────────────────────── */}
-          {prediction?.fertile_window_start && (
-            <Card style={styles.fertileCard}>
-              <View style={styles.fertileHeader}>
-                <Icon name="leaf" size={18} color={Colors.forest} />
-                <Text style={styles.fertileTitle}>Fertile Window</Text>
+          {/* ── Stat tiles ──────────────────────────────────────────────── */}
+          {seasonInfo && (
+            <View style={styles.statsRow}>
+              <StatTile
+                label="Next period"
+                value={daysUntilPeriod != null ? (daysUntilPeriod <= 0 ? 'Today' : `${daysUntilPeriod}d`) : '—'}
+                hint={prediction?.next_period_start ? formatDisplayDate(prediction.next_period_start) : ''}
+                dotColor={Colors.roseDeep}
+              />
+              <StatTile
+                label="Cycle length"
+                value={`${seasonInfo.cycleLength}d`}
+                hint="average"
+                dotColor={Colors.matchaDeep}
+              />
+              <StatTile
+                label="Cycle day"
+                value={`${seasonInfo.cycleDay}`}
+                hint={`of ${seasonInfo.cycleLength}`}
+                dotColor={Colors.skyDeep}
+              />
+              <StatTile
+                label="Logged"
+                value={`${cycleLogs.length}`}
+                hint="cycles"
+                dotColor={Colors.apricot}
+              />
+            </View>
+          )}
+
+          {/* ── Recent alerts ────────────────────────────────────────────── */}
+          {alerts.filter((a) => !a.is_read).slice(0, 2).map((alert) => (
+            <View
+              key={alert.id}
+              style={[styles.alertBanner, alert.severity === 'emergency' && styles.alertEmergency]}
+            >
+              <Icon name="triangle-alert" size={16} color={alert.severity === 'emergency' ? Colors.roseDeep : Colors.textSecondary} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.alertTitle}>{alert.title}</Text>
+                {alert.body && <Text style={styles.alertBody} numberOfLines={2}>{alert.body}</Text>}
               </View>
-              <Text style={styles.fertileDate}>
-                {formatDisplayDate(prediction.fertile_window_start)} – {formatDisplayDate(prediction.fertile_window_end!)}
-              </Text>
-            </Card>
-          )}
-
-          {/* ── Recent alerts ──────────────────────────────────────────────── */}
-          {alerts.filter((a) => !a.is_read).slice(0, 3).map((alert) => (
-            <View key={alert.id} style={[
-              styles.alertBanner,
-              alert.severity === 'emergency' && styles.alertEmergency,
-            ]}>
-              <Text style={styles.alertTitle}>{alert.title}</Text>
-              {alert.body && <Text style={styles.alertBody} numberOfLines={2}>{alert.body}</Text>}
             </View>
           ))}
 
-          {/* ── No data CTA ─────────────────────────────────────────────────── */}
-          {cycleLogs.length === 0 && (
-            <Card style={styles.emptyCard}>
-              <View style={styles.emptyIconWrap}>
-                <Icon name="calendar" size={48} color={Colors.textMuted} />
-              </View>
-              <Text style={styles.emptyTitle}>Start tracking your cycle</Text>
-              <Text style={styles.emptySub}>
-                Log your first period to get personalized predictions and insights
-              </Text>
+          {/* ── For you today ────────────────────────────────────────────── */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>For you today</Text>
+            <Icon name="sparkles" size={16} color={Colors.matchaDeep} />
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.carouselContent}
+          >
+            {suggestions.map((s) => (
               <TouchableOpacity
-                onPress={() => router.push('/(tabs)/cycle' as any)}
-                style={styles.emptyBtn}
-                activeOpacity={0.8}
+                key={s.key}
+                onPress={s.onPress}
+                activeOpacity={0.82}
+                style={[styles.suggestCard, { backgroundColor: s.bg }]}
               >
-                <Text style={styles.emptyBtnText}>Log first period</Text>
+                <View style={[styles.suggestIcon, { backgroundColor: s.accent + '22' }]}>
+                  <Icon name={s.icon} size={18} color={s.accent} />
+                </View>
+                <Text style={styles.suggestTitle}>{s.title}</Text>
+                <Text style={styles.suggestBody} numberOfLines={2}>{s.body}</Text>
+                <View style={styles.suggestCta}>
+                  <Text style={[styles.suggestCtaText, { color: s.accent }]}>Open</Text>
+                  <Icon name="arrow-right" size={12} color={s.accent} />
+                </View>
               </TouchableOpacity>
-            </Card>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            ))}
+          </ScrollView>
+
+          {/* ── Disclaimer ───────────────────────────────────────────────── */}
+          <Text style={styles.disclaimer}>
+            Atossa is for personal tracking and education. It is not a medical device and does not provide diagnoses.
+          </Text>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+}
+
+function StatTile({ label, value, hint, dotColor }: {
+  label: string; value: string; hint?: string; dotColor: string;
+}) {
+  return (
+    <View style={styles.statTile}>
+      <View style={styles.statTileHeader}>
+        <View style={[styles.statDot, { backgroundColor: dotColor }]} />
+        <Text style={styles.statTileLabel}>{label}</Text>
+      </View>
+      <Text style={styles.statTileValue}>{value}</Text>
+      {hint ? <Text style={styles.statTileHint}>{hint}</Text> : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: Colors.background },
+  scrollContent: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
 
-  // Hero — web: linear-gradient(135deg, #390517 0%, #03110D 100%)
-  hero: { padding: Spacing.xl, paddingTop: Spacing.lg },
-  heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  heroLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, flex: 1 },
-  headerLogo: { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)' },
-  greeting: {
-    fontSize: FontSize.lg, fontWeight: FontWeight.bold,
-    fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary,
+  // Header
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  dateSmallcaps: {
+    fontSize: 10,
+    fontFamily: 'Jost_600SemiBold',
+    color: Colors.textMuted,
+    letterSpacing: 1.2,
+    flex: 1,
   },
-  heroDate: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, marginTop: 2 },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
-  bellBtn: { position: 'relative', padding: Spacing.xs },
+  bellBtn: { padding: 6, position: 'relative' },
   profileBtn: {
-    padding: Spacing.xs,
-    backgroundColor: 'rgba(255,255,255,0.6)',
-    borderRadius: 20,
-    width: 36, height: 36,
+    width: 34, height: 34, borderRadius: 17,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderWidth: 1, borderColor: Colors.border,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: 'rgba(180,150,140,0.2)',
   },
   badge: {
-    position: 'absolute', top: 0, right: 0,
-    backgroundColor: Colors.whiskey, borderRadius: 99,
-    width: 18, height: 18, alignItems: 'center', justifyContent: 'center',
+    position: 'absolute', top: 2, right: 2,
+    backgroundColor: Colors.roseDeep,
+    borderRadius: 99, width: 16, height: 16,
+    alignItems: 'center', justifyContent: 'center',
   },
-  badgeText: { fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold },
+  badgeText: { fontSize: 9, color: Colors.white, fontFamily: 'Jost_600SemiBold' },
 
-  // Prediction card in hero
-  predCard: {
-    backgroundColor: 'rgba(255,255,255,0.75)',
-    borderRadius: 16, padding: Spacing.md, marginTop: Spacing.lg,
-    borderWidth: 1, borderColor: 'rgba(180,150,140,0.2)',
+  greeting: {
+    fontSize: 34,
+    fontFamily: 'CormorantGaramond_600SemiBold',
+    color: Colors.textPrimary,
+    marginTop: 8,
+    lineHeight: 40,
   },
-  predLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.cherry, marginBottom: 4 },
-  predValue: { fontSize: FontSize.display, fontWeight: FontWeight.bold, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, lineHeight: 44 },
-  predSub: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, marginTop: 4 },
-  predMetaRow: {
-    flexDirection: 'row', marginTop: Spacing.md, paddingTop: Spacing.md,
-    borderTopWidth: 1, borderTopColor: 'rgba(180,150,140,0.2)',
+  tagline: {
+    fontSize: FontSize.md,
+    fontFamily: 'CormorantGaramond_600SemiBold_Italic',
+    color: Colors.textMuted,
+    marginBottom: Spacing.lg,
+    marginTop: 2,
   },
-  predMeta: { flex: 1 },
-  predMetaDivider: { width: 1, backgroundColor: 'rgba(180,150,140,0.2)', marginHorizontal: Spacing.sm },
-  predMetaLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
-  predMetaValue: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, marginTop: 2 },
 
-  content: { padding: Spacing.md, gap: Spacing.md },
-
-  // Inner Seasons
-  seasonCard: { borderRadius: 20, padding: Spacing.lg, overflow: 'hidden' },
-  seasonTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.sm },
-  seasonLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  seasonName: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', fontWeight: FontWeight.semibold, letterSpacing: 0.5 },
-  seasonPhase: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(42,28,24,0.5)', marginTop: 2 },
-  cycleDayBox: {
-    backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 10,
-    paddingHorizontal: Spacing.sm, paddingVertical: Spacing.xs, alignItems: 'flex-end',
+  // Hero card
+  heroCard: {
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderRadius: 32,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(51,50,68,0.08)',
+    shadowColor: '#333244',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 4,
+    marginBottom: Spacing.md,
   },
-  cycleDayLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(42,28,24,0.5)' },
-  cycleDayValue: { fontSize: FontSize.xl, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.bold },
-  cycleDayMax: { fontSize: FontSize.xs, opacity: 0.55 },
-  seasonTagline: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: 'rgba(42,28,24,0.65)', marginBottom: Spacing.md },
-  energyRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs, marginBottom: Spacing.md },
-  energyPill: {
-    borderRadius: 99, paddingHorizontal: Spacing.sm, paddingVertical: 4,
-    borderWidth: 1, backgroundColor: 'rgba(255,255,255,0.07)',
+  smallcaps: {
+    fontSize: 10,
+    fontFamily: 'Jost_600SemiBold',
+    color: Colors.textMuted,
+    letterSpacing: 1.5,
+    marginBottom: 6,
   },
-  energyText: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium', fontWeight: FontWeight.medium },
-  seasonInfoBox: {
-    backgroundColor: 'rgba(255,255,255,0.45)', borderRadius: 12, padding: 12, marginBottom: Spacing.md,
-    borderWidth: 1, borderColor: 'rgba(180,150,140,0.15)',
+  heroPhase: {
+    fontSize: 28,
+    fontFamily: 'CormorantGaramond_600SemiBold',
+    color: Colors.textPrimary,
+    lineHeight: 34,
+    marginBottom: 6,
   },
-  seasonInfoRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm },
-  siRowBorder: { paddingTop: 10, marginTop: 10, borderTopWidth: 1, borderTopColor: 'rgba(180,150,140,0.15)' },
-  siLabel: { fontSize: 9, fontFamily: 'Jost_600SemiBold', color: 'rgba(42,28,24,0.4)', letterSpacing: 0.8, marginBottom: 2 },
-  siValue: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: 'rgba(42,28,24,0.75)', lineHeight: 18 },
-  affirmation: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold_Italic', opacity: 0.85 },
+  heroTagline: {
+    fontSize: FontSize.sm,
+    fontFamily: 'Jost_400Regular',
+    color: Colors.textSecondary,
+    lineHeight: 20,
+    marginBottom: Spacing.md,
+  },
+  chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: Spacing.sm },
+  chip: {
+    borderRadius: 99, paddingHorizontal: 10, paddingVertical: 5,
+    borderWidth: 1, backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  chipText: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium' },
+  selfCareRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: Spacing.sm },
+  selfCareText: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, flex: 1, lineHeight: 18 },
+  affirmation: {
+    fontSize: FontSize.sm,
+    fontFamily: 'CormorantGaramond_600SemiBold_Italic',
+    opacity: 0.85,
+    marginBottom: Spacing.md,
+    lineHeight: 20,
+  },
+  heroLink: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  heroLinkText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold' },
+  heroCta: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.cherry,
+    borderRadius: 99,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: 10,
+    marginTop: Spacing.sm,
+  },
+  heroCtaText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.white },
 
-  // Fertile window — sage green tint
-  fertileCard: { backgroundColor: Colors.forestLighter, borderColor: 'rgba(93,158,106,0.2)' },
-  fertileHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
-  fertileTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.bold, color: Colors.forest },
-  fertileDate: { fontSize: FontSize.lg, fontFamily: 'Jost_500Medium', fontWeight: FontWeight.semibold, color: Colors.forest, marginTop: 4 },
+  // Stat tiles
+  statsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: Spacing.md,
+  },
+  statTile: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.65)',
+    borderRadius: 20,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  statTileHeader: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
+  statDot: { width: 6, height: 6, borderRadius: 3 },
+  statTileLabel: { fontSize: 9, fontFamily: 'Jost_600SemiBold', color: Colors.textMuted, letterSpacing: 0.5, flex: 1 },
+  statTileValue: { fontSize: 22, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, lineHeight: 26 },
+  statTileHint: { fontSize: 10, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 1 },
 
-  // Alert banners
+  // Alerts
   alertBanner: {
-    backgroundColor: Colors.whiskeyLighter,
+    flexDirection: 'row', alignItems: 'flex-start', gap: 10,
+    backgroundColor: 'rgba(255,255,255,0.65)',
     borderRadius: 16, padding: Spacing.md,
-    borderWidth: 1, borderColor: 'rgba(163,133,96,0.3)',
+    borderWidth: 1, borderColor: Colors.border,
+    marginBottom: Spacing.sm,
   },
-  alertEmergency: { backgroundColor: Colors.cherryLighter, borderColor: 'rgba(57,5,23,0.2)' },
-  alertTitle: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.semibold, color: Colors.textSecondary },
-  alertBody: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
+  alertEmergency: { borderColor: Colors.roseDeep + '55', backgroundColor: 'rgba(203,117,117,0.08)' },
+  alertTitle: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textSecondary },
+  alertBody: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2, lineHeight: 18 },
 
-  // Empty CTA
-  emptyCard: { alignItems: 'center', paddingVertical: Spacing.xl },
-  emptyIconWrap: { marginBottom: Spacing.md },
-  emptyTitle: {
-    fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold',
-    fontWeight: FontWeight.semibold, color: Colors.textPrimary, marginBottom: Spacing.xs,
+  // For you today
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  sectionTitle: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary },
+  carouselContent: { gap: 12, paddingBottom: 4 },
+  suggestCard: {
+    width: 180,
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(51,50,68,0.07)',
   },
-  emptySub: {
-    fontSize: FontSize.sm, fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted, textAlign: 'center', marginBottom: Spacing.lg, lineHeight: 20,
+  suggestIcon: {
+    width: 38, height: 38, borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center',
+    marginBottom: 10,
   },
-  emptyBtn: {
-    backgroundColor: Colors.cherry, borderRadius: 99,
-    paddingHorizontal: Spacing.xl, paddingVertical: Spacing.sm,
+  suggestTitle: {
+    fontSize: FontSize.md,
+    fontFamily: 'CormorantGaramond_600SemiBold',
+    color: Colors.textPrimary,
+    marginBottom: 4,
+    lineHeight: 20,
   },
-  emptyBtnText: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', fontWeight: FontWeight.semibold, color: Colors.white },
+  suggestBody: {
+    fontSize: FontSize.xs,
+    fontFamily: 'Jost_400Regular',
+    color: Colors.textSecondary,
+    lineHeight: 17,
+    marginBottom: 12,
+    flex: 1,
+  },
+  suggestCta: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  suggestCtaText: { fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold' },
+
+  disclaimer: {
+    fontSize: 10,
+    fontFamily: 'Jost_400Regular',
+    color: Colors.textMuted,
+    textAlign: 'center',
+    lineHeight: 16,
+    marginTop: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+  },
 });

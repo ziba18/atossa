@@ -4,10 +4,11 @@ import { Colors } from '../../constants/colors';
 import { FontSize, Radius, Spacing } from '../../constants/theme';
 
 const PHASES = [
-  { label: 'Period',     color: Colors.menstrual },
-  { label: 'Predicted', color: Colors.cherryLighter },
-  { label: 'Fertile',   color: Colors.emerald },
-  { label: 'Ovulation', color: Colors.whiskey },
+  { label: 'Menstrual', color: Colors.menstrual },
+  { label: 'Follicular', color: Colors.follicular },
+  { label: 'Fertile',    color: Colors.matchaDeep },
+  { label: 'Ovulation',  color: Colors.ovulation },
+  { label: 'Luteal',     color: Colors.luteal },
 ];
 
 export function PhaseLegend() {
@@ -24,8 +25,15 @@ export function PhaseLegend() {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: Spacing.sm },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    gap: 4,
+  },
   item: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  dot: { width: 10, height: 10, borderRadius: Radius.full },
-  label: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
+  dot: { width: 8, height: 8, borderRadius: Radius.full },
+  label: { fontSize: 10, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
 });

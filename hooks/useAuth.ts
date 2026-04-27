@@ -7,12 +7,16 @@ export function useAuth() {
     useAuthStore();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        // Stale/invalid token (e.g. from a previous project) — clear it
+        supabase.auth.signOut();
+        setSession(null);
+      } else {
+        setSession(session);
+      }
     });
 
-    // Listen for auth changes
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });

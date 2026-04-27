@@ -1,18 +1,18 @@
-import { Tabs } from 'expo-router';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Tabs } from 'expo-router';
 import { Icon, type IconName } from '../../components/ui/Icon';
+import { Colors } from '../../constants/colors';
 
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
   return (
-    <View style={styles.iconWrapper}>
-      <View style={focused ? styles.iconActive : styles.iconInactive}>
-        <Icon
-          name={name}
-          size={focused ? 22 : 20}
-          color={focused ? Colors.cherry : 'rgba(160, 144, 128, 0.55)'}
-        />
-      </View>
+    <View style={[styles.iconPill, focused && styles.iconPillActive]}>
+      <Icon
+        name={name}
+        size={20}
+        color={focused ? Colors.cherry : Colors.textMuted}
+        strokeWidth={focused ? 2.2 : 1.8}
+      />
     </View>
   );
 }
@@ -20,88 +20,88 @@ function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
 export default function TabsLayout() {
   return (
     <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            backgroundColor: '#FFFFFF',
-            borderTopColor: 'rgba(180, 150, 140, 0.18)',
-            borderTopWidth: 1,
-            height: 82,
-            paddingBottom: 18,
-            paddingTop: 8,
-          },
-          tabBarActiveTintColor: Colors.cherry,
-          tabBarInactiveTintColor: 'rgba(160, 144, 128, 0.55)',
-          tabBarLabelStyle: {
-            fontSize: 11,
-            fontWeight: '600',
-            letterSpacing: 0.3,
-            fontFamily: 'Jost_600SemiBold',
-          },
-          tabBarIconStyle: {
-            alignItems: 'center',
-            justifyContent: 'center',
-          },
-          tabBarItemStyle: {
-            alignItems: 'center',
-            justifyContent: 'center',
-          },
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: Colors.cherry,
+        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarLabelStyle: styles.tabLabel,
+        tabBarItemStyle: styles.tabItem,
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ focused }) => <TabIcon name="house" focused={focused} />,
         }}
-      >
-        <Tabs.Screen
-          name="home"
-          options={{
-            title: 'Home',
-            tabBarIcon: ({ focused }) => <TabIcon name="house" focused={focused} />,
-          }}
-        />
-        <Tabs.Screen
-          name="cycle"
-          options={{
-            title: 'Cycle',
-            tabBarIcon: ({ focused }) => <TabIcon name="droplets" focused={focused} />,
-          }}
-        />
-        <Tabs.Screen
-          name="health"
-          options={{
-            title: 'Health Log',
-            tabBarIcon: ({ focused }) => <TabIcon name="clipboard-list" focused={focused} />,
-          }}
-        />
-        <Tabs.Screen
-          name="education"
-          options={{
-            title: 'Learn',
-            tabBarIcon: ({ focused }) => <TabIcon name="book-open" focused={focused} />,
-          }}
-        />
-        {/* Hidden routes — display:none removes them from tab bar layout entirely */}
-        <Tabs.Screen name="track"    options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
-        <Tabs.Screen name="insights" options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
-        <Tabs.Screen name="profile"  options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
+      />
+      <Tabs.Screen
+        name="cycle"
+        options={{
+          title: 'Cycle',
+          tabBarIcon: ({ focused }) => <TabIcon name="droplets" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="health"
+        options={{
+          title: 'Log',
+          tabBarIcon: ({ focused }) => <TabIcon name="heart" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="education"
+        options={{
+          title: 'Learn',
+          tabBarIcon: ({ focused }) => <TabIcon name="book-open" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen name="track"    options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
+      <Tabs.Screen name="insights" options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
+      <Tabs.Screen name="profile"  options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  iconWrapper: {
-    flex: 1,
+  tabBar: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    right: 12,
+    height: 68,
+    borderRadius: 28,
+    borderTopWidth: 0,
+    backgroundColor: 'rgba(250,248,242,0.93)',
+    borderWidth: 1,
+    borderColor: 'rgba(51,50,68,0.08)',
+    // Shadow
+    shadowColor: '#333244',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.10,
+    shadowRadius: 24,
+    elevation: 8,
+    paddingTop: 8,
+    paddingBottom: 10,
+  } as any,
+  tabLabel: {
+    fontSize: 10,
+    fontFamily: 'Jost_500Medium',
+    letterSpacing: 0.2,
+    marginTop: -2,
+  },
+  tabItem: {
+    paddingTop: 4,
+  },
+  iconPill: {
+    width: 40,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconActive: {
-    backgroundColor: 'rgba(199, 110, 114, 0.1)',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconInactive: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
+  iconPillActive: {
+    backgroundColor: 'rgba(78,158,90,0.14)',
   },
 });

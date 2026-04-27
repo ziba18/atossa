@@ -1,91 +1,108 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Attosa Design System — Soft Pastel Palette
-// Dusty rose · Sage green · Warm yellow · Muted lavender · Blush cream
+// Atossa Design System — cycle-bloom palette
+// Matcha · Rose · Sky · Cream · Ink · Lavender · Apricot
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const Colors = {
-  // ── Dusty Rose (primary brand — replaces cherry/red) ─────────────────────
-  cherry: '#C76E72',           // dusty rose — primary CTA, active states
-  cherryLight: '#D4878A',      // lighter rose
-  cherryLighter: '#FDF0F0',    // soft rose tinted backgrounds, chips
-  cherryDark: '#A05558',       // deep rose — gradients
+  // ── Matcha (primary brand — sage green) ───────────────────────────────────
+  cherry: '#4E9E5A',            // matcha-deep — primary CTA, active states
+  cherryLight: '#8DC98F',       // matcha — lighter sage
+  cherryLighter: '#EBF5EB',     // soft sage tinted backgrounds, chips
+  cherryDark: '#3A7A44',        // deep sage — gradients
 
-  // ── Dark surfaces (kept for overlays / dark mode) ─────────────────────────
-  bordeaux: '#2A1C18',         // deep warm brown — overlays only
-  bordeauxMid: '#F5EDE5',      // maps to background in light mode
-  bordeauxLight: '#FDFAF8',    // maps to elevated surface
+  // ── Ink surfaces (dark overlays) ──────────────────────────────────────────
+  bordeaux: '#333244',          // ink — deep blue-gray overlays
+  bordeauxMid: '#FAF8F2',       // maps to background in light mode
+  bordeauxLight: '#FEFEFE',     // maps to elevated surface
 
-  // ── Lavender (accent — replaces gold) ────────────────────────────────────
-  gold: '#9B8EC4',             // muted lavender accent
-  goldLight: '#B0A3D4',        // lighter lavender
-  goldLighter: '#F0EDF8',      // lavender tinted bg
-  goldDark: '#7A6EA0',         // deep lavender text
+  // ── Lavender (accent) ─────────────────────────────────────────────────────
+  gold: '#9B88C4',              // muted lavender accent
+  goldLight: '#C4B5D9',         // lighter lavender
+  goldLighter: '#F0EDF8',       // lavender tinted bg
+  goldDark: '#7A6EAA',          // deep lavender text
 
-  // ── Blush Cream (backgrounds) ─────────────────────────────────────────────
-  cream: '#F5EDE5',            // warm blush cream bg
-  creamDark: '#EDE4DC',        // slightly deeper cream
+  // ── Cream (backgrounds) ───────────────────────────────────────────────────
+  cream: '#FAF7EF',             // warm cream bg
+  creamDark: '#F2EFE4',         // slightly deeper cream
 
   // ── Sage Green (secondary / follicular) ───────────────────────────────────
-  forest: '#5E9E6A',           // sage green
-  forestDark: '#FFFFFF',       // tab bar background (white)
-  forestMuted: '#8DBF8A',      // light sage
-  forestLighter: '#EDF5ED',    // sage tinted bg
+  forest: '#4E9E5A',            // sage green (= matcha-deep)
+  forestDark: '#FFFFFF',        // tab bar background (white)
+  forestMuted: '#8DC98F',       // light sage
+  forestLighter: '#EBF5EB',     // sage tinted bg
 
-  // ── Whiskey (mapped to Dusty Rose for consistency) ────────────────────────
-  whiskey: '#C76E72',          // = dusty rose (used for active tab)
-  whiskeyLight: '#D4878A',
-  whiskeyLighter: '#FDF0F0',
-  whiskeyDark: '#A05558',
+  // ── Rose (mapped to rose-deep for phase/status) ───────────────────────────
+  whiskey: '#CB7575',           // rose-deep
+  whiskeyLight: '#EDCACA',
+  whiskeyLighter: '#FAF0F0',
+  whiskeyDark: '#A85A5A',
 
   // ── Emerald ───────────────────────────────────────────────────────────────
-  emerald: '#6ABF8A',
-  emeraldLight: '#8DD4A8',
-  emeraldLighter: '#EDF8F2',
-  emeraldDark: '#4A9A6A',
+  emerald: '#5BA571',
+  emeraldLight: '#8DC9A0',
+  emeraldLighter: '#E8F5EE',
+  emeraldDark: '#3D8055',
 
   // ── Silver ────────────────────────────────────────────────────────────────
-  silver: '#E0D8D0',
-  silverDark: '#B8AEA8',
+  silver: '#E0DCF0',
+  silverDark: '#B0A8C8',
 
   // ── Backgrounds ───────────────────────────────────────────────────────────
-  background: '#F5EDE5',       // warm blush cream
-  backgroundDark: '#2A1C18',
+  background: '#FAF8F2',        // warm cream
+  backgroundDark: '#1E1C2E',
   surface: '#FFFFFF',
-  surfaceDark: '#2A1C18',
-  surfaceElevated: '#FDFAF8',  // warm elevated surface
-  surfaceElevatedDark: '#3A2820',
+  surfaceDark: '#252338',
+  surfaceElevated: '#FEFEFE',
+  surfaceElevatedDark: '#2D2B42',
 
   // ── Text ──────────────────────────────────────────────────────────────────
-  textPrimary: '#2A1C18',      // dark warm brown
-  textPrimaryDark: '#F5EDE5',
-  textSecondary: '#7A6860',    // muted warm brown
-  textSecondaryDark: '#C4A89C',
-  textMuted: '#A09080',
-  textMutedDark: '#7A6860',
+  textPrimary: '#333244',       // ink — dark blue-gray
+  textPrimaryDark: '#F0EEF8',
+  textSecondary: '#5C5A70',     // ink/60
+  textSecondaryDark: '#A8A6C0',
+  textMuted: '#8A889E',         // ink/40
+  textMutedDark: '#6E6C88',
 
   // ── Borders ───────────────────────────────────────────────────────────────
-  border: 'rgba(180, 150, 140, 0.2)',
-  borderStrong: 'rgba(180, 150, 140, 0.4)',
-  borderDark: 'rgba(180, 150, 140, 0.25)',
+  border: 'rgba(51,50,68,0.10)',
+  borderStrong: 'rgba(51,50,68,0.20)',
+  borderDark: 'rgba(240,238,248,0.12)',
 
-  // ── Cycle phase colours — soft pastels ───────────────────────────────────
-  menstrual: '#D4878A',        // dusty rose
-  predictedPeriod: '#FDF0F0',  // soft rose tint
-  follicular: '#8DBF8A',       // sage green
-  ovulation: '#D4C870',        // warm yellow
-  luteal: '#9B8EC4',           // muted lavender
+  // ── Cycle phase colours ───────────────────────────────────────────────────
+  menstrual: '#CB7575',         // rose-deep
+  predictedPeriod: '#FAF0F0',   // soft rose tint
+  follicular: '#8DC98F',        // matcha
+  ovulation: '#EDD1A0',         // apricot
+  luteal: '#BBCFE8',            // sky
+
+  // ── Direct brand palette references ──────────────────────────────────────
+  matcha: '#8DC98F',
+  matchaDeep: '#4E9E5A',
+  rose: '#EDCACA',
+  roseDeep: '#CB7575',
+  sky: '#BBCFE8',
+  skyDeep: '#68A2C8',
+  ink: '#333244',
+  lavender: '#D5ABE0',
+  apricot: '#EDD1A0',
 
   // ── Status ────────────────────────────────────────────────────────────────
-  success: '#6ABF8A',
-  warning: '#D4C870',
-  error: '#C76E72',
-  info: '#7AB0D4',
+  success: '#5BA571',
+  warning: '#E8C87A',
+  error: '#CB7575',
+  info: '#68A2C8',
+
+  // ── Severity scale (pain slider) ─────────────────────────────────────────
+  severity1: '#5BA571',   // low — green
+  severity4: '#D4AD62',   // moderate — apricot
+  severity7: '#CB7575',   // high — rose
+  severity10: '#A84040',  // severe — deep red
 
   // ── Utility ───────────────────────────────────────────────────────────────
   white: '#FFFFFF',
   black: '#000000',
-  overlay: 'rgba(42, 28, 24, 0.5)',
-  overlayLight: 'rgba(199, 110, 114, 0.06)',
+  overlay: 'rgba(51,50,68,0.5)',
+  overlayLight: 'rgba(78,158,90,0.06)',
 } as const;
 
 export type ColorKey = keyof typeof Colors;

@@ -3,7 +3,6 @@ import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextS
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
 
-// Matches web button variants: primary=#390517, secondary=cherry-lighter, outline, ghost, danger
 type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 type Size = 'sm' | 'md' | 'lg';
 
@@ -62,7 +61,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: Radius.md,        // rounded-xl — 12px
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -70,34 +69,34 @@ const styles = StyleSheet.create({
   fullWidth: { width: '100%' },
   disabled: { opacity: 0.45 },
 
-  // Variants — exact match to web
+  // Variants
   primary: {
-    backgroundColor: Colors.cherry,  // #390517 dark burgundy
+    backgroundColor: Colors.cherry,   // matcha-deep #4E9E5A
     shadowColor: Colors.cherry,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowOpacity: 0.22,
+    shadowRadius: 6,
     elevation: 3,
   },
   secondary: {
-    backgroundColor: Colors.cherryLighter,  // #F2E6EA
+    backgroundColor: Colors.cherryLighter,
   },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: Colors.cherry,             // #390517
+    borderColor: Colors.cherry,
   },
   ghost: {
-    backgroundColor: Colors.cherryLighter,  // light tint
+    backgroundColor: Colors.cherryLighter,
   },
   danger: {
-    backgroundColor: '#dc2626',
+    backgroundColor: Colors.roseDeep,
   },
   success: {
     backgroundColor: Colors.emerald,
   },
 
-  // Sizes — h-8/h-10/h-12 matching web
+  // Sizes
   size_sm: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 2, minHeight: 36 },
   size_md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 4, minHeight: 44 },
   size_lg: { paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, minHeight: 52 },
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
   // Text
   text: {
     fontWeight: FontWeight.semibold,
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
     fontFamily: 'Jost_600SemiBold',
   },
   text_primary: { color: Colors.white },

@@ -17,13 +17,13 @@ const R     = SIZE * 0.40;
 const THICK = SIZE * 0.092;
 const GAP   = 3.2;
 
-// ── Phase colors ──────────────────────────────────────────────────────────────
+// ── Phase colors — cycle-bloom palette ───────────────────────────────────────
 const C = {
-  period:     { solid: '#D4878A', faded: 'rgba(212,135,138,0.30)' },
-  follicular: { solid: 'rgba(168,150,138,0.65)', faded: 'rgba(168,150,138,0.16)' },
-  fertile:    { solid: '#8DBF8A', faded: 'rgba(141,191,138,0.28)' },
-  ovulation:  { solid: '#D4C870', faded: 'rgba(212,200,112,0.35)' },
-  luteal:     { solid: '#9B8EC4', faded: 'rgba(155,142,196,0.26)' },
+  period:     { solid: '#CB7575', faded: 'rgba(203,117,117,0.26)' },
+  follicular: { solid: '#8DC98F', faded: 'rgba(141,201,143,0.22)' },
+  fertile:    { solid: '#4E9E5A', faded: 'rgba(78,158,90,0.22)' },
+  ovulation:  { solid: '#D4AD62', faded: 'rgba(212,173,98,0.30)' },
+  luteal:     { solid: '#82AECF', faded: 'rgba(130,174,207,0.25)' },
 } as const;
 
 type Phase = keyof typeof C;
@@ -293,7 +293,7 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
           />
 
           {/* ── Centre fill ── */}
-          <Circle cx={CX} cy={CY} r={R - THICK / 2 - 3} fill="#F5EDE5" />
+          <Circle cx={CX} cy={CY} r={R - THICK / 2 - 3} fill="#FAF8F2" />
 
           {/* ── Real today anchor (shown while dragging, grey & small) ── */}
           {isDragging && (

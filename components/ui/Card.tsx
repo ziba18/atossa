@@ -3,21 +3,22 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Radius, Shadow } from '../../constants/theme';
 
-// Matches web card: rounded-2xl, border rgba(163,133,96,0.18), shadow-sm, #FFFFFF surface
 interface CardProps {
   children: React.ReactNode;
   style?: ViewStyle;
   elevated?: boolean;
   noPadding?: boolean;
   darkMode?: boolean;
+  glass?: boolean;
 }
 
-export function Card({ children, style, elevated = false, noPadding = false, darkMode }: CardProps) {
+export function Card({ children, style, elevated = false, noPadding = false, darkMode, glass }: CardProps) {
   return (
     <View
       style={[
         styles.card,
         elevated && Shadow.md,
+        glass && styles.glass,
         noPadding && styles.noPadding,
         darkMode && styles.cardDark,
         style,
@@ -30,12 +31,16 @@ export function Card({ children, style, elevated = false, noPadding = false, dar
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface,   // #FFFFFF
-    borderRadius: Radius.xxl,          // 24px — rounded-2xl
-    padding: 20,                       // p-5 = 20px
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.xxxl,
+    padding: 20,
     borderWidth: 1,
-    borderColor: Colors.border,        // rgba(163,133,96,0.18) warm golden
+    borderColor: Colors.border,
     ...Shadow.sm,
+  },
+  glass: {
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderColor: 'rgba(51,50,68,0.08)',
   },
   cardDark: {
     backgroundColor: Colors.surfaceDark,

@@ -13,10 +13,11 @@ export const Spacing = {
 // ─── Border radius ───────────────────────────────────────────────────────────
 export const Radius = {
   sm: 8,
-  md: 12,   // rounded-xl equivalent
+  md: 12,
   lg: 16,
   xl: 20,
-  xxl: 24,  // rounded-2xl — used on cards (matching web)
+  xxl: 24,
+  xxxl: 32,   // cycle-bloom "2rem" — main card radius
   full: 9999,
 } as const;
 
@@ -41,60 +42,57 @@ export const FontWeight = {
 };
 
 // ─── Font families ────────────────────────────────────────────────────────────
-// Web uses: Jost (sans) + Cormorant Garamond (display/serif)
-// Install with: npx expo install @expo-google-fonts/jost @expo-google-fonts/cormorant-garamond expo-font
 export const FontFamily = {
   sans: 'Jost_400Regular',
   sansMedium: 'Jost_500Medium',
   sansSemibold: 'Jost_600SemiBold',
   display: 'CormorantGaramond_600SemiBold',
   displayItalic: 'CormorantGaramond_600SemiBold_Italic',
-  // System fallbacks (used until fonts load)
   sansSystem: 'System',
   displaySystem: 'Georgia',
 } as const;
 
-// ─── Shadows — soft warm ─────────────────────────────────────────────────────
+// ─── Shadows — soft ──────────────────────────────────────────────────────────
 export const Shadow = {
   sm: {
-    shadowColor: '#A09080',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    shadowColor: '#333244',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 2,
   },
   md: {
-    shadowColor: '#A09080',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.10,
-    shadowRadius: 8,
+    shadowColor: '#333244',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#A09080',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
+    shadowColor: '#333244',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.10,
+    shadowRadius: 30,
     elevation: 8,
   },
 } as const;
 
 // ─── Themes ───────────────────────────────────────────────────────────────────
 export const lightTheme = {
-  background: Colors.background,      // #F5EDE5 — warm blush cream
-  surface: Colors.surface,            // #FFFFFF
+  background: Colors.background,
+  surface: Colors.surface,
   surfaceElevated: Colors.surfaceElevated,
   text: Colors.textPrimary,
   textSecondary: Colors.textSecondary,
   textMuted: Colors.textMuted,
   border: Colors.border,
   borderStrong: Colors.borderStrong,
-  primary: Colors.cherry,             // #C76E72 dusty rose
-  secondary: Colors.forest,           // #5E9E6A sage green
-  accent: Colors.gold,                // #9B8EC4 lavender
-  tabBar: Colors.forestDark,          // #FFFFFF
-  tabActive: Colors.cherry,           // #C76E72
-  tabInactive: 'rgba(160,144,128,0.55)',
+  primary: Colors.cherry,
+  secondary: Colors.forest,
+  accent: Colors.gold,
+  tabBar: Colors.forestDark,
+  tabActive: Colors.cherry,
+  tabInactive: Colors.textMuted,
   isDark: false,
 };
 
