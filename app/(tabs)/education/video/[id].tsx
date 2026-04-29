@@ -8,12 +8,14 @@ import { Header } from '../../../../components/layout/Header';
 import { LoadingSpinner } from '../../../../components/ui/LoadingSpinner';
 import { Badge } from '../../../../components/ui/Badge';
 import type { EducationContent } from '../../../../types/database';
-import { Colors } from '../../../../constants/colors';
+import { useColors, type AppColors } from '../../../../contexts/ThemeContext';
 import { FontSize, FontWeight, Spacing } from '../../../../constants/theme';
 
 const { width } = Dimensions.get('window');
 
 export default function VideoScreen() {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const { id } = useLocalSearchParams<{ id: string }>();
   const [video, setVideo] = useState<EducationContent | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function VideoScreen() {
   if (loading) return <LoadingSpinner fullScreen />;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title={video?.title ?? 'Video'} showBack />
       <ScrollView>
         {video?.video_url && (
@@ -48,8 +50,10 @@ export default function VideoScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  info: { padding: Spacing.lg },
-  title: { fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  badges: { flexDirection: 'row', gap: Spacing.xs },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    info: { padding: Spacing.lg },
+    title: { fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: c.textPrimary, marginBottom: Spacing.sm },
+    badges: { flexDirection: 'row', gap: Spacing.xs },
+  });
+}

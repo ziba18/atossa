@@ -8,6 +8,7 @@ import { useCycleStore } from '../../../stores/cycleStore';
 import { supabase } from '../../../lib/supabase';
 import { Header } from '../../../components/layout/Header';
 import { Colors } from '../../../constants/colors';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { FontSize, Spacing, Radius } from '../../../constants/theme';
 import type { CycleLog, CyclePrediction } from '../../../types/database';
 
@@ -85,10 +86,12 @@ function buildMarkedDates(
 
 // ── Legend item ───────────────────────────────────────────────────────────────
 function LegendItem({ color, label }: { color: string; label: string }) {
+  const theme = useColors();
+  const s = createStyles(theme);
   return (
-    <View style={styles.legendItem}>
-      <View style={[styles.legendDot, { backgroundColor: color }]} />
-      <Text style={styles.legendLabel}>{label}</Text>
+    <View style={s.legendItem}>
+      <View style={[s.legendDot, { backgroundColor: color }]} />
+      <Text style={[s.legendLabel, { color: theme.textSecondary }]}>{label}</Text>
     </View>
   );
 }
@@ -102,6 +105,8 @@ interface Selecting {
 }
 
 export default function CycleCalendarScreen() {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const { cycleLogs, prediction, fetchCycleLogs } = useCycleStore();
 
@@ -296,17 +301,17 @@ export default function CycleCalendarScreen() {
         onDayPress={handleDayPress}
         onDayLongPress={handleLongPress}
         theme={{
-          backgroundColor:         Colors.background,
-          calendarBackground:      Colors.surface,
-          textSectionTitleColor:   Colors.textMuted,
-          dayTextColor:            Colors.textPrimary,
-          todayTextColor:          Colors.cherry,
+          backgroundColor:         theme.background,
+          calendarBackground:      theme.surface,
+          textSectionTitleColor:   theme.textMuted,
+          dayTextColor:            theme.textPrimary,
+          todayTextColor:          theme.cherry,
           todayBackgroundColor:    'transparent',
-          selectedDayTextColor:    Colors.white,
-          monthTextColor:          Colors.textPrimary,
-          indicatorColor:          Colors.cherry,
+          selectedDayTextColor:    '#FFFFFF',
+          monthTextColor:          theme.textPrimary,
+          indicatorColor:          theme.cherry,
           textDisabledColor:       Colors.silver,
-          arrowColor:              Colors.cherry,
+          arrowColor:              theme.cherry,
           textDayFontFamily:       'Jost_400Regular',
           textMonthFontFamily:     'CormorantGaramond_600SemiBold',
           textDayHeaderFontFamily: 'Jost_600SemiBold',
@@ -352,7 +357,7 @@ export default function CycleCalendarScreen() {
               disabled={saving}
             >
               {saving
-                ? <ActivityIndicator size="small" color={Colors.white} />
+                ? <ActivityIndicator size="small" color="#FFFFFF" />
                 : <Text style={styles.saveBtnText}>Save</Text>
               }
             </TouchableOpacity>
@@ -363,111 +368,27 @@ export default function CycleCalendarScreen() {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.background },
-
-  legend: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  legendDot: { width: 12, height: 12, borderRadius: 6 },
-  legendLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
-
-  instrStrip: {
-    paddingVertical: 7,
-    paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.surfaceElevated,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    alignItems: 'center',
-  },
-  instrStripEdit: {
-    backgroundColor: Colors.cherryLighter,
-    borderBottomColor: 'rgba(199,110,114,0.25)',
-  },
-  instrText: {
-    fontSize: 11,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted,
-    textAlign: 'center',
-  },
-  instrTextEdit: {
-    color: Colors.cherry,
-  },
-
-  // Edit action bar
-  editBar: {
-    backgroundColor: Colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    paddingBottom: Spacing.lg,
-    gap: Spacing.sm,
-  },
-  editInfo: { alignItems: 'center' },
-  editRange: {
-    fontSize: FontSize.lg,
-    fontFamily: 'CormorantGaramond_600SemiBold',
-    color: Colors.textPrimary,
-  },
-  editDays: {
-    fontSize: FontSize.xs,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
-  editActions: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    justifyContent: 'center',
-  },
-  deleteBtn: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(199,110,114,0.4)',
-    backgroundColor: Colors.cherryLighter,
-  },
-  deleteBtnText: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.cherry,
-  },
-  cancelBtn: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surfaceElevated,
-  },
-  cancelBtnText: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textSecondary,
-  },
-  saveBtn: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.xl,
-    borderRadius: Radius.full,
-    backgroundColor: Colors.cherry,
-    minWidth: 80,
-    alignItems: 'center',
-  },
-  saveBtnText: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.white,
-  },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    screen: { flex: 1, backgroundColor: c.background },
+    legend: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: Spacing.lg, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.border },
+    legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    legendDot: { width: 12, height: 12, borderRadius: 6 },
+    legendLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular' },
+    instrStrip: { paddingVertical: 7, paddingHorizontal: Spacing.md, backgroundColor: c.surfaceElevated, borderBottomWidth: 1, borderBottomColor: c.border, alignItems: 'center' },
+    instrStripEdit: { backgroundColor: c.cherryLighter, borderBottomColor: 'rgba(199,110,114,0.25)' },
+    instrText: { fontSize: 11, fontFamily: 'Jost_400Regular', color: c.textMuted, textAlign: 'center' },
+    instrTextEdit: { color: c.cherry },
+    editBar: { backgroundColor: c.surface, borderTopWidth: 1, borderTopColor: c.border, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, paddingBottom: Spacing.lg, gap: Spacing.sm },
+    editInfo: { alignItems: 'center' },
+    editRange: { fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    editDays: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
+    editActions: { flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center' },
+    deleteBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, borderRadius: Radius.full, borderWidth: 1, borderColor: 'rgba(199,110,114,0.4)', backgroundColor: c.cherryLighter },
+    deleteBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.cherry },
+    cancelBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.surfaceElevated },
+    cancelBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.textSecondary },
+    saveBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.xl, borderRadius: Radius.full, backgroundColor: c.cherry, minWidth: 80, alignItems: 'center' },
+    saveBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
+  });
+}

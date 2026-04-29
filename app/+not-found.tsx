@@ -3,13 +3,15 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../constants/colors';
+import { useColors } from '../contexts/ThemeContext';
 import { FontSize, FontWeight, Spacing } from '../constants/theme';
 
 export default function NotFoundScreen() {
   const router = useRouter();
+  const theme = useColors();
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: theme.background }]}>
       <LinearGradient
         colors={['#390517', '#03110D']}
         start={{ x: 0, y: 0 }}
@@ -46,7 +48,6 @@ export default function NotFoundScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   hero: {
     flex: 1,

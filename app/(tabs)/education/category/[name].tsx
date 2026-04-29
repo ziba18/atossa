@@ -7,15 +7,16 @@ import { Header } from '../../../../components/layout/Header';
 import { EmptyState } from '../../../../components/ui/EmptyState';
 import { getArticlesByCategory } from '../../../../constants/articles';
 import type { ContentCategory } from '../../../../types/database';
-import { Colors } from '../../../../constants/colors';
+import { useColors } from '../../../../contexts/ThemeContext';
 import { Spacing } from '../../../../constants/theme';
 
 export default function CategoryScreen() {
+  const theme = useColors();
   const { name } = useLocalSearchParams<{ name: string }>();
   const articles = getArticlesByCategory((name as ContentCategory) ?? 'all');
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title={name?.replace(/_/g, ' ') ?? 'Category'} showBack />
       <FlatList
         data={articles}

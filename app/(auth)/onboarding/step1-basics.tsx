@@ -6,6 +6,7 @@ import { supabase } from '../../../lib/supabase';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
@@ -28,6 +29,9 @@ export default function Step1Basics() {
     setLoading(false);
     router.push('/(auth)/onboarding/step2-last-period');
   };
+
+  const theme = useColors();
+  const styles = createStyles(theme);
 
   return (
     <SafeScreen>
@@ -84,24 +88,26 @@ export default function Step1Basics() {
   );
 }
 
-const styles = StyleSheet.create({
-  progress: { marginBottom: Spacing.xl },
-  step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xs },
-  progressBar: { height: 4, backgroundColor: Colors.border, borderRadius: 2 },
-  progressFill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-  title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-  label: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
-  options: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
-  option: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: 99,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-  },
-  optionSelected: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
-  optionText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
-  optionTextSelected: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
-  btn: { marginTop: Spacing.xxl },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    progress: { marginBottom: Spacing.xl },
+    step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
+    progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
+    progressFill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
+    title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    label: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
+    options: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+    option: {
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.sm,
+      borderRadius: 99,
+      borderWidth: 1.5,
+      borderColor: c.border,
+    },
+    optionSelected: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
+    optionText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textSecondary },
+    optionTextSelected: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
+    btn: { marginTop: Spacing.xxl },
+  });
+}

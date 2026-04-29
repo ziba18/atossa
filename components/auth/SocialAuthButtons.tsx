@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { supabase } from '../../lib/supabase';
 import { signInWithGoogle, signInWithApple } from '../../lib/socialAuth';
-import { Colors } from '../../constants/colors';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, Spacing, Radius } from '../../constants/theme';
 
 function GoogleLogo({ size = 20 }: { size?: number }) {
@@ -21,6 +21,8 @@ function GoogleLogo({ size = 20 }: { size?: number }) {
 
 export function SocialAuthButtons() {
   const router = useRouter();
+  const theme = useColors();
+  const styles = createStyles(theme);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
 
@@ -75,7 +77,7 @@ export function SocialAuthButtons() {
         activeOpacity={0.8}
       >
         {loadingGoogle ? (
-          <ActivityIndicator size="small" color={Colors.textPrimary} />
+          <ActivityIndicator size="small" color={theme.textPrimary} />
         ) : (
           <GoogleLogo size={20} />
         )}
@@ -95,48 +97,31 @@ export function SocialAuthButtons() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginTop: Spacing.sm,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.border,
-  },
-  dividerText: {
-    marginHorizontal: Spacing.md,
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted,
-  },
-  socialBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.md,
-    paddingVertical: 14,
-    marginBottom: Spacing.md,
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-  socialBtnText: {
-    fontSize: FontSize.md,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textPrimary,
-  },
-  appleBtn: {
-    height: 50,
-    width: '100%',
-  },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { marginTop: Spacing.sm },
+    dividerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.lg },
+    line: { flex: 1, height: 1, backgroundColor: c.border },
+    dividerText: {
+      marginHorizontal: Spacing.md,
+      fontSize: FontSize.sm,
+      fontFamily: 'Jost_400Regular',
+      color: c.textMuted,
+    },
+    socialBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: Spacing.sm,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: Radius.md,
+      paddingVertical: 14,
+      marginBottom: Spacing.md,
+    },
+    disabled: { opacity: 0.6 },
+    socialBtnText: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
+    appleBtn: { height: 50, width: '100%' },
+  });
+}

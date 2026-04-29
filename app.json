@@ -13,7 +13,7 @@
       "backgroundColor": "#FFF8F9"
     },
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.attosa.app",
       "infoPlist": {
         "NSHealthShareUsageDescription": "Atossa reads health data to enhance your cycle predictions.",
@@ -71,7 +71,8 @@
       ],
       "expo-av",
       "expo-apple-authentication",
-      "expo-web-browser"
+      "expo-web-browser",
+      "./plugins/withHealthKit"
     ],
     "experiments": {
       "typedRoutes": true

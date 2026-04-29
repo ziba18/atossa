@@ -11,13 +11,15 @@ import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Icon } from '../../../components/ui/Icon';
 import type { HealthMetric } from '../../../types/database';
-import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { formatShortDate } from '../../../algorithms/dateHelpers';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function HealthTrendsScreen() {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const [weightData, setWeightData] = useState<HealthMetric[]>([]);
   const [bpData, setBpData] = useState<HealthMetric[]>([]);
@@ -38,22 +40,22 @@ export default function HealthTrendsScreen() {
   if (loading) return <LoadingSpinner fullScreen />;
 
   const chartConfig = {
-    backgroundGradientFrom: Colors.surface,
-    backgroundGradientTo: Colors.surface,
+    backgroundGradientFrom: theme.surface,
+    backgroundGradientTo: theme.surface,
     color: (opacity = 1) => `rgba(57, 5, 23, ${opacity})`,
-    labelColor: () => Colors.textSecondary,
+    labelColor: () => theme.textSecondary,
     strokeWidth: 2,
-    propsForDots: { r: '4', strokeWidth: '2', stroke: Colors.cherry },
+    propsForDots: { r: '4', strokeWidth: '2', stroke: theme.cherry },
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Health Trends" showBack />
       <ScrollView contentContainerStyle={styles.container}>
         {weightData.length >= 2 ? (
           <Card style={styles.chartCard}>
             <View style={styles.chartHeader}>
-              <Icon name="trending-up" size={18} color={Colors.cherry} />
+              <Icon name="trending-up" size={18} color={theme.cherry} />
               <Text style={styles.chartTitle}>Weight Trend (kg)</Text>
             </View>
             <LineChart
@@ -75,13 +77,13 @@ export default function HealthTrendsScreen() {
         {bpData.length >= 2 ? (
           <Card style={styles.chartCard}>
             <View style={styles.chartHeader}>
-              <Icon name="heart-pulse" size={18} color={Colors.cherry} />
+              <Icon name="heart-pulse" size={18} color={theme.cherry} />
               <Text style={styles.chartTitle}>Blood Pressure Trend (mmHg)</Text>
             </View>
             <LineChart
               data={{
                 labels: bpData.map((d) => formatShortDate(d.recorded_at.split('T')[0])),
-                datasets: [{ data: bpData.map((d) => d.value), color: () => Colors.cherry }],
+                datasets: [{ data: bpData.map((d) => d.value), color: () => theme.cherry }],
               }}
               width={SCREEN_WIDTH - Spacing.md * 4}
               height={180}
@@ -98,10 +100,12 @@ export default function HealthTrendsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: Spacing.md },
-  chartCard: { marginBottom: Spacing.md },
-  chartHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.sm },
-  chartTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
-  chart: { borderRadius: 12, marginLeft: -Spacing.md },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { padding: Spacing.md },
+    chartCard: { marginBottom: Spacing.md },
+    chartHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.sm },
+    chartTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
+    chart: { borderRadius: 12, marginLeft: -Spacing.md },
+  });
+}

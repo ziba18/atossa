@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, FontWeight, Spacing } from '../../constants/theme';
 import { Button } from './Button';
 import { Icon, type IconName } from './Icon';
@@ -14,10 +14,12 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ iconName = 'flower', title, subtitle, actionLabel, onAction }: EmptyStateProps) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   return (
     <View style={styles.container}>
       <View style={styles.iconWrap}>
-        <Icon name={iconName} size={48} color={Colors.textMuted} />
+        <Icon name={iconName} size={48} color={theme.textMuted} />
       </View>
       <Text style={styles.title}>{title}</Text>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -28,28 +30,26 @@ export function EmptyState({ iconName = 'flower', title, subtitle, actionLabel, 
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing.xxl,
-  },
-  iconWrap: { marginBottom: Spacing.md },
-  title: {
-    fontSize: FontSize.lg,
-    fontWeight: FontWeight.semibold,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  },
-  subtitle: {
-    fontSize: FontSize.md,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: Spacing.lg,
-  },
-  button: { marginTop: Spacing.md },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { alignItems: 'center', justifyContent: 'center', padding: Spacing.xxl },
+    iconWrap: { marginBottom: Spacing.md },
+    title: {
+      fontSize: FontSize.lg,
+      fontWeight: FontWeight.semibold,
+      fontFamily: 'Jost_600SemiBold',
+      color: c.textPrimary,
+      textAlign: 'center',
+      marginBottom: Spacing.sm,
+    },
+    subtitle: {
+      fontSize: FontSize.md,
+      fontFamily: 'Jost_400Regular',
+      color: c.textMuted,
+      textAlign: 'center',
+      lineHeight: 22,
+      marginBottom: Spacing.lg,
+    },
+    button: { marginTop: Spacing.md },
+  });
+}

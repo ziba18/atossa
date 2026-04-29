@@ -6,6 +6,7 @@ import { supabase } from '../../../lib/supabase';
 import { registerForPushNotifications } from '../../../lib/notifications';
 import { Button } from '../../../components/ui/Button';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
@@ -39,6 +40,9 @@ export default function Step4Notifications() {
     </View>
   );
 
+  const theme = useColors();
+  const styles = createStyles(theme);
+
   return (
     <SafeScreen>
       <View style={styles.progress}>
@@ -57,16 +61,18 @@ export default function Step4Notifications() {
   );
 }
 
-const styles = StyleSheet.create({
-  progress: { marginBottom: Spacing.xl },
-  step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xs },
-  progressBar: { height: 4, backgroundColor: Colors.border, borderRadius: 2 },
-  fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-  title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  rowText: { flex: 1, marginRight: Spacing.md },
-  rowLabel: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
-  rowDesc: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
-  btn: { marginTop: Spacing.xxl },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    progress: { marginBottom: Spacing.xl },
+    step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
+    progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
+    fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
+    title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: Spacing.md, borderBottomWidth: 1, borderBottomColor: c.border },
+    rowText: { flex: 1, marginRight: Spacing.md },
+    rowLabel: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
+    rowDesc: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
+    btn: { marginTop: Spacing.xxl },
+  });
+}

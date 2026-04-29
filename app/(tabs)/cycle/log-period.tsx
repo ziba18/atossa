@@ -11,6 +11,7 @@ import { Header } from '../../../components/layout/Header';
 import { Icon } from '../../../components/ui/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { FlowIntensity } from '../../../types/database';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../../constants/theme';
 import { toDateStr } from '../../../algorithms/dateHelpers';
@@ -48,6 +49,8 @@ export default function LogPeriodScreen() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const { addCycleLog } = useCycleStore();
+  const theme = useColors();
+  const styles = createStyles(theme);
 
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
@@ -109,7 +112,7 @@ export default function LogPeriodScreen() {
       : null;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Log Period" showBack />
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 
@@ -173,6 +176,11 @@ export default function LogPeriodScreen() {
           markedDates={markedDates}
           onDayPress={handleDayPress}
           theme={{
+            backgroundColor: theme.background,
+            calendarBackground: theme.surface,
+            dayTextColor: theme.textPrimary,
+            monthTextColor: theme.textPrimary,
+            textSectionTitleColor: theme.textMuted,
             arrowColor: Colors.cherry,
             todayTextColor: Colors.cherry,
             textDayFontSize: 14,
@@ -208,75 +216,44 @@ export default function LogPeriodScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: Spacing.md, paddingBottom: Spacing.xxl },
+function createStyles(c: AppColors) {
+  const Colors = c;
+  return StyleSheet.create({
+    container: { padding: Spacing.md, paddingBottom: Spacing.xxl },
 
-  dateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.sm,
-  },
-  dateCard: {
-    flex: 1,
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    padding: Spacing.md,
-  },
-  dateCardActive: {
-    borderColor: Colors.cherry,
-    backgroundColor: Colors.cherryLighter,
-  },
-  dateCardDisabled: {
-    opacity: 0.5,
-  },
-  dateCardLabel: {
-    fontSize: FontSize.xs,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  dateCardValue: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textPrimary,
-  },
-  dateCardPlaceholder: {
-    color: Colors.textMuted,
-    fontFamily: 'Jost_400Regular',
-  },
-  dateSeparator: { alignItems: 'center' },
-  dateSeparatorText: { fontSize: FontSize.lg, color: Colors.textMuted },
+    dateRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.sm },
+    dateCard: {
+      flex: 1,
+      backgroundColor: Colors.surface,
+      borderRadius: Radius.lg,
+      borderWidth: 1.5,
+      borderColor: Colors.border,
+      padding: Spacing.md,
+    },
+    dateCardActive: { borderColor: Colors.cherry, backgroundColor: Colors.cherryLighter },
+    dateCardDisabled: { opacity: 0.5 },
+    dateCardLabel: {
+      fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
+      color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4,
+    },
+    dateCardValue: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
+    dateCardPlaceholder: { color: Colors.textMuted, fontFamily: 'Jost_400Regular' },
+    dateSeparator: { alignItems: 'center' },
+    dateSeparatorText: { fontSize: FontSize.lg, color: Colors.textMuted },
 
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-    minHeight: 20,
-  },
-  summaryContent: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  summaryText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
-  summaryHint: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
-  clearText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+    summaryRow: {
+      flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+      marginBottom: Spacing.md, minHeight: 20,
+    },
+    summaryContent: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    summaryText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+    summaryHint: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
+    clearText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
 
-  calendar: {
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    overflow: 'hidden',
-  },
+    calendar: { borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
 
-  section: { marginTop: Spacing.lg },
-  label: {
-    fontSize: FontSize.md,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textPrimary,
-    marginBottom: Spacing.sm,
-  },
-  btn: { marginTop: Spacing.xl },
-});
+    section: { marginTop: Spacing.lg },
+    label: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
+    btn: { marginTop: Spacing.xl },
+  });
+}

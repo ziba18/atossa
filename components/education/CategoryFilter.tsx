@@ -1,8 +1,8 @@
 import React from 'react';
 import { ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import type { ContentCategory } from '../../types/database';
-import { Colors } from '../../constants/colors';
-import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
+import { FontSize, Radius, Spacing } from '../../constants/theme';
 
 const CATEGORIES: { value: ContentCategory | 'all'; label: string }[] = [
   { value: 'all',            label: 'All' },
@@ -23,6 +23,8 @@ interface Props {
 }
 
 export function CategoryFilter({ selected, onChange }: Props) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   return (
     <ScrollView
       horizontal
@@ -45,15 +47,12 @@ export function CategoryFilter({ selected, onChange }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { paddingHorizontal: Spacing.md, gap: Spacing.xs, paddingVertical: Spacing.xs },
-  chip: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs + 2,
-    borderRadius: Radius.full,
-    backgroundColor: Colors.border,
-  },
-  chipActive: { backgroundColor: Colors.cherry },
-  label: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textSecondary },
-  labelActive: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { paddingHorizontal: Spacing.md, gap: Spacing.xs, paddingVertical: Spacing.xs },
+    chip: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 2, borderRadius: Radius.full, backgroundColor: c.border },
+    chipActive: { backgroundColor: c.cherry },
+    label: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textSecondary },
+    labelActive: { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold' },
+  });
+}

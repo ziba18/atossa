@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View, StyleSheet, ViewStyle, ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../../hooks/useTheme';
+import { useColors } from '../../contexts/ThemeContext';
 import { Spacing } from '../../constants/theme';
 
 interface SafeScreenProps extends ScrollViewProps {
@@ -18,7 +18,7 @@ export function SafeScreen({
   noPadding = false,
   ...scrollProps
 }: SafeScreenProps) {
-  const theme = useTheme();
+  const theme = useColors();
 
   const content = (
     <View style={[styles.inner, noPadding && styles.noPadding, style]}>{children}</View>

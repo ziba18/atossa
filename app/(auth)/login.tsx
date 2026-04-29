@@ -8,11 +8,13 @@ import { Input } from '../../components/ui/Input';
 import { SafeScreen } from '../../components/layout/SafeScreen';
 import { Header } from '../../components/layout/Header';
 import { Icon } from '../../components/ui/Icon';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../constants/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const theme = useColors();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,6 +52,8 @@ export default function LoginScreen() {
       }
     }
   };
+
+  const styles = createStyles(theme);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -100,13 +104,15 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: Spacing.xl },
-  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl },
-  forgotBtn: { alignSelf: 'flex-end', marginBottom: Spacing.lg, marginTop: -Spacing.sm },
-  forgotText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.cherry },
-  loginBtn: { marginBottom: Spacing.xl },
-  registerRow: { flexDirection: 'row', justifyContent: 'center' },
-  registerText: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
-  registerLink: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { flex: 1, paddingTop: Spacing.xl },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl },
+    forgotBtn: { alignSelf: 'flex-end', marginBottom: Spacing.lg, marginTop: -Spacing.sm },
+    forgotText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.cherry },
+    loginBtn: { marginBottom: Spacing.xl },
+    registerRow: { flexDirection: 'row', justifyContent: 'center' },
+    registerText: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted },
+    registerLink: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+  });
+}

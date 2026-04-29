@@ -3,14 +3,16 @@ import { View, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Icon, type IconName } from '../../components/ui/Icon';
 import { Colors } from '../../constants/colors';
+import { useColors } from '../../contexts/ThemeContext';
 
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
+  const theme = useColors();
   return (
     <View style={[styles.iconPill, focused && styles.iconPillActive]}>
       <Icon
         name={name}
         size={20}
-        color={focused ? Colors.cherry : Colors.textMuted}
+        color={focused ? theme.cherry : theme.textMuted}
         strokeWidth={focused ? 2.2 : 1.8}
       />
     </View>
@@ -18,13 +20,14 @@ function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
 }
 
 export default function TabsLayout() {
+  const theme = useColors();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: Colors.cherry,
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarStyle: [styles.tabBar, { backgroundColor: theme.surface + 'ED', borderColor: theme.border }],
+        tabBarActiveTintColor: theme.cherry,
+        tabBarInactiveTintColor: theme.textMuted,
         tabBarLabelStyle: styles.tabLabel,
         tabBarItemStyle: styles.tabItem,
       }}

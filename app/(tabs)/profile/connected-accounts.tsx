@@ -11,10 +11,13 @@ import { Header } from '../../../components/layout/Header';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import type { ConnectedAccount } from '../../../types/database';
 import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
+import { FontSize, Spacing } from '../../../constants/theme';
 
 export default function ConnectedAccountsScreen() {
   const router = useRouter();
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const [connections, setConnections] = useState<ConnectedAccount[]>([]);
 
@@ -41,7 +44,7 @@ export default function ConnectedAccountsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Connected Accounts" showBack />
       <FlatList
         data={connections}
@@ -74,15 +77,17 @@ export default function ConnectedAccountsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  list: { padding: Spacing.md },
-  addBtn: { marginBottom: Spacing.md },
-  card: { marginBottom: Spacing.sm },
-  row: { flexDirection: 'row', alignItems: 'center' },
-  info: { flex: 1 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  name: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary },
-  rel: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
-  revokeBtn: { padding: Spacing.sm },
-  revokeText: { fontSize: FontSize.sm, color: Colors.error },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    list: { padding: Spacing.md },
+    addBtn: { marginBottom: Spacing.md },
+    card: { marginBottom: Spacing.sm },
+    row: { flexDirection: 'row', alignItems: 'center' },
+    info: { flex: 1 },
+    nameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+    name: { fontSize: FontSize.md, color: c.textPrimary },
+    rel: { fontSize: FontSize.sm, color: c.textMuted, marginTop: 2 },
+    revokeBtn: { padding: Spacing.sm },
+    revokeText: { fontSize: FontSize.sm, color: Colors.error },
+  });
+}

@@ -6,6 +6,16 @@ import { supabase } from './supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 
+async function generateNonce(): Promise<{ raw: string; hashed: string }> {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const raw = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  const msgBuffer = new TextEncoder().encode(raw);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashed = Array.from(new Uint8Array(hashBuffer), (b) => b.toString(16).padStart(2, '0')).join('');
+  return { raw, hashed };
+}
+
 export async function signInWithGoogle(): Promise<{ user: any | null; error: Error | null }> {
   const redirectUrl = makeRedirectUri({ scheme: 'attosa', path: 'auth/callback' });
 
@@ -58,11 +68,14 @@ export async function signInWithApple(): Promise<{ user: any | null; error: Erro
   }
 
   try {
+    const { raw: rawNonce, hashed: hashedNonce } = await generateNonce();
+
     const credential = await AppleAuthentication.signInAsync({
       requestedScopes: [
         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
         AppleAuthentication.AppleAuthenticationScope.EMAIL,
       ],
+      requestedNonce: hashedNonce,
     });
 
     if (!credential.identityToken) {
@@ -72,6 +85,7 @@ export async function signInWithApple(): Promise<{ user: any | null; error: Erro
     const { data, error } = await supabase.auth.signInWithIdToken({
       provider: 'apple',
       token: credential.identityToken,
+      nonce: rawNonce,
     });
 
     return { user: data?.user ?? null, error };

@@ -3,7 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import type { CycleLog, CyclePrediction } from '../../types/database';
 import { Colors } from '../../constants/colors';
-import { FontSize, Radius } from '../../constants/theme';
+import { useColors } from '../../contexts/ThemeContext';
+import { FontSize } from '../../constants/theme';
 import { isDateInRange, addDaysToStr } from '../../algorithms/dateHelpers';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function CycleCalendar({ cycleLogs, prediction, onDayPress }: Props) {
+  const theme = useColors();
   const markedDates = useMemo(() => {
     const marks: Record<string, any> = {};
 
@@ -75,17 +77,17 @@ export function CycleCalendar({ cycleLogs, prediction, onDayPress }: Props) {
       markedDates={markedDates}
       onDayPress={(day: any) => onDayPress?.(day.dateString)}
       theme={{
-        backgroundColor: Colors.background,
-        calendarBackground: Colors.background,
-        textSectionTitleColor: Colors.textSecondary,
-        selectedDayBackgroundColor: Colors.cherry,
-        selectedDayTextColor: Colors.white,
-        todayTextColor: Colors.cherry,
-        dayTextColor: Colors.textPrimary,
-        textDisabledColor: Colors.textMuted,
-        dotColor: Colors.cherry,
+        backgroundColor: theme.background,
+        calendarBackground: theme.background,
+        textSectionTitleColor: theme.textSecondary,
+        selectedDayBackgroundColor: theme.cherry,
+        selectedDayTextColor: '#FFFFFF',
+        todayTextColor: theme.cherry,
+        dayTextColor: theme.textPrimary,
+        textDisabledColor: theme.textMuted,
+        dotColor: theme.cherry,
         arrowColor: Colors.whiskey,
-        monthTextColor: Colors.textPrimary,
+        monthTextColor: theme.textPrimary,
         textDayFontSize: FontSize.sm,
         textMonthFontSize: FontSize.md,
         textDayHeaderFontSize: FontSize.xs,

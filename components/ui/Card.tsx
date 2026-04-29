@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { Colors } from '../../constants/colors';
 import { Radius, Shadow } from '../../constants/theme';
 
@@ -13,6 +14,8 @@ interface CardProps {
 }
 
 export function Card({ children, style, elevated = false, noPadding = false, darkMode, glass }: CardProps) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   return (
     <View
       style={[
@@ -29,22 +32,24 @@ export function Card({ children, style, elevated = false, noPadding = false, dar
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.xxxl,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadow.sm,
-  },
-  glass: {
-    backgroundColor: 'rgba(255,255,255,0.72)',
-    borderColor: 'rgba(51,50,68,0.08)',
-  },
-  cardDark: {
-    backgroundColor: Colors.surfaceDark,
-    borderColor: Colors.borderDark,
-  },
-  noPadding: { padding: 0 },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: c.surface,
+      borderRadius: Radius.xxxl,
+      padding: 20,
+      borderWidth: 1,
+      borderColor: c.border,
+      ...Shadow.sm,
+    },
+    glass: {
+      backgroundColor: 'rgba(255,255,255,0.72)',
+      borderColor: 'rgba(51,50,68,0.08)',
+    },
+    cardDark: {
+      backgroundColor: Colors.surfaceDark,
+      borderColor: Colors.borderDark,
+    },
+    noPadding: { padding: 0 },
+  });
+}

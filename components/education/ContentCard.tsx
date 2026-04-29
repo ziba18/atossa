@@ -4,7 +4,8 @@ import { useRouter } from 'expo-router';
 import type { EducationContent } from '../../types/database';
 import { Icon } from '../ui/Icon';
 import { Colors } from '../../constants/colors';
-import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
+import { FontSize, Radius, Spacing } from '../../constants/theme';
 import { Badge } from '../ui/Badge';
 
 interface Props {
@@ -25,6 +26,8 @@ const CATEGORY_COLORS: Record<string, 'cherry' | 'emerald' | 'whiskey'> = {
 
 export function ContentCard({ content }: Props) {
   const router = useRouter();
+  const theme = useColors();
+  const styles = createStyles(theme);
 
   const handlePress = () => {
     if (content.content_type === 'article') {
@@ -43,7 +46,7 @@ export function ContentCard({ content }: Props) {
           <Icon
             name={content.content_type === 'video' ? 'play' : 'file-text'}
             size={36}
-            color={Colors.cherry}
+            color={theme.cherry}
           />
         </View>
       )}
@@ -57,7 +60,7 @@ export function ContentCard({ content }: Props) {
         <Text style={styles.title} numberOfLines={2}>{content.title}</Text>
         {content.reading_time_minutes && (
           <View style={styles.metaRow}>
-            <Icon name="clock" size={12} color={Colors.textMuted} />
+            <Icon name="clock" size={12} color={theme.textMuted} />
             <Text style={styles.meta}>{content.reading_time_minutes} min read</Text>
           </View>
         )}
@@ -66,31 +69,15 @@ export function ContentCard({ content }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    overflow: 'hidden',
-    marginBottom: Spacing.md,
-  },
-  thumbnail: { width: '100%', height: 160 },
-  thumbnailPlaceholder: {
-    width: '100%',
-    height: 120,
-    backgroundColor: Colors.cherryLighter,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  info: { padding: Spacing.md },
-  badgeRow: { flexDirection: 'row', gap: Spacing.xs, marginBottom: Spacing.xs },
-  title: {
-    fontSize: FontSize.md,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textPrimary,
-    lineHeight: 22,
-  },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: Spacing.xs },
-  meta: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    card: { backgroundColor: c.surface, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, overflow: 'hidden', marginBottom: Spacing.md },
+    thumbnail: { width: '100%', height: 160 },
+    thumbnailPlaceholder: { width: '100%', height: 120, backgroundColor: c.cherryLighter, alignItems: 'center', justifyContent: 'center' },
+    info: { padding: Spacing.md },
+    badgeRow: { flexDirection: 'row', gap: Spacing.xs, marginBottom: Spacing.xs },
+    title: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, lineHeight: 22 },
+    metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: Spacing.xs },
+    meta: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted },
+  });
+}

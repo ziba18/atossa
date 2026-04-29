@@ -9,45 +9,17 @@ import { supabase } from '../../../lib/supabase';
 import { Badge } from '../../../components/ui/Badge';
 import { Card } from '../../../components/ui/Card';
 import { Icon, type IconName } from '../../../components/ui/Icon';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../../constants/theme';
-
-interface MenuItemProps {
-  iconName: IconName;
-  label: string;
-  onPress: () => void;
-  badge?: string;
-}
-
-function MenuItem({ iconName, label, onPress, badge }: MenuItemProps) {
-  return (
-    <TouchableOpacity onPress={onPress} style={styles.menuItem} activeOpacity={0.8}>
-      <Icon name={iconName} size={20} color={Colors.textSecondary} />
-      <Text style={styles.menuLabel}>{label}</Text>
-      {badge && <Badge label={badge} variant="cherry" />}
-      <Icon name="chevron-right" size={18} color={Colors.textMuted} />
-    </TouchableOpacity>
-  );
-}
-
-function CycleRegularityBadge({ regularity }: { regularity: string }) {
-  const cfg: Record<string, { bg: string; color: string }> = {
-    regular: { bg: Colors.emeraldLighter, color: Colors.emeraldDark },
-    irregular: { bg: Colors.whiskeyLighter, color: Colors.whiskeyDark },
-  };
-  const c = cfg[regularity] ?? { bg: Colors.background, color: Colors.textMuted };
-  return (
-    <View style={[styles.regularityBadge, { backgroundColor: c.bg }]}>
-      <Text style={[styles.regularityText, { color: c.color }]}>{regularity}</Text>
-    </View>
-  );
-}
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { profile, user, signOut } = useAuthStore();
   const { cycleLogs, fetchCycleLogs } = useCycleStore();
   const [totalSymptoms, setTotalSymptoms] = useState<number>(0);
+  const theme = useColors();
+  const styles = createStyles(theme);
 
   useEffect(() => {
     if (!user) return;
@@ -66,11 +38,32 @@ export default function ProfileScreen() {
     return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
+  const MenuItem = ({ iconName, label, onPress, badge }: { iconName: IconName; label: string; onPress: () => void; badge?: string }) => (
+    <TouchableOpacity onPress={onPress} style={styles.menuItem} activeOpacity={0.8}>
+      <Icon name={iconName} size={20} color={theme.textSecondary} />
+      <Text style={styles.menuLabel}>{label}</Text>
+      {badge && <Badge label={badge} variant="cherry" />}
+      <Icon name="chevron-right" size={18} color={theme.textMuted} />
+    </TouchableOpacity>
+  );
+
+  const CycleRegularityBadge = ({ regularity }: { regularity: string }) => {
+    const cfg: Record<string, { bg: string; color: string }> = {
+      regular: { bg: Colors.emeraldLighter, color: Colors.emeraldDark },
+      irregular: { bg: Colors.whiskeyLighter, color: Colors.whiskeyDark },
+    };
+    const c = cfg[regularity] ?? { bg: theme.surface, color: theme.textMuted };
+    return (
+      <View style={[styles.regularityBadge, { backgroundColor: c.bg }]}>
+        <Text style={[styles.regularityText, { color: c.color }]}>{regularity}</Text>
+      </View>
+    );
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* Hero */}
         <LinearGradient colors={[Colors.cherry, Colors.cherryDark]} style={styles.hero}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
@@ -86,7 +79,6 @@ export default function ProfileScreen() {
           )}
         </LinearGradient>
 
-        {/* ── Cycle stats grid ──────────────────────────────────────────── */}
         <View style={styles.statsSection}>
           <View style={styles.statsGrid}>
             <Card style={styles.statCell}>
@@ -104,7 +96,6 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* ── Cycle profile ─────────────────────────────────────────────── */}
         {profile && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Cycle Profile</Text>
@@ -145,7 +136,6 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* ── Menu sections ─────────────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
           <Card noPadding>
@@ -187,56 +177,56 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  hero: { padding: Spacing.xl, alignItems: 'center', paddingBottom: Spacing.xl },
-  avatar: {
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
-  },
-  avatarText: { fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white },
-  name: { fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.white, marginBottom: 4 },
-  email: { fontSize: FontSize.sm, color: 'rgba(255,255,255,0.8)', marginBottom: 4 },
-  memberSince: { fontSize: FontSize.xs, color: 'rgba(255,255,255,0.6)' },
+function createStyles(c: AppColors) {
+  const Colors = c;
+  return StyleSheet.create({
+    hero: { padding: Spacing.xl, alignItems: 'center', paddingBottom: Spacing.xl },
+    avatar: {
+      width: 80, height: 80, borderRadius: 40,
+      backgroundColor: 'rgba(255,255,255,0.25)',
+      alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
+    },
+    avatarText: { fontSize: 36, fontWeight: FontWeight.bold, color: c.white ?? '#FFFFFF' },
+    name: { fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: c.white ?? '#FFFFFF', marginBottom: 4 },
+    email: { fontSize: FontSize.sm, color: 'rgba(255,255,255,0.8)', marginBottom: 4 },
+    memberSince: { fontSize: FontSize.xs, color: 'rgba(255,255,255,0.6)' },
 
-  // Cycle stats
-  statsSection: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
-  statsGrid: { flexDirection: 'row', gap: Spacing.sm },
-  statCell: { flex: 1, alignItems: 'center', paddingVertical: Spacing.md },
-  statValue: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.cherry },
-  statLabel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2, textAlign: 'center' },
+    statsSection: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
+    statsGrid: { flexDirection: 'row', gap: Spacing.sm },
+    statCell: { flex: 1, alignItems: 'center', paddingVertical: Spacing.md },
+    statValue: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.cherry },
+    statLabel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2, textAlign: 'center' },
 
-  // Info card
-  section: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
-  sectionTitle: {
-    fontSize: FontSize.xs, fontWeight: FontWeight.semibold,
-    color: Colors.textMuted, textTransform: 'uppercase',
-    letterSpacing: 0.8, marginBottom: Spacing.sm,
-  },
-  infoRow: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingVertical: Spacing.sm,
-  },
-  infoLabel: { fontSize: FontSize.sm, color: Colors.textMuted, flex: 1 },
-  infoValue: { fontSize: FontSize.sm, color: Colors.textPrimary, fontWeight: FontWeight.semibold },
-  divider: { height: 1, backgroundColor: Colors.border },
-  regularityBadge: { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 3 },
-  regularityText: { fontSize: FontSize.xs, fontWeight: FontWeight.semibold, textTransform: 'capitalize' },
-  editBtn: {
-    flexDirection: 'row', gap: Spacing.xs,
-    paddingVertical: Spacing.sm, alignItems: 'center', justifyContent: 'center',
-    borderRadius: Radius.md, backgroundColor: Colors.cherryLighter, marginTop: Spacing.sm,
-  },
-  editBtnText: { fontSize: FontSize.sm, color: Colors.cherry, fontWeight: FontWeight.semibold },
+    section: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
+    sectionTitle: {
+      fontSize: FontSize.xs, fontWeight: FontWeight.semibold,
+      color: Colors.textMuted, textTransform: 'uppercase',
+      letterSpacing: 0.8, marginBottom: Spacing.sm,
+    },
+    infoRow: {
+      flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+      paddingVertical: Spacing.sm,
+    },
+    infoLabel: { fontSize: FontSize.sm, color: Colors.textMuted, flex: 1 },
+    infoValue: { fontSize: FontSize.sm, color: Colors.textPrimary, fontWeight: FontWeight.semibold },
+    divider: { height: 1, backgroundColor: Colors.border },
+    regularityBadge: { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 3 },
+    regularityText: { fontSize: FontSize.xs, fontWeight: FontWeight.semibold, textTransform: 'capitalize' },
+    editBtn: {
+      flexDirection: 'row', gap: Spacing.xs,
+      paddingVertical: Spacing.sm, alignItems: 'center', justifyContent: 'center',
+      borderRadius: Radius.md, backgroundColor: Colors.cherryLighter, marginTop: Spacing.sm,
+    },
+    editBtnText: { fontSize: FontSize.sm, color: Colors.cherry, fontWeight: FontWeight.semibold },
 
-  // Menu
-  menuItem: {
-    flexDirection: 'row', alignItems: 'center',
-    padding: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border, gap: Spacing.sm,
-  },
-  menuLabel: { flex: 1, fontSize: FontSize.md, color: Colors.textPrimary },
+    menuItem: {
+      flexDirection: 'row', alignItems: 'center',
+      padding: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border, gap: Spacing.sm,
+    },
+    menuLabel: { flex: 1, fontSize: FontSize.md, color: Colors.textPrimary },
 
-  signOutBtn: { margin: Spacing.xl, padding: Spacing.md, alignItems: 'center' },
-  signOutText: { fontSize: FontSize.md, color: Colors.cherry, fontWeight: FontWeight.semibold },
-  footer: { textAlign: 'center', fontSize: FontSize.xs, color: Colors.textMuted, paddingBottom: Spacing.xl },
-});
+    signOutBtn: { margin: Spacing.xl, padding: Spacing.md, alignItems: 'center' },
+    signOutText: { fontSize: FontSize.md, color: Colors.cherry, fontWeight: FontWeight.semibold },
+    footer: { textAlign: 'center', fontSize: FontSize.xs, color: Colors.textMuted, paddingBottom: Spacing.xl },
+  });
+}

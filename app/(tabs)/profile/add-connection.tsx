@@ -7,13 +7,15 @@ import { supabase } from '../../../lib/supabase';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Header } from '../../../components/layout/Header';
-import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
+import { FontSize, Spacing } from '../../../constants/theme';
 
 const RELATIONSHIPS = ['partner', 'parent', 'guardian', 'friend', 'doctor'] as const;
 
 export default function AddConnectionScreen() {
   const router = useRouter();
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const [email, setEmail] = useState('');
   const [relationship, setRelationship] = useState<typeof RELATIONSHIPS[number]>('partner');
@@ -36,7 +38,7 @@ export default function AddConnectionScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Invite Someone" showBack />
       <View style={styles.container}>
         <Text style={styles.subtitle}>
@@ -62,11 +64,13 @@ export default function AddConnectionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: Spacing.md },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, lineHeight: 22, marginBottom: Spacing.xl },
-  label: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  options: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.xl },
-  relBtn: {},
-  btn: { marginTop: Spacing.md },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { padding: Spacing.md },
+    subtitle: { fontSize: FontSize.md, color: c.textMuted, lineHeight: 22, marginBottom: Spacing.xl },
+    label: { fontSize: FontSize.md, color: c.textPrimary, marginBottom: Spacing.sm },
+    options: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.xl },
+    relBtn: {},
+    btn: { marginTop: Spacing.md },
+  });
+}

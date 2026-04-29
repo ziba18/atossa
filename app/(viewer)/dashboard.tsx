@@ -8,11 +8,13 @@ import { Badge } from '../../components/ui/Badge';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 import type { ConnectedAccount, CycleLog, SymptomLog } from '../../types/database';
-import { Colors } from '../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../constants/theme';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
+import { FontSize, Spacing } from '../../constants/theme';
 import { formatDisplayDate } from '../../algorithms/dateHelpers';
 
 export default function ViewerDashboard() {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const [connections, setConnections] = useState<ConnectedAccount[]>([]);
   const [selectedOwner, setSelectedOwner] = useState<string | null>(null);
@@ -47,14 +49,14 @@ export default function ViewerDashboard() {
 
   if (connections.length === 0) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
         <EmptyState iconName="link" title="No connections" subtitle="You haven't been connected to anyone's Atossa account yet." />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Viewing Health Data</Text>
         <Text style={styles.subtitle}>You have been granted viewer access to the following accounts:</Text>
@@ -88,12 +90,14 @@ export default function ViewerDashboard() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: Spacing.md },
-  title: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginBottom: Spacing.xs },
-  subtitle: { fontSize: FontSize.md, color: Colors.textMuted, marginBottom: Spacing.xl },
-  sectionTitle: { fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.textPrimary, marginTop: Spacing.lg, marginBottom: Spacing.sm },
-  logCard: { marginBottom: Spacing.sm, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  logDate: { flex: 1, fontSize: FontSize.md, color: Colors.textPrimary },
-  severity: { fontSize: FontSize.sm, color: Colors.textMuted },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { padding: Spacing.md },
+    title: { fontSize: FontSize.xxl, color: c.textPrimary, marginBottom: Spacing.xs },
+    subtitle: { fontSize: FontSize.md, color: c.textMuted, marginBottom: Spacing.xl },
+    sectionTitle: { fontSize: FontSize.lg, color: c.textPrimary, marginTop: Spacing.lg, marginBottom: Spacing.sm },
+    logCard: { marginBottom: Spacing.sm, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+    logDate: { flex: 1, fontSize: FontSize.md, color: c.textPrimary },
+    severity: { fontSize: FontSize.sm, color: c.textMuted },
+  });
+}

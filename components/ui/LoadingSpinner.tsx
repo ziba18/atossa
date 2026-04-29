@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, Spacing } from '../../constants/theme';
 
 interface LoadingSpinnerProps {
@@ -8,7 +8,11 @@ interface LoadingSpinnerProps {
   fullScreen?: boolean;
 }
 
+import { Colors } from '../../constants/colors';
+
 export function LoadingSpinner({ message, fullScreen = false }: LoadingSpinnerProps) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   return (
     <View style={[styles.container, fullScreen && styles.fullScreen]}>
       <ActivityIndicator size="large" color={Colors.whiskey} />
@@ -17,13 +21,15 @@ export function LoadingSpinner({ message, fullScreen = false }: LoadingSpinnerPr
   );
 }
 
-const styles = StyleSheet.create({
-  container: { alignItems: 'center', justifyContent: 'center', padding: Spacing.xl },
-  fullScreen: { flex: 1, backgroundColor: Colors.background },
-  message: {
-    marginTop: Spacing.md,
-    fontSize: FontSize.md,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textSecondary,
-  },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { alignItems: 'center', justifyContent: 'center', padding: Spacing.xl },
+    fullScreen: { flex: 1, backgroundColor: c.background },
+    message: {
+      marginTop: Spacing.md,
+      fontSize: FontSize.md,
+      fontFamily: 'Jost_400Regular',
+      color: c.textSecondary,
+    },
+  });
+}

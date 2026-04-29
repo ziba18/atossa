@@ -5,7 +5,6 @@ export default function InsightsLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="health-trends" />
-      <Stack.Screen name="pcos-assessment" />
     </Stack>
   );
 }

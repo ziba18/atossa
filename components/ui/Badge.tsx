@@ -1,9 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
-import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
+import { FontSize, FontWeight, Radius } from '../../constants/theme';
 
-// Matches web badge variants exactly
 type BadgeVariant =
   | 'cherry'       // cherry-lighter bg, cherry-dark text
   | 'emerald'      // emerald-lighter bg, emerald-dark text
@@ -25,17 +23,17 @@ interface BadgeProps {
 }
 
 const VARIANT_STYLES: Record<BadgeVariant, { bg: string; color: string }> = {
-  cherry:     { bg: Colors.cherryLighter, color: '#1E030C' },
-  emerald:    { bg: Colors.emeraldLighter, color: Colors.emeraldDark },
-  whiskey:    { bg: Colors.whiskeyLighter, color: Colors.whiskeyDark },
+  cherry:     { bg: '#EBF5EB', color: '#1E030C' },
+  emerald:    { bg: '#E8F5EE', color: '#3D8055' },
+  whiskey:    { bg: '#FAF0F0', color: '#A85A5A' },
   neutral:    { bg: '#f3f4f6', color: '#374151' },
   danger:     { bg: '#fee2e2', color: '#991b1b' },
-  low:        { bg: Colors.emeraldLighter, color: Colors.emeraldDark },
-  moderate:   { bg: Colors.whiskeyLighter, color: Colors.whiskeyDark },
+  low:        { bg: '#E8F5EE', color: '#3D8055' },
+  moderate:   { bg: '#FAF0F0', color: '#A85A5A' },
   high:       { bg: '#fff7ed', color: '#c2410c' },
   very_high:  { bg: '#fee2e2', color: '#991b1b' },
   info:       { bg: '#eff6ff', color: '#1d4ed8' },
-  warning:    { bg: Colors.whiskeyLighter, color: Colors.whiskeyDark },
+  warning:    { bg: '#FAF0F0', color: '#A85A5A' },
   critical:   { bg: '#fff7ed', color: '#c2410c' },
   emergency:  { bg: '#fee2e2', color: '#991b1b' },
 };

@@ -9,6 +9,7 @@ import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { Colors } from '../../../constants/colors';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
 import type { AlertLog } from '../../../types/database';
 
@@ -39,14 +40,6 @@ const DEMO_ALERTS: Omit<AlertLog, 'id' | 'user_id' | 'metadata' | 'sent_to_conta
     created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    alert_type: 'pcos_risk',
-    severity: 'warning',
-    title: 'PCOS risk score increased',
-    body: 'Your PCOS risk score has risen to 52 based on recent cycle logs and symptoms. Review your Insights page and consider discussing this with a healthcare provider.',
-    is_read: true,
-    created_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
     alert_type: 'fertile_window',
     severity: 'info',
     title: 'Fertile window starts tomorrow',
@@ -65,6 +58,8 @@ function formatRelativeDate(iso: string) {
 }
 
 export default function NotificationsScreen() {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const { alerts, fetchAlerts, markAllRead } = useAlertStore();
 
@@ -75,7 +70,7 @@ export default function NotificationsScreen() {
   const unreadCount = displayAlerts.filter((a) => !a.is_read).length;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Alerts" showBack />
 
       {/* Mark all read */}
@@ -142,7 +137,7 @@ export default function NotificationsScreen() {
                 {item.body && <Text style={styles.alertBody}>{item.body}</Text>}
                 <Text style={styles.alertTime}>{formatRelativeDate(item.created_at)}</Text>
               </View>
-              {item.is_read && <Icon name="check" size={16} color={Colors.border} />}
+              {item.is_read && <Icon name="check" size={16} color={theme.border} />}
             </View>
           );
         }}
@@ -151,44 +146,26 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  markAllBtn: { marginHorizontal: Spacing.md, marginTop: Spacing.sm },
-  list: { padding: Spacing.md, paddingBottom: Spacing.xxl },
-
-  demoNotice: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm,
-    backgroundColor: '#E8F1FB', borderRadius: Radius.md,
-    padding: Spacing.md, marginBottom: Spacing.md,
-    borderWidth: 1, borderColor: '#BDD1F0',
-  },
-  demoText: { flex: 1, fontSize: FontSize.sm, color: '#1A4A8A', lineHeight: 20 },
-
-  summaryGrid: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.lg },
-  summaryCell: {
-    flex: 1, backgroundColor: Colors.surface,
-    borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border,
-    padding: Spacing.sm, alignItems: 'center',
-  },
-  summaryCount: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.textPrimary },
-  summaryBadge: { borderRadius: Radius.sm, paddingHorizontal: 6, paddingVertical: 2, marginTop: 4 },
-  summaryLabel: { fontSize: 10, fontWeight: FontWeight.semibold },
-
-  listTitle: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary, marginBottom: Spacing.sm },
-
-  alertRow: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm,
-    borderRadius: Radius.md, padding: Spacing.sm, marginBottom: Spacing.sm,
-    borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.surface,
-  },
-  alertIconBox: {
-    width: 36, height: 36, borderRadius: Radius.sm,
-    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  },
-  alertContent: { flex: 1 },
-  alertTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: 2 },
-  alertTitle: { fontSize: FontSize.sm, fontWeight: FontWeight.semibold, color: Colors.textSecondary, flex: 1 },
-  alertTitleUnread: { color: Colors.textPrimary },
-  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.cherry, flexShrink: 0 },
-  alertBody: { fontSize: FontSize.xs, color: Colors.textMuted, lineHeight: 18 },
-  alertTime: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 4 },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    markAllBtn: { marginHorizontal: Spacing.md, marginTop: Spacing.sm },
+    list: { padding: Spacing.md, paddingBottom: Spacing.xxl },
+    demoNotice: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm, backgroundColor: '#E8F1FB', borderRadius: Radius.md, padding: Spacing.md, marginBottom: Spacing.md, borderWidth: 1, borderColor: '#BDD1F0' },
+    demoText: { flex: 1, fontSize: FontSize.sm, color: '#1A4A8A', lineHeight: 20 },
+    summaryGrid: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.lg },
+    summaryCell: { flex: 1, backgroundColor: c.surface, borderRadius: Radius.md, borderWidth: 1, borderColor: c.border, padding: Spacing.sm, alignItems: 'center' },
+    summaryCount: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: c.textPrimary },
+    summaryBadge: { borderRadius: Radius.sm, paddingHorizontal: 6, paddingVertical: 2, marginTop: 4 },
+    summaryLabel: { fontSize: 10, fontWeight: FontWeight.semibold },
+    listTitle: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: c.textPrimary, marginBottom: Spacing.sm },
+    alertRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm, borderRadius: Radius.md, padding: Spacing.sm, marginBottom: Spacing.sm, borderWidth: 1, borderColor: c.border, backgroundColor: c.surface },
+    alertIconBox: { width: 36, height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+    alertContent: { flex: 1 },
+    alertTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: 2 },
+    alertTitle: { fontSize: FontSize.sm, fontWeight: FontWeight.semibold, color: c.textSecondary, flex: 1 },
+    alertTitleUnread: { color: c.textPrimary },
+    unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: c.cherry, flexShrink: 0 },
+    alertBody: { fontSize: FontSize.xs, color: c.textMuted, lineHeight: 18 },
+    alertTime: { fontSize: FontSize.xs, color: c.textMuted, marginTop: 4 },
+  });
+}

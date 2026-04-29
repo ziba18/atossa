@@ -11,10 +11,12 @@ import { Header } from '../../../components/layout/Header';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Icon } from '../../../components/ui/Icon';
 import type { EmergencyContact } from '../../../types/database';
-import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
+import { FontSize, Spacing } from '../../../constants/theme';
 
 export default function EmergencyContactsScreen() {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -58,7 +60,7 @@ export default function EmergencyContactsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Emergency Contacts" showBack />
       <View style={styles.emergencySection}>
         <EmergencyButton emergencyContacts={contacts} />
@@ -94,7 +96,7 @@ export default function EmergencyContactsScreen() {
                 {item.relationship && <Text style={styles.contactRel}>{item.relationship}</Text>}
               </View>
               <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteBtn}>
-                <Icon name="x" size={18} color={Colors.textMuted} />
+                <Icon name="x" size={18} color={theme.textMuted} />
               </TouchableOpacity>
             </View>
           </Card>
@@ -104,19 +106,21 @@ export default function EmergencyContactsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  emergencySection: { padding: Spacing.md, alignItems: 'center' },
-  list: { padding: Spacing.md },
-  addBtn: { marginBottom: Spacing.md },
-  form: { marginBottom: Spacing.md, gap: Spacing.xs },
-  formTitle: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  contactCard: { marginBottom: Spacing.sm },
-  contactRow: { flexDirection: 'row', alignItems: 'center' },
-  contactInfo: { flex: 1 },
-  contactNameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  contactName: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary },
-  primaryBadge: { fontSize: FontSize.xs, color: Colors.cherry, fontWeight: FontWeight.bold },
-  contactPhone: { fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: 2 },
-  contactRel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2 },
-  deleteBtn: { padding: Spacing.sm },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    emergencySection: { padding: Spacing.md, alignItems: 'center' },
+    list: { padding: Spacing.md },
+    addBtn: { marginBottom: Spacing.md },
+    form: { marginBottom: Spacing.md, gap: Spacing.xs },
+    formTitle: { fontSize: FontSize.md, color: c.textPrimary, marginBottom: Spacing.sm },
+    contactCard: { marginBottom: Spacing.sm },
+    contactRow: { flexDirection: 'row', alignItems: 'center' },
+    contactInfo: { flex: 1 },
+    contactNameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+    contactName: { fontSize: FontSize.md, color: c.textPrimary },
+    primaryBadge: { fontSize: FontSize.xs, color: c.cherry },
+    contactPhone: { fontSize: FontSize.sm, color: c.textSecondary, marginTop: 2 },
+    contactRel: { fontSize: FontSize.xs, color: c.textMuted, marginTop: 2 },
+    deleteBtn: { padding: Spacing.sm },
+  });
+}

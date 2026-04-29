@@ -12,8 +12,8 @@ import { Button } from '../../../components/ui/Button';
 import { Header } from '../../../components/layout/Header';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
 import { FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { today } from '../../../algorithms/dateHelpers';
 import { BodyPainMap, type PainEntry } from '../../../components/tracking/BodyPainMap';
 
@@ -25,7 +25,7 @@ const SYMPTOM_CATEGORIES = [
   {
     key: 'cycle',
     label: 'Cycle',
-    color: Colors.cherry,
+    color: '#4E9E5A',
     symptoms: [
       { value: 'cramps',            label: 'Cramps' },
       { value: 'bloating',          label: 'Bloating' },
@@ -39,7 +39,7 @@ const SYMPTOM_CATEGORIES = [
   {
     key: 'hormonal',
     label: 'Hormonal / PCOS',
-    color: Colors.forest,
+    color: '#4E9E5A',
     symptoms: [
       { value: 'acne',                  label: 'Acne' },
       { value: 'hair_loss',             label: 'Hair Loss' },
@@ -53,7 +53,7 @@ const SYMPTOM_CATEGORIES = [
   {
     key: 'energy',
     label: 'Energy & Pain',
-    color: Colors.whiskeyDark,
+    color: '#A85A5A',
     symptoms: [
       { value: 'fatigue',         label: 'Fatigue' },
       { value: 'extreme_fatigue', label: 'Extreme Fatigue' },
@@ -67,7 +67,7 @@ const SYMPTOM_CATEGORIES = [
   {
     key: 'digestive',
     label: 'Digestive',
-    color: Colors.emeraldDark,
+    color: '#3D8055',
     symptoms: [
       { value: 'constipation',    label: 'Constipation' },
       { value: 'diarrhea',        label: 'Diarrhea' },
@@ -142,6 +142,8 @@ interface SymptomEntry {
 // ── Screen ────────────────────────────────────────────────────────────────────
 export default function LogHealthScreen() {
   const router = useRouter();
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
 
   const [page, setPage] = useState(0);
@@ -441,7 +443,7 @@ export default function LogHealthScreen() {
                 start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                 style={styles.banner}
               >
-                <Icon name="pill" size={28} color={Colors.white} />
+                <Icon name="pill" size={28} color="#FFFFFF" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.bannerTitle}>Medications</Text>
                   <Text style={styles.bannerDesc}>Log any medications or supplements taken today</Text>
@@ -456,7 +458,7 @@ export default function LogHealthScreen() {
               <ScrollView contentContainerStyle={styles.pageContent} showsVerticalScrollIndicator={false} nestedScrollEnabled>
                 {medications.length === 0 && !showMedForm ? (
                   <View style={styles.emptyCard}>
-                    <Icon name="leaf" size={44} color={Colors.textMuted} />
+                    <Icon name="leaf" size={44} color={theme.textMuted} />
                     <Text style={styles.emptyTitle}>No medications yet</Text>
                     <Text style={styles.emptySubtitle}>Tap the button below to add one</Text>
                   </View>
@@ -464,7 +466,7 @@ export default function LogHealthScreen() {
                   medications.map((med, idx) => (
                     <View key={idx} style={styles.medItem}>
                       <View style={styles.medIcon}>
-                        <Icon name="pill" size={16} color={Colors.cherry} />
+                        <Icon name="pill" size={16} color={theme.cherry} />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.medName}>{med.name}</Text>
@@ -477,7 +479,7 @@ export default function LogHealthScreen() {
                         onPress={() => setMedications((p) => p.filter((_, i) => i !== idx))}
                         style={styles.removeBtn}
                       >
-                        <Icon name="x" size={16} color={Colors.textMuted} />
+                        <Icon name="x" size={16} color={theme.textMuted} />
                       </TouchableOpacity>
                     </View>
                   ))
@@ -557,7 +559,7 @@ export default function LogHealthScreen() {
                 start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                 style={styles.banner}
               >
-                <Icon name="activity" size={28} color={Colors.white} />
+                <Icon name="activity" size={28} color="#FFFFFF" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.bannerTitle}>Symptoms</Text>
                   <Text style={styles.bannerDesc}>Tap body regions or select symptoms below</Text>
@@ -645,7 +647,7 @@ export default function LogHealthScreen() {
                 start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                 style={styles.banner}
               >
-                <Icon name="file-text" size={28} color={Colors.white} />
+                <Icon name="file-text" size={28} color="#FFFFFF" />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.bannerTitle}>Review & Save</Text>
                   <Text style={styles.bannerDesc}>
@@ -659,7 +661,7 @@ export default function LogHealthScreen() {
               <ScrollView contentContainerStyle={styles.pageContent} showsVerticalScrollIndicator={false} nestedScrollEnabled>
                 {summaryItems.length === 0 ? (
                   <View style={styles.emptyCard}>
-                    <Icon name="flower" size={44} color={Colors.textMuted} />
+                    <Icon name="flower" size={44} color={theme.textMuted} />
                     <Text style={styles.emptyTitle}>Nothing logged yet</Text>
                     <Text style={styles.emptySubtitle}>Swipe left to go back and fill in the sections</Text>
                   </View>
@@ -667,7 +669,7 @@ export default function LogHealthScreen() {
                   summaryItems.map((item) => (
                     <View key={item.label} style={styles.summaryRow}>
                       <View style={styles.summaryIcon}>
-                        <Icon name={item.icon} size={18} color={Colors.cherry} />
+                        <Icon name={item.icon} size={18} color={theme.cherry} />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.summaryLabel}>
@@ -676,7 +678,7 @@ export default function LogHealthScreen() {
                         <Text style={styles.summaryText} numberOfLines={2}>{item.text}</Text>
                       </View>
                       <View style={styles.summaryCheck}>
-                        <Icon name="check" size={14} color={Colors.emeraldDark} />
+                        <Icon name="check" size={14} color="#3D8055" />
                       </View>
                     </View>
                   ))
@@ -791,7 +793,7 @@ export default function LogHealthScreen() {
               value={modalNotes}
               onChangeText={setModalNotes}
               placeholder="When did it start, what makes it better or worse…"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={theme.textMuted}
               multiline
               numberOfLines={3}
               style={styles.modalNotesInput}
@@ -822,256 +824,253 @@ export default function LogHealthScreen() {
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.background },
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    screen: { flex: 1, backgroundColor: c.background },
 
-  dotsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 44,
-    gap: 8,
-  },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.border },
-  dotPast: { backgroundColor: Colors.gold },
-  dotActive: { width: 24, backgroundColor: Colors.cherry },
+    dotsRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: 44,
+      gap: 8,
+    },
+    dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: c.border },
+    dotPast: { backgroundColor: c.gold },
+    dotActive: { width: 24, backgroundColor: c.cherry },
 
-  page: { backgroundColor: Colors.background, overflow: 'hidden' },
+    page: { backgroundColor: c.background, overflow: 'hidden' },
 
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    gap: Spacing.md,
-  },
-  bannerTitle: {
-    fontSize: 22,
-    fontFamily: 'CormorantGaramond_600SemiBold',
-    color: Colors.white,
-    letterSpacing: 0.3,
-  },
-  bannerDesc: {
-    fontSize: FontSize.xs,
-    fontFamily: 'Jost_400Regular',
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 2,
-  },
-  countBadge: {
-    width: 26, height: 26, borderRadius: 13,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)',
-  },
-  countBadgeText: { fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold', color: Colors.white },
+    banner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.md,
+      gap: Spacing.md,
+    },
+    bannerTitle: {
+      fontSize: 22,
+      fontFamily: 'CormorantGaramond_600SemiBold',
+      color: '#FFFFFF',
+      letterSpacing: 0.3,
+    },
+    bannerDesc: {
+      fontSize: FontSize.xs,
+      fontFamily: 'Jost_400Regular',
+      color: 'rgba(255,255,255,0.8)',
+      marginTop: 2,
+    },
+    countBadge: {
+      width: 26, height: 26, borderRadius: 13,
+      backgroundColor: 'rgba(255,255,255,0.25)',
+      alignItems: 'center', justifyContent: 'center',
+      borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)',
+    },
+    countBadgeText: { fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
 
-  pageContent: { padding: Spacing.md, paddingBottom: Spacing.xl },
+    pageContent: { padding: Spacing.md, paddingBottom: Spacing.xl },
 
-  emptyCard: { alignItems: 'center', paddingVertical: Spacing.xxl },
-  emptyTitle: {
-    fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold',
-    color: Colors.textPrimary, marginBottom: Spacing.xs, marginTop: Spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: FontSize.sm, fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted, textAlign: 'center', lineHeight: 20,
-  },
+    emptyCard: { alignItems: 'center', paddingVertical: Spacing.xxl },
+    emptyTitle: {
+      fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold',
+      color: c.textPrimary, marginBottom: Spacing.xs, marginTop: Spacing.sm,
+    },
+    emptySubtitle: {
+      fontSize: FontSize.sm, fontFamily: 'Jost_400Regular',
+      color: c.textMuted, textAlign: 'center', lineHeight: 20,
+    },
 
-  // Medications
-  medItem: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.surface, borderRadius: Radius.md,
-    borderWidth: 1, borderColor: Colors.border,
-    padding: Spacing.sm, marginBottom: Spacing.xs, gap: Spacing.sm,
-  },
-  medIcon: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: Colors.cherryLighter,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  medName: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
-  medDetail: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
-  removeBtn: { padding: Spacing.xs },
-  medForm: {
-    backgroundColor: Colors.surface, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: Colors.border,
-    padding: Spacing.md, marginBottom: Spacing.md,
-  },
-  formTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.md },
-  unitLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textSecondary, marginBottom: Spacing.xs },
-  unitChip: {
-    paddingHorizontal: Spacing.sm, paddingVertical: 6,
-    borderRadius: Radius.sm, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.surface,
-  },
-  unitChipActive: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
-  unitChipText: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
-  unitChipTextActive: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
-  suggestionsBox: {
-    backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.border,
-    borderRadius: Radius.md, marginTop: -Spacing.sm, marginBottom: Spacing.sm, overflow: 'hidden',
-  },
-  suggestionItem: {
-    paddingHorizontal: Spacing.md, paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-  },
-  suggestionItemText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textPrimary },
-  addMedBtn: {
-    borderWidth: 1.5, borderColor: Colors.cherry, borderRadius: Radius.lg,
-    borderStyle: 'dashed', paddingVertical: Spacing.md, alignItems: 'center', marginTop: Spacing.sm,
-  },
-  addMedBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+    medItem: {
+      flexDirection: 'row', alignItems: 'center',
+      backgroundColor: c.surface, borderRadius: Radius.md,
+      borderWidth: 1, borderColor: c.border,
+      padding: Spacing.sm, marginBottom: Spacing.xs, gap: Spacing.sm,
+    },
+    medIcon: {
+      width: 36, height: 36, borderRadius: 18,
+      backgroundColor: c.cherryLighter,
+      alignItems: 'center', justifyContent: 'center',
+    },
+    medName: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
+    medDetail: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
+    removeBtn: { padding: Spacing.xs },
+    medForm: {
+      backgroundColor: c.surface, borderRadius: Radius.lg,
+      borderWidth: 1, borderColor: c.border,
+      padding: Spacing.md, marginBottom: Spacing.md,
+    },
+    formTitle: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.md },
+    unitLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textSecondary, marginBottom: Spacing.xs },
+    unitChip: {
+      paddingHorizontal: Spacing.sm, paddingVertical: 6,
+      borderRadius: Radius.sm, borderWidth: 1, borderColor: c.border, backgroundColor: c.surface,
+    },
+    unitChipActive: { backgroundColor: c.cherry, borderColor: c.cherry },
+    unitChipText: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textSecondary },
+    unitChipTextActive: { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold' },
+    suggestionsBox: {
+      backgroundColor: c.surface, borderWidth: 1, borderColor: c.border,
+      borderRadius: Radius.md, marginTop: -Spacing.sm, marginBottom: Spacing.sm, overflow: 'hidden',
+    },
+    suggestionItem: {
+      paddingHorizontal: Spacing.md, paddingVertical: 10,
+      borderBottomWidth: 1, borderBottomColor: c.border,
+    },
+    suggestionItemText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textPrimary },
+    addMedBtn: {
+      borderWidth: 1.5, borderColor: c.cherry, borderRadius: Radius.lg,
+      borderStyle: 'dashed', paddingVertical: Spacing.md, alignItems: 'center', marginTop: Spacing.sm,
+    },
+    addMedBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.cherry },
 
-  // Symptoms page
-  bodySection: {
-    backgroundColor: Colors.surface, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: Colors.border,
-    padding: Spacing.md, marginBottom: Spacing.md,
-  },
-  bodySectionTitle: {
-    fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary,
-  },
-  bodySectionSub: {
-    fontSize: FontSize.xs, fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted, marginTop: 2, marginBottom: Spacing.md,
-  },
-  sectionDivider: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    marginBottom: Spacing.xs,
-  },
-  dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
-  dividerLabel: {
-    fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
-    color: Colors.textMuted, letterSpacing: 0.8,
-  },
-  dividerSub: {
-    fontSize: FontSize.xs, fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted, marginBottom: Spacing.md, textAlign: 'center',
-  },
-  symptomCategory: { marginBottom: Spacing.lg },
-  catLabelRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.sm },
-  catDot: { width: 8, height: 8, borderRadius: 4 },
-  catLabel: {
-    fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
-    color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, flex: 1,
-  },
-  catCountPill: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
-  catCountText: { fontSize: 11, fontFamily: 'Jost_600SemiBold' },
+    bodySection: {
+      backgroundColor: c.surface, borderRadius: Radius.lg,
+      borderWidth: 1, borderColor: c.border,
+      padding: Spacing.md, marginBottom: Spacing.md,
+    },
+    bodySectionTitle: {
+      fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary,
+    },
+    bodySectionSub: {
+      fontSize: FontSize.xs, fontFamily: 'Jost_400Regular',
+      color: c.textMuted, marginTop: 2, marginBottom: Spacing.md,
+    },
+    sectionDivider: {
+      flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+      marginBottom: Spacing.xs,
+    },
+    dividerLine: { flex: 1, height: 1, backgroundColor: c.border },
+    dividerLabel: {
+      fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
+      color: c.textMuted, letterSpacing: 0.8,
+    },
+    dividerSub: {
+      fontSize: FontSize.xs, fontFamily: 'Jost_400Regular',
+      color: c.textMuted, marginBottom: Spacing.md, textAlign: 'center',
+    },
+    symptomCategory: { marginBottom: Spacing.lg },
+    catLabelRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.sm },
+    catDot: { width: 8, height: 8, borderRadius: 4 },
+    catLabel: {
+      fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
+      color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, flex: 1,
+    },
+    catCountPill: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
+    catCountText: { fontSize: 11, fontFamily: 'Jost_600SemiBold' },
 
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs },
-  chip: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: Spacing.md, paddingVertical: 9,
-    borderRadius: Radius.full, borderWidth: 1.5,
-    borderColor: Colors.border, backgroundColor: Colors.surface,
-    gap: 5,
-  },
-  chipText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
-  chipTextWhite: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
-  severityBadge: {
-    width: 18, height: 18, borderRadius: 9,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  severityBadgeText: { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: Colors.white },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs },
+    chip: {
+      flexDirection: 'row', alignItems: 'center',
+      paddingHorizontal: Spacing.md, paddingVertical: 9,
+      borderRadius: Radius.full, borderWidth: 1.5,
+      borderColor: c.border, backgroundColor: c.surface,
+      gap: 5,
+    },
+    chipText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textSecondary },
+    chipTextWhite: { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold' },
+    severityBadge: {
+      width: 18, height: 18, borderRadius: 9,
+      backgroundColor: 'rgba(255,255,255,0.3)',
+      alignItems: 'center', justifyContent: 'center',
+    },
+    severityBadgeText: { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
 
-  // Review
-  summaryRow: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.surface, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: Colors.border,
-    padding: Spacing.md, marginBottom: Spacing.sm, gap: Spacing.sm,
-  },
-  summaryIcon: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: Colors.cherryLighter,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  summaryLabel: {
-    fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
-    color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5,
-  },
-  summaryText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textPrimary, marginTop: 2 },
-  summaryCheck: {
-    width: 24, height: 24, borderRadius: 12,
-    backgroundColor: Colors.emeraldLighter,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  notesInput: { marginTop: Spacing.sm },
-  saveBtn: { marginTop: Spacing.md },
+    summaryRow: {
+      flexDirection: 'row', alignItems: 'center',
+      backgroundColor: c.surface, borderRadius: Radius.lg,
+      borderWidth: 1, borderColor: c.border,
+      padding: Spacing.md, marginBottom: Spacing.sm, gap: Spacing.sm,
+    },
+    summaryIcon: {
+      width: 40, height: 40, borderRadius: 20,
+      backgroundColor: c.cherryLighter,
+      alignItems: 'center', justifyContent: 'center',
+    },
+    summaryLabel: {
+      fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
+      color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5,
+    },
+    summaryText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textPrimary, marginTop: 2 },
+    summaryCheck: {
+      width: 24, height: 24, borderRadius: 12,
+      backgroundColor: c.emeraldLighter,
+      alignItems: 'center', justifyContent: 'center',
+    },
+    notesInput: { marginTop: Spacing.sm },
+    saveBtn: { marginTop: Spacing.md },
 
-  // Nav
-  navRow: {
-    height: 64, flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'space-between', paddingHorizontal: Spacing.md,
-    borderTopWidth: 1, borderTopColor: Colors.border,
-    backgroundColor: Colors.surface,
-  },
-  navBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, minWidth: 80 },
-  navBtnDisabled: { opacity: 0.3 },
-  navBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textSecondary },
-  navBtnTextDisabled: { color: Colors.textMuted },
-  navBtnNext: {
-    paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.cherry, borderRadius: Radius.full, minWidth: 80, alignItems: 'center',
-  },
-  navBtnNextText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.white },
-  pageCounter: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
-  pageCounterOf: { fontFamily: 'Jost_400Regular', color: Colors.textMuted },
+    navRow: {
+      height: 64, flexDirection: 'row', alignItems: 'center',
+      justifyContent: 'space-between', paddingHorizontal: Spacing.md,
+      borderTopWidth: 1, borderTopColor: c.border,
+      backgroundColor: c.surface,
+    },
+    navBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, minWidth: 80 },
+    navBtnDisabled: { opacity: 0.3 },
+    navBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.textSecondary },
+    navBtnTextDisabled: { color: c.textMuted },
+    navBtnNext: {
+      paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md,
+      backgroundColor: c.cherry, borderRadius: Radius.full, minWidth: 80, alignItems: 'center',
+    },
+    navBtnNextText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
+    pageCounter: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted },
+    pageCounterOf: { fontFamily: 'Jost_400Regular', color: c.textMuted },
 
-  // Symptom modal
-  modalBackdrop: { flex: 1, backgroundColor: 'rgba(42,28,24,0.4)' },
-  modalSheet: {
-    backgroundColor: Colors.surface,
-    borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.sm,
-    maxHeight: '80%',
-    ...Shadow.lg,
-  },
-  modalHandle: {
-    width: 40, height: 4, borderRadius: 2,
-    backgroundColor: Colors.border, alignSelf: 'center', marginBottom: Spacing.md,
-  },
-  modalHeader: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'flex-start', marginBottom: Spacing.md,
-  },
-  modalSymptomDot: { width: 8, height: 8, borderRadius: 4, marginBottom: 4 },
-  modalTitle: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary },
-  modalSub: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
-  modalCloseBtn: {
-    width: 30, height: 30, borderRadius: 15,
-    backgroundColor: Colors.surfaceElevated,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  modalCloseTxt: { fontSize: FontSize.sm, color: Colors.textMuted },
-  modalSectionLabel: {
-    fontSize: 10, fontFamily: 'Jost_600SemiBold',
-    color: Colors.textMuted, letterSpacing: 1.2,
-    marginBottom: Spacing.sm, marginTop: Spacing.md,
-  },
-  severityRow: { flexDirection: 'row', gap: 5, flexWrap: 'wrap' },
-  severityDot: {
-    width: 34, height: 34, borderRadius: 17,
-    borderWidth: 1.5, alignItems: 'center', justifyContent: 'center',
-  },
-  severityNum: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold' },
-  severityDesc: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', marginTop: Spacing.sm },
-  modalNotesInput: {
-    backgroundColor: Colors.surfaceElevated,
-    borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border,
-    padding: Spacing.md, fontSize: FontSize.sm, fontFamily: 'Jost_400Regular',
-    color: Colors.textPrimary, minHeight: 80, textAlignVertical: 'top',
-  },
-  modalActions: { gap: Spacing.sm, marginTop: Spacing.lg },
-  modalSaveBtn: {
-    borderRadius: Radius.full, paddingVertical: Spacing.md, alignItems: 'center',
-  },
-  modalSaveTxt: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.white },
-  modalRemoveBtn: {
-    borderRadius: Radius.full, paddingVertical: Spacing.sm,
-    alignItems: 'center', borderWidth: 1, borderColor: Colors.border,
-    backgroundColor: Colors.surfaceElevated,
-  },
-  modalRemoveTxt: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textMuted },
-});
+    modalBackdrop: { flex: 1, backgroundColor: 'rgba(42,28,24,0.4)' },
+    modalSheet: {
+      backgroundColor: c.surface,
+      borderTopLeftRadius: 24, borderTopRightRadius: 24,
+      paddingHorizontal: Spacing.lg,
+      paddingTop: Spacing.sm,
+      maxHeight: '80%',
+      ...Shadow.lg,
+    },
+    modalHandle: {
+      width: 40, height: 4, borderRadius: 2,
+      backgroundColor: c.border, alignSelf: 'center', marginBottom: Spacing.md,
+    },
+    modalHeader: {
+      flexDirection: 'row', justifyContent: 'space-between',
+      alignItems: 'flex-start', marginBottom: Spacing.md,
+    },
+    modalSymptomDot: { width: 8, height: 8, borderRadius: 4, marginBottom: 4 },
+    modalTitle: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    modalSub: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
+    modalCloseBtn: {
+      width: 30, height: 30, borderRadius: 15,
+      backgroundColor: c.surfaceElevated,
+      alignItems: 'center', justifyContent: 'center',
+    },
+    modalCloseTxt: { fontSize: FontSize.sm, color: c.textMuted },
+    modalSectionLabel: {
+      fontSize: 10, fontFamily: 'Jost_600SemiBold',
+      color: c.textMuted, letterSpacing: 1.2,
+      marginBottom: Spacing.sm, marginTop: Spacing.md,
+    },
+    severityRow: { flexDirection: 'row', gap: 5, flexWrap: 'wrap' },
+    severityDot: {
+      width: 34, height: 34, borderRadius: 17,
+      borderWidth: 1.5, alignItems: 'center', justifyContent: 'center',
+    },
+    severityNum: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold' },
+    severityDesc: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', marginTop: Spacing.sm },
+    modalNotesInput: {
+      backgroundColor: c.surfaceElevated,
+      borderRadius: Radius.md, borderWidth: 1, borderColor: c.border,
+      padding: Spacing.md, fontSize: FontSize.sm, fontFamily: 'Jost_400Regular',
+      color: c.textPrimary, minHeight: 80, textAlignVertical: 'top',
+    },
+    modalActions: { gap: Spacing.sm, marginTop: Spacing.lg },
+    modalSaveBtn: {
+      borderRadius: Radius.full, paddingVertical: Spacing.md, alignItems: 'center',
+    },
+    modalSaveTxt: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
+    modalRemoveBtn: {
+      borderRadius: Radius.full, paddingVertical: Spacing.sm,
+      alignItems: 'center', borderWidth: 1, borderColor: c.border,
+      backgroundColor: c.surfaceElevated,
+    },
+    modalRemoveTxt: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textMuted },
+  });
+}

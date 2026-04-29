@@ -15,8 +15,8 @@ import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 import { Header } from '../../../components/layout/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
 import { FontSize, Spacing, Radius } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { today } from '../../../algorithms/dateHelpers';
 
 // ─── Category icons (inline SVG paths) ───────────────────────────────────────
@@ -85,8 +85,8 @@ const CATEGORIES = [
     key: 'cycle',
     label: 'Cycle',
     description: 'Menstrual & bleeding symptoms',
-    color: Colors.cherry,
-    bg: Colors.cherryLighter,
+    color: '#4E9E5A',
+    bg: '#EBF5EB',
     Icon: CycleIcon,
     symptoms: [
       { value: 'cramps',           label: 'Cramps' },
@@ -104,8 +104,8 @@ const CATEGORIES = [
     key: 'hormonal',
     label: 'Hormonal / PCOS',
     description: 'Hormonal imbalance & PCOS signs',
-    color: Colors.forest,
-    bg: Colors.forestLighter,
+    color: '#4E9E5A',
+    bg: '#EBF5EB',
     Icon: HormonalIcon,
     symptoms: [
       { value: 'acne',                  label: 'Acne' },
@@ -123,8 +123,8 @@ const CATEGORIES = [
     key: 'pain',
     label: 'Pain & Energy',
     description: 'Pain, fatigue and energy levels',
-    color: Colors.whiskeyDark,
-    bg: Colors.whiskeyLighter,
+    color: '#A85A5A',
+    bg: '#FAF0F0',
     Icon: PainIcon,
     symptoms: [
       { value: 'fatigue',         label: 'Fatigue' },
@@ -142,8 +142,8 @@ const CATEGORIES = [
     key: 'digestive',
     label: 'Digestive',
     description: 'Gut and digestive symptoms',
-    color: Colors.emeraldDark,
-    bg: Colors.emeraldLighter,
+    color: '#3D8055',
+    bg: '#E8F5EE',
     Icon: DigestiveIcon,
     symptoms: [
       { value: 'nausea',            label: 'Nausea' },
@@ -198,6 +198,8 @@ type SymptomValue = typeof CATEGORIES[number]['symptoms'][number]['value'];
 // ─── Screen ───────────────────────────────────────────────────────────────────
 export default function LogSymptomsScreen() {
   const router = useRouter();
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
 
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -355,134 +357,135 @@ export default function LogSymptomsScreen() {
   );
 }
 
-// ─── Styles ──────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Colors.background },
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    screen: { flex: 1, backgroundColor: c.background },
 
-  selectionBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    backgroundColor: Colors.cherryLighter,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  selectionBarText: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.cherry,
-  },
-  selectionBarClear: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.cherry,
-    textDecorationLine: 'underline',
-  },
+    selectionBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.sm,
+      backgroundColor: c.cherryLighter,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    selectionBarText: {
+      fontSize: FontSize.sm,
+      fontFamily: 'Jost_600SemiBold',
+      color: c.cherry,
+    },
+    selectionBarClear: {
+      fontSize: FontSize.sm,
+      fontFamily: 'Jost_400Regular',
+      color: c.cherry,
+      textDecorationLine: 'underline',
+    },
 
-  content: {
-    padding: Spacing.md,
-    paddingBottom: Spacing.xxl,
-    gap: Spacing.sm,
-  },
+    content: {
+      padding: Spacing.md,
+      paddingBottom: Spacing.xxl,
+      gap: Spacing.sm,
+    },
 
-  categoryCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    overflow: 'hidden',
-  },
+    categoryCard: {
+      backgroundColor: c.surface,
+      borderRadius: Radius.lg,
+      borderWidth: 1,
+      borderColor: c.border,
+      overflow: 'hidden',
+    },
 
-  categoryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Spacing.md,
-    gap: Spacing.md,
-  },
+    categoryHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: Spacing.md,
+      gap: Spacing.md,
+    },
 
-  iconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    iconWrap: {
+      width: 44,
+      height: 44,
+      borderRadius: Radius.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
 
-  categoryInfo: { flex: 1 },
-  categoryLabel: {
-    fontSize: FontSize.md,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textPrimary,
-  },
-  categoryDesc: {
-    fontSize: FontSize.xs,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
+    categoryInfo: { flex: 1 },
+    categoryLabel: {
+      fontSize: FontSize.md,
+      fontFamily: 'Jost_600SemiBold',
+      color: c.textPrimary,
+    },
+    categoryDesc: {
+      fontSize: FontSize.xs,
+      fontFamily: 'Jost_400Regular',
+      color: c.textMuted,
+      marginTop: 2,
+    },
 
-  categoryRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  countBadge: {
-    minWidth: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 6,
-  },
-  countBadgeText: {
-    fontSize: 11,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.white,
-  },
-  chevron: {
-    fontSize: 11,
-    fontFamily: 'Jost_600SemiBold',
-  },
+    categoryRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.xs,
+    },
+    countBadge: {
+      minWidth: 22,
+      height: 22,
+      borderRadius: 11,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 6,
+    },
+    countBadgeText: {
+      fontSize: 11,
+      fontFamily: 'Jost_600SemiBold',
+      color: '#FFFFFF',
+    },
+    chevron: {
+      fontSize: 11,
+      fontFamily: 'Jost_600SemiBold',
+    },
 
-  chipsWrap: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingTop: Spacing.md,
-  },
-  chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.xs,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 8,
-    borderRadius: Radius.full,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    backgroundColor: Colors.background,
-  },
-  chipCheck: {
-    fontSize: FontSize.xs,
-    color: Colors.white,
-    fontFamily: 'Jost_600SemiBold',
-  },
-  chipText: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textSecondary,
-  },
-  chipTextActive: {
-    color: Colors.white,
-    fontFamily: 'Jost_600SemiBold',
-  },
+    chipsWrap: {
+      paddingHorizontal: Spacing.md,
+      paddingBottom: Spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+      paddingTop: Spacing.md,
+    },
+    chips: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: Spacing.xs,
+    },
+    chip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: Spacing.md,
+      paddingVertical: 8,
+      borderRadius: Radius.full,
+      borderWidth: 1.5,
+      borderColor: c.border,
+      backgroundColor: c.background,
+    },
+    chipCheck: {
+      fontSize: FontSize.xs,
+      color: '#FFFFFF',
+      fontFamily: 'Jost_600SemiBold',
+    },
+    chipText: {
+      fontSize: FontSize.sm,
+      fontFamily: 'Jost_400Regular',
+      color: c.textSecondary,
+    },
+    chipTextActive: {
+      color: '#FFFFFF',
+      fontFamily: 'Jost_600SemiBold',
+    },
 
-  notesSection: { marginTop: Spacing.xs },
-  saveBtn: { marginTop: Spacing.md },
-});
+    notesSection: { marginTop: Spacing.xs },
+    saveBtn: { marginTop: Spacing.md },
+  });
+}

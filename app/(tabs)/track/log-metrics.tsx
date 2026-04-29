@@ -8,8 +8,8 @@ import { Input } from '../../../components/ui/Input';
 import { Header } from '../../../components/layout/Header';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
+import { FontSize, Spacing } from '../../../constants/theme';
 
 const METRIC_OPTIONS: { type: string; label: string; unit: string; icon: IconName; placeholder: string }[] = [
   { type: 'weight', label: 'Weight', unit: 'kg', icon: 'trending-up', placeholder: '60.5' },
@@ -24,6 +24,8 @@ const METRIC_OPTIONS: { type: string; label: string; unit: string; icon: IconNam
 
 export default function LogMetricsScreen() {
   const router = useRouter();
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const [values, setValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -48,14 +50,14 @@ export default function LogMetricsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Log Health Metrics" showBack />
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.subtitle}>Enter any metrics you've measured. Leave blank to skip.</Text>
         {METRIC_OPTIONS.map((m) => (
           <View key={m.type} style={styles.metricRow}>
             <View style={styles.metricIcon}>
-              <Icon name={m.icon} size={24} color={Colors.cherry} />
+              <Icon name={m.icon} size={24} color={theme.cherry} />
             </View>
             <View style={styles.metricInput}>
               <Input
@@ -74,11 +76,13 @@ export default function LogMetricsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: Spacing.md },
-  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-  metricRow: { flexDirection: 'row', alignItems: 'flex-end', gap: Spacing.sm },
-  metricIcon: { marginBottom: Spacing.md + 4 },
-  metricInput: { flex: 1 },
-  btn: { marginTop: Spacing.md },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { padding: Spacing.md },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    metricRow: { flexDirection: 'row', alignItems: 'flex-end', gap: Spacing.sm },
+    metricIcon: { marginBottom: Spacing.md + 4 },
+    metricInput: { flex: 1 },
+    btn: { marginTop: Spacing.md },
+  });
+}

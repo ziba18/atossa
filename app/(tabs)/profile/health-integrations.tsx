@@ -7,11 +7,14 @@ import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
 import { Header } from '../../../components/layout/Header';
 import { Icon } from '../../../components/ui/Icon';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
 export default function HealthIntegrationsScreen() {
   const user = useAuthStore((s) => s.user);
+  const theme = useColors();
+  const styles = createStyles(theme);
   const [healthKitConnected, setHealthKitConnected] = useState(false);
   const [syncing, setSyncing] = useState(false);
 
@@ -36,7 +39,7 @@ export default function HealthIntegrationsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Health Integrations" showBack />
       <View style={styles.container}>
         {Platform.OS === 'ios' && (
@@ -54,7 +57,7 @@ export default function HealthIntegrationsScreen() {
               <Button label="Connect Apple Health" onPress={connectHealthKit} fullWidth />
             )}
             <View style={styles.noteRow}>
-              <Icon name="triangle-alert" size={12} color={Colors.textMuted} />
+              <Icon name="triangle-alert" size={12} color={theme.textMuted} />
               <Text style={styles.note}>Requires EAS Build (not Expo Go)</Text>
             </View>
           </Card>
@@ -71,7 +74,7 @@ export default function HealthIntegrationsScreen() {
             </Text>
             <Button label="Connect Google Fit" onPress={() => Alert.alert('Coming Soon', 'Google Fit integration requires EAS Build.')} fullWidth />
             <View style={styles.noteRow}>
-              <Icon name="triangle-alert" size={12} color={Colors.textMuted} />
+              <Icon name="triangle-alert" size={12} color={theme.textMuted} />
               <Text style={styles.note}>Requires EAS Build (not Expo Go)</Text>
             </View>
           </Card>
@@ -89,13 +92,16 @@ export default function HealthIntegrationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: Spacing.md },
-  card: { marginBottom: Spacing.md, gap: Spacing.sm },
-  manualCard: { backgroundColor: Colors.emeraldLighter, borderColor: Colors.emerald },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
-  cardTitle: { fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.textPrimary },
-  cardDesc: { fontSize: FontSize.md, color: Colors.textSecondary, lineHeight: 22 },
-  noteRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  note: { fontSize: FontSize.xs, color: Colors.textMuted, fontStyle: 'italic' },
-});
+function createStyles(c: AppColors) {
+  const Colors = c;
+  return StyleSheet.create({
+    container: { padding: Spacing.md },
+    card: { marginBottom: Spacing.md, gap: Spacing.sm },
+    manualCard: { backgroundColor: Colors.emeraldLighter, borderColor: Colors.emerald },
+    cardHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
+    cardTitle: { fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.textPrimary },
+    cardDesc: { fontSize: FontSize.md, color: Colors.textSecondary, lineHeight: 22 },
+    noteRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    note: { fontSize: FontSize.xs, color: Colors.textMuted, fontStyle: 'italic' },
+  });
+}

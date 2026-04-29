@@ -6,6 +6,7 @@ import { useUIStore } from '../../../stores/uiStore';
 import { supabase } from '../../../lib/supabase';
 import { Header } from '../../../components/layout/Header';
 import { Card } from '../../../components/ui/Card';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
@@ -14,6 +15,8 @@ export default function SettingsScreen() {
   const profile = useAuthStore((s) => s.profile);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
   const setDarkMode = useUIStore((s) => s.setDarkMode);
+  const theme = useColors();
+  const styles = createStyles(theme);
 
   const updateProfile = async (updates: Record<string, unknown>) => {
     if (!user) return;
@@ -32,7 +35,7 @@ export default function SettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Settings" showBack />
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.sectionTitle}>Appearance</Text>
@@ -59,11 +62,14 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: Spacing.md },
-  sectionTitle: { fontSize: FontSize.sm, fontWeight: FontWeight.semibold, color: Colors.textMuted, marginBottom: Spacing.sm, marginTop: Spacing.lg, textTransform: 'uppercase', letterSpacing: 0.8 },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  rowText: { flex: 1, marginRight: Spacing.md },
-  rowLabel: { fontSize: FontSize.md, fontWeight: FontWeight.medium, color: Colors.textPrimary },
-  rowDesc: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
-});
+function createStyles(c: AppColors) {
+  const Colors = c;
+  return StyleSheet.create({
+    container: { padding: Spacing.md },
+    sectionTitle: { fontSize: FontSize.sm, fontWeight: FontWeight.semibold, color: Colors.textMuted, marginBottom: Spacing.sm, marginTop: Spacing.lg, textTransform: 'uppercase', letterSpacing: 0.8 },
+    row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border },
+    rowText: { flex: 1, marginRight: Spacing.md },
+    rowLabel: { fontSize: FontSize.md, fontWeight: FontWeight.medium, color: Colors.textPrimary },
+    rowDesc: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
+  });
+}

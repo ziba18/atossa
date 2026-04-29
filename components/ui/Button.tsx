@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../constants/theme';
 
@@ -29,6 +30,8 @@ export function Button({
   textStyle,
   fullWidth = false,
 }: ButtonProps) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const isDisabled = disabled || loading;
 
   return (
@@ -47,7 +50,7 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' || variant === 'ghost' ? Colors.cherry : Colors.white}
+          color={variant === 'outline' || variant === 'ghost' ? theme.cherry : '#FFFFFF'}
           size="small"
         />
       ) : (
@@ -59,62 +62,45 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  fullWidth: { width: '100%' },
-  disabled: { opacity: 0.45 },
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    base: {
+      borderRadius: Radius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+    },
+    fullWidth: { width: '100%' },
+    disabled: { opacity: 0.45 },
 
-  // Variants
-  primary: {
-    backgroundColor: Colors.cherry,   // matcha-deep #4E9E5A
-    shadowColor: Colors.cherry,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.22,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  secondary: {
-    backgroundColor: Colors.cherryLighter,
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: Colors.cherry,
-  },
-  ghost: {
-    backgroundColor: Colors.cherryLighter,
-  },
-  danger: {
-    backgroundColor: Colors.roseDeep,
-  },
-  success: {
-    backgroundColor: Colors.emerald,
-  },
+    primary: {
+      backgroundColor: c.cherry,
+      shadowColor: c.cherry,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.22,
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    secondary: { backgroundColor: c.cherryLighter },
+    outline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: c.cherry },
+    ghost: { backgroundColor: c.cherryLighter },
+    danger: { backgroundColor: Colors.roseDeep },
+    success: { backgroundColor: Colors.emerald },
 
-  // Sizes
-  size_sm: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 2, minHeight: 36 },
-  size_md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 4, minHeight: 44 },
-  size_lg: { paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, minHeight: 52 },
+    size_sm: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 2, minHeight: 36 },
+    size_md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 4, minHeight: 44 },
+    size_lg: { paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md, minHeight: 52 },
 
-  // Text
-  text: {
-    fontWeight: FontWeight.semibold,
-    letterSpacing: 0.2,
-    fontFamily: 'Jost_600SemiBold',
-  },
-  text_primary: { color: Colors.white },
-  text_secondary: { color: Colors.cherry },
-  text_outline: { color: Colors.cherry },
-  text_ghost: { color: Colors.cherry },
-  text_danger: { color: Colors.white },
-  text_success: { color: Colors.white },
+    text: { fontWeight: FontWeight.semibold, letterSpacing: 0.2, fontFamily: 'Jost_600SemiBold' },
+    text_primary: { color: '#FFFFFF' },
+    text_secondary: { color: c.cherry },
+    text_outline: { color: c.cherry },
+    text_ghost: { color: c.cherry },
+    text_danger: { color: '#FFFFFF' },
+    text_success: { color: '#FFFFFF' },
 
-  textSize_sm: { fontSize: FontSize.sm },
-  textSize_md: { fontSize: FontSize.sm },
-  textSize_lg: { fontSize: FontSize.md },
-});
+    textSize_sm: { fontSize: FontSize.sm },
+    textSize_md: { fontSize: FontSize.sm },
+    textSize_lg: { fontSize: FontSize.md },
+  });
+}

@@ -7,18 +7,20 @@ import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Header } from '../../../components/layout/Header';
-import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
+import { FontSize, Spacing } from '../../../constants/theme';
 import { formatDisplayDate, formatShortDate } from '../../../algorithms/dateHelpers';
 
 export default function HistoryScreen() {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const { cycleLogs, fetchCycleLogs } = useCycleStore();
 
   useEffect(() => { if (user) fetchCycleLogs(user.id); }, [user]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Period History" showBack />
       <FlatList
         data={cycleLogs}
@@ -54,12 +56,14 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  list: { padding: Spacing.md },
-  card: { marginBottom: Spacing.sm },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  date: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
-  sub: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
-  badges: { flexDirection: 'row', gap: 4, flexWrap: 'wrap', maxWidth: '50%' },
-  notes: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: Spacing.sm, fontStyle: 'italic' },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    list: { padding: Spacing.md },
+    card: { marginBottom: Spacing.sm },
+    row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+    date: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
+    sub: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
+    badges: { flexDirection: 'row', gap: 4, flexWrap: 'wrap', maxWidth: '50%' },
+    notes: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: Spacing.sm, fontStyle: 'italic' },
+  });
+}

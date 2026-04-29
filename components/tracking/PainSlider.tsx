@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Colors } from '../../constants/colors';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, FontWeight, Spacing } from '../../constants/theme';
 
 interface Props {
@@ -11,6 +12,9 @@ interface Props {
 }
 
 export function PainSlider({ value, onChange, label = 'Severity' }: Props) {
+  const theme = useColors();
+  const styles = createStyles(theme);
+
   const getColor = () => {
     if (value <= 3) return Colors.severity1;
     if (value <= 6) return Colors.severity4;
@@ -31,7 +35,7 @@ export function PainSlider({ value, onChange, label = 'Severity' }: Props) {
         value={value}
         onValueChange={onChange}
         minimumTrackTintColor={getColor()}
-        maximumTrackTintColor={Colors.border}
+        maximumTrackTintColor={theme.border}
         thumbTintColor={getColor()}
       />
       <View style={styles.hints}>
@@ -43,11 +47,13 @@ export function PainSlider({ value, onChange, label = 'Severity' }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { marginVertical: Spacing.sm },
-  row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: Spacing.xs },
-  label: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: Colors.textPrimary },
-  value: { fontSize: FontSize.lg, fontWeight: FontWeight.bold },
-  hints: { flexDirection: 'row', justifyContent: 'space-between', marginTop: -Spacing.xs },
-  hint: { fontSize: FontSize.xs, color: Colors.textMuted },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { marginVertical: Spacing.sm },
+    row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: Spacing.xs },
+    label: { fontSize: FontSize.md, fontWeight: FontWeight.semibold, color: c.textPrimary },
+    value: { fontSize: FontSize.lg, fontWeight: FontWeight.bold },
+    hints: { flexDirection: 'row', justifyContent: 'space-between', marginTop: -Spacing.xs },
+    hint: { fontSize: FontSize.xs, color: c.textMuted },
+  });
+}

@@ -203,8 +203,8 @@ Early diagnosis and management can significantly reduce the long-term risks of t
     content_type: 'article',
     thumbnail_url: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80',
     reading_time_minutes: 6,
-    source_name: 'Harvard Health Publishing',
-    source_url: 'https://www.health.harvard.edu/womens-health/the-hormone-guide',
+    source_name: 'Hormone Health Network',
+    source_url: 'https://www.hormone.org/your-health-and-hormones/glands-and-hormones-a-to-z/hormones',
     published_date: 'March 2024',
     summary: 'Estrogen and progesterone are the two main hormones that govern your cycle — but they do far more than regulate reproduction. They affect your brain, bones, heart, skin, and sleep.',
     tags: ['hormones', 'estrogen', 'progesterone', 'cycle'],
@@ -266,7 +266,7 @@ Neither hormone works in isolation. It's the **ratio** and **rhythm** of estroge
 
 ---
 
-*Source: [Harvard Health Publishing — Women's Health Hormones](https://www.health.harvard.edu/womens-health/the-hormone-guide) · Updated March 2024*
+*Source: [Hormone Health Network — Hormones A-Z](https://www.hormone.org/your-health-and-hormones/glands-and-hormones-a-to-z/hormones) · Updated March 2024*
 `,
   },
 
@@ -280,7 +280,7 @@ Neither hormone works in isolation. It's the **ratio** and **rhythm** of estroge
     thumbnail_url: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
     reading_time_minutes: 6,
     source_name: 'Medical News Today',
-    source_url: 'https://www.medicalnewstoday.com/articles/period-diet',
+    source_url: 'https://www.medicalnewstoday.com/articles/277177',
     published_date: 'April 2024',
     summary: 'Your nutritional needs shift across the four phases of your cycle. Supporting your body with the right foods at the right time can reduce PMS, improve energy, and ease period pain.',
     tags: ['nutrition', 'diet', 'pms', 'cycle', 'food'],
@@ -366,7 +366,7 @@ Progesterone dominates, raising your basal metabolic rate slightly (you burn ~10
 
 ---
 
-*Source: [Medical News Today — Period Diet: Foods to Eat and Avoid](https://www.medicalnewstoday.com/articles/period-diet) · Medically reviewed April 2024*
+*Source: [Medical News Today — Menstrual Cycle and Diet](https://www.medicalnewstoday.com/articles/277177) · Medically reviewed April 2024*
 `,
   },
 
@@ -379,8 +379,8 @@ Progesterone dominates, raising your basal metabolic rate slightly (you burn ~10
     content_type: 'article',
     thumbnail_url: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=800&q=80',
     reading_time_minutes: 5,
-    source_name: 'Mayo Clinic',
-    source_url: 'https://www.mayoclinic.org/healthy-lifestyle/getting-pregnant/in-depth/ovulation/art-20045544',
+    source_name: 'NHS',
+    source_url: 'https://www.nhs.uk/conditions/periods/fertility-in-the-menstrual-cycle/',
     published_date: 'March 2024',
     summary: 'You can only conceive during a short window each cycle. Understanding when you ovulate — and the five days before it — is the key to both achieving and avoiding pregnancy naturally.',
     tags: ['fertility', 'ovulation', 'cycle tracking', 'conception'],
@@ -450,7 +450,7 @@ If your cycles vary by more than 7–8 days, calendar-based methods are unreliab
 
 ---
 
-*Source: [Mayo Clinic — Ovulation Signs: When Am I Most Fertile?](https://www.mayoclinic.org/healthy-lifestyle/getting-pregnant/in-depth/ovulation/art-20045544) · Updated March 2024*
+*Source: [NHS — Fertility in the Menstrual Cycle](https://www.nhs.uk/conditions/periods/fertility-in-the-menstrual-cycle/) · Updated March 2024*
 `,
   },
 
@@ -463,8 +463,8 @@ If your cycles vary by more than 7–8 days, calendar-based methods are unreliab
     content_type: 'article',
     thumbnail_url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80',
     reading_time_minutes: 5,
-    source_name: 'Verywell Health',
-    source_url: 'https://www.verywellhealth.com/mood-changes-during-menstrual-cycle-5271143',
+    source_name: 'NIMH',
+    source_url: 'https://www.nimh.nih.gov/health/topics/women-and-mental-health',
     published_date: 'January 2024',
     summary: 'Mood swings across your cycle are not "just hormones" — they reflect real changes in brain chemistry. Understanding why they happen is the first step to managing them.',
     tags: ['mental health', 'mood', 'pms', 'pmdd', 'anxiety'],
@@ -543,7 +543,7 @@ If premenstrual mood changes are affecting your relationships, work, or quality 
 
 ---
 
-*Source: [Verywell Health — Mood Changes During the Menstrual Cycle](https://www.verywellhealth.com/mood-changes-during-menstrual-cycle-5271143) · Reviewed January 2024*
+*Source: [NIMH — Women and Mental Health](https://www.nimh.nih.gov/health/topics/women-and-mental-health) · Reviewed January 2024*
 `,
   },
 
@@ -743,8 +743,8 @@ Do not let pain be dismissed. It is not "just part of being a woman."
     content_type: 'article',
     thumbnail_url: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80',
     reading_time_minutes: 5,
-    source_name: 'Royal College of Obstetricians & Gynaecologists',
-    source_url: 'https://www.rcog.org.uk/for-the-public/browse-our-patient-information/pelvic-pain/',
+    source_name: 'ACOG',
+    source_url: 'https://www.acog.org/womens-health/faqs/pelvic-pain',
     published_date: 'March 2024',
     summary: 'Some gynaecological symptoms require urgent medical attention. Knowing the difference between normal discomfort and a potential emergency can save your life.',
     tags: ['emergency', 'ectopic pregnancy', 'ovarian torsion', 'pelvic pain', 'safety'],
@@ -838,7 +838,7 @@ You know what is normal for you. If something feels dramatically wrong — espec
 
 ---
 
-*Source: [Royal College of Obstetricians & Gynaecologists — Pelvic Pain](https://www.rcog.org.uk/for-the-public/browse-our-patient-information/pelvic-pain/) · Updated March 2024*
+*Source: [ACOG — Pelvic Pain](https://www.acog.org/womens-health/faqs/pelvic-pain) · Updated March 2024*
 `,
   },
 
@@ -943,8 +943,8 @@ TSS is rare, and you should not be frightened of using tampons — but you shoul
     content_type: 'article',
     thumbnail_url: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=800&q=80',
     reading_time_minutes: 5,
-    source_name: 'American Academy of Pediatrics',
-    source_url: 'https://www.healthychildren.org/English/ages-stages/gradeschool/puberty/Pages/Menstruation-What-to-Expect.aspx',
+    source_name: 'KidsHealth',
+    source_url: 'https://kidshealth.org/en/teens/menstruation.html',
     published_date: 'February 2024',
     summary: 'Getting your first period can feel overwhelming — but it is a normal, healthy part of growing up. Here is everything you need to know about what to expect and how to feel prepared.',
     tags: ['teen health', 'first period', 'puberty', 'menarche', 'periods'],
@@ -1025,7 +1025,7 @@ Speak to a doctor if:
 
 ---
 
-*Source: [American Academy of Pediatrics — Menstruation: What to Expect](https://www.healthychildren.org/English/ages-stages/gradeschool/puberty/Pages/Menstruation-What-to-Expect.aspx) · Updated February 2024*
+*Source: [KidsHealth — Menstruation](https://kidshealth.org/en/teens/menstruation.html) · Updated February 2024*
 `,
   },
 
@@ -1147,7 +1147,7 @@ Make an appointment if:
     thumbnail_url: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=800&q=80',
     reading_time_minutes: 6,
     source_name: 'The Menopause Society',
-    source_url: 'https://menopause.org/patient-education/menopause-faqs-understanding-the-menopausal-transition',
+    source_url: 'https://www.menopause.org/for-women/sexual-health-menopause-online/changes-at-midlife/what-is-menopause',
     published_date: 'April 2024',
     summary: 'Perimenopause — the transition to menopause — can begin up to 10 years before your last period. Understanding what is happening hormonally helps make sense of the often confusing symptoms.',
     tags: ['perimenopause', 'menopause', 'hormones', 'transition', 'midlife'],
@@ -1238,7 +1238,7 @@ Speak to a doctor if:
 
 ---
 
-*Source: [The Menopause Society — Understanding the Menopausal Transition](https://menopause.org/patient-education/menopause-faqs-understanding-the-menopausal-transition) · Updated April 2024*
+*Source: [The Menopause Society — What Is Menopause?](https://www.menopause.org/for-women/sexual-health-menopause-online/changes-at-midlife/what-is-menopause) · Updated April 2024*
 `,
   },
 

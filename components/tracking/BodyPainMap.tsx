@@ -4,7 +4,7 @@ import {
   ScrollView, TextInput, Dimensions, Platform,
 } from 'react-native';
 import Svg, { G, Ellipse, Rect, Path, Circle, Text as SvgText } from 'react-native-svg';
-import { Colors } from '../../constants/colors';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, Spacing, Radius, Shadow } from '../../constants/theme';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -423,6 +423,8 @@ function PainModal({
   onRemove: (regionId: string) => void;
   onClose: () => void;
 }) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const [intensity, setIntensity] = useState(existing?.intensity ?? 5);
   const [painType, setPainType] = useState(existing?.painType ?? '');
   const [notes, setNotes] = useState(existing?.notes ?? '');
@@ -512,7 +514,7 @@ function PainModal({
             value={notes}
             onChangeText={setNotes}
             placeholder="Describe the pain, triggers, when it started..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={theme.textMuted}
             multiline
             numberOfLines={3}
             style={styles.notesInput}
@@ -546,6 +548,8 @@ const DISPLAY_W = Math.min(Dimensions.get('window').width - 80, 240);
 const DISPLAY_H = DISPLAY_W * (VB_H / VB_W);
 
 export function BodyPainMap({ value, onChange }: Props) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const [view, setView] = useState<'front' | 'back'>('front');
   const [activeRegion, setActiveRegion] = useState<Region | null>(null);
 
@@ -651,213 +655,52 @@ export function BodyPainMap({ value, onChange }: Props) {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  toggle: {
-    flexDirection: 'row',
-    backgroundColor: Colors.surfaceElevated,
-    borderRadius: Radius.full,
-    padding: 3,
-    alignSelf: 'center',
-    marginBottom: Spacing.xs,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  toggleBtn: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xs + 2,
-    borderRadius: Radius.full,
-  },
-  toggleBtnActive: { backgroundColor: Colors.cherry },
-  toggleText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textSecondary },
-  toggleTextActive: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
-
-  instruction: {
-    textAlign: 'center',
-    fontSize: FontSize.xs,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted,
-    marginBottom: Spacing.md,
-  },
-
-  bodyContainer: {
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-
-  legend: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: Spacing.md,
-    flexWrap: 'wrap',
-    marginBottom: Spacing.md,
-  },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  legendDot: { width: 10, height: 10, borderRadius: 5 },
-  legendText: { fontSize: 10, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
-
-  loggedList: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    overflow: 'hidden',
-  },
-  loggedTitle: {
-    fontSize: FontSize.xs,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textMuted,
-    letterSpacing: 0.8,
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xs,
-  },
-  loggedItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  loggedDot: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loggedDotText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.white },
-  loggedInfo: { flex: 1 },
-  loggedRegion: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
-  loggedMeta: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 1 },
-  editHint: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium', color: Colors.cherry },
-
-  // Modal / bottom sheet
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(42,28,24,0.4)',
-  },
-  sheet: {
-    backgroundColor: Colors.surface,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.sm,
-    maxHeight: '80%',
-    ...Shadow.lg,
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: Colors.border,
-    alignSelf: 'center',
-    marginBottom: Spacing.md,
-  },
-  sheetHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: Spacing.lg,
-  },
-  sheetRegion: {
-    fontSize: FontSize.xl,
-    fontFamily: 'CormorantGaramond_600SemiBold',
-    color: Colors.textPrimary,
-  },
-  sheetSub: {
-    fontSize: FontSize.xs,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
-  closeBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: Colors.surfaceElevated,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeBtnText: { fontSize: FontSize.sm, color: Colors.textMuted },
-
-  sectionLabel: {
-    fontSize: 10,
-    fontFamily: 'Jost_600SemiBold',
-    color: Colors.textMuted,
-    letterSpacing: 1.2,
-    marginBottom: Spacing.sm,
-    marginTop: Spacing.md,
-  },
-
-  intensityRow: {
-    flexDirection: 'row',
-    gap: 5,
-    flexWrap: 'wrap',
-  },
-  intensityDot: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  intensityDotActive: { transform: [{ scale: 1.15 }] },
-  intensityNum: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold' },
-  intensityDesc: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_500Medium',
-    marginTop: Spacing.sm,
-  },
-
-  typeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.xs,
-  },
-  typeChip: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 8,
-    borderRadius: Radius.full,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    backgroundColor: Colors.background,
-  },
-  typeChipActive: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
-  typeChipText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary },
-  typeChipTextActive: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
-
-  notesInput: {
-    backgroundColor: Colors.surfaceElevated,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    padding: Spacing.md,
-    fontSize: FontSize.sm,
-    fontFamily: 'Jost_400Regular',
-    color: Colors.textPrimary,
-    minHeight: 90,
-    textAlignVertical: 'top',
-  },
-
-  actions: { gap: Spacing.sm, marginTop: Spacing.lg },
-  saveBtn: {
-    backgroundColor: Colors.cherry,
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-  },
-  saveBtnText: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.white },
-  removeBtn: {
-    backgroundColor: Colors.surfaceElevated,
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.sm,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  removeBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textMuted },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    toggle: { flexDirection: 'row', backgroundColor: c.surfaceElevated, borderRadius: Radius.full, padding: 3, alignSelf: 'center', marginBottom: Spacing.xs, borderWidth: 1, borderColor: c.border },
+    toggleBtn: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.xs + 2, borderRadius: Radius.full },
+    toggleBtnActive: { backgroundColor: c.cherry },
+    toggleText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textSecondary },
+    toggleTextActive: { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold' },
+    instruction: { textAlign: 'center', fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.md },
+    bodyContainer: { alignItems: 'center', marginBottom: Spacing.md },
+    legend: { flexDirection: 'row', justifyContent: 'center', gap: Spacing.md, flexWrap: 'wrap', marginBottom: Spacing.md },
+    legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+    legendDot: { width: 10, height: 10, borderRadius: 5 },
+    legendText: { fontSize: 10, fontFamily: 'Jost_400Regular', color: c.textMuted },
+    loggedList: { backgroundColor: c.surface, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, overflow: 'hidden' },
+    loggedTitle: { fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold', color: c.textMuted, letterSpacing: 0.8, paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
+    loggedItem: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderTopWidth: 1, borderTopColor: c.border },
+    loggedDot: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+    loggedDotText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
+    loggedInfo: { flex: 1 },
+    loggedRegion: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
+    loggedMeta: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 1 },
+    editHint: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium', color: c.cherry },
+    backdrop: { flex: 1, backgroundColor: 'rgba(42,28,24,0.4)' },
+    sheet: { backgroundColor: c.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm, maxHeight: '80%', ...Shadow.lg },
+    handle: { width: 40, height: 4, borderRadius: 2, backgroundColor: c.border, alignSelf: 'center', marginBottom: Spacing.md },
+    sheetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.lg },
+    sheetRegion: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    sheetSub: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
+    closeBtn: { width: 30, height: 30, borderRadius: 15, backgroundColor: c.surfaceElevated, alignItems: 'center', justifyContent: 'center' },
+    closeBtnText: { fontSize: FontSize.sm, color: c.textMuted },
+    sectionLabel: { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: c.textMuted, letterSpacing: 1.2, marginBottom: Spacing.sm, marginTop: Spacing.md },
+    intensityRow: { flexDirection: 'row', gap: 5, flexWrap: 'wrap' },
+    intensityDot: { width: 34, height: 34, borderRadius: 17, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+    intensityDotActive: { transform: [{ scale: 1.15 }] },
+    intensityNum: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold' },
+    intensityDesc: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', marginTop: Spacing.sm },
+    typeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs },
+    typeChip: { paddingHorizontal: Spacing.md, paddingVertical: 8, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.border, backgroundColor: c.background },
+    typeChipActive: { backgroundColor: c.cherry, borderColor: c.cherry },
+    typeChipText: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textSecondary },
+    typeChipTextActive: { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold' },
+    notesInput: { backgroundColor: c.surfaceElevated, borderRadius: Radius.md, borderWidth: 1, borderColor: c.border, padding: Spacing.md, fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textPrimary, minHeight: 90, textAlignVertical: 'top' },
+    actions: { gap: Spacing.sm, marginTop: Spacing.lg },
+    saveBtn: { backgroundColor: c.cherry, borderRadius: Radius.full, paddingVertical: Spacing.md, alignItems: 'center' },
+    saveBtnText: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
+    removeBtn: { backgroundColor: c.surfaceElevated, borderRadius: Radius.full, paddingVertical: Spacing.sm, alignItems: 'center', borderWidth: 1, borderColor: c.border },
+    removeBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textMuted },
+  });
+}

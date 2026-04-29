@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Alert } from 'react-native';
 import { Icon } from '../ui/Icon';
 import { Colors } from '../../constants/colors';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, FontWeight, Radius, Shadow, Spacing } from '../../constants/theme';
 import { sendEmergencyAlert } from '../../lib/emergency';
 import { useAuthStore } from '../../stores/authStore';
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export function EmergencyButton({ emergencyContacts }: Props) {
+  const theme = useColors();
+  const styles = createStyles(theme);
   const [showConfirm, setShowConfirm] = useState(false);
   const [sending, setSending] = useState(false);
   const profile = useAuthStore((s) => s.profile);
@@ -42,7 +45,7 @@ export function EmergencyButton({ emergencyContacts }: Props) {
         style={styles.button}
         activeOpacity={0.85}
       >
-        <Icon name="shield" size={20} color={Colors.white} />
+        <Icon name="shield" size={20} color="#FFFFFF" />
         <Text style={styles.label}>Emergency</Text>
       </TouchableOpacity>
 
@@ -72,53 +75,17 @@ export function EmergencyButton({ emergencyContacts }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: Colors.cherryDark,
-    borderRadius: Radius.full,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    ...Shadow.md,
-  },
-  label: { color: Colors.white, fontWeight: FontWeight.bold, fontSize: FontSize.md },
-  overlay: {
-    flex: 1,
-    backgroundColor: Colors.overlay,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing.lg,
-  },
-  modal: {
-    backgroundColor: Colors.white,
-    borderRadius: Radius.xl,
-    padding: Spacing.xl,
-    width: '100%',
-  },
-  modalTitle: {
-    fontSize: FontSize.xl,
-    fontWeight: FontWeight.bold,
-    color: Colors.cherryDark,
-    marginBottom: Spacing.sm,
-    textAlign: 'center',
-  },
-  modalBody: {
-    fontSize: FontSize.md,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-    lineHeight: 22,
-  },
-  confirmBtn: {
-    backgroundColor: Colors.cherry,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  confirmText: { color: Colors.white, fontWeight: FontWeight.bold, fontSize: FontSize.md },
-  cancelBtn: { alignItems: 'center', padding: Spacing.sm },
-  cancelText: { color: Colors.textSecondary, fontSize: FontSize.md },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    button: { backgroundColor: Colors.cherryDark, borderRadius: Radius.full, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, ...Shadow.md },
+    label: { color: '#FFFFFF', fontWeight: FontWeight.bold, fontSize: FontSize.md },
+    overlay: { flex: 1, backgroundColor: c.overlay, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
+    modal: { backgroundColor: c.surface, borderRadius: Radius.xl, padding: Spacing.xl, width: '100%' },
+    modalTitle: { fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.cherryDark, marginBottom: Spacing.sm, textAlign: 'center' },
+    modalBody: { fontSize: FontSize.md, color: c.textSecondary, textAlign: 'center', marginBottom: Spacing.xl, lineHeight: 22 },
+    confirmBtn: { backgroundColor: c.cherry, borderRadius: Radius.md, padding: Spacing.md, alignItems: 'center', marginBottom: Spacing.sm },
+    confirmText: { color: '#FFFFFF', fontWeight: FontWeight.bold, fontSize: FontSize.md },
+    cancelBtn: { alignItems: 'center', padding: Spacing.sm },
+    cancelText: { color: c.textSecondary, fontSize: FontSize.md },
+  });
+}

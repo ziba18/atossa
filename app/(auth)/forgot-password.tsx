@@ -6,6 +6,7 @@ import { Input } from '../../components/ui/Input';
 import { SafeScreen } from '../../components/layout/SafeScreen';
 import { Header } from '../../components/layout/Header';
 import { Icon } from '../../components/ui/Icon';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { Colors } from '../../constants/colors';
 import { FontSize, Spacing } from '../../constants/theme';
 
@@ -22,6 +23,9 @@ export default function ForgotPasswordScreen() {
     if (error) { Alert.alert('Error', error.message); return; }
     setSent(true);
   };
+
+  const theme = useColors();
+  const styles = createStyles(theme);
 
   return (
     <SafeScreen>
@@ -58,11 +62,13 @@ export default function ForgotPasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: Spacing.xl },
-  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-  sentContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  sentIconWrap: { marginBottom: Spacing.lg },
-  sentTitle: { fontSize: 24, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
-  sentBody: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, textAlign: 'center', lineHeight: 22 },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    container: { flex: 1, paddingTop: Spacing.xl },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    sentContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    sentIconWrap: { marginBottom: Spacing.lg },
+    sentTitle: { fontSize: 24, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
+    sentBody: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 22 },
+  });
+}

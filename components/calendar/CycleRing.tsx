@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import Svg, { Path, Circle, G } from 'react-native-svg';
 import type { CycleLog, CyclePrediction } from '../../types/database';
-import { Colors } from '../../constants/colors';
+import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { Spacing } from '../../constants/theme';
 import { daysBetween, today } from '../../algorithms/dateHelpers';
 
@@ -32,8 +32,8 @@ const PHASE_LABEL: Record<Phase, string> = {
   period: 'Menstrual', follicular: 'Follicular',
   fertile: 'Fertile', ovulation: 'Ovulation', luteal: 'Luteal',
 };
-const PHASE_TEXT_COLOR: Record<Phase, string> = {
-  period: C.period.solid, follicular: Colors.textMuted,
+const PHASE_TEXT_COLOR_LIGHT: Record<Phase, string> = {
+  period: C.period.solid, follicular: '#8A8A9A',
   fertile: C.fertile.solid, ovulation: '#8A7020', luteal: C.luteal.solid,
 };
 
@@ -79,6 +79,8 @@ interface Props {
 }
 
 export function CycleRing({ cycleLogs, prediction }: Props) {
+  const theme = useColors();
+  const styles = useStyles();
   const [dragDay, setDragDay]     = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -203,7 +205,7 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
 
     // Phase at displayDay
     const phase        = classifyDay(displayDay, menEnd, ovDay);
-    const phaseColor   = PHASE_TEXT_COLOR[phase];
+    const phaseColor   = PHASE_TEXT_COLOR_LIGHT[phase];
     const phaseLabel   = PHASE_LABEL[phase];
     const activeColor  = C[phase].solid;
 
@@ -293,7 +295,7 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
           />
 
           {/* ── Centre fill ── */}
-          <Circle cx={CX} cy={CY} r={R - THICK / 2 - 3} fill="#FAF8F2" />
+          <Circle cx={CX} cy={CY} r={R - THICK / 2 - 3} fill={theme.background} />
 
           {/* ── Real today anchor (shown while dragging, grey & small) ── */}
           {isDragging && (
@@ -340,7 +342,7 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
             {isDragging ? 'EXPLORING' : 'TODAY'}
           </Text>
 
-          <Text style={[styles.dayNum, { color: Colors.textPrimary }]}>
+          <Text style={[styles.dayNum, { color: theme.textPrimary }]}>
             {displayDay}
           </Text>
 
@@ -392,112 +394,24 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  wrapper: {
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-  },
-
-  hint: {
-    fontSize:      10,
-    fontFamily:    'Jost_400Regular',
-    color:         Colors.textMuted,
-    letterSpacing: 0.3,
-    marginBottom:  Spacing.sm,
-  },
-
-  pulse: {
-    position:     'absolute',
-    width:        30,
-    height:       30,
-    borderRadius: 15,
-    borderWidth:  1.5,
-  },
-
-  center: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems:     'center',
-    justifyContent: 'center',
-    gap:            2,
-  },
-  topLabel: {
-    fontSize:      9,
-    fontFamily:    'Jost_600SemiBold',
-    color:         Colors.textMuted,
-    letterSpacing: 2.5,
-    marginBottom:  2,
-  },
-  dayNum: {
-    fontSize:      64,
-    fontFamily:    'CormorantGaramond_600SemiBold',
-    lineHeight:    66,
-    letterSpacing: -2,
-  },
-  dayOf: {
-    fontSize:     11,
-    fontFamily:   'Jost_400Regular',
-    color:        Colors.textMuted,
-    marginTop:    -4,
-    marginBottom: 6,
-  },
-  phaseBadge: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               5,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
-    borderRadius:      20,
-    borderWidth:       1,
-  },
-  phaseDot: {
-    width:        7,
-    height:       7,
-    borderRadius: 4,
-  },
-  phaseName: {
-    fontSize:      11,
-    fontFamily:    'Jost_600SemiBold',
-    letterSpacing: 0.5,
-  },
-  nextPeriod: {
-    fontSize:   10,
-    fontFamily: 'Jost_400Regular',
-    color:      Colors.textMuted,
-    marginTop:  4,
-  },
-
-  // Stats
-  statsRow: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    marginTop:      Spacing.md,
-    paddingTop:     Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(180,150,140,0.2)',
-    width:          '100%',
-  },
-  statItem: {
-    flex:       1,
-    alignItems: 'center',
-    gap:        4,
-  },
-  statValue: {
-    fontSize:   28,
-    fontFamily: 'CormorantGaramond_600SemiBold',
-    color:      Colors.textPrimary,
-    lineHeight: 30,
-  },
-  statLabel: {
-    fontSize:      8.5,
-    fontFamily:    'Jost_600SemiBold',
-    color:         Colors.textMuted,
-    letterSpacing: 1.2,
-  },
-  statDivider: {
-    width:           1,
-    height:          36,
-    backgroundColor: 'rgba(180,150,140,0.2)',
-  },
-});
+function useStyles() {
+  const theme = useColors();
+  return StyleSheet.create({
+    wrapper: { alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm },
+    hint: { fontSize: 10, fontFamily: 'Jost_400Regular', color: theme.textMuted, letterSpacing: 0.3, marginBottom: Spacing.sm },
+    pulse: { position: 'absolute', width: 30, height: 30, borderRadius: 15, borderWidth: 1.5 },
+    center: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: 2 },
+    topLabel: { fontSize: 9, fontFamily: 'Jost_600SemiBold', color: theme.textMuted, letterSpacing: 2.5, marginBottom: 2 },
+    dayNum: { fontSize: 64, fontFamily: 'CormorantGaramond_600SemiBold', lineHeight: 66, letterSpacing: -2 },
+    dayOf: { fontSize: 11, fontFamily: 'Jost_400Regular', color: theme.textMuted, marginTop: -4, marginBottom: 6 },
+    phaseBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, borderWidth: 1 },
+    phaseDot: { width: 7, height: 7, borderRadius: 4 },
+    phaseName: { fontSize: 11, fontFamily: 'Jost_600SemiBold', letterSpacing: 0.5 },
+    nextPeriod: { fontSize: 10, fontFamily: 'Jost_400Regular', color: theme.textMuted, marginTop: 4 },
+    statsRow: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.md, paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: 'rgba(180,150,140,0.2)', width: '100%' },
+    statItem: { flex: 1, alignItems: 'center', gap: 4 },
+    statValue: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: theme.textPrimary, lineHeight: 30 },
+    statLabel: { fontSize: 8.5, fontFamily: 'Jost_600SemiBold', color: theme.textMuted, letterSpacing: 1.2 },
+    statDivider: { width: 1, height: 36, backgroundColor: 'rgba(180,150,140,0.2)' },
+  });
+}

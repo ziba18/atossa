@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/Button';
 import { SymptomChip } from '../../../components/tracking/SymptomChip';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
 import { SYMPTOM_META, type SymptomType } from '../../../constants/symptomTypes';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
@@ -25,6 +26,9 @@ export default function Step3Symptoms() {
       return next;
     });
   };
+
+  const theme = useColors();
+  const styles = createStyles(theme);
 
   return (
     <SafeScreen>
@@ -50,13 +54,15 @@ export default function Step3Symptoms() {
   );
 }
 
-const styles = StyleSheet.create({
-  progress: { marginBottom: Spacing.xl },
-  step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xs },
-  progressBar: { height: 4, backgroundColor: Colors.border, borderRadius: 2 },
-  fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-  title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap' },
-  btn: { marginTop: Spacing.xl },
-});
+function createStyles(c: AppColors) {
+  return StyleSheet.create({
+    progress: { marginBottom: Spacing.xl },
+    step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
+    progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
+    fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
+    title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    chips: { flexDirection: 'row', flexWrap: 'wrap' },
+    btn: { marginTop: Spacing.xl },
+  });
+}

@@ -4,12 +4,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Button } from '../../components/ui/Button';
 import { Icon, type IconName } from '../../components/ui/Icon';
+import { useColors } from '../../contexts/ThemeContext';
 import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const theme = useColors();
 
   return (
     <SafeAreaView style={styles.container}>

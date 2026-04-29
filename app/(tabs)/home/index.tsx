@@ -8,6 +8,7 @@ import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
 import { useAlertStore } from '../../../stores/alertStore';
 import { Icon, type IconName } from '../../../components/ui/Icon';
+import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
 import { AuroraBackground } from '../../../components/layout/AuroraBackground';
@@ -110,6 +111,7 @@ function getCycleSeasonInfo(
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const Colors = useColors();
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
   const { cycleLogs, prediction, fetchCycleLogs, fetchPrediction } = useCycleStore();
@@ -181,6 +183,8 @@ export default function HomeScreen() {
       onPress: () => router.push('/(tabs)/education' as any),
     },
   ];
+
+  const styles = createStyles(Colors);
 
   return (
     <View style={styles.screen}>
@@ -363,6 +367,8 @@ export default function HomeScreen() {
 function StatTile({ label, value, hint, dotColor }: {
   label: string; value: string; hint?: string; dotColor: string;
 }) {
+  const Colors = useColors();
+  const styles = createStyles(Colors);
   return (
     <View style={styles.statTile}>
       <View style={styles.statTileHeader}>
@@ -375,7 +381,9 @@ function StatTile({ label, value, hint, dotColor }: {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(c: AppColors) {
+  const Colors = c;
+  return StyleSheet.create({
   screen: { flex: 1, backgroundColor: Colors.background },
   scrollContent: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
 
@@ -556,4 +564,5 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     paddingHorizontal: Spacing.lg,
   },
-});
+  });
+}
