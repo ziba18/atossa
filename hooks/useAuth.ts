@@ -9,11 +9,11 @@ export function useAuth() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
-        // Stale/invalid token (e.g. from a previous project) — clear it
         supabase.auth.signOut();
         setSession(null);
       } else {
         setSession(session);
+        if (session?.user) fetchProfile();
       }
     });
 

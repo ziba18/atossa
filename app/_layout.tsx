@@ -17,6 +17,10 @@ import {
   CormorantGaramond_600SemiBold,
   CormorantGaramond_600SemiBold_Italic,
 } from '@expo-google-fonts/cormorant-garamond';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const MAX_CONTENT_WIDTH = 600;
 
@@ -34,6 +38,12 @@ function AppShell() {
     CormorantGaramond_600SemiBold,
     CormorantGaramond_600SemiBold_Italic,
   });
+
+  useEffect(() => {
+    if (isInitialized && fontsLoaded) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [isInitialized, fontsLoaded]);
 
   if (!isInitialized || !fontsLoaded) return null;
 

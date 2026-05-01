@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
 import { CycleRing } from '../../../components/calendar/CycleRing';
@@ -13,6 +13,7 @@ import { FontSize, Spacing } from '../../../constants/theme';
 export default function TrackScreen() {
   const router = useRouter();
   const theme = useColors();
+  const insets = useSafeAreaInsets();
   const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const { cycleLogs, prediction, fetchCycleLogs, fetchPrediction } = useCycleStore();
@@ -22,7 +23,7 @@ export default function TrackScreen() {
   }, [user]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>My Cycle</Text>
         <TouchableOpacity onPress={() => router.push('/(tabs)/track/log-period' as any)} style={styles.logBtn}>
@@ -33,7 +34,7 @@ export default function TrackScreen() {
       <CycleRing cycleLogs={cycleLogs} prediction={prediction} />
       <PhaseLegend />
 
-      <View style={styles.actions}>
+      <View style={[styles.actions, { paddingBottom: 68 + insets.bottom + 12 }]}>
         {([
           { icon: 'clipboard-list', label: 'Health Log', route: '/(tabs)/track/log-health' },
           { icon: 'trending-up', label: 'Metrics', route: '/(tabs)/track/log-metrics' },

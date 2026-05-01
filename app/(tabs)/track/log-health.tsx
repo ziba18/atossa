@@ -11,7 +11,7 @@ import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 import { Header } from '../../../components/layout/Header';
 import { Icon, type IconName } from '../../../components/ui/Icon';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { today } from '../../../algorithms/dateHelpers';
@@ -144,7 +144,10 @@ export default function LogHealthScreen() {
   const router = useRouter();
   const theme = useColors();
   const styles = createStyles(theme);
+  const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
+  // Tab bar floats at bottom:12, height:68 — clear that + home indicator
+  const navSpacerHeight = 68 + 12 + insets.bottom;
 
   const [page, setPage] = useState(0);
   const [carouselHeight, setCarouselHeight] = useState(0);
@@ -405,12 +408,12 @@ export default function LogHealthScreen() {
   ].filter(Boolean) as { icon: IconName; text: string; count: number; label: string }[];
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top']}>
       <Header title="Health Log" showBack />
 
       <View
         style={{ flex: 1 }}
-        onLayout={(e) => setCarouselHeight(e.nativeEvent.layout.height - 44 - 64)}
+        onLayout={(e) => setCarouselHeight(e.nativeEvent.layout.height - 44 - 64 - navSpacerHeight)}
       >
         {/* Progress dots */}
         <View style={styles.dotsRow}>
@@ -709,7 +712,7 @@ export default function LogHealthScreen() {
           </ScrollView>
         )}
 
-        {/* Bottom navigation */}
+        {/* Bottom navigation — sits above the floating tab bar */}
         <View style={styles.navRow}>
           <TouchableOpacity
             onPress={() => goToPage(page - 1)}
@@ -736,6 +739,7 @@ export default function LogHealthScreen() {
             </TouchableOpacity>
           )}
         </View>
+        <View style={{ height: navSpacerHeight }} />
       </View>
 
       {/* ── Symptom severity modal ── */}

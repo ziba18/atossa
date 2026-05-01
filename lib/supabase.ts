@@ -8,18 +8,18 @@ const CHUNK_SIZE = 1900;
 
 const ExpoSecureStoreAdapter = {
   getItem: async (key: string): Promise<string | null> => {
-    const direct = await SecureStore.getItemAsync(key);
+    const [direct, countStr] = await Promise.all([
+      SecureStore.getItemAsync(key),
+      SecureStore.getItemAsync(`${key}__chunks`),
+    ]);
     if (direct !== null) return direct;
-    const countStr = await SecureStore.getItemAsync(`${key}__chunks`);
     if (!countStr) return null;
     const count = parseInt(countStr, 10);
-    let result = '';
-    for (let i = 0; i < count; i++) {
-      const chunk = await SecureStore.getItemAsync(`${key}__chunk_${i}`);
-      if (chunk == null) return null;
-      result += chunk;
-    }
-    return result;
+    const chunks = await Promise.all(
+      Array.from({ length: count }, (_, i) => SecureStore.getItemAsync(`${key}__chunk_${i}`))
+    );
+    if (chunks.some((c) => c === null)) return null;
+    return chunks.join('');
   },
   setItem: async (key: string, value: string): Promise<void> => {
     if (value.length <= CHUNK_SIZE) {
