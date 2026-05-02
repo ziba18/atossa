@@ -84,7 +84,7 @@ function classifyDay(day: number, menEnd: number, ovDay: number): Phase {
 // ── Quick-log actions ─────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
   { label: 'Period',   icon: 'droplets',  route: '/(tabs)/cycle/log-period' },
-  { label: 'Health',   icon: 'heart',     route: '/(tabs)/track/log-health' },
+  { label: 'Health',   icon: 'heart',     route: '/(tabs)/health' },
   { label: 'Calendar', icon: 'calendar',  route: '/(tabs)/cycle/calendar' },
 ] as const;
 

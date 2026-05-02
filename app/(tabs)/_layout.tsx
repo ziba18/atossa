@@ -60,8 +60,6 @@ export default function TabsLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="book-open" focused={focused} />,
         }}
       />
-      <Tabs.Screen name="track"    options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
-      <Tabs.Screen name="insights" options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
       <Tabs.Screen name="profile"  options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }} />
     </Tabs>
   );
