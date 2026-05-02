@@ -9,7 +9,7 @@ import { supabase } from '../../../lib/supabase';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 import { Icon, type IconName } from '../../../components/ui/Icon';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { today } from '../../../algorithms/dateHelpers';
@@ -140,6 +140,10 @@ export default function HealthLogScreen() {
   const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
   const SCREEN_WIDTH = useContentWidth();
+  const insets = useSafeAreaInsets();
+  // Tab bar floats absolutely at bottom:12 with height:68. Reserve that space
+  // so the bottom navigation row isn't hidden behind it.
+  const navSpacerHeight = 68 + 12 + insets.bottom;
 
   const [page, setPage] = useState(0);
   const [carouselHeight, setCarouselHeight] = useState(0);
@@ -397,7 +401,7 @@ export default function HealthLogScreen() {
 
       <View
         style={{ flex: 1 }}
-        onLayout={(e) => setCarouselHeight(e.nativeEvent.layout.height - 44 - 64)}
+        onLayout={(e) => setCarouselHeight(e.nativeEvent.layout.height - 44 - 64 - navSpacerHeight)}
       >
         {/* Progress dots */}
         <View style={styles.dotsRow}>
@@ -713,6 +717,9 @@ export default function HealthLogScreen() {
             </TouchableOpacity>
           )}
         </View>
+
+        {/* Spacer to clear the floating tab bar */}
+        <View style={{ height: navSpacerHeight }} />
       </View>
 
       {/* Symptom severity modal */}
