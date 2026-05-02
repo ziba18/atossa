@@ -4,6 +4,7 @@ import {
   Modal, TextInput, NativeSyntheticEvent, NativeScrollEvent,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../stores/authStore';
 import { supabase } from '../../../lib/supabase';
 import { Input } from '../../../components/ui/Input';
@@ -139,6 +140,7 @@ export default function HealthLogScreen() {
   const theme = useColors();
   const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
+  const router = useRouter();
   const SCREEN_WIDTH = useContentWidth();
   const insets = useSafeAreaInsets();
   // Tab bar floats absolutely at bottom:12 with height:68. Reserve that space
@@ -358,6 +360,13 @@ export default function HealthLogScreen() {
       if (painEntries.length > 0) parts.push(`${painEntries.length} pain area${painEntries.length !== 1 ? 's' : ''}`);
       if (selectedSymptomCount > 0) parts.push(`${selectedSymptomCount} symptom${selectedSymptomCount !== 1 ? 's' : ''}`);
       Alert.alert('Saved!', `Logged: ${parts.join(', ')}.`, [
+        {
+          text: 'View History',
+          onPress: () => {
+            goToPage(0);
+            router.push('/(tabs)/health/history');
+          },
+        },
         { text: 'Done', onPress: () => goToPage(0) },
       ]);
     }
@@ -394,9 +403,20 @@ export default function HealthLogScreen() {
       {/* Title header (no back button — this is a tab) */}
       <View style={styles.titleBar}>
         <Text style={styles.titleBarText}>Health Log</Text>
-        <Text style={styles.titleBarDate}>
-          {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-        </Text>
+        <View style={styles.titleBarRight}>
+          <Text style={styles.titleBarDate}>
+            {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/health/history')}
+            style={styles.historyBtn}
+            hitSlop={8}
+            activeOpacity={0.7}
+            accessibilityLabel="View logged health entries"
+          >
+            <Icon name="clock" size={18} color={theme.textSecondary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View
@@ -813,7 +833,13 @@ function createStyles(c: AppColors) {
       paddingTop: Spacing.sm,
       paddingBottom: Spacing.xs,
       flexDirection: 'row',
-      alignItems: 'baseline',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: Spacing.sm,
+    },
+    titleBarRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
       gap: Spacing.sm,
     },
     titleBarText: {
@@ -825,6 +851,16 @@ function createStyles(c: AppColors) {
       fontSize: FontSize.sm,
       fontFamily: 'Jost_400Regular',
       color: c.textMuted,
+    },
+    historyBtn: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: c.glassBgSoft,
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
 
     dotsRow: {
