@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atossa — Support</title>
+  <meta name="description" content="Support, FAQ, and privacy information for the Atossa cycle-tracking app." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #FAF8F2;
+      --surface: #FFFFFF;
+      --surface-soft: rgba(255, 255, 255, 0.72);
+      --ink: #333244;
+      --ink-soft: #5C5A70;
+      --ink-muted: #8A889E;
+      --border: rgba(51, 50, 68, 0.10);
+      --matcha: #4E9E5A;
+      --matcha-deep: #3A7A44;
+      --rose: #CB7575;
+      --shadow: 0 8px 32px rgba(51, 50, 68, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Jost', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .aurora {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .aurora .blob {
+      position: absolute; border-radius: 9999px; filter: blur(40px);
+    }
+    .aurora .b1 { top: -120px; left: -100px; width: 380px; height: 380px; background: rgba(141, 201, 143, 0.42); }
+    .aurora .b2 { top: -80px; right: -120px; width: 400px; height: 400px; background: rgba(237, 202, 202, 0.38); }
+    .aurora .b3 { bottom: -100px; left: 30%; width: 320px; height: 320px; background: rgba(187, 207, 232, 0.36); }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 24px 96px;
+    }
+    header { text-align: center; margin-bottom: 48px; }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--matcha-deep);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      font-size: 48px;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+    .lede {
+      font-size: 17px;
+      color: var(--ink-soft);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px 28px 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    h2 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      font-size: 26px;
+      margin-bottom: 16px;
+      letter-spacing: -0.2px;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 16px;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+    p, li {
+      font-size: 15px;
+      color: var(--ink-soft);
+    }
+    p { margin-bottom: 12px; }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 6px; }
+    a {
+      color: var(--matcha-deep);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(78, 158, 90, 0.35);
+      transition: border-color 0.15s ease;
+    }
+    a:hover { border-bottom-color: var(--matcha-deep); }
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(78, 158, 90, 0.08);
+      border: 1px solid rgba(78, 158, 90, 0.18);
+      border-radius: 16px;
+      margin-top: 4px;
+    }
+    .contact-row .label {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--matcha-deep);
+      font-weight: 600;
+    }
+    .contact-row a {
+      font-size: 16px;
+      font-weight: 500;
+      border-bottom: none;
+    }
+    .faq details {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .faq details:last-child { border-bottom: none; }
+    .faq summary {
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--ink);
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after {
+      content: '+';
+      font-size: 22px;
+      color: var(--ink-muted);
+      transition: transform 0.2s ease;
+    }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details > p, .faq details > ul {
+      margin-top: 10px;
+    }
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+    footer p { font-size: 13px; color: var(--ink-muted); margin-bottom: 4px; }
+    @media (max-width: 600px) {
+      .container { padding: 40px 18px 64px; }
+      h1 { font-size: 36px; }
+      .card { padding: 22px 20px 18px; border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <main class="container">
+    <header>
+      <div class="eyebrow">Atossa · Support</div>
+      <h1>We're here to help.</h1>
+      <p class="lede">Atossa is a cycle-tracking and women's-health companion. If you're stuck, have a feature idea, or need to delete your account, this page has you covered.</p>
+    </header>
+
+    <section class="card">
+      <h2>Contact us</h2>
+      <p>The fastest way to reach us is by email. We typically reply within one or two business days.</p>
+      <div class="contact-row">
+        <div>
+          <div class="label">Email</div>
+          <a href="mailto:zamaniziba18@gmail.com?subject=Atossa%20Support">zamaniziba18@gmail.com</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card faq">
+      <h2>Frequently asked questions</h2>
+
+      <details>
+        <summary>How do I reset my password?</summary>
+        <p>On the sign-in screen, tap <strong>Forgot password?</strong> and enter the email you used to sign up. We'll send you a reset link. Check your spam folder if it doesn't arrive within a few minutes.</p>
+      </details>
+
+      <details>
+        <summary>Sign in with Apple isn't working — what should I do?</summary>
+        <p>Make sure you're on the latest version of Atossa from the App Store and signed into iCloud on your device. If the issue continues, sign in with email and password instead, and email us so we can investigate.</p>
+      </details>
+
+      <details>
+        <summary>How do I connect Apple Health?</summary>
+        <p>Apple Health sync is available on iPhone. Open Atossa, go to <strong>Profile → Health Integrations</strong> and tap <strong>Connect Apple Health</strong>. iOS will ask which categories you want to share. You can change these any time in <strong>Settings → Privacy &amp; Security → Health → Atossa</strong>.</p>
+      </details>
+
+      <details>
+        <summary>Why are my cycle predictions different from another app?</summary>
+        <p>Predictions improve as Atossa learns your individual cycle. The first one or two cycles after sign-up rely on the average you logged at onboarding; after that, predictions adjust based on your actual data.</p>
+      </details>
+
+      <details>
+        <summary>How do I export or delete my data?</summary>
+        <p>You can request an export or full deletion of your account at any time. Email <a href="mailto:zamaniziba18@gmail.com?subject=Atossa%20account%20deletion">zamaniziba18@gmail.com</a> from the address tied to your account, and we'll process it within seven days.</p>
+      </details>
+
+      <details>
+        <summary>Is my data private?</summary>
+        <p>Yes. Cycle and health data is stored in your account and is never sold or shared with advertisers. See the <a href="#privacy">Privacy</a> section below for details.</p>
+      </details>
+
+      <details>
+        <summary>What devices does Atossa support?</summary>
+        <p>Atossa runs on iPhone and iPad with iOS / iPadOS 15 or later. Some integrations such as Apple Health sync are available on iPhone only.</p>
+      </details>
+    </section>
+
+    <section class="card" id="privacy">
+      <h2>Privacy</h2>
+      <p>Atossa stores your account information and cycle data in our backend (Supabase), protected by row-level security so only you can read your own data. Sensitive session tokens are stored in the iOS Keychain on your device.</p>
+      <h3>What we collect</h3>
+      <ul>
+        <li>The email and profile details you provide when you sign up.</li>
+        <li>Cycle, symptom, and health entries you log inside the app.</li>
+        <li>Optional health metrics imported from Apple Health, only if you grant permission.</li>
+      </ul>
+      <h3>What we don't do</h3>
+      <ul>
+        <li>We don't sell your data.</li>
+        <li>We don't share it with advertisers.</li>
+        <li>We don't read your data for any purpose other than providing the app to you.</li>
+      </ul>
+      <h3>Your rights</h3>
+      <p>You can request a copy of all data we hold for your account, or ask us to delete it permanently. Email <a href="mailto:zamaniziba18@gmail.com?subject=Atossa%20data%20request">zamaniziba18@gmail.com</a> from the address tied to your account.</p>
+    </section>
+
+    <section class="card">
+      <h2>Reporting a bug</h2>
+      <p>Found something broken? Send us an email with:</p>
+      <ul>
+        <li>The device and iOS version you're using (e.g. iPhone 15 Pro, iOS 18.2).</li>
+        <li>The Atossa version, found in <strong>Profile → Settings</strong>.</li>
+        <li>A short description of what you did and what went wrong. A screenshot helps a lot.</li>
+      </ul>
+      <p>We read every report.</p>
+    </section>
+
+    <footer>
+      <p>© <span id="year"></span> Atossa. All rights reserved.</p>
+      <p>This page is for app support. To download Atossa, visit the App Store.</p>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
