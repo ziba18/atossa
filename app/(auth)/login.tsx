@@ -79,7 +79,7 @@ export default function LoginScreen() {
             placeholder="Your password"
             rightIcon={
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} color={Colors.textMuted} />
+                <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} color={theme.textMuted} />
               </TouchableOpacity>
             }
           />

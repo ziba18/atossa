@@ -98,6 +98,13 @@ export const Colors = {
   severity7: '#CB7575',   // high — rose
   severity10: '#A84040',  // severe — deep red
 
+  // ── Translucent glass surfaces (overridden in dark theme) ────────────────
+  glassBg: 'rgba(255,255,255,0.72)',          // hero / main glass card
+  glassBgSoft: 'rgba(255,255,255,0.65)',      // stat tiles, alert card
+  glassBgSubtle: 'rgba(255,255,255,0.5)',     // small tiles
+  glassBgFaint: 'rgba(255,255,255,0.25)',     // chips on coloured banners
+  glassBorder: 'rgba(51,50,68,0.08)',         // glass card border
+
   // ── Utility ───────────────────────────────────────────────────────────────
   white: '#FFFFFF',
   black: '#000000',

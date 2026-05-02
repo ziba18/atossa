@@ -400,7 +400,7 @@ function createStyles(c: AppColors) {
   bellBtn: { padding: 6, position: 'relative' },
   profileBtn: {
     width: 34, height: 34, borderRadius: 17,
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: Colors.glassBgSoft,
     borderWidth: 1, borderColor: Colors.border,
     alignItems: 'center', justifyContent: 'center',
   },
@@ -429,11 +429,11 @@ function createStyles(c: AppColors) {
 
   // Hero card
   heroCard: {
-    backgroundColor: 'rgba(255,255,255,0.72)',
+    backgroundColor: Colors.glassBg,
     borderRadius: 32,
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(51,50,68,0.08)',
+    borderColor: Colors.glassBorder,
     shadowColor: '#333244',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.08,
@@ -465,7 +465,7 @@ function createStyles(c: AppColors) {
   chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: Spacing.sm },
   chip: {
     borderRadius: 99, paddingHorizontal: 10, paddingVertical: 5,
-    borderWidth: 1, backgroundColor: 'rgba(255,255,255,0.5)',
+    borderWidth: 1, backgroundColor: Colors.glassBgSubtle,
   },
   chipText: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium' },
   selfCareRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: Spacing.sm },
@@ -497,7 +497,7 @@ function createStyles(c: AppColors) {
   },
   statTile: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.65)',
+    backgroundColor: Colors.glassBgSoft,
     borderRadius: 20,
     padding: 12,
     borderWidth: 1,
@@ -512,7 +512,7 @@ function createStyles(c: AppColors) {
   // Alerts
   alertBanner: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 10,
-    backgroundColor: 'rgba(255,255,255,0.65)',
+    backgroundColor: Colors.glassBgSoft,
     borderRadius: 16, padding: Spacing.md,
     borderWidth: 1, borderColor: Colors.border,
     marginBottom: Spacing.sm,

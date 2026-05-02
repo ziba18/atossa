@@ -43,8 +43,8 @@ function createStyles(c: AppColors) {
       ...Shadow.sm,
     },
     glass: {
-      backgroundColor: 'rgba(255,255,255,0.72)',
-      borderColor: 'rgba(51,50,68,0.08)',
+      backgroundColor: c.glassBg,
+      borderColor: c.glassBorder,
     },
     cardDark: {
       backgroundColor: Colors.surfaceDark,
