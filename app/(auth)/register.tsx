@@ -87,7 +87,7 @@ export default function RegisterScreen() {
             By signing up, you agree to our Terms of Service and Privacy Policy.
           </Text>
 
-          <SocialAuthButtons />
+          <SocialAuthButtons mode="signup" />
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>

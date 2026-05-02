@@ -1,17 +1,42 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, Alert, ActivityIndicator, Platform } from 'react-native';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Button } from '../../components/ui/Button';
 import { Icon, type IconName } from '../../components/ui/Icon';
 import { useColors } from '../../contexts/ThemeContext';
 import { Colors } from '../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../constants/theme';
+import { FontSize, FontWeight, Spacing, Radius } from '../../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { signInWithApple } from '../../lib/socialAuth';
+import { supabase } from '../../lib/supabase';
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const theme = useColors();
+  const [appleLoading, setAppleLoading] = useState(false);
+
+  const handleApple = async () => {
+    setAppleLoading(true);
+    const { user, error } = await signInWithApple();
+    setAppleLoading(false);
+    if (error) {
+      Alert.alert('Apple Sign In Failed', error.message);
+      return;
+    }
+    if (!user) return;
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_complete')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (profile?.onboarding_complete) {
+      router.replace('/(tabs)/home');
+    } else {
+      router.replace('/(auth)/onboarding/step1-basics');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,13 +71,28 @@ export default function WelcomeScreen() {
           </View>
 
           <View style={styles.buttons}>
+            {Platform.OS === 'ios' && (
+              appleLoading ? (
+                <View style={styles.appleLoading}>
+                  <ActivityIndicator color={Colors.white} />
+                </View>
+              ) : (
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+                  cornerRadius={Radius.md}
+                  style={styles.appleBtn}
+                  onPress={handleApple}
+                />
+              )
+            )}
             <Button
-              label="Get Started"
+              label="Sign up with email"
               onPress={() => router.push('/(auth)/register')}
               size="lg"
               fullWidth
-              style={styles.primaryBtn}
-              textStyle={{ color: Colors.cherry }}
+              variant="ghost"
+              style={styles.secondaryBtn}
             />
             <Button
               label="I already have an account"
@@ -60,7 +100,8 @@ export default function WelcomeScreen() {
               variant="ghost"
               size="lg"
               fullWidth
-              style={styles.secondaryBtn}
+              style={styles.tertiaryBtn}
+              textStyle={{ color: 'rgba(255,255,255,0.85)' }}
             />
           </View>
         </View>
@@ -100,6 +141,8 @@ const styles = StyleSheet.create({
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   featureText: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: Colors.white, flex: 1 },
   buttons: { gap: Spacing.sm },
-  primaryBtn: { backgroundColor: Colors.white },
+  appleBtn: { height: 52, width: '100%' },
+  appleLoading: { height: 52, alignItems: 'center', justifyContent: 'center' },
   secondaryBtn: { backgroundColor: 'rgba(255,255,255,0.15)' },
+  tertiaryBtn: { backgroundColor: 'transparent' },
 });

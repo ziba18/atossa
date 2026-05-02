@@ -97,7 +97,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <SocialAuthButtons />
+          <SocialAuthButtons mode="signin" />
         </View>
       </SafeScreen>
     </KeyboardAvoidingView>
