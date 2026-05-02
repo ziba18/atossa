@@ -1,18 +1,20 @@
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
 import { supabase } from './supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 
 async function generateNonce(): Promise<{ raw: string; hashed: string }> {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
+  const bytes = await Crypto.getRandomBytesAsync(32);
   const raw = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-  const msgBuffer = new TextEncoder().encode(raw);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashed = Array.from(new Uint8Array(hashBuffer), (b) => b.toString(16).padStart(2, '0')).join('');
+  const hashed = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    raw,
+    { encoding: Crypto.CryptoEncoding.HEX },
+  );
   return { raw, hashed };
 }
 
@@ -75,7 +77,7 @@ export async function signInWithApple(): Promise<{ user: any | null; error: Erro
         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
         AppleAuthentication.AppleAuthenticationScope.EMAIL,
       ],
-      requestedNonce: hashedNonce,
+      nonce: hashedNonce,
     });
 
     if (!credential.identityToken) {

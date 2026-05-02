@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { Colors } from '../constants/colors';
 import { useUIStore } from '../stores/uiStore';
-import { useAuthStore } from '../stores/authStore';
 
 export type AppColors = typeof Colors;
 
@@ -27,9 +26,7 @@ const DarkColors: AppColors = {
 const ThemeContext = createContext<AppColors>(Colors);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const isDarkFromStore = useUIStore((s) => s.isDarkMode);
-  const profile = useAuthStore((s) => s.profile);
-  const isDark = profile?.dark_mode ?? isDarkFromStore;
+  const isDark = useUIStore((s) => s.isDarkMode);
   const colors = useMemo(() => (isDark ? DarkColors : Colors), [isDark]);
   return <ThemeContext.Provider value={colors}>{children}</ThemeContext.Provider>;
 }

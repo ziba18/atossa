@@ -5,7 +5,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, useWindowDimensions } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../stores/uiStore';
-import { useAuthStore } from '../stores/authStore';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { useFonts } from 'expo-font';
 import {
@@ -26,9 +25,8 @@ const MAX_CONTENT_WIDTH = 600;
 
 function AppShell() {
   const { isInitialized } = useAuth();
-  const isDarkFromStore = useUIStore((s) => s.isDarkMode);
-  const profile = useAuthStore((s) => s.profile);
-  const isDark = profile?.dark_mode ?? isDarkFromStore;
+  const isDark = useUIStore((s) => s.isDarkMode);
+  const hydrated = useUIStore((s) => s.hydrated);
   const { width } = useWindowDimensions();
 
   const [fontsLoaded] = useFonts({
@@ -40,12 +38,12 @@ function AppShell() {
   });
 
   useEffect(() => {
-    if (isInitialized && fontsLoaded) {
+    if (isInitialized && fontsLoaded && hydrated) {
       SplashScreen.hideAsync().catch(() => {});
     }
-  }, [isInitialized, fontsLoaded]);
+  }, [isInitialized, fontsLoaded, hydrated]);
 
-  if (!isInitialized || !fontsLoaded) return null;
+  if (!isInitialized || !fontsLoaded || !hydrated) return null;
 
   const isTablet = width >= MAX_CONTENT_WIDTH;
 

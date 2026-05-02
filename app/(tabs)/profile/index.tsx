@@ -141,7 +141,6 @@ export default function ProfileScreen() {
           <Card noPadding>
             <MenuItem iconName="link" label="Connected Accounts" onPress={() => router.push('/(tabs)/profile/connected-accounts' as any)} />
             <MenuItem iconName="shield" label="Emergency Contacts" onPress={() => router.push('/(tabs)/profile/emergency-contacts' as any)} />
-            <MenuItem iconName="heart-pulse" label="Health Integrations" onPress={() => router.push('/(tabs)/profile/health-integrations' as any)} />
           </Card>
         </View>
 

@@ -218,7 +218,6 @@ export default function CycleScreen() {
           {/* ── Header ── */}
           <View style={styles.header}>
             <View>
-              <Text style={styles.smallcaps}>YOUR CYCLE</Text>
               <Text style={styles.title}>My Cycle</Text>
             </View>
             <TouchableOpacity
@@ -405,7 +404,6 @@ function createStyles(c: AppColors) {
 
     // Header
     header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
-    smallcaps:     { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: c.textMuted, letterSpacing: 1.5, marginBottom: 4 },
     title:         { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
     logBtn:        { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: c.cherry, borderRadius: Radius.full, paddingHorizontal: Spacing.md, paddingVertical: 8 },
     logBtnText:    { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold', fontSize: FontSize.sm },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Text, Switch, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../stores/authStore';
@@ -10,21 +10,16 @@ import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
-export default function SettingsScreen() {
-  const user = useAuthStore((s) => s.user);
-  const profile = useAuthStore((s) => s.profile);
-  const fetchProfile = useAuthStore((s) => s.fetchProfile);
-  const setDarkMode = useUIStore((s) => s.setDarkMode);
-  const theme = useColors();
-  const styles = createStyles(theme);
+type SettingRowProps = {
+  label: string;
+  desc?: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+  styles: ReturnType<typeof createStyles>;
+};
 
-  const updateProfile = async (updates: Record<string, unknown>) => {
-    if (!user) return;
-    await supabase.from('profiles').update(updates).eq('id', user.id);
-    await fetchProfile();
-  };
-
-  const SettingRow = ({ label, desc, value, onChange }: { label: string; desc?: string; value: boolean; onChange: (v: boolean) => void }) => (
+const SettingRow = memo(function SettingRow({ label, desc, value, onChange, styles }: SettingRowProps) {
+  return (
     <View style={styles.row}>
       <View style={styles.rowText}>
         <Text style={styles.rowLabel}>{label}</Text>
@@ -32,6 +27,41 @@ export default function SettingsScreen() {
       </View>
       <Switch value={value} onValueChange={onChange} trackColor={{ true: Colors.cherry }} />
     </View>
+  );
+});
+
+export default function SettingsScreen() {
+  const user = useAuthStore((s) => s.user);
+  const profile = useAuthStore((s) => s.profile);
+  const setProfile = useAuthStore((s) => s.setProfile);
+  const isDarkMode = useUIStore((s) => s.isDarkMode);
+  const setDarkMode = useUIStore((s) => s.setDarkMode);
+  const theme = useColors();
+  const styles = createStyles(theme);
+
+  const persistProfile = useCallback(
+    (updates: Record<string, unknown>) => {
+      if (!user) return;
+      const current = useAuthStore.getState().profile;
+      if (current) setProfile({ ...current, ...updates } as typeof current);
+      supabase.from('profiles').update(updates).eq('id', user.id).then(() => {});
+    },
+    [user, setProfile],
+  );
+
+  const handleDarkModeChange = useCallback(
+    (v: boolean) => {
+      setDarkMode(v);
+      persistProfile({ dark_mode: v });
+    },
+    [setDarkMode, persistProfile],
+  );
+
+  const handleNotificationsChange = useCallback(
+    (v: boolean) => {
+      persistProfile({ notifications_enabled: v });
+    },
+    [persistProfile],
   );
 
   return (
@@ -43,8 +73,9 @@ export default function SettingsScreen() {
           <SettingRow
             label="Dark Mode"
             desc="Switch to dark theme"
-            value={profile?.dark_mode ?? false}
-            onChange={(v) => { setDarkMode(v); updateProfile({ dark_mode: v }); }}
+            value={isDarkMode}
+            onChange={handleDarkModeChange}
+            styles={styles}
           />
         </Card>
 
@@ -54,7 +85,8 @@ export default function SettingsScreen() {
             label="All Notifications"
             desc="Enable or disable all Atossa notifications"
             value={profile?.notifications_enabled ?? true}
-            onChange={(v) => updateProfile({ notifications_enabled: v })}
+            onChange={handleNotificationsChange}
+            styles={styles}
           />
         </Card>
       </ScrollView>
