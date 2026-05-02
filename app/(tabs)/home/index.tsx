@@ -421,7 +421,7 @@ function createStyles(c: AppColors) {
   },
   tagline: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_600SemiBold_Italic',
+    fontFamily: 'CormorantGaramond_600SemiBold',
     color: Colors.textMuted,
     marginBottom: Spacing.lg,
     marginTop: 2,
@@ -472,7 +472,7 @@ function createStyles(c: AppColors) {
   selfCareText: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, flex: 1, lineHeight: 18 },
   affirmation: {
     fontSize: FontSize.sm,
-    fontFamily: 'CormorantGaramond_600SemiBold_Italic',
+    fontFamily: 'CormorantGaramond_600SemiBold',
     opacity: 0.85,
     marginBottom: Spacing.md,
     lineHeight: 20,
