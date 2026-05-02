@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
 import { useAuthStore } from '../../../stores/authStore';
+import { useContentWidth } from '../../../hooks/useContentWidth';
 import { supabase } from '../../../lib/supabase';
 import { Header } from '../../../components/layout/Header';
 import { Card } from '../../../components/ui/Card';
@@ -15,12 +15,11 @@ import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { formatShortDate } from '../../../algorithms/dateHelpers';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-
 export default function HealthTrendsScreen() {
   const theme = useColors();
   const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
+  const SCREEN_WIDTH = useContentWidth();
   const [weightData, setWeightData] = useState<HealthMetric[]>([]);
   const [bpData, setBpData] = useState<HealthMetric[]>([]);
   const [loading, setLoading] = useState(true);

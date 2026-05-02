@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity,
-  Modal, TextInput, NativeSyntheticEvent, NativeScrollEvent, Dimensions,
+  Modal, TextInput, NativeSyntheticEvent, NativeScrollEvent,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '../../../stores/authStore';
@@ -14,8 +14,8 @@ import { FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { today } from '../../../algorithms/dateHelpers';
 import { BodyPainMap, type PainEntry } from '../../../components/tracking/BodyPainMap';
+import { useContentWidth } from '../../../hooks/useContentWidth';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TOTAL_PAGES = 3;
 
 // ── Symptom categories ────────────────────────────────────────────────────────
@@ -139,6 +139,7 @@ export default function HealthLogScreen() {
   const theme = useColors();
   const styles = createStyles(theme);
   const user = useAuthStore((s) => s.user);
+  const SCREEN_WIDTH = useContentWidth();
 
   const [page, setPage] = useState(0);
   const [carouselHeight, setCarouselHeight] = useState(0);

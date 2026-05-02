@@ -10,6 +10,11 @@ export const Spacing = {
   xxl: 48,
 } as const;
 
+// ─── Layout ──────────────────────────────────────────────────────────────────
+// Phone-style content is centred in a column at this width on tablets, so screens
+// don't stretch to ~1180pt on an iPad and break paged carousels / charts.
+export const MAX_CONTENT_WIDTH = 600;
+
 // ─── Border radius ───────────────────────────────────────────────────────────
 export const Radius = {
   sm: 8,

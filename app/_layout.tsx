@@ -18,10 +18,9 @@ import {
 } from '@expo-google-fonts/cormorant-garamond';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { MAX_CONTENT_WIDTH } from '../constants/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
-
-const MAX_CONTENT_WIDTH = 600;
 
 function AppShell() {
   const { isInitialized } = useAuth();

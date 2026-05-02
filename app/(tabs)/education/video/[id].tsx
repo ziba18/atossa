@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
@@ -10,13 +10,13 @@ import { Badge } from '../../../../components/ui/Badge';
 import type { EducationContent } from '../../../../types/database';
 import { useColors, type AppColors } from '../../../../contexts/ThemeContext';
 import { FontSize, FontWeight, Spacing } from '../../../../constants/theme';
-
-const { width } = Dimensions.get('window');
+import { useContentWidth } from '../../../../hooks/useContentWidth';
 
 export default function VideoScreen() {
   const theme = useColors();
   const styles = createStyles(theme);
   const { id } = useLocalSearchParams<{ id: string }>();
+  const width = useContentWidth();
   const [video, setVideo] = useState<EducationContent | null>(null);
   const [loading, setLoading] = useState(true);
 
