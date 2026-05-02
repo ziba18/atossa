@@ -16,7 +16,6 @@
 - **Health log** — capture symptoms, mood, sleep, energy, flow, and notes in a fast multi-page flow.
 - **Insights & metrics** — visualize trends across cycles with charts that surface what your body is telling you.
 - **Education hub** — curated, evidence-based articles on hormones, fertility, and well-being.
-- **Apple Health integration (iOS)** — optional HealthKit sync to enrich predictions with workouts and vitals.
 - **Secure by default** — sessions are stored in the device secure enclave (Expo SecureStore); no analytics, no tracking.
 - **Apple & email sign-in** — frictionless onboarding via Supabase Auth.
 
@@ -35,7 +34,7 @@
 - **Charts & calendars** — `react-native-chart-kit`, `react-native-calendars`, `react-native-svg`
 - **Backend** — [Supabase](https://supabase.com) (Postgres + Auth + Row-level security)
 - **Auth** — Supabase Auth, Apple Sign-In (`expo-apple-authentication`)
-- **Native modules** — HealthKit (custom plugin in `plugins/withHealthKit.ts`), Notifications, Secure Store, Contacts
+- **Native modules** — Notifications, Secure Store, Contacts
 - **Build** — [EAS Build](https://docs.expo.dev/build/introduction/)
 
 ## 📂 Project structure
@@ -51,7 +50,6 @@ atossa/
 ├── contexts/             # ThemeContext (light/dark colors)
 ├── hooks/                # useAuth, useColorScheme, etc.
 ├── lib/                  # supabase client, storage adapter, integrations
-├── plugins/              # custom Expo config plugins (HealthKit)
 ├── stores/               # Zustand stores (auth, cycle, health, profile)
 ├── supabase/             # SQL migrations & schema
 └── assets/               # icons, splash, logo
@@ -100,7 +98,7 @@ npx eas build --platform ios
 npx eas build --platform android
 ```
 
-EAS configuration lives in `eas.json`. Bundle IDs and HealthKit entitlements are wired up via `app.json` and `plugins/withHealthKit.ts`.
+EAS configuration lives in `eas.json`. Bundle IDs and platform settings are wired up in `app.json`.
 
 ## 🧠 Cycle prediction
 

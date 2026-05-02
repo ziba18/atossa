@@ -16,8 +16,6 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.attosa.app",
       "infoPlist": {
-        "NSHealthShareUsageDescription": "Atossa reads health data to enhance your cycle predictions.",
-        "NSHealthUpdateUsageDescription": "Atossa may write cycle data to Apple Health.",
         "NSContactsUsageDescription": "Atossa needs access to contacts to set up emergency alerts.",
         "NSPhotoLibraryUsageDescription": "Atossa needs access to your photo library to update your profile picture.",
         "ITSAppUsesNonExemptEncryption": false
@@ -71,8 +69,7 @@
       ],
       "expo-av",
       "expo-apple-authentication",
-      "expo-web-browser",
-      "./plugins/withHealthKit"
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
