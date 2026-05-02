@@ -83,7 +83,6 @@ function classifyDay(day: number, menEnd: number, ovDay: number): Phase {
 
 // ── Quick-log actions ─────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { label: 'Symptoms', icon: 'activity',  route: '/(tabs)/track/log-symptoms' },
   { label: 'Period',   icon: 'droplets',  route: '/(tabs)/cycle/log-period' },
   { label: 'Health',   icon: 'heart',     route: '/(tabs)/track/log-health' },
   { label: 'Calendar', icon: 'calendar',  route: '/(tabs)/cycle/calendar' },
@@ -217,17 +216,7 @@ export default function CycleScreen() {
 
           {/* ── Header ── */}
           <View style={styles.header}>
-            <View>
-              <Text style={styles.title}>My Cycle</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => router.push('/(tabs)/cycle/log-period')}
-              style={styles.logBtn}
-              activeOpacity={0.85}
-            >
-              <Icon name="plus" size={14} color="#FFFFFF" />
-              <Text style={styles.logBtnText}>Log Period</Text>
-            </TouchableOpacity>
+            <Text style={styles.title}>My Cycle</Text>
           </View>
 
           {/* ── Cycle Ring ── */}
@@ -403,10 +392,8 @@ function createStyles(c: AppColors) {
     screen:        { flex: 1, backgroundColor: c.background },
 
     // Header
-    header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
+    header:        { paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
     title:         { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
-    logBtn:        { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: c.cherry, borderRadius: Radius.full, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-    logBtnText:    { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold', fontSize: FontSize.sm },
 
     // Ring
     ringCard:      { marginHorizontal: Spacing.md, backgroundColor: glass, borderRadius: 32, borderWidth: 1, borderColor: c.border, overflow: 'hidden', paddingVertical: Spacing.sm },

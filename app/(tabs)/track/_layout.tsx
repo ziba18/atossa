@@ -5,7 +5,6 @@ export default function TrackLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="log-period" />
-      <Stack.Screen name="log-symptoms" />
       <Stack.Screen name="log-metrics" />
       <Stack.Screen name="history" />
     </Stack>
