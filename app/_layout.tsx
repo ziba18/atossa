@@ -2,7 +2,18 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View, useWindowDimensions } from 'react-native';
+import { View, useWindowDimensions, LogBox } from 'react-native';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+
+// expo-notifications logs two warnings on every launch in Expo Go (SDK 53+
+// dropped push support there). They don't apply to dev/production builds.
+// Mute them only when actually running inside Expo Go.
+if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+  LogBox.ignoreLogs([
+    'expo-notifications: Android Push notifications',
+    '`expo-notifications` functionality is not fully supported in Expo Go',
+  ]);
+}
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../stores/uiStore';
 import { ThemeProvider } from '../contexts/ThemeContext';
@@ -68,7 +79,6 @@ function AppShell() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(viewer)" />
           <Stack.Screen name="+not-found" />
         </Stack>
       )}

@@ -54,7 +54,7 @@ export default function Step4Notifications() {
 
       <NotifRow label="Period Reminders" desc="Get notified 2 days before your predicted period" value={periodReminders} onChange={setPeriodReminders} />
       <NotifRow label="Ovulation Alerts" desc="Know when your fertile window is approaching" value={ovulationReminders} onChange={setOvulationReminders} />
-      <NotifRow label="Health Alerts" desc="Warnings for unusual symptoms or PCOS risk" value={healthAlerts} onChange={setHealthAlerts} />
+      <NotifRow label="Health Alerts" desc="Warnings for unusual cycle patterns or symptoms" value={healthAlerts} onChange={setHealthAlerts} />
 
       <Button label="Next →" onPress={handleNext} loading={loading} size="lg" fullWidth style={styles.btn} />
     </SafeScreen>

@@ -59,8 +59,8 @@ export default function WelcomeScreen() {
           <View style={styles.features}>
             {([
               { icon: 'calendar', text: 'Track your cycle & symptoms' },
-              { icon: 'sparkles', text: 'Predict irregular periods with AI' },
-              { icon: 'stethoscope', text: 'Detect PCOS & health risks' },
+              { icon: 'sparkles', text: 'Predict your next period & fertile window' },
+              { icon: 'heart', text: 'Log pain, mood, and medications daily' },
               { icon: 'bell', text: 'Emergency alerts for loved ones' },
             ] as { icon: IconName; text: string }[]).map((f) => (
               <View key={f.text} style={styles.featureRow}>

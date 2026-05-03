@@ -2,7 +2,6 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 
 export type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy' | 'very_heavy';
 export type CycleRegularity = 'regular' | 'irregular' | 'unknown';
-export type RiskLevel = 'low' | 'moderate' | 'high' | 'very_high';
 export type AlertSeverity = 'info' | 'warning' | 'critical' | 'emergency';
 export type ContentType = 'article' | 'video' | 'infographic';
 export type ContentCategory =
@@ -104,23 +103,6 @@ export interface AlertLog {
   metadata: Json;
   is_read: boolean;
   sent_to_contacts: boolean;
-  created_at: string;
-}
-
-export interface PCOSAssessment {
-  id: string;
-  user_id: string;
-  assessed_at: string;
-  risk_score: number;
-  risk_level: RiskLevel;
-  flag_irregular_cycles: boolean;
-  flag_hyperandrogenism: boolean;
-  flag_elevated_lh_fsh_ratio: boolean;
-  flag_insulin_resistance: boolean;
-  flag_weight_gain: boolean;
-  contributing_factors: string[];
-  recommendation: string | null;
-  is_dismissed: boolean;
   created_at: string;
 }
 

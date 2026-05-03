@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
@@ -20,6 +20,10 @@ export default function ProfileScreen() {
   const [totalSymptoms, setTotalSymptoms] = useState<number>(0);
   const theme = useColors();
   const styles = createStyles(theme);
+  const insets = useSafeAreaInsets();
+  // Tab bar floats absolutely (height 68 + 12 from bottom). Pad the scroll
+  // content so the footer line clears it on every device.
+  const bottomPad = insets.bottom + 96;
 
   useEffect(() => {
     if (!user) return;
@@ -62,7 +66,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
 
         <LinearGradient colors={[Colors.cherry, Colors.cherryDark]} style={styles.hero}>
           <View style={styles.avatar}>
@@ -226,6 +230,6 @@ function createStyles(c: AppColors) {
 
     signOutBtn: { margin: Spacing.xl, padding: Spacing.md, alignItems: 'center' },
     signOutText: { fontSize: FontSize.md, color: Colors.cherry, fontWeight: FontWeight.semibold },
-    footer: { textAlign: 'center', fontSize: FontSize.xs, color: Colors.textMuted, paddingBottom: Spacing.xl },
+    footer: { textAlign: 'center', fontSize: FontSize.xs, color: Colors.textMuted },
   });
 }

@@ -5,25 +5,40 @@ import { useUIStore } from '../stores/uiStore';
 
 let authInitStarted = false;
 
+async function clearLocalSession() {
+  // Stale/invalid refresh token: clear locally without hitting the server,
+  // which would just fail again with the same dead token.
+  try {
+    await supabase.auth.signOut({ scope: 'local' });
+  } catch {}
+}
+
 function startAuthInit() {
   if (authInitStarted) return;
   authInitStarted = true;
 
-  supabase.auth.getSession().then(({ data: { session }, error }) => {
+  (async () => {
     const { setSession, fetchProfile } = useAuthStore.getState();
-    if (error) {
-      supabase.auth.signOut();
-      setSession(null);
-    } else {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        if (error) await clearLocalSession();
+        setSession(null);
+        return;
+      }
       setSession(session);
-      if (session?.user) fetchProfile();
+      if (session.user) fetchProfile();
+    } catch {
+      await clearLocalSession();
+      setSession(null);
     }
-  });
+  })();
 
-  supabase.auth.onAuthStateChange((_event, session) => {
+  supabase.auth.onAuthStateChange((event, session) => {
     const prev = useAuthStore.getState().user;
     const { setSession, fetchProfile } = useAuthStore.getState();
     setSession(session);
+    if (event === 'SIGNED_OUT') return;
     if (session?.user && session.user.id !== prev?.id) fetchProfile();
   });
 }
