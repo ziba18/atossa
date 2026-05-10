@@ -67,7 +67,7 @@ function createStyles(c: AppColors) {
     step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
     progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
     fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-    title: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
+    title: { fontSize: 28, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
     subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
     row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: Spacing.md, borderBottomWidth: 1, borderBottomColor: c.border },
     rowText: { flex: 1, marginRight: Spacing.md },

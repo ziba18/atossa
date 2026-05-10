@@ -17,13 +17,13 @@ const R     = SIZE * 0.40;
 const THICK = SIZE * 0.092;
 const GAP   = 3.2;
 
-// ── Phase colors — cycle-bloom palette ───────────────────────────────────────
+// ── Phase colors — warm rose palette ─────────────────────────────────────────
 const C = {
-  period:     { solid: '#CB7575', faded: 'rgba(203,117,117,0.26)' },
-  follicular: { solid: '#8DC98F', faded: 'rgba(141,201,143,0.22)' },
-  fertile:    { solid: '#4E9E5A', faded: 'rgba(78,158,90,0.22)' },
-  ovulation:  { solid: '#D4AD62', faded: 'rgba(212,173,98,0.30)' },
-  luteal:     { solid: '#82AECF', faded: 'rgba(130,174,207,0.25)' },
+  period:     { solid: '#B0455A', faded: 'rgba(176,69,90,0.26)' },
+  follicular: { solid: '#B5C8B5', faded: 'rgba(181,200,181,0.30)' },
+  fertile:    { solid: '#8FA88E', faded: 'rgba(143,168,142,0.26)' },
+  ovulation:  { solid: '#D4A65C', faded: 'rgba(212,166,92,0.30)' },
+  luteal:     { solid: '#A89AB5', faded: 'rgba(168,154,181,0.28)' },
 } as const;
 
 type Phase = keyof typeof C;
@@ -33,8 +33,11 @@ const PHASE_LABEL: Record<Phase, string> = {
   fertile: 'Fertile', ovulation: 'Ovulation', luteal: 'Luteal',
 };
 const PHASE_TEXT_COLOR_LIGHT: Record<Phase, string> = {
-  period: C.period.solid, follicular: '#8A8A9A',
-  fertile: C.fertile.solid, ovulation: '#8A7020', luteal: C.luteal.solid,
+  period: C.period.solid,
+  follicular: '#6B8B6A',           // deepened so it reads as text
+  fertile: C.fertile.solid,
+  ovulation: '#8B6A2A',            // deep honey for legibility
+  luteal: '#7C6E89',               // deep mauve
 };
 
 // ── Geometry ─────────────────────────────────────────────────────────────────
@@ -76,9 +79,13 @@ function isOnRing(x: number, y: number): boolean {
 interface Props {
   cycleLogs:  CycleLog[];
   prediction: CyclePrediction | null;
+  // Parent passes a setter so the wheel can disable the surrounding
+  // ScrollView while the user is dragging — otherwise the page scrolls
+  // when they try to spin the ring.
+  onDragChange?: (isDragging: boolean) => void;
 }
 
-export function CycleRing({ cycleLogs, prediction }: Props) {
+export function CycleRing({ cycleLogs, prediction, onDragChange }: Props) {
   const theme = useColors();
   const styles = useStyles();
   const [dragDay, setDragDay]     = useState<number | null>(null);
@@ -157,29 +164,57 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
   const totalDaysRef = useRef(cycle.totalDays);
   useEffect(() => { totalDaysRef.current = cycle.totalDays; }, [cycle.totalDays]);
 
+  // Keep an onDragChange ref so the PanResponder (created once) always sees
+  // the latest callback without stale closures.
+  const onDragChangeRef = useRef(onDragChange);
+  useEffect(() => { onDragChangeRef.current = onDragChange; }, [onDragChange]);
+
   // ── PanResponder ──────────────────────────────────────────────────────────
+  // Claim the gesture as early as possible (capture-phase) when the touch is
+  // on the ring donut, so the parent ScrollView doesn't scroll when the user
+  // starts spinning the wheel.
   const panResponder = useRef(
     PanResponder.create({
-      // Only claim touches that start on the ring donut
       onStartShouldSetPanResponder: (evt) => {
         const { locationX, locationY } = evt.nativeEvent;
         return isOnRing(locationX, locationY);
       },
-      onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: (evt) => {
+        const { locationX, locationY } = evt.nativeEvent;
+        return isOnRing(locationX, locationY);
+      },
+      onMoveShouldSetPanResponder: (evt) => {
+        const { locationX, locationY } = evt.nativeEvent;
+        return isOnRing(locationX, locationY);
+      },
+      onMoveShouldSetPanResponderCapture: (evt) => {
+        const { locationX, locationY } = evt.nativeEvent;
+        return isOnRing(locationX, locationY);
+      },
 
       onPanResponderGrant: (evt) => {
         const { locationX, locationY } = evt.nativeEvent;
         const d = touchToDay(locationX, locationY, totalDaysRef.current);
         setDragDay(d);
         setIsDragging(true);
+        onDragChangeRef.current?.(true);
       },
       onPanResponderMove: (evt) => {
         const { locationX, locationY } = evt.nativeEvent;
         const d = touchToDay(locationX, locationY, totalDaysRef.current);
         setDragDay(d);
       },
-      onPanResponderRelease:   () => { setIsDragging(false); setDragDay(null); },
-      onPanResponderTerminate: () => { setIsDragging(false); setDragDay(null); },
+      onPanResponderRelease:   () => {
+        setIsDragging(false);
+        setDragDay(null);
+        onDragChangeRef.current?.(false);
+      },
+      onPanResponderTerminate: () => {
+        setIsDragging(false);
+        setDragDay(null);
+        onDragChangeRef.current?.(false);
+      },
+      onPanResponderTerminationRequest: () => false,
     }),
   ).current;
 
@@ -247,7 +282,7 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
           <Circle
             cx={CX} cy={CY} r={R}
             fill="none"
-            stroke="rgba(180,150,140,0.12)"
+            stroke="rgba(42,31,38,0.08)"
             strokeWidth={THICK + 4}
           />
 
@@ -290,7 +325,7 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
           <Circle
             cx={CX} cy={CY} r={R - THICK / 2 - 1}
             fill="none"
-            stroke="rgba(140,110,100,0.07)"
+            stroke="rgba(42,31,38,0.05)"
             strokeWidth={3}
           />
 
@@ -303,9 +338,9 @@ export function CycleRing({ cycleLogs, prediction }: Props) {
               <Circle cx={todayDotPos.x} cy={todayDotPos.y} r={7}
                 fill="#FFFFFF" />
               <Circle cx={todayDotPos.x} cy={todayDotPos.y} r={6.5}
-                fill="none" stroke="rgba(160,140,130,0.6)" strokeWidth={1.5} />
+                fill="none" stroke="rgba(42,31,38,0.40)" strokeWidth={1.5} />
               <Circle cx={todayDotPos.x} cy={todayDotPos.y} r={3}
-                fill="rgba(160,140,130,0.5)" />
+                fill="rgba(42,31,38,0.35)" />
             </>
           )}
 
@@ -402,16 +437,16 @@ function useStyles() {
     pulse: { position: 'absolute', width: 30, height: 30, borderRadius: 15, borderWidth: 1.5 },
     center: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: 2 },
     topLabel: { fontSize: 9, fontFamily: 'Jost_600SemiBold', color: theme.textMuted, letterSpacing: 2.5, marginBottom: 2 },
-    dayNum: { fontSize: 64, fontFamily: 'CormorantGaramond_600SemiBold', lineHeight: 66, letterSpacing: -2 },
+    dayNum: { fontSize: 64, fontFamily: 'Jost_600SemiBold', lineHeight: 66, letterSpacing: -2 },
     dayOf: { fontSize: 11, fontFamily: 'Jost_400Regular', color: theme.textMuted, marginTop: -4, marginBottom: 6 },
     phaseBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, borderWidth: 1 },
     phaseDot: { width: 7, height: 7, borderRadius: 4 },
     phaseName: { fontSize: 11, fontFamily: 'Jost_600SemiBold', letterSpacing: 0.5 },
     nextPeriod: { fontSize: 10, fontFamily: 'Jost_400Regular', color: theme.textMuted, marginTop: 4 },
-    statsRow: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.md, paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: 'rgba(180,150,140,0.2)', width: '100%' },
+    statsRow: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.md, paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: 'rgba(42,31,38,0.10)', width: '100%' },
     statItem: { flex: 1, alignItems: 'center', gap: 4 },
-    statValue: { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: theme.textPrimary, lineHeight: 30 },
+    statValue: { fontSize: 28, fontFamily: 'Jost_600SemiBold', color: theme.textPrimary, lineHeight: 30 },
     statLabel: { fontSize: 8.5, fontFamily: 'Jost_600SemiBold', color: theme.textMuted, letterSpacing: 1.2 },
-    statDivider: { width: 1, height: 36, backgroundColor: 'rgba(180,150,140,0.2)' },
+    statDivider: { width: 1, height: 36, backgroundColor: 'rgba(42,31,38,0.10)' },
   });
 }

@@ -64,7 +64,7 @@ function createStyles(c: AppColors) {
       letterSpacing: 0.01,
     },
     titleDisplay: {
-      fontFamily: 'CormorantGaramond_600SemiBold',
+      fontFamily: 'Jost_600SemiBold',
       fontSize: FontSize.xl,
       letterSpacing: 0.02,
     },

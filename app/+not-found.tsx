@@ -57,13 +57,13 @@ const styles = StyleSheet.create({
   },
   code: {
     fontSize: 96,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Jost_600SemiBold',
     color: 'rgba(255,255,255,0.15)',
     lineHeight: 100,
   },
   title: {
     fontSize: FontSize.xxl,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.white,
     marginBottom: Spacing.sm,
     textAlign: 'center',

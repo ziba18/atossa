@@ -39,6 +39,9 @@ yarn-error.*
 # Claude Code project settings (may contain tokens/secrets)
 .claude/settings.local.json
 
+# Google Play service account credentials (used by `eas submit`)
+google-play-service-account.json
+
 # typescript
 *.tsbuildinfo
 

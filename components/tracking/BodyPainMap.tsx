@@ -681,7 +681,7 @@ function createStyles(c: AppColors) {
     sheet: { backgroundColor: c.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm, maxHeight: '80%', ...Shadow.lg },
     handle: { width: 40, height: 4, borderRadius: 2, backgroundColor: c.border, alignSelf: 'center', marginBottom: Spacing.md },
     sheetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.lg },
-    sheetRegion: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    sheetRegion: { fontSize: FontSize.xl, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
     sheetSub: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
     closeBtn: { width: 30, height: 30, borderRadius: 15, backgroundColor: c.surfaceElevated, alignItems: 'center', justifyContent: 'center' },
     closeBtnText: { fontSize: FontSize.sm, color: c.textMuted },

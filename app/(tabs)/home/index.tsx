@@ -27,7 +27,6 @@ const SEASONS: Record<CycleSeason, {
   energy: string[];
   selfCare: string;
   affirmation: string;
-  tipAccent: string;
 }> = {
   winter: {
     name: 'Menstrual',
@@ -38,7 +37,6 @@ const SEASONS: Record<CycleSeason, {
     energy: ['Introspective', 'Intuitive', 'Honest'],
     selfCare: 'Warm baths · Gentle stretching · Journaling',
     affirmation: '"I honour my body\'s wisdom and allow myself to rest."',
-    tipAccent: Colors.roseDeep,
   },
   spring: {
     name: 'Follicular',
@@ -49,29 +47,26 @@ const SEASONS: Record<CycleSeason, {
     energy: ['Creative', 'Optimistic', 'Curious'],
     selfCare: 'Try something new · Start that project · Morning walks',
     affirmation: '"I am full of fresh energy and endless possibility."',
-    tipAccent: Colors.matchaDeep,
   },
   summer: {
     name: 'Ovulation',
     phase: 'Ovulation',
-    phaseColor: '#B08020',
+    phaseColor: Colors.apricot,
     icon: 'sparkles',
     tagline: 'Radiant, magnetic & powerful.',
     energy: ['Confident', 'Magnetic', 'Communicative'],
     selfCare: 'Connect & collaborate · Dress up · Celebrate yourself',
     affirmation: '"I radiate warmth and confidence in everything I do."',
-    tipAccent: '#B08020',
   },
   autumn: {
     name: 'Luteal',
     phase: 'Luteal',
-    phaseColor: Colors.skyDeep,
+    phaseColor: Colors.lavender,
     icon: 'flower',
     tagline: 'Focused, grounded & reflective.',
     energy: ['Analytical', 'Detail-oriented', 'Nesting'],
     selfCare: 'Finish projects · Cozy nights in · Nourishing meals',
     affirmation: '"I trust the rhythm of my body and honour every phase."',
-    tipAccent: Colors.skyDeep,
   },
 };
 
@@ -143,6 +138,9 @@ export default function HomeScreen() {
   const bottomPad = 68 + 12 + insets.bottom + 16;
 
   // ── Suggest cards ──────────────────────────────────────────────────────────
+  // Each card uses one accent colour for the icon + CTA only — body text
+  // stays in textPrimary/Secondary so the carousel feels calm, not
+  // multi-coloured.
   const suggestions = [
     {
       key: 'log',
@@ -150,7 +148,7 @@ export default function HomeScreen() {
       title: 'Log your cycle',
       body: season ? `In ${season.name} — ${season.tagline}` : 'Start tracking your period',
       accent: Colors.roseDeep,
-      bg: 'rgba(203,117,117,0.12)',
+      bg: 'rgba(176,69,90,0.07)',
       onPress: () => router.push('/(tabs)/cycle/log-period' as any),
     },
     {
@@ -160,8 +158,8 @@ export default function HomeScreen() {
       body: prediction?.next_period_start
         ? `Next period ~${formatDisplayDate(prediction.next_period_start)}`
         : 'Year-ahead cycle predictions',
-      accent: Colors.matchaDeep,
-      bg: 'rgba(78,158,90,0.10)',
+      accent: Colors.cherryDark,
+      bg: 'rgba(122,42,61,0.06)',
       onPress: () => router.push('/(tabs)/cycle/calendar' as any),
     },
     {
@@ -169,8 +167,8 @@ export default function HomeScreen() {
       icon: 'clipboard-list' as IconName,
       title: 'Health log',
       body: 'Record symptoms, mood & metrics for today',
-      accent: Colors.skyDeep,
-      bg: 'rgba(104,162,200,0.12)',
+      accent: Colors.gold,
+      bg: 'rgba(196,155,137,0.10)',
       onPress: () => router.push('/(tabs)/health' as any),
     },
     {
@@ -178,8 +176,8 @@ export default function HomeScreen() {
       icon: 'book-open' as IconName,
       title: 'Read & learn',
       body: season ? `Articles for the ${season.name} phase` : 'Evidence-based articles',
-      accent: '#9B88C4',
-      bg: 'rgba(155,136,196,0.12)',
+      accent: Colors.lavender,
+      bg: 'rgba(168,154,181,0.10)',
       onPress: () => router.push('/(tabs)/education' as any),
     },
   ];
@@ -230,28 +228,31 @@ export default function HomeScreen() {
           {/* ── Hero glass card ──────────────────────────────────────────── */}
           {season && seasonInfo ? (
             <View style={styles.heroCard}>
-              <Text style={styles.smallcaps}>TODAY — DAY {seasonInfo.cycleDay} OF {seasonInfo.cycleLength}</Text>
+              <View style={styles.heroTopRow}>
+                <View style={[styles.phaseDotBig, { backgroundColor: season.phaseColor }]} />
+                <Text style={styles.smallcaps}>DAY {seasonInfo.cycleDay} OF {seasonInfo.cycleLength}</Text>
+              </View>
               <Text style={[styles.heroPhase, { color: season.phaseColor }]}>
                 {season.name} phase
               </Text>
               <Text style={styles.heroTagline}>{season.tagline}</Text>
 
-              {/* Energy chips */}
+              {/* Energy chips — neutral, cohesive */}
               <View style={styles.chipsRow}>
                 {season.energy.map((e) => (
-                  <View key={e} style={[styles.chip, { borderColor: season.phaseColor + '55' }]}>
-                    <Text style={[styles.chipText, { color: season.phaseColor }]}>{e}</Text>
+                  <View key={e} style={styles.chip}>
+                    <Text style={styles.chipText}>{e}</Text>
                   </View>
                 ))}
               </View>
 
               {/* Self-care */}
               <View style={styles.selfCareRow}>
-                <Icon name="leaf" size={14} color={Colors.textMuted} />
+                <Icon name="leaf" size={14} color={season.phaseColor} />
                 <Text style={styles.selfCareText}>{season.selfCare}</Text>
               </View>
 
-              <Text style={[styles.affirmation, { color: season.phaseColor }]}>
+              <Text style={styles.affirmation}>
                 {season.affirmation}
               </Text>
 
@@ -259,17 +260,17 @@ export default function HomeScreen() {
                 onPress={() => router.push('/(tabs)/cycle' as any)}
                 style={styles.heroLink}
               >
-                <Text style={[styles.heroLinkText, { color: season.phaseColor }]}>
+                <Text style={styles.heroLinkText}>
                   View full cycle
                 </Text>
-                <Icon name="arrow-right" size={14} color={season.phaseColor} />
+                <Icon name="arrow-right" size={14} color={Colors.textPrimary} />
               </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.heroCard}>
               <Text style={styles.smallcaps}>WELCOME</Text>
               <Text style={styles.heroPhase}>Start your journey</Text>
-              <Text style={styles.heroTagline}>Log your first period to unlock personalized cycle insights.</Text>
+              <Text style={styles.heroTagline}>Log your first period to unlock personalised cycle insights.</Text>
               <TouchableOpacity
                 onPress={() => router.push('/(tabs)/cycle/log-period' as any)}
                 style={styles.heroCta}
@@ -326,7 +327,6 @@ export default function HomeScreen() {
           {/* ── For you today ────────────────────────────────────────────── */}
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>For you today</Text>
-            <Icon name="sparkles" size={16} color={Colors.matchaDeep} />
           </View>
 
           <ScrollView
@@ -388,18 +388,18 @@ function createStyles(c: AppColors) {
   scrollContent: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
 
   // Header
-  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.xs },
   dateSmallcaps: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Jost_600SemiBold',
     color: Colors.textMuted,
-    letterSpacing: 1.2,
+    letterSpacing: 1.4,
     flex: 1,
   },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
   bellBtn: { padding: 6, position: 'relative' },
   profileBtn: {
-    width: 34, height: 34, borderRadius: 17,
+    width: 36, height: 36, borderRadius: 18,
     backgroundColor: Colors.glassBgSoft,
     borderWidth: 1, borderColor: Colors.border,
     alignItems: 'center', justifyContent: 'center',
@@ -413,47 +413,47 @@ function createStyles(c: AppColors) {
   badgeText: { fontSize: 9, color: Colors.white, fontFamily: 'Jost_600SemiBold' },
 
   greeting: {
-    fontSize: 34,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontSize: 30,
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textPrimary,
-    marginTop: 8,
-    lineHeight: 40,
+    marginTop: Spacing.sm,
+    lineHeight: 36,
   },
   tagline: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_600SemiBold',
-    color: Colors.textMuted,
+    fontFamily: 'Jost_400Regular',
+    color: Colors.textSecondary,
     marginBottom: Spacing.lg,
-    marginTop: 2,
+    marginTop: Spacing.xs,
   },
 
   // Hero card
   heroCard: {
     backgroundColor: Colors.glassBg,
-    borderRadius: 32,
-    padding: 24,
+    borderRadius: 28,
+    padding: Spacing.lg,
     borderWidth: 1,
     borderColor: Colors.glassBorder,
-    shadowColor: '#333244',
+    shadowColor: '#2A1F26',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.08,
     shadowRadius: 20,
     elevation: 4,
     marginBottom: Spacing.md,
   },
+  heroTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  phaseDotBig: { width: 10, height: 10, borderRadius: 5 },
   smallcaps: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Jost_600SemiBold',
     color: Colors.textMuted,
-    letterSpacing: 1.5,
-    marginBottom: 6,
+    letterSpacing: 1.4,
   },
   heroPhase: {
-    fontSize: 28,
-    fontFamily: 'CormorantGaramond_600SemiBold',
-    color: Colors.textPrimary,
-    lineHeight: 34,
-    marginBottom: 6,
+    fontSize: 26,
+    fontFamily: 'Jost_600SemiBold',
+    lineHeight: 32,
+    marginBottom: 4,
   },
   heroTagline: {
     fontSize: FontSize.sm,
@@ -462,23 +462,31 @@ function createStyles(c: AppColors) {
     lineHeight: 20,
     marginBottom: Spacing.md,
   },
-  chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: Spacing.sm },
+  chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: Spacing.md },
   chip: {
-    borderRadius: 99, paddingHorizontal: 10, paddingVertical: 5,
-    borderWidth: 1, backgroundColor: Colors.glassBgSubtle,
+    borderRadius: 99,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.glassBgSubtle,
   },
-  chipText: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium' },
-  selfCareRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: Spacing.sm },
-  selfCareText: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, flex: 1, lineHeight: 18 },
+  chipText: {
+    fontSize: FontSize.xs,
+    fontFamily: 'Jost_500Medium',
+    color: Colors.textSecondary,
+  },
+  selfCareRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: Spacing.sm },
+  selfCareText: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, flex: 1, lineHeight: 18 },
   affirmation: {
     fontSize: FontSize.sm,
-    fontFamily: 'CormorantGaramond_600SemiBold',
-    opacity: 0.85,
+    fontFamily: 'Jost_500Medium',
+    color: Colors.textPrimary,
     marginBottom: Spacing.md,
     lineHeight: 20,
   },
-  heroLink: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  heroLinkText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold' },
+  heroLink: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  heroLinkText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
   heroCta: {
     alignSelf: 'flex-start',
     backgroundColor: Colors.cherry,
@@ -492,22 +500,22 @@ function createStyles(c: AppColors) {
   // Stat tiles
   statsRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
   statTile: {
     flex: 1,
     backgroundColor: Colors.glassBgSoft,
     borderRadius: 20,
-    padding: 12,
+    padding: 14,
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  statTileHeader: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
+  statTileHeader: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 6 },
   statDot: { width: 6, height: 6, borderRadius: 3 },
-  statTileLabel: { fontSize: 9, fontFamily: 'Jost_600SemiBold', color: Colors.textMuted, letterSpacing: 0.5, flex: 1 },
-  statTileValue: { fontSize: 22, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, lineHeight: 26 },
-  statTileHint: { fontSize: 10, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 1 },
+  statTileLabel: { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: Colors.textMuted, letterSpacing: 0.6, flex: 1 },
+  statTileValue: { fontSize: 22, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary, lineHeight: 26 },
+  statTileHint: { fontSize: 10, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2 },
 
   // Alerts
   alertBanner: {
@@ -517,20 +525,20 @@ function createStyles(c: AppColors) {
     borderWidth: 1, borderColor: Colors.border,
     marginBottom: Spacing.sm,
   },
-  alertEmergency: { borderColor: Colors.roseDeep + '55', backgroundColor: 'rgba(203,117,117,0.08)' },
-  alertTitle: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textSecondary },
-  alertBody: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2, lineHeight: 18 },
+  alertEmergency: { borderColor: Colors.roseDeep + '55', backgroundColor: 'rgba(176,69,90,0.08)' },
+  alertTitle: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
+  alertBody: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, marginTop: 2, lineHeight: 18 },
 
   // For you today
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  sectionTitle: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary },
-  carouselContent: { gap: 12, paddingBottom: 4 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
+  sectionTitle: { fontSize: FontSize.xl, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
+  carouselContent: { gap: Spacing.sm, paddingBottom: Spacing.xs },
   suggestCard: {
     width: 180,
-    borderRadius: 24,
-    padding: 16,
+    borderRadius: 22,
+    padding: Spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(51,50,68,0.07)',
+    borderColor: Colors.glassBorder,
   },
   suggestIcon: {
     width: 38, height: 38, borderRadius: 14,
@@ -539,7 +547,7 @@ function createStyles(c: AppColors) {
   },
   suggestTitle: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Jost_600SemiBold',
     color: Colors.textPrimary,
     marginBottom: 4,
     lineHeight: 20,
@@ -552,7 +560,7 @@ function createStyles(c: AppColors) {
     marginBottom: 12,
     flex: 1,
   },
-  suggestCta: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  suggestCta: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   suggestCtaText: { fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold' },
 
   disclaimer: {

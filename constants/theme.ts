@@ -22,7 +22,7 @@ export const Radius = {
   lg: 16,
   xl: 20,
   xxl: 24,
-  xxxl: 32,   // cycle-bloom "2rem" — main card radius
+  xxxl: 32,
   full: 9999,
 } as const;
 
@@ -47,34 +47,37 @@ export const FontWeight = {
 };
 
 // ─── Font families ────────────────────────────────────────────────────────────
+// Single-typeface system: Jost everywhere. The legacy `display` /
+// `displayItalic` aliases are kept (mapped to Jost weights) so existing
+// callers compile without churn.
 export const FontFamily = {
   sans: 'Jost_400Regular',
   sansMedium: 'Jost_500Medium',
   sansSemibold: 'Jost_600SemiBold',
-  display: 'CormorantGaramond_600SemiBold',
-  displayItalic: 'CormorantGaramond_600SemiBold_Italic',
+  display: 'Jost_600SemiBold',
+  displayItalic: 'Jost_500Medium',
   sansSystem: 'System',
-  displaySystem: 'Georgia',
+  displaySystem: 'System',
 } as const;
 
 // ─── Shadows — soft ──────────────────────────────────────────────────────────
 export const Shadow = {
   sm: {
-    shadowColor: '#333244',
+    shadowColor: '#2A1F26',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 6,
     elevation: 2,
   },
   md: {
-    shadowColor: '#333244',
+    shadowColor: '#2A1F26',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#333244',
+    shadowColor: '#2A1F26',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.10,
     shadowRadius: 30,
@@ -93,9 +96,9 @@ export const lightTheme = {
   border: Colors.border,
   borderStrong: Colors.borderStrong,
   primary: Colors.cherry,
-  secondary: Colors.forest,
+  secondary: Colors.cherryDark,
   accent: Colors.gold,
-  tabBar: Colors.forestDark,
+  tabBar: Colors.surface,
   tabActive: Colors.cherry,
   tabInactive: Colors.textMuted,
   isDark: false,
@@ -110,12 +113,12 @@ export const darkTheme = {
   textMuted: Colors.textMutedDark,
   border: Colors.borderDark,
   borderStrong: Colors.borderDark,
-  primary: Colors.cherry,
-  secondary: Colors.forest,
-  accent: Colors.whiskey,
-  tabBar: Colors.forestDark,
-  tabActive: Colors.whiskey,
-  tabInactive: 'rgba(224,224,224,0.35)',
+  primary: Colors.cherryLight,
+  secondary: Colors.cherryDark,
+  accent: Colors.gold,
+  tabBar: Colors.surfaceDark,
+  tabActive: Colors.cherryLight,
+  tabInactive: 'rgba(245,235,232,0.45)',
   isDark: true,
 };
 

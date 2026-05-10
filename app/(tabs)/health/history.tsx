@@ -169,7 +169,7 @@ function createStyles(c: AppColors) {
     card: { marginBottom: Spacing.sm, gap: Spacing.sm },
     date: {
       fontSize: FontSize.lg,
-      fontFamily: 'CormorantGaramond_600SemiBold',
+      fontFamily: 'Jost_600SemiBold',
       color: c.textPrimary,
       marginBottom: 2,
     },

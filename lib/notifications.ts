@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -14,6 +15,17 @@ Notifications.setNotificationHandler({
 
 export async function registerForPushNotifications(): Promise<string | null> {
   if (!Device.isDevice) return null;
+
+  // Android requires an explicit notification channel for any notification to
+  // display — without one, scheduled local notifications silently no-op.
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'Default',
+      importance: Notifications.AndroidImportance.DEFAULT,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#DC143C',
+    });
+  }
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;

@@ -58,7 +58,7 @@ function createStyles(c: AppColors) {
     },
     title: {
       fontSize: 28,
-      fontFamily: 'CormorantGaramond_600SemiBold',
+      fontFamily: 'Jost_600SemiBold',
       color: c.textPrimary,
       lineHeight: 34,
       marginBottom: 6,

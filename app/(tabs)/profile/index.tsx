@@ -42,8 +42,8 @@ export default function ProfileScreen() {
     return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  const MenuItem = ({ iconName, label, onPress, badge }: { iconName: IconName; label: string; onPress: () => void; badge?: string }) => (
-    <TouchableOpacity onPress={onPress} style={styles.menuItem} activeOpacity={0.8}>
+  const MenuItem = ({ iconName, label, onPress, badge, isLast }: { iconName: IconName; label: string; onPress: () => void; badge?: string; isLast?: boolean }) => (
+    <TouchableOpacity onPress={onPress} style={[styles.menuItem, !isLast && styles.menuItemBorder]} activeOpacity={0.8}>
       <Icon name={iconName} size={20} color={theme.textSecondary} />
       <Text style={styles.menuLabel}>{label}</Text>
       {badge && <Badge label={badge} variant="cherry" />}
@@ -127,14 +127,13 @@ export default function ProfileScreen() {
                   </View>
                 </>
               )}
-              <View style={styles.divider} />
               <TouchableOpacity
                 onPress={() => router.push('/(tabs)/profile/edit-profile' as any)}
                 style={styles.editBtn}
                 activeOpacity={0.8}
               >
                 <Icon name="pencil" size={14} color={Colors.cherry} />
-                <Text style={styles.editBtnText}>Edit Profile & Change Password</Text>
+                <Text style={styles.editBtnText}>Edit profile & change password</Text>
               </TouchableOpacity>
             </Card>
           </View>
@@ -143,15 +142,15 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
           <Card noPadding>
-            <MenuItem iconName="link" label="Connected Accounts" onPress={() => router.push('/(tabs)/profile/connected-accounts' as any)} />
-            <MenuItem iconName="shield" label="Emergency Contacts" onPress={() => router.push('/(tabs)/profile/emergency-contacts' as any)} />
+            <MenuItem iconName="link" label="Connected accounts" onPress={() => router.push('/(tabs)/profile/connected-accounts' as any)} />
+            <MenuItem iconName="shield" label="Emergency contacts" onPress={() => router.push('/(tabs)/profile/emergency-contacts' as any)} isLast />
           </Card>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Settings</Text>
           <Card noPadding>
-            <MenuItem iconName="settings" label="App Settings" onPress={() => router.push('/(tabs)/profile/settings' as any)} />
+            <MenuItem iconName="settings" label="App settings" onPress={() => router.push('/(tabs)/profile/settings' as any)} isLast />
           </Card>
         </View>
 
@@ -189,20 +188,20 @@ function createStyles(c: AppColors) {
       backgroundColor: 'rgba(255,255,255,0.25)',
       alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
     },
-    avatarText: { fontSize: 36, fontWeight: FontWeight.bold, color: c.white ?? '#FFFFFF' },
-    name: { fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: c.white ?? '#FFFFFF', marginBottom: 4 },
-    email: { fontSize: FontSize.sm, color: 'rgba(255,255,255,0.8)', marginBottom: 4 },
-    memberSince: { fontSize: FontSize.xs, color: 'rgba(255,255,255,0.6)' },
+    avatarText: { fontSize: 36, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
+    name: { fontSize: FontSize.xl, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF', marginBottom: 4 },
+    email: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.85)', marginBottom: 4 },
+    memberSince: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: 'rgba(255,255,255,0.7)' },
 
     statsSection: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
     statsGrid: { flexDirection: 'row', gap: Spacing.sm },
     statCell: { flex: 1, alignItems: 'center', paddingVertical: Spacing.md },
-    statValue: { fontSize: FontSize.xxl, fontWeight: FontWeight.bold, color: Colors.cherry },
-    statLabel: { fontSize: FontSize.xs, color: Colors.textMuted, marginTop: 2, textAlign: 'center' },
+    statValue: { fontSize: FontSize.xxl, fontFamily: 'Jost_600SemiBold', color: Colors.textPrimary },
+    statLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted, marginTop: 2, textAlign: 'center' },
 
     section: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
     sectionTitle: {
-      fontSize: FontSize.xs, fontWeight: FontWeight.semibold,
+      fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold',
       color: Colors.textMuted, textTransform: 'uppercase',
       letterSpacing: 0.8, marginBottom: Spacing.sm,
     },
@@ -210,26 +209,27 @@ function createStyles(c: AppColors) {
       flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
       paddingVertical: Spacing.sm,
     },
-    infoLabel: { fontSize: FontSize.sm, color: Colors.textMuted, flex: 1 },
-    infoValue: { fontSize: FontSize.sm, color: Colors.textPrimary, fontWeight: FontWeight.semibold },
+    infoLabel: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: Colors.textSecondary, flex: 1 },
+    infoValue: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.textPrimary },
     divider: { height: 1, backgroundColor: Colors.border },
     regularityBadge: { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 3 },
-    regularityText: { fontSize: FontSize.xs, fontWeight: FontWeight.semibold, textTransform: 'capitalize' },
+    regularityText: { fontSize: FontSize.xs, fontFamily: 'Jost_600SemiBold', textTransform: 'capitalize' },
     editBtn: {
       flexDirection: 'row', gap: Spacing.xs,
       paddingVertical: Spacing.sm, alignItems: 'center', justifyContent: 'center',
-      borderRadius: Radius.md, backgroundColor: Colors.cherryLighter, marginTop: Spacing.sm,
+      borderRadius: Radius.md, backgroundColor: Colors.cherryLighter, marginTop: Spacing.md,
     },
-    editBtnText: { fontSize: FontSize.sm, color: Colors.cherry, fontWeight: FontWeight.semibold },
+    editBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
 
     menuItem: {
       flexDirection: 'row', alignItems: 'center',
-      padding: Spacing.md, borderBottomWidth: 1, borderBottomColor: Colors.border, gap: Spacing.sm,
+      padding: Spacing.md, gap: Spacing.sm,
     },
-    menuLabel: { flex: 1, fontSize: FontSize.md, color: Colors.textPrimary },
+    menuItemBorder: { borderBottomWidth: 1, borderBottomColor: Colors.border },
+    menuLabel: { flex: 1, fontSize: FontSize.md, fontFamily: 'Jost_500Medium', color: Colors.textPrimary },
 
     signOutBtn: { margin: Spacing.xl, padding: Spacing.md, alignItems: 'center' },
-    signOutText: { fontSize: FontSize.md, color: Colors.cherry, fontWeight: FontWeight.semibold },
-    footer: { textAlign: 'center', fontSize: FontSize.xs, color: Colors.textMuted },
+    signOutText: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+    footer: { textAlign: 'center', fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: Colors.textMuted },
   });
 }

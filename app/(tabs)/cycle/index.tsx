@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,12 +12,15 @@ import { FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
 import { AuroraBackground } from '../../../components/layout/AuroraBackground';
 
 // ── Phase palette ─────────────────────────────────────────────────────────────
+// Anchored to the warm rose palette in constants/colors.ts. Each phase has
+// a distinct hue but they all sit in the same tonal family (warm, slightly
+// muted) so the cycle ring feels cohesive.
 const PHASE_COLORS = {
-  period:     '#CB7575',
-  follicular: '#8DC98F',
-  fertile:    '#4E9E5A',
-  ovulation:  '#D4AD62',
-  luteal:     '#82AECF',
+  period:     '#B0455A', // deep rose
+  follicular: '#B5C8B5', // light muted sage
+  fertile:    '#8FA88E', // muted sage
+  ovulation:  '#D4A65C', // warm honey
+  luteal:     '#A89AB5', // soft mauve
 } as const;
 
 type Phase = keyof typeof PHASE_COLORS;
@@ -208,11 +211,19 @@ export default function CycleScreen() {
   const phaseColor = PHASE_COLORS[cycle.phase];
   const bottomPad  = 68 + 12 + insets.bottom + 16;
 
+  // Lock the page scroll while the user is dragging the cycle ring so the
+  // page doesn't move underneath them.
+  const [ringDragging, setRingDragging] = useState(false);
+
   return (
     <View style={styles.screen}>
       <AuroraBackground />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: bottomPad }}
+          scrollEnabled={!ringDragging}
+        >
 
           {/* ── Header ── */}
           <View style={styles.header}>
@@ -221,7 +232,11 @@ export default function CycleScreen() {
 
           {/* ── Cycle Ring ── */}
           <View style={styles.ringCard}>
-            <CycleRing cycleLogs={cycleLogs} prediction={prediction} />
+            <CycleRing
+              cycleLogs={cycleLogs}
+              prediction={prediction}
+              onDragChange={setRingDragging}
+            />
           </View>
 
           {/* ── Quick-log row ── */}
@@ -241,7 +256,7 @@ export default function CycleScreen() {
             ))}
           </View>
 
-          {/* ── Phase insight card (the AI / Clue-style block) ── */}
+          {/* ── Phase insight card ── */}
           {cycle.hasData && (
             <View style={[styles.phaseCard, { borderColor: phaseColor + '45' }]}>
               {/* Top row: phase name + energy/mood chips */}
@@ -303,7 +318,7 @@ export default function CycleScreen() {
             </View>
           )}
 
-          {/* ── Coming up (AI predictions) ── */}
+          {/* ── Coming up ── */}
           {cycle.events.length > 0 && (
             <View style={styles.eventsCard}>
               <Text style={styles.sectionLabel}>COMING UP</Text>
@@ -324,7 +339,7 @@ export default function CycleScreen() {
                 <View style={styles.aiRow}>
                   <Icon name="sparkles" size={11} color={theme.cherry} />
                   <Text style={styles.aiText}>
-                    AI prediction · {Math.round(prediction.confidence_score ?? 0)}% confidence
+                    Predicted from your history · {Math.round(prediction.confidence_score ?? 0)}% confidence
                     {prediction.method_used === 'moving_average_6'
                       ? ' · 6-cycle average'
                       : prediction.method_used === 'average'
@@ -367,7 +382,7 @@ export default function CycleScreen() {
               <Icon name="flower" size={48} color={theme.cherry} />
               <Text style={styles.emptyTitle}>Start tracking your cycle</Text>
               <Text style={styles.emptySub}>
-                Log your first period to unlock AI-powered predictions, personalised phase insights, and your cycle ring.
+                Log your first period to unlock personalised cycle predictions, phase insights, and your cycle ring.
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(tabs)/cycle/log-period')}
@@ -393,7 +408,7 @@ function createStyles(c: AppColors) {
 
     // Header
     header:        { paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
-    title:         { fontSize: 28, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    title:         { fontSize: 28, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
 
     // Ring
     ringCard:      { marginHorizontal: Spacing.md, backgroundColor: glass, borderRadius: 32, borderWidth: 1, borderColor: c.border, overflow: 'hidden', paddingVertical: Spacing.sm },
@@ -444,13 +459,13 @@ function createStyles(c: AppColors) {
     statsCard:     { marginHorizontal: Spacing.md, marginTop: Spacing.md, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, padding: Spacing.md },
     statsRow:      { flexDirection: 'row', justifyContent: 'space-around', marginTop: Spacing.sm },
     stat:          { alignItems: 'center' },
-    statValue:     { fontSize: FontSize.xxl, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    statValue:     { fontSize: FontSize.xxl, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
     statLabel:     { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
     statDivider:   { width: 1, backgroundColor: c.border },
 
     // Empty state
     emptyCard:     { alignItems: 'center', marginHorizontal: Spacing.md, marginTop: Spacing.md, gap: Spacing.sm, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, padding: 36 },
-    emptyTitle:    { fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, textAlign: 'center' },
+    emptyTitle:    { fontSize: FontSize.lg, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, textAlign: 'center' },
     emptySub:      { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 21 },
     emptyBtn:      { backgroundColor: c.cherry, borderRadius: Radius.full, paddingHorizontal: Spacing.xl, paddingVertical: Spacing.sm, marginTop: Spacing.sm },
     emptyBtnText:  { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },

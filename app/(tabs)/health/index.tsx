@@ -844,7 +844,7 @@ function createStyles(c: AppColors) {
     },
     titleBarText: {
       fontSize: FontSize.xxl,
-      fontFamily: 'CormorantGaramond_600SemiBold',
+      fontFamily: 'Jost_600SemiBold',
       color: c.textPrimary,
     },
     titleBarDate: {
@@ -885,7 +885,7 @@ function createStyles(c: AppColors) {
     },
     bannerTitle: {
       fontSize: 22,
-      fontFamily: 'CormorantGaramond_600SemiBold',
+      fontFamily: 'Jost_600SemiBold',
       color: '#FFFFFF',
       letterSpacing: 0.3,
     },
@@ -907,7 +907,7 @@ function createStyles(c: AppColors) {
 
     emptyCard: { alignItems: 'center', paddingVertical: Spacing.xxl },
     emptyTitle: {
-      fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold',
+      fontSize: FontSize.lg, fontFamily: 'Jost_600SemiBold',
       color: c.textPrimary, marginBottom: Spacing.xs, marginTop: Spacing.sm,
     },
     emptySubtitle: {
@@ -1068,7 +1068,7 @@ function createStyles(c: AppColors) {
       alignItems: 'flex-start', marginBottom: Spacing.md,
     },
     modalSymptomDot: { width: 8, height: 8, borderRadius: 4, marginBottom: 4 },
-    modalTitle: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    modalTitle: { fontSize: FontSize.xl, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
     modalSub: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
     modalCloseBtn: {
       width: 30, height: 30, borderRadius: 15,
