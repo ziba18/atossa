@@ -135,21 +135,19 @@ export default function WelcomeScreen() {
                 />
               )
             )}
-            {Platform.OS === 'ios' && (
-              googleLoading ? (
-                <View style={styles.socialLoading}>
-                  <ActivityIndicator color={Colors.white} />
-                </View>
-              ) : (
-                <TouchableOpacity
-                  onPress={handleGoogle}
-                  activeOpacity={0.85}
-                  style={styles.googleBtn}
-                >
-                  <GoogleGLogo size={20} />
-                  <Text style={styles.googleBtnText}>Continue with Google</Text>
-                </TouchableOpacity>
-              )
+            {googleLoading ? (
+              <View style={styles.socialLoading}>
+                <ActivityIndicator color={Colors.white} />
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={handleGoogle}
+                activeOpacity={0.85}
+                style={styles.googleBtn}
+              >
+                <GoogleGLogo size={20} />
+                <Text style={styles.googleBtnText}>Continue with Google</Text>
+              </TouchableOpacity>
             )}
             <Button
               label="Sign up with email"

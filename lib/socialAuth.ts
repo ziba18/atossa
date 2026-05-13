@@ -28,9 +28,9 @@ import { Config } from '../constants/config';
 GoogleSignin.configure({
   webClientId: Config.googleWebClientId,
   iosClientId: Config.googleIosClientId,
-  // Android's client id is auto-discovered from the package + SHA-1
-  // registered in Google Cloud, but passing it explicitly avoids surprises.
-  ...(Platform.OS === 'android' ? { } : {}),
+  ...(Platform.OS === 'android'
+    ? { androidClientId: Config.googleAndroidClientId }
+    : {}),
   // Request the user's profile so we can read name on first sign-in.
   scopes: ['profile', 'email'],
 });
