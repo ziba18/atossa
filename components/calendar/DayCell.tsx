@@ -7,11 +7,22 @@ import type { CalendarDay, CalendarPhase } from '../../algorithms/calendarDerive
 import { CalendarDayText, Accent } from '../../constants/typography';
 
 // Phase fills tuned for the cream background — softer than the orb hues.
-const PHASE_BG: Record<CalendarPhase, string> = {
-  period:     '#E5A5AD',  // soft rose
-  follicular: '#CCE2CD',  // matcha mist
-  ovulation:  '#BFD6EC',  // sky tint
-  luteal:     '#F2E5C9',  // cream apricot
+// Period uses a very light transparent red so logged period days read as
+// a gentle wash rather than a solid block. Predicted period days use the
+// `STROKE` color for their dashed border (transparent fill alone would
+// disappear against the cream background, so we need a visible stroke).
+const PHASE_FILL: Record<CalendarPhase, string> = {
+  period:     'rgba(229, 80, 112, 0.18)',  // very light transparent red
+  follicular: '#CCE2CD',                    // matcha mist
+  ovulation:  '#BFD6EC',                    // sky tint
+  luteal:     '#F2E5C9',                    // cream apricot
+};
+
+const PHASE_STROKE: Record<CalendarPhase, string> = {
+  period:     '#E5A5AD',  // soft rose — visible enough for dashed predicted border
+  follicular: '#CCE2CD',
+  ovulation:  '#BFD6EC',
+  luteal:     '#F2E5C9',
 };
 
 interface Props {
@@ -40,11 +51,11 @@ export function DayCell({ day, info, isToday, inMonth, size, onPress }: Props) {
   const hasPhase = !!info;
   const predicted = info?.predicted;
   const bg = hasPhase
-    ? predicted ? 'transparent' : PHASE_BG[info!.phase]
+    ? predicted ? 'transparent' : PHASE_FILL[info!.phase]
     : 'rgba(255,255,255,0.40)';
 
   const border = hasPhase && predicted
-    ? PHASE_BG[info!.phase]
+    ? PHASE_STROKE[info!.phase]
     : 'rgba(255,255,255,0.55)';
 
   return (
@@ -74,7 +85,7 @@ export function DayCell({ day, info, isToday, inMonth, size, onPress }: Props) {
       >
         {/* Ovulation glow halo */}
         {info?.phase === 'ovulation' && !predicted && (
-          <View style={[styles.ovulationHalo, { backgroundColor: PHASE_BG.ovulation + '99' }]} />
+          <View style={[styles.ovulationHalo, { backgroundColor: PHASE_STROKE.ovulation + '99' }]} />
         )}
 
         {/* Today border */}
