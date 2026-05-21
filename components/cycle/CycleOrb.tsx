@@ -5,7 +5,15 @@ import Animated, {
   useSharedValue, useAnimatedStyle, useAnimatedProps,
   withRepeat, withTiming, withSpring, Easing, interpolate,
 } from 'react-native-reanimated';
-import { DeviceMotion } from 'expo-sensors';
+// Lazy-require expo-sensors so the app loads on dev clients without the
+// native module. Tilt parallax silently disables; orb still breathes/rotates.
+let DeviceMotion: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  DeviceMotion = require('expo-sensors').DeviceMotion;
+} catch {
+  DeviceMotion = null;
+}
 import type { CycleLog, CyclePrediction } from '../../types/database';
 import { Colors } from '../../constants/colors';
 import { FontFamily, Spacing } from '../../constants/theme';
@@ -86,21 +94,26 @@ export function CycleOrb({ cycleLogs, prediction }: Props) {
   const tiltY = useSharedValue(0);
 
   useEffect(() => {
+    if (!DeviceMotion) return; // native module not linked → skip tilt parallax
     let sub: { remove: () => void } | undefined;
     (async () => {
-      const granted = await DeviceMotion.isAvailableAsync();
-      if (!granted) return;
-      DeviceMotion.setUpdateInterval(60);
-      sub = DeviceMotion.addListener((m) => {
-        if (!m.rotation) return;
-        // Cap tilt so it never feels like the orb is sliding off-screen.
-        tiltX.value = withSpring(Math.max(-10, Math.min(10, m.rotation.beta * 12)), {
-          stiffness: 80, damping: 14,
+      try {
+        const granted = await DeviceMotion.isAvailableAsync();
+        if (!granted) return;
+        DeviceMotion.setUpdateInterval(60);
+        sub = DeviceMotion.addListener((m: any) => {
+          if (!m.rotation) return;
+          // Cap tilt so it never feels like the orb is sliding off-screen.
+          tiltX.value = withSpring(Math.max(-10, Math.min(10, m.rotation.beta * 12)), {
+            stiffness: 80, damping: 14,
+          });
+          tiltY.value = withSpring(Math.max(-10, Math.min(10, m.rotation.gamma * 12)), {
+            stiffness: 80, damping: 14,
+          });
         });
-        tiltY.value = withSpring(Math.max(-10, Math.min(10, m.rotation.gamma * 12)), {
-          stiffness: 80, damping: 14,
-        });
-      });
+      } catch {
+        // DeviceMotion failed to start — silently fall back to static orb.
+      }
     })();
     return () => sub?.remove();
   }, []);

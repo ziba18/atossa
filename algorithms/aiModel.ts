@@ -8,15 +8,30 @@
  * can call `getForecaster()` / `getBackfill()` and branch on null.
  */
 
-import { loadTensorflowModel, type TensorflowModel } from 'react-native-fast-tflite';
+// Lazy-require fast-tflite so the app doesn't crash on dev clients that
+// haven't been rebuilt with the native module linked. Falls through to
+// the EWMA forecaster when the import or model load fails.
+let _loadTensorflowModel: ((source: any, delegates: any[]) => Promise<any>) | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  _loadTensorflowModel = require('react-native-fast-tflite').loadTensorflowModel;
+} catch {
+  _loadTensorflowModel = null;
+}
 
-let forecaster: TensorflowModel | null = null;
-let backfill: TensorflowModel | null = null;
+type TensorflowModel = { run: (input: any[]) => Promise<any[]> } | null;
+
+let forecaster: TensorflowModel = null;
+let backfill: TensorflowModel = null;
 let initialized = false;
 
 export async function initAIModels(): Promise<void> {
   if (initialized) return;
   initialized = true;
+
+  // If the native module didn't load (dev client without fast-tflite), skip.
+  if (!_loadTensorflowModel) return;
+  const loadTensorflowModel = _loadTensorflowModel;
 
   // Load both in parallel. Either failing is non-fatal — the prediction
   // pipeline falls back to the EWMA forecaster from cyclePrediction.ts.
@@ -45,11 +60,11 @@ export async function initAIModels(): Promise<void> {
   ]);
 }
 
-export function getForecaster(): TensorflowModel | null {
+export function getForecaster(): TensorflowModel {
   return forecaster;
 }
 
-export function getBackfill(): TensorflowModel | null {
+export function getBackfill(): TensorflowModel {
   return backfill;
 }
 

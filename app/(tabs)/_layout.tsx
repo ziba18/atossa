@@ -6,8 +6,19 @@ import Animated, {
   useSharedValue, useAnimatedStyle, withSpring,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { Icon, type IconName } from '../../components/ui/Icon';
+
+// Lazy-require expo-blur so the app loads on dev clients that don't have
+// the native module linked yet. Falls back to a plain translucent View.
+let BlurView: React.ComponentType<any>;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  BlurView = require('expo-blur').BlurView;
+} catch {
+  BlurView = ({ style, children }: any) => (
+    <View style={[style, { backgroundColor: 'rgba(255,255,255,0.55)' }]}>{children}</View>
+  );
+}
 import { Colors } from '../../constants/colors';
 import { FontFamily } from '../../constants/theme';
 import { useColors } from '../../contexts/ThemeContext';
