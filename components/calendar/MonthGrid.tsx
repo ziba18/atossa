@@ -1,11 +1,10 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { addDays, endOfMonth, format, isSameDay, parseISO, startOfMonth, startOfWeek } from 'date-fns';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, LayoutChangeEvent } from 'react-native';
+import { addDays, endOfMonth, format, isSameDay, startOfMonth, startOfWeek } from 'date-fns';
 import { DayCell } from './DayCell';
 import type { CalendarDay } from '../../algorithms/calendarDerive';
-import { FontFamily, Spacing } from '../../constants/theme';
+import { Spacing, MAX_CONTENT_WIDTH } from '../../constants/theme';
 import { CalendarMonth, CalendarYear, CalendarWeekday } from '../../constants/typography';
-import { Colors } from '../../constants/colors';
 import { toDateStr } from '../../algorithms/dateHelpers';
 
 interface Props {
@@ -17,7 +16,16 @@ interface Props {
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+// Pre-compute a reasonable cell size from screen width so the first paint
+// doesn't flash an empty grid. onLayout refines this once the grid view
+// actually measures itself.
+const SCREEN_W = Math.min(Dimensions.get('window').width, MAX_CONTENT_WIDTH);
+const CARD_INSET = Spacing.md * 4; // card horizontal margin (×2) + card padding (×2)
+const INITIAL_CELL = Math.floor((SCREEN_W - CARD_INSET) / 7);
+
 export function MonthGrid({ month, calendar, today, onSelectDay }: Props) {
+  const [cellSize, setCellSize] = useState(INITIAL_CELL);
+
   const cells = useMemo(() => {
     const first = startOfMonth(month);
     const last = endOfMonth(month);
@@ -34,23 +42,31 @@ export function MonthGrid({ month, calendar, today, onSelectDay }: Props) {
 
   const monthIdx = month.getMonth();
 
+  // The grid container measures its own width and divides by 7 — this
+  // gives every cell an exact integer pixel width, no floating-point
+  // wrap behaviour. Floor (not round) so 7 cells always fit.
+  const onGridLayout = (e: LayoutChangeEvent) => {
+    const measured = Math.floor(e.nativeEvent.layout.width / 7);
+    if (measured > 0 && measured !== cellSize) setCellSize(measured);
+  };
+
   return (
     <View style={styles.card}>
-      {/* Month header — Cormorant italic */}
+      {/* Month header */}
       <View style={styles.header}>
         <Text style={styles.monthTitle}>{format(month, 'MMMM')}</Text>
         <Text style={styles.year}>{format(month, 'yyyy')}</Text>
       </View>
 
-      {/* Weekday header */}
+      {/* Weekday header — same exact widths so columns align with the grid */}
       <View style={styles.weekdayRow}>
         {WEEKDAYS.map((d, i) => (
-          <Text key={i} style={styles.weekday}>{d}</Text>
+          <Text key={i} style={[styles.weekday, { width: cellSize }]}>{d}</Text>
         ))}
       </View>
 
       {/* Day grid */}
-      <View style={styles.grid}>
+      <View style={styles.grid} onLayout={onGridLayout}>
         {cells.map((d) => {
           const dateStr = toDateStr(d);
           const info = calendar.get(dateStr);
@@ -61,6 +77,7 @@ export function MonthGrid({ month, calendar, today, onSelectDay }: Props) {
               info={info}
               isToday={isSameDay(d, today)}
               inMonth={d.getMonth() === monthIdx}
+              size={cellSize}
               onPress={() => onSelectDay(dateStr)}
             />
           );
@@ -98,7 +115,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 6,
   },
-  weekday: { ...CalendarWeekday, flex: 1, textAlign: 'center' as const },
+  weekday: { ...CalendarWeekday, textAlign: 'center' as const },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

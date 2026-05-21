@@ -19,10 +19,14 @@ interface Props {
   info?: CalendarDay;
   isToday: boolean;
   inMonth: boolean;
+  /** Exact pixel size for both width and height — supplied by MonthGrid
+   *  after it measures its own width. Avoids the floating-point wrap bug
+   *  that percentage widths can produce in a 7-column flexWrap row. */
+  size: number;
   onPress: () => void;
 }
 
-export function DayCell({ day, info, isToday, inMonth, onPress }: Props) {
+export function DayCell({ day, info, isToday, inMonth, size, onPress }: Props) {
   // Pressable is the OUTER element so gestures reach it directly.
   // The scale animation lives on an inner Animated.View — it can't
   // swallow touches because it sits inside the Pressable hit box.
@@ -51,7 +55,7 @@ export function DayCell({ day, info, isToday, inMonth, onPress }: Props) {
       // hitSlop expands the tap target slightly beyond the visible cell so
       // narrow gaps between cells don't dead-zone the tap.
       hitSlop={2}
-      style={styles.cell}
+      style={[styles.cell, { width: size, height: size }]}
     >
       <Animated.View
         style={[
@@ -90,12 +94,9 @@ export function DayCell({ day, info, isToday, inMonth, onPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  // Explicit width = 1/7 of the row. `flex: 1` inside `flexWrap: 'wrap'`
-  // is fragile — yoga can collapse cells to 0 width in some Metro states,
-  // which is the exact symptom that broke tapping before.
+  // Width + height are supplied per-instance by MonthGrid (measured from
+  // the actual grid container) so 7 cells always fit on one row.
   cell: {
-    width: `${100 / 7}%`,
-    aspectRatio: 1,
     padding: 2,
   },
   inner: {
