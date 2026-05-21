@@ -17,17 +17,29 @@ if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../stores/uiStore';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { initAIModels } from '../algorithms/aiModel';
 import { useFonts } from 'expo-font';
 import {
   Jost_400Regular,
   Jost_500Medium,
   Jost_600SemiBold,
 } from '@expo-google-fonts/jost';
+import {
+  CormorantGaramond_500Medium,
+  CormorantGaramond_500Medium_Italic,
+  CormorantGaramond_600SemiBold,
+} from '@expo-google-fonts/cormorant-garamond';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { MAX_CONTENT_WIDTH } from '../constants/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+// Load the on-device AI models eagerly at module load. initAIModels()
+// catches and swallows all errors, so a missing or stub .tflite simply
+// leaves the predictor in "fall back to EWMA" mode without blocking app
+// startup.
+initAIModels().catch(() => {});
 
 function AppShell() {
   // Importing useAuth runs the module-level startAuthInit() side effect that
@@ -42,6 +54,9 @@ function AppShell() {
     Jost_400Regular,
     Jost_500Medium,
     Jost_600SemiBold,
+    CormorantGaramond_500Medium,
+    CormorantGaramond_500Medium_Italic,
+    CormorantGaramond_600SemiBold,
   });
 
   // Hide the splash as soon as the visual prerequisites (fonts + theme) are

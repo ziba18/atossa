@@ -1,0 +1,15 @@
+# Phase B training stack.
+#
+# TensorFlow is used end-to-end (training + TFLite export) so the conversion
+# is a single .convert() call. PyTorch was considered but adds an ONNX→TF
+# hop that breaks regularly across version pins.
+#
+# Tested on Python 3.10 / macOS arm64. On Apple Silicon, `tensorflow` ships
+# with Metal acceleration out of the box.
+
+tensorflow==2.16.1
+numpy>=1.26,<2.0
+pandas>=2.2,<3.0
+scikit-learn>=1.4,<2.0
+kaggle>=1.6,<2.0     # optional — only for fetch.py
+tqdm>=4.66,<5.0

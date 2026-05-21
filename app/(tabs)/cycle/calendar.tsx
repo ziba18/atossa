@@ -1,394 +1,268 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { CalendarList } from 'react-native-calendars';
-import { addDays, differenceInDays, format, parseISO, startOfDay } from 'date-fns';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { addMonths, endOfMonth, parseISO, startOfMonth } from 'date-fns';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
 import { supabase } from '../../../lib/supabase';
-import { Header } from '../../../components/layout/Header';
+import { AuroraBackground } from '../../../components/layout/AuroraBackground';
+import { MonthGrid } from '../../../components/calendar/MonthGrid';
+import { DayEditorSheet } from '../../../components/calendar/DayEditorSheet';
+import { Icon } from '../../../components/ui/Icon';
+import { deriveCalendar } from '../../../algorithms/calendarDerive';
+import { toDateStr } from '../../../algorithms/dateHelpers';
 import { Colors } from '../../../constants/colors';
-import { useColors, type AppColors } from '../../../contexts/ThemeContext';
-import { FontSize, Spacing, Radius } from '../../../constants/theme';
-import type { CycleLog, CyclePrediction } from '../../../types/database';
+import { FontFamily, Spacing } from '../../../constants/theme';
+import type { CycleLog } from '../../../types/database';
 
-// ── Colours ───────────────────────────────────────────────────────────────────
-const CAL = {
-  period:    { bg: '#C76E72', text: '#FFFFFF' },
-  periodDim: { bg: 'rgba(199,110,114,0.30)', text: '#FFFFFF' },
-  predicted: { bg: '#E8AFAF', text: '#FFFFFF' },
-  fertile:   { bg: '#8DBF8A', text: '#FFFFFF' },
-  ovulation: { bg: '#D4C870', text: '#5A4A00' },
-} as const;
+// ── Phase legend chips (Aura-style) ─────────────────────────────────────────
+const PHASES = [
+  { key: 'period',     label: 'Period',     color: '#E5A5AD' },
+  { key: 'follicular', label: 'Follicular', color: '#CCE2CD' },
+  { key: 'ovulation',  label: 'Ovulation',  color: '#BFD6EC' },
+  { key: 'luteal',     label: 'Luteal',     color: '#F2E5C9' },
+] as const;
 
-type DayMark = {
-  startingDay?: boolean;
-  endingDay?: boolean;
-  color: string;
-  textColor: string;
-};
+export default function CycleCalendarScreen() {
+  const insets = useSafeAreaInsets();
+  const user = useAuthStore((s) => s.user);
+  const { cycleLogs, prediction, fetchCycleLogs, recomputePrediction } = useCycleStore();
 
-// ── Build base marked dates ───────────────────────────────────────────────────
-function buildMarkedDates(
-  cycleLogs: CycleLog[],
-  prediction: CyclePrediction | null,
-): Record<string, DayMark> {
-  const marks: Record<string, DayMark> = {};
+  // ── Selection state ───────────────────────────────────────────────────────
+  const [selected, setSelected] = useState<string | null>(null);
 
-  function markRange(start: Date, end: Date, color: string, textColor: string) {
-    let cur = startOfDay(start);
-    const last = startOfDay(end);
-    while (cur <= last) {
-      const s = format(cur, 'yyyy-MM-dd');
-      marks[s] = {
-        startingDay: cur.getTime() === startOfDay(start).getTime(),
-        endingDay:   cur.getTime() === last.getTime(),
-        color, textColor,
-      };
-      cur = addDays(cur, 1);
+  useEffect(() => {
+    if (user) fetchCycleLogs(user.id);
+  }, [user]);
+
+  // ── Month list: past 3 → current → next 6 ─────────────────────────────────
+  const today = useMemo(() => new Date(), []);
+  const months = useMemo(() => {
+    const arr: Date[] = [];
+    for (let i = -3; i <= 6; i++) arr.push(addMonths(startOfMonth(today), i));
+    return arr;
+  }, [today]);
+
+  // ── Derive per-day phase map across the whole visible range ──────────────
+  const calendar = useMemo(() => {
+    const start = toDateStr(startOfMonth(months[0]));
+    const end   = toDateStr(endOfMonth(months[months.length - 1]));
+    return deriveCalendar(cycleLogs, prediction, start, end);
+  }, [cycleLogs, prediction, months]);
+
+  const selectedInfo = selected ? calendar.get(selected) : undefined;
+
+  // ── Edit handlers — all go through the store so AI + EWMA pipeline reruns ─
+  const refresh = useCallback(async () => {
+    if (!user) return;
+    await fetchCycleLogs(user.id);
+    await recomputePrediction(user.id);
+  }, [user]);
+
+  const onMarkStart = useCallback(async (date: string) => {
+    if (!user) return;
+    // If there's an existing log within 12 days, treat as edit-start.
+    const nearby = cycleLogs.find(
+      (l) => Math.abs(
+        parseISO(l.period_start).getTime() - parseISO(date).getTime(),
+      ) < 12 * 86400000,
+    );
+    if (nearby) {
+      await supabase.from('cycle_logs').update({ period_start: date }).eq('id', nearby.id);
+    } else {
+      await supabase.from('cycle_logs').insert({
+        user_id: user.id,
+        period_start: date,
+        period_length: 5,
+        flow_intensity: 'medium',
+        is_confirmed: true,
+      });
     }
-  }
+    await refresh();
+  }, [user, cycleLogs, refresh]);
 
-  function markDay(date: Date, color: string, textColor: string) {
-    marks[format(date, 'yyyy-MM-dd')] = { startingDay: true, endingDay: true, color, textColor };
-  }
+  const onMarkEnd = useCallback(async (date: string) => {
+    if (!user) return;
+    // Find the most recent log whose start ≤ date.
+    const candidate = [...cycleLogs]
+      .filter((l) => l.period_start <= date)
+      .sort((a, b) => b.period_start.localeCompare(a.period_start))[0];
+    if (!candidate) return;
+    const periodLength = Math.max(2, Math.min(10,
+      Math.round((parseISO(date).getTime() - parseISO(candidate.period_start).getTime()) / 86400000) + 1
+    ));
+    await supabase
+      .from('cycle_logs')
+      .update({ period_end: date, period_length: periodLength })
+      .eq('id', candidate.id);
+    await refresh();
+  }, [user, cycleLogs, refresh]);
 
-  // Future predicted cycles
-  if (prediction?.next_period_start) {
-    const cycleLen  = prediction.predicted_cycle_length ?? 28;
-    const periodLen = 5;
-    const ovOffset  = cycleLen - 14;
-    const limit     = addDays(new Date(), 365);
-    let cycleStart  = parseISO(prediction.next_period_start);
-
-    for (let i = 0; i < 14 && cycleStart <= limit; i++) {
-      const fertileStart = addDays(cycleStart, ovOffset - 5);
-      const fertileEnd   = addDays(cycleStart, ovOffset - 1);
-      markRange(fertileStart, fertileEnd, CAL.fertile.bg, CAL.fertile.text);
-      markDay(addDays(cycleStart, ovOffset), CAL.ovulation.bg, CAL.ovulation.text);
-      markRange(cycleStart, addDays(cycleStart, periodLen - 1), CAL.predicted.bg, CAL.predicted.text);
-      cycleStart = addDays(cycleStart, cycleLen);
+  const onClear = useCallback(async (date: string) => {
+    if (!user) return;
+    const log = cycleLogs.find((l: CycleLog) => l.period_start === date);
+    if (log) {
+      await supabase.from('cycle_logs').delete().eq('id', log.id);
+    } else {
+      // Date falls inside an existing range — clear the end so the cycle re-opens.
+      const inRange = cycleLogs.find((l) => l.period_start <= date && (l.period_end ?? '') >= date);
+      if (inRange) {
+        await supabase.from('cycle_logs').update({ period_end: null }).eq('id', inRange.id);
+      }
     }
-  }
+    await refresh();
+  }, [user, cycleLogs, refresh]);
 
-  // Actual past period logs (override predictions)
-  const sorted = [...cycleLogs].sort((a, b) => a.period_start.localeCompare(b.period_start));
-  for (const log of sorted) {
-    const start = parseISO(log.period_start);
-    const end   = log.period_end
-      ? parseISO(log.period_end)
-      : addDays(start, (log.period_length ?? 5) - 1);
-    markRange(start, end, CAL.period.bg, CAL.period.text);
-  }
+  // ── Render ────────────────────────────────────────────────────────────────
+  const bottomPad = 96 + insets.bottom;
 
-  return marks;
-}
-
-// ── Legend item ───────────────────────────────────────────────────────────────
-function LegendItem({ color, label }: { color: string; label: string }) {
-  const theme = useColors();
-  const s = createStyles(theme);
   return (
-    <View style={s.legendItem}>
-      <View style={[s.legendDot, { backgroundColor: color }]} />
-      <Text style={[s.legendLabel, { color: theme.textSecondary }]}>{label}</Text>
+    <View style={styles.screen}>
+      <AuroraBackground />
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: bottomPad }}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.kicker}>YOUR TIMELINE</Text>
+            <Text style={styles.title}>Calendar</Text>
+          </View>
+
+          {/* Legend */}
+          <View style={styles.legendCard}>
+            {PHASES.map((p) => (
+              <View key={p.key} style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: p.color }]} />
+                <Text style={styles.legendLabel}>{p.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Solid vs Dashed hint */}
+          <View style={styles.hintCard}>
+            <Text style={styles.hintCardTitle}>
+              Avg {prediction?.predicted_cycle_length ?? 28}d cycle
+            </Text>
+            <View style={styles.hintRow}>
+              <View style={styles.hintInline}>
+                <View style={[styles.hintSwatch, { backgroundColor: '#E5A5AD' }]} />
+                <Text style={styles.hintText}>logged</Text>
+              </View>
+              <View style={styles.hintInline}>
+                <View style={[styles.hintSwatch, { backgroundColor: 'transparent', borderColor: '#E5A5AD', borderWidth: 1.4, borderStyle: 'dashed' }]} />
+                <Text style={styles.hintText}>predicted</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Month stack */}
+          {months.map((m) => (
+            <MonthGrid
+              key={toDateStr(m)}
+              month={m}
+              calendar={calendar}
+              today={today}
+              onSelectDay={(d) => setSelected(d)}
+            />
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+
+      {/* Day editor sheet */}
+      <DayEditorSheet
+        open={!!selected}
+        date={selected}
+        info={selectedInfo}
+        onClose={() => setSelected(null)}
+        onMarkStart={onMarkStart}
+        onMarkEnd={onMarkEnd}
+        onClear={onClear}
+      />
     </View>
   );
 }
 
-// ── Screen ────────────────────────────────────────────────────────────────────
-interface Selecting {
-  logId: string | null;
-  anchor: string;   // the day that was long-pressed — determines start vs end
-  start: string;
-  end: string;
-}
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: Colors.background },
+  header: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
+  kicker: {
+    fontFamily: 'Jost_600SemiBold',
+    fontSize: 10,
+    color: 'rgba(63,47,74,0.50)',
+    letterSpacing: 3.5,
+  },
+  title: {
+    fontFamily: FontFamily.displayItalic,
+    fontSize: 40,
+    color: Colors.ink,
+    marginTop: 2,
+  },
 
-export default function CycleCalendarScreen() {
-  const theme = useColors();
-  const styles = createStyles(theme);
-  const user = useAuthStore((s) => s.user);
-  const { cycleLogs, prediction, fetchCycleLogs } = useCycleStore();
+  legendCard: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    padding: Spacing.sm + 2,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.55)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.65)',
+    gap: 14,
+    justifyContent: 'space-around',
+  },
+  legendItem: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+  },
+  legendDot: {
+    width: 10, height: 10, borderRadius: 5,
+  },
+  legendLabel: {
+    fontFamily: 'Jost_500Medium',
+    fontSize: 11,
+    color: 'rgba(63,47,74,0.78)',
+  },
 
-  const [selecting, setSelecting] = useState<Selecting | null>(null);
-  const [saving, setSaving] = useState(false);
-
-  const todayStr = format(new Date(), 'yyyy-MM-dd');
-
-  // ── Map each actual period date → its log (for quick lookup on press) ──────
-  const dateToLog = useMemo<Record<string, CycleLog>>(() => {
-    const map: Record<string, CycleLog> = {};
-    for (const log of cycleLogs) {
-      const start = parseISO(log.period_start);
-      const end   = log.period_end
-        ? parseISO(log.period_end)
-        : addDays(start, (log.period_length ?? 5) - 1);
-      let cur = startOfDay(start);
-      while (cur <= startOfDay(end)) {
-        map[format(cur, 'yyyy-MM-dd')] = log;
-        cur = addDays(cur, 1);
-      }
-    }
-    return map;
-  }, [cycleLogs]);
-
-  // ── Base marked dates (predictions + actual logs) ─────────────────────────
-  const baseMarks = useMemo(
-    () => buildMarkedDates(cycleLogs, prediction),
-    [cycleLogs, prediction],
-  );
-
-  // ── Display marks: dim others + highlight selection while editing ──────────
-  const displayMarks = useMemo<Record<string, DayMark>>(() => {
-    if (!selecting) return baseMarks;
-
-    // Copy base; dim all actual period segments
-    const marks: Record<string, DayMark> = {};
-    for (const [d, m] of Object.entries(baseMarks)) {
-      marks[d] = m.color === CAL.period.bg
-        ? { ...m, color: CAL.periodDim.bg }
-        : m;
-    }
-
-    // Draw the live selection range
-    let cur = parseISO(selecting.start);
-    const last = parseISO(selecting.end);
-    while (cur <= last) {
-      const s = format(cur, 'yyyy-MM-dd');
-      marks[s] = {
-        startingDay: s === selecting.start,
-        endingDay:   s === selecting.end,
-        color:     CAL.period.bg,
-        textColor: CAL.period.text,
-      };
-      cur = addDays(cur, 1);
-    }
-
-    return marks;
-  }, [baseMarks, selecting]);
-
-  // ── Gesture handlers ──────────────────────────────────────────────────────
-
-  /** Long-press: start editing an existing period or creating a new one. */
-  const handleLongPress = (day: { dateString: string }) => {
-    const log = dateToLog[day.dateString];
-    if (log) {
-      const end = log.period_end
-        ?? format(addDays(parseISO(log.period_start), (log.period_length ?? 5) - 1), 'yyyy-MM-dd');
-      setSelecting({ logId: log.id, anchor: day.dateString, start: log.period_start, end });
-    } else {
-      setSelecting({ logId: null, anchor: day.dateString, start: day.dateString, end: day.dateString });
-    }
-  };
-
-  /**
-   * Tap while editing: extend or shrink the range.
-   * Days before the anchor move the start; days after move the end.
-   */
-  const handleDayPress = (day: { dateString: string }) => {
-    if (!selecting) {
-      // Not editing — tap a period day to start editing it
-      const log = dateToLog[day.dateString];
-      if (log) handleLongPress(day);
-      return;
-    }
-    const d = day.dateString;
-    if (d <= selecting.anchor) {
-      setSelecting((prev) => ({ ...prev!, start: d }));
-    } else {
-      setSelecting((prev) => ({ ...prev!, end: d }));
-    }
-  };
-
-  // ── Save ─────────────────────────────────────────────────────────────────
-  const handleSave = async () => {
-    if (!selecting || !user) return;
-    setSaving(true);
-
-    const periodLength =
-      differenceInDays(parseISO(selecting.end), parseISO(selecting.start)) + 1;
-
-    if (selecting.logId) {
-      await supabase
-        .from('cycle_logs')
-        .update({
-          period_start:  selecting.start,
-          period_end:    selecting.end,
-          period_length: periodLength,
-        })
-        .eq('id', selecting.logId);
-    } else {
-      await supabase.from('cycle_logs').insert({
-        user_id:       user.id,
-        period_start:  selecting.start,
-        period_end:    selecting.end,
-        period_length: periodLength,
-        flow_intensity: 'medium',
-      });
-    }
-
-    await fetchCycleLogs(user.id);
-    setSelecting(null);
-    setSaving(false);
-  };
-
-  // ── Delete ────────────────────────────────────────────────────────────────
-  const handleDelete = () => {
-    if (!selecting?.logId || !user) return;
-    Alert.alert('Delete Period', 'Remove this period log?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete', style: 'destructive',
-        onPress: async () => {
-          setSaving(true);
-          await supabase.from('cycle_logs').delete().eq('id', selecting.logId!);
-          await fetchCycleLogs(user.id);
-          setSelecting(null);
-          setSaving(false);
-        },
-      },
-    ]);
-  };
-
-  // ── Formatted range label ─────────────────────────────────────────────────
-  const rangeLabel = selecting
-    ? selecting.start === selecting.end
-      ? format(parseISO(selecting.start), 'MMM d')
-      : `${format(parseISO(selecting.start), 'MMM d')} → ${format(parseISO(selecting.end), 'MMM d')}`
-    : '';
-
-  const dayCount = selecting
-    ? differenceInDays(parseISO(selecting.end), parseISO(selecting.start)) + 1
-    : 0;
-
-  return (
-    <SafeAreaView style={styles.screen}>
-      <Header title="Cycle Calendar" showBack displayTitle />
-
-      {/* ── Legend ── */}
-      <View style={styles.legend}>
-        <LegendItem color={CAL.period.bg}    label="Period" />
-        <LegendItem color={CAL.predicted.bg} label="Predicted" />
-        <LegendItem color={CAL.fertile.bg}   label="Fertile" />
-        <LegendItem color={CAL.ovulation.bg} label="Ovulation" />
-      </View>
-
-      {/* ── Instruction strip ── */}
-      <View style={[styles.instrStrip, selecting && styles.instrStripEdit]}>
-        {selecting ? (
-          <Text style={[styles.instrText, styles.instrTextEdit]}>
-            Tap any day to move the{' '}
-            <Text style={{ fontFamily: 'Jost_600SemiBold' }}>start</Text> or{' '}
-            <Text style={{ fontFamily: 'Jost_600SemiBold' }}>end</Text> of this period
-          </Text>
-        ) : (
-          <Text style={styles.instrText}>
-            Tap or long-press a period to edit · Tap an empty day to log new
-          </Text>
-        )}
-      </View>
-
-      {/* ── Calendar ── */}
-      <CalendarList
-        current={todayStr}
-        markingType="period"
-        markedDates={displayMarks}
-        pastScrollRange={24}
-        futureScrollRange={13}
-        scrollEnabled={!selecting}
-        showScrollIndicator={false}
-        calendarHeight={340}
-        onDayPress={handleDayPress}
-        onDayLongPress={handleLongPress}
-        theme={{
-          backgroundColor:         theme.background,
-          calendarBackground:      theme.surface,
-          textSectionTitleColor:   theme.textMuted,
-          dayTextColor:            theme.textPrimary,
-          todayTextColor:          theme.cherry,
-          todayBackgroundColor:    'transparent',
-          selectedDayTextColor:    '#FFFFFF',
-          monthTextColor:          theme.textPrimary,
-          indicatorColor:          theme.cherry,
-          textDisabledColor:       Colors.silver,
-          arrowColor:              theme.cherry,
-          textDayFontFamily:       'Jost_400Regular',
-          textMonthFontFamily:     'Jost_600SemiBold',
-          textDayHeaderFontFamily: 'Jost_600SemiBold',
-          textDayFontSize:         14,
-          textMonthFontSize:       22,
-          textDayHeaderFontSize:   11,
-        }}
-      />
-
-      {/* ── Edit action bar ── */}
-      {selecting && (
-        <View style={styles.editBar}>
-          {/* Period info */}
-          <View style={styles.editInfo}>
-            <Text style={styles.editRange}>{rangeLabel}</Text>
-            <Text style={styles.editDays}>
-              {dayCount} day{dayCount !== 1 ? 's' : ''}
-              {selecting.logId ? '' : ' · New period'}
-            </Text>
-          </View>
-
-          {/* Actions */}
-          <View style={styles.editActions}>
-            {selecting.logId && (
-              <TouchableOpacity
-                onPress={handleDelete}
-                style={styles.deleteBtn}
-                disabled={saving}
-              >
-                <Text style={styles.deleteBtnText}>Delete</Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              onPress={() => setSelecting(null)}
-              style={styles.cancelBtn}
-              disabled={saving}
-            >
-              <Text style={styles.cancelBtnText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleSave}
-              style={[styles.saveBtn, saving && { opacity: 0.6 }]}
-              disabled={saving}
-            >
-              {saving
-                ? <ActivityIndicator size="small" color="#FFFFFF" />
-                : <Text style={styles.saveBtnText}>Save</Text>
-              }
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    </SafeAreaView>
-  );
-}
-
-function createStyles(c: AppColors) {
-  return StyleSheet.create({
-    screen: { flex: 1, backgroundColor: c.background },
-    legend: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: Spacing.lg, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, backgroundColor: c.surface, borderBottomWidth: 1, borderBottomColor: c.border },
-    legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    legendDot: { width: 12, height: 12, borderRadius: 6 },
-    legendLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular' },
-    instrStrip: { paddingVertical: 7, paddingHorizontal: Spacing.md, backgroundColor: c.surfaceElevated, borderBottomWidth: 1, borderBottomColor: c.border, alignItems: 'center' },
-    instrStripEdit: { backgroundColor: c.cherryLighter, borderBottomColor: 'rgba(199,110,114,0.25)' },
-    instrText: { fontSize: 11, fontFamily: 'Jost_400Regular', color: c.textMuted, textAlign: 'center' },
-    instrTextEdit: { color: c.cherry },
-    editBar: { backgroundColor: c.surface, borderTopWidth: 1, borderTopColor: c.border, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, paddingBottom: Spacing.lg, gap: Spacing.sm },
-    editInfo: { alignItems: 'center' },
-    editRange: { fontSize: FontSize.lg, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
-    editDays: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
-    editActions: { flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center' },
-    deleteBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, borderRadius: Radius.full, borderWidth: 1, borderColor: 'rgba(199,110,114,0.4)', backgroundColor: c.cherryLighter },
-    deleteBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.cherry },
-    cancelBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.surfaceElevated },
-    cancelBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.textSecondary },
-    saveBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.xl, borderRadius: Radius.full, backgroundColor: c.cherry, minWidth: 80, alignItems: 'center' },
-    saveBtnText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
-  });
-}
+  hintCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.45)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.6)',
+  },
+  hintCardTitle: {
+    fontFamily: FontFamily.displayItalic,
+    fontSize: 16,
+    color: Colors.ink,
+  },
+  hintRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  hintInline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  hintSwatch: {
+    width: 10, height: 10, borderRadius: 4,
+  },
+  hintText: {
+    fontFamily: 'Jost_500Medium',
+    fontSize: 10,
+    color: 'rgba(63,47,74,0.65)',
+    letterSpacing: 1,
+  },
+});

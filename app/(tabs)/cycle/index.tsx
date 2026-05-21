@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { addDays, differenceInDays, format, parseISO } from 'date-fns';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
-import { CycleRing } from '../../../components/calendar/CycleRing';
+import { CycleOrb } from '../../../components/cycle/CycleOrb';
 import { Icon } from '../../../components/ui/Icon';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
-import { FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
+import { FontFamily, FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
 import { AuroraBackground } from '../../../components/layout/AuroraBackground';
 
 // ── Phase palette ─────────────────────────────────────────────────────────────
@@ -211,10 +211,6 @@ export default function CycleScreen() {
   const phaseColor = PHASE_COLORS[cycle.phase];
   const bottomPad  = 68 + 12 + insets.bottom + 16;
 
-  // Lock the page scroll while the user is dragging the cycle ring so the
-  // page doesn't move underneath them.
-  const [ringDragging, setRingDragging] = useState(false);
-
   return (
     <View style={styles.screen}>
       <AuroraBackground />
@@ -222,21 +218,17 @@ export default function CycleScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: bottomPad }}
-          scrollEnabled={!ringDragging}
         >
 
           {/* ── Header ── */}
           <View style={styles.header}>
-            <Text style={styles.title}>My Cycle</Text>
+            <Text style={styles.kicker}>YOUR CYCLE</Text>
+            <Text style={styles.title}>Atossa Cycle</Text>
           </View>
 
-          {/* ── Cycle Ring ── */}
-          <View style={styles.ringCard}>
-            <CycleRing
-              cycleLogs={cycleLogs}
-              prediction={prediction}
-              onDragChange={setRingDragging}
-            />
+          {/* ── Floating cycle orb ── */}
+          <View style={styles.orbWrap}>
+            <CycleOrb cycleLogs={cycleLogs} prediction={prediction} />
           </View>
 
           {/* ── Quick-log row ── */}
@@ -406,12 +398,13 @@ function createStyles(c: AppColors) {
   return StyleSheet.create({
     screen:        { flex: 1, backgroundColor: c.background },
 
-    // Header
+    // Header — Cormorant italic display
     header:        { paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
-    title:         { fontSize: 28, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
+    kicker:        { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: 'rgba(63,47,74,0.50)', letterSpacing: 3.5 },
+    title:         { fontSize: 40, fontFamily: FontFamily.displayItalic, color: c.textPrimary, marginTop: 2 },
 
-    // Ring
-    ringCard:      { marginHorizontal: Spacing.md, backgroundColor: glass, borderRadius: 32, borderWidth: 1, borderColor: c.border, overflow: 'hidden', paddingVertical: Spacing.sm },
+    // Orb wrapper — transparent, lets the orb float over the aurora background
+    orbWrap:       { marginHorizontal: Spacing.md, marginTop: Spacing.lg, marginBottom: Spacing.md, alignItems: 'center' },
 
     // Quick-log row
     quickRow:      { flexDirection: 'row', marginHorizontal: Spacing.md, marginTop: Spacing.md, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, paddingVertical: Spacing.sm },

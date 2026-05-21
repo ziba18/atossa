@@ -16,7 +16,7 @@ const googlePlugin: any[] = googleIosUrlScheme
 const config: ExpoConfig = {
   name: 'Atossa',
   slug: 'attosa',
-  version: '1.0.0',
+  version: '1.1.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
@@ -32,6 +32,7 @@ const config: ExpoConfig = {
     infoPlist: {
       NSContactsUsageDescription: 'Atossa needs access to contacts to set up emergency alerts.',
       NSPhotoLibraryUsageDescription: 'Atossa needs access to your photo library to update your profile picture.',
+      NSMotionUsageDescription: 'Atossa uses motion to gently animate the cycle orb as you hold your phone.',
       ITSAppUsesNonExemptEncryption: false,
     },
   },

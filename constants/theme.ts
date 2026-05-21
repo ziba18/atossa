@@ -47,15 +47,17 @@ export const FontWeight = {
 };
 
 // ─── Font families ────────────────────────────────────────────────────────────
-// Single-typeface system: Jost everywhere. The legacy `display` /
-// `displayItalic` aliases are kept (mapped to Jost weights) so existing
-// callers compile without churn.
+// Display headings: Cormorant Garamond — feminine serif used italic for
+// "alive" hero text. Body / UI: Jost (geometric sans). Existing aliases
+// kept mapped to Jost so legacy callers don't break.
 export const FontFamily = {
   sans: 'Jost_400Regular',
   sansMedium: 'Jost_500Medium',
   sansSemibold: 'Jost_600SemiBold',
-  display: 'Jost_600SemiBold',
-  displayItalic: 'Jost_500Medium',
+  display: 'CormorantGaramond_500Medium_Italic',
+  displayMedium: 'CormorantGaramond_500Medium',
+  displayItalic: 'CormorantGaramond_500Medium_Italic',
+  displaySemibold: 'CormorantGaramond_600SemiBold',
   sansSystem: 'System',
   displaySystem: 'System',
 } as const;
