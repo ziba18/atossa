@@ -252,7 +252,7 @@ export default function CycleScreen() {
           {/* ── Phase insight card ── */}
           {cycle.hasData && (
             <View style={[styles.phaseCard, { borderColor: phaseColor + '45' }]}>
-              {/* Top row: phase name + energy/mood chips */}
+              {/* Top row: phase name + energy/mood chips with SVG icons */}
               <View style={styles.phaseTop}>
                 <View style={[styles.phasePip, { backgroundColor: phaseColor }]} />
                 <View style={{ flex: 1 }}>
@@ -261,10 +261,12 @@ export default function CycleScreen() {
                 </View>
                 <View style={styles.phaseChips}>
                   <View style={[styles.phaseChip, { backgroundColor: phaseColor + '1A' }]}>
-                    <Text style={[styles.phaseChipText, { color: phaseColor }]}>⚡ {phaseData.energy}</Text>
+                    <Icon name="zap" size={11} color={phaseColor} strokeWidth={1.8} />
+                    <Text style={[styles.phaseChipText, { color: phaseColor }]}>{phaseData.energy}</Text>
                   </View>
                   <View style={[styles.phaseChip, { backgroundColor: phaseColor + '1A' }]}>
-                    <Text style={[styles.phaseChipText, { color: phaseColor }]}>💭 {phaseData.mood}</Text>
+                    <Icon name="message-circle" size={11} color={phaseColor} strokeWidth={1.8} />
+                    <Text style={[styles.phaseChipText, { color: phaseColor }]}>{phaseData.mood}</Text>
                   </View>
                 </View>
               </View>
@@ -420,8 +422,8 @@ function createStyles(c: AppColors) {
     phaseLabel:    { ...Type.cycle.phaseLabel },
     phaseSub:      { ...Type.cycle.phaseSubtitle, marginTop: 2 },
     phaseChips:    { gap: 4, alignItems: 'flex-end' },
-    phaseChip:     { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3 },
-    phaseChipText: { ...Type.cycle.label, fontSize: 10 },
+    phaseChip:     { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: Radius.full, paddingHorizontal: 9, paddingVertical: 4 },
+    phaseChipText: { ...Type.cycle.label, fontSize: 10.5 },
     phaseDesc:     { ...Type.cycle.body },
     tipRow:        { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
     tipChip:       { borderRadius: Radius.full, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4 },
