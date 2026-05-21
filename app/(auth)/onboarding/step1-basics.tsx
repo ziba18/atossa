@@ -168,12 +168,12 @@ export default function Step1Basics() {
 function createStyles(c: AppColors) {
   return StyleSheet.create({
     progress: { marginBottom: Spacing.xl },
-    step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
+    step: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
     progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
     progressFill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-    title: { fontSize: 28, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
-    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-    label: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
+    title: { fontSize: 28, fontFamily: 'CormorantGaramond_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    label: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
     options: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
     option: {
       paddingHorizontal: Spacing.md,
@@ -183,8 +183,8 @@ function createStyles(c: AppColors) {
       borderColor: c.border,
     },
     optionSelected: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
-    optionText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textSecondary },
-    optionTextSelected: { color: Colors.white, fontFamily: 'Jost_600SemiBold' },
+    optionText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: c.textSecondary },
+    optionTextSelected: { color: Colors.white, fontFamily: 'CormorantGaramond_600SemiBold' },
     btn: { marginTop: Spacing.xxl },
 
     modalBackdrop: {
@@ -202,8 +202,8 @@ function createStyles(c: AppColors) {
       padding: Spacing.lg,
       gap: Spacing.sm,
     },
-    modalTitle: { fontSize: FontSize.lg, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
-    modalHint: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted },
+    modalTitle: { fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    modalHint: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted },
     modalInput: {
       borderWidth: 1.5,
       borderColor: c.border,
@@ -211,14 +211,14 @@ function createStyles(c: AppColors) {
       paddingHorizontal: Spacing.md,
       paddingVertical: 12,
       fontSize: FontSize.lg,
-      fontFamily: 'Jost_500Medium',
+      fontFamily: 'CormorantGaramond_500Medium',
       color: c.textPrimary,
       marginTop: Spacing.xs,
     },
     modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.sm, marginTop: Spacing.sm },
     modalCancel: { paddingVertical: 10, paddingHorizontal: 16 },
-    modalCancelText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textSecondary },
+    modalCancelText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: c.textSecondary },
     modalSave: { backgroundColor: Colors.cherry, borderRadius: 99, paddingVertical: 10, paddingHorizontal: 20 },
-    modalSaveText: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: Colors.white },
+    modalSaveText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.white },
   });
 }

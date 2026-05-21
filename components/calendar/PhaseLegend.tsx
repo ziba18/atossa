@@ -30,5 +30,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap', paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, gap: 4 },
   item: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   dot: { width: 8, height: 8, borderRadius: Radius.full },
-  label: { fontSize: 10, fontFamily: 'Jost_400Regular' },
+  label: { fontSize: 10, fontFamily: 'CormorantGaramond_400Regular' },
 });

@@ -52,7 +52,7 @@ function createStyles(c: AppColors) {
     container: { paddingHorizontal: Spacing.md, gap: Spacing.xs, paddingVertical: Spacing.xs },
     chip: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs + 2, borderRadius: Radius.full, backgroundColor: c.border },
     chipActive: { backgroundColor: c.cherry },
-    label: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textSecondary },
-    labelActive: { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold' },
+    label: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: c.textSecondary },
+    labelActive: { color: '#FFFFFF', fontFamily: 'CormorantGaramond_600SemiBold' },
   });
 }

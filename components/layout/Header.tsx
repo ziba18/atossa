@@ -59,18 +59,18 @@ function createStyles(c: AppColors) {
     title: {
       fontSize: FontSize.lg,
       fontWeight: FontWeight.semibold,
-      fontFamily: 'Jost_600SemiBold',
+      fontFamily: 'CormorantGaramond_500Medium_Italic',
       color: c.textPrimary,
       letterSpacing: 0.01,
     },
     titleDisplay: {
-      fontFamily: 'Jost_600SemiBold',
+      fontFamily: 'CormorantGaramond_500Medium_Italic',
       fontSize: FontSize.xl,
       letterSpacing: 0.02,
     },
     subtitle: {
       fontSize: FontSize.xs,
-      fontFamily: 'Jost_400Regular',
+      fontFamily: 'CormorantGaramond_400Regular',
       color: c.textMuted,
       marginTop: 2,
     },

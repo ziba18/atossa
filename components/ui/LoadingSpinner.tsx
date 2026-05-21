@@ -28,7 +28,7 @@ function createStyles(c: AppColors) {
     message: {
       marginTop: Spacing.md,
       fontSize: FontSize.md,
-      fontFamily: 'Jost_400Regular',
+      fontFamily: 'CormorantGaramond_400Regular',
       color: c.textSecondary,
     },
   });

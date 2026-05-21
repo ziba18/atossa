@@ -75,9 +75,9 @@ export default function OnboardingNameScreen() {
 
 function createStyles(c: AppColors) {
   return StyleSheet.create({
-    title: { fontSize: 32, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginTop: Spacing.lg, marginBottom: Spacing.sm },
-    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-    label: { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.xs },
+    title: { fontSize: 32, fontFamily: 'CormorantGaramond_500Medium_Italic', color: c.textPrimary, marginTop: Spacing.lg, marginBottom: Spacing.sm },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    label: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.xs },
     input: {
       borderWidth: 1.5,
       borderColor: c.border,
@@ -85,7 +85,7 @@ function createStyles(c: AppColors) {
       paddingHorizontal: Spacing.md,
       paddingVertical: 14,
       fontSize: FontSize.lg,
-      fontFamily: 'Jost_500Medium',
+      fontFamily: 'CormorantGaramond_500Medium',
       color: c.textPrimary,
     },
     btn: { marginTop: Spacing.xl },

@@ -83,11 +83,11 @@ export default function Step5Connected() {
 function createStyles(c: AppColors) {
   return StyleSheet.create({
     progress: { marginBottom: Spacing.xl },
-    step: { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
+    step: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
     progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
     fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-    title: { fontSize: 28, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
-    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    title: { fontSize: 28, fontFamily: 'CormorantGaramond_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
     relationshipRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.xl },
     relBtn: { flex: 1 },
     btn: { marginTop: Spacing.md, marginBottom: Spacing.sm },

@@ -37,14 +37,14 @@ function createStyles(c: AppColors) {
     title: {
       fontSize: FontSize.lg,
       fontWeight: FontWeight.semibold,
-      fontFamily: 'Jost_600SemiBold',
+      fontFamily: 'CormorantGaramond_600SemiBold',
       color: c.textPrimary,
       textAlign: 'center',
       marginBottom: Spacing.sm,
     },
     subtitle: {
       fontSize: FontSize.md,
-      fontFamily: 'Jost_400Regular',
+      fontFamily: 'CormorantGaramond_400Regular',
       color: c.textMuted,
       textAlign: 'center',
       lineHeight: 22,

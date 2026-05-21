@@ -52,11 +52,11 @@ export function FlowIntensitySelector({ value, onChange }: Props) {
 
 function createStyles(c: AppColors) {
   return StyleSheet.create({
-    label: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
+    label: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm },
     row: { flexDirection: 'row', gap: Spacing.xs },
     option: { flex: 1, alignItems: 'center', paddingVertical: Spacing.sm, borderRadius: Radius.md },
     selectedOption: { borderWidth: 2, borderColor: '#A3304A' },
-    optionLabel: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textSecondary, textAlign: 'center' },
-    selectedLabel: { color: '#FFFFFF', fontFamily: 'Jost_600SemiBold' },
+    optionLabel: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textSecondary, textAlign: 'center' },
+    selectedLabel: { color: '#FFFFFF', fontFamily: 'CormorantGaramond_600SemiBold' },
   });
 }

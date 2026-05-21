@@ -107,12 +107,12 @@ export default function LoginScreen() {
 function createStyles(c: AppColors) {
   return StyleSheet.create({
     container: { flex: 1, paddingTop: Spacing.xl },
-    subtitle: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted, marginBottom: Spacing.xl },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xl },
     forgotBtn: { alignSelf: 'flex-end', marginBottom: Spacing.lg, marginTop: -Spacing.sm },
-    forgotText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: Colors.cherry },
+    forgotText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: Colors.cherry },
     loginBtn: { marginBottom: Spacing.xl },
     registerRow: { flexDirection: 'row', justifyContent: 'center' },
-    registerText: { fontSize: FontSize.md, fontFamily: 'Jost_400Regular', color: c.textMuted },
-    registerLink: { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: Colors.cherry },
+    registerText: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted },
+    registerLink: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.cherry },
   });
 }

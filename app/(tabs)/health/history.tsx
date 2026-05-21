@@ -169,7 +169,7 @@ function createStyles(c: AppColors) {
     card: { marginBottom: Spacing.sm, gap: Spacing.sm },
     date: {
       fontSize: FontSize.lg,
-      fontFamily: 'Jost_600SemiBold',
+      fontFamily: 'CormorantGaramond_600SemiBold',
       color: c.textPrimary,
       marginBottom: 2,
     },
@@ -182,7 +182,7 @@ function createStyles(c: AppColors) {
     sectionHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
     sectionTitle: {
       fontSize: 11,
-      fontFamily: 'Jost_600SemiBold',
+      fontFamily: 'CormorantGaramond_600SemiBold',
       color: c.textMuted,
       letterSpacing: 1.2,
       textTransform: 'uppercase',
@@ -195,15 +195,15 @@ function createStyles(c: AppColors) {
       paddingVertical: 6,
     },
     rowMain: { flex: 1, gap: 2 },
-    rowText: { fontSize: FontSize.sm, fontFamily: 'Jost_500Medium', color: c.textPrimary },
-    rowSub: { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted },
-    rowMeta: { fontSize: FontSize.xs, fontFamily: 'Jost_500Medium', color: c.textSecondary },
+    rowText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: c.textPrimary },
+    rowSub: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted },
+    rowMeta: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_500Medium', color: c.textSecondary },
     sevPill: {
       paddingHorizontal: 10,
       paddingVertical: 3,
       borderRadius: Radius.full,
       borderWidth: 1,
     },
-    sevText: { fontSize: 11, fontFamily: 'Jost_600SemiBold' },
+    sevText: { fontSize: 11, fontFamily: 'CormorantGaramond_600SemiBold' },
   });
 }

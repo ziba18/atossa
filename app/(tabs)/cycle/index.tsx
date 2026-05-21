@@ -289,7 +289,7 @@ export default function CycleScreen() {
               <View style={styles.weekRow}>
                 {cycle.weekDays.map((d, i) => (
                   <View key={i} style={styles.weekDay}>
-                    <Text style={[styles.weekDayName, d.isToday && { color: theme.textPrimary, fontFamily: 'Jost_600SemiBold' }]}>
+                    <Text style={[styles.weekDayName, d.isToday && { color: theme.textPrimary, fontFamily: 'CormorantGaramond_600SemiBold' }]}>
                       {d.label}
                     </Text>
                     <View style={[
@@ -297,7 +297,7 @@ export default function CycleScreen() {
                       { backgroundColor: PHASE_COLORS[d.phase] + (d.isToday ? 'FF' : '40') },
                       d.isToday && styles.weekDayBubbleToday,
                     ]}>
-                      <Text style={[styles.weekDayNum, d.isToday && { color: '#FFF', fontFamily: 'Jost_600SemiBold' }]}>
+                      <Text style={[styles.weekDayNum, d.isToday && { color: '#FFF', fontFamily: 'CormorantGaramond_600SemiBold' }]}>
                         {d.dayNum}
                       </Text>
                     </View>
@@ -400,7 +400,7 @@ function createStyles(c: AppColors) {
 
     // Header — Cormorant italic display
     header:        { paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
-    kicker:        { fontSize: 10, fontFamily: 'Jost_600SemiBold', color: 'rgba(63,47,74,0.50)', letterSpacing: 3.5 },
+    kicker:        { fontSize: 10, fontFamily: 'CormorantGaramond_600SemiBold', color: 'rgba(63,47,74,0.50)', letterSpacing: 3.5 },
     title:         { fontSize: 40, fontFamily: FontFamily.displayItalic, color: c.textPrimary, marginTop: 2 },
 
     // Orb wrapper — transparent, lets the orb float over the aurora background
@@ -410,32 +410,32 @@ function createStyles(c: AppColors) {
     quickRow:      { flexDirection: 'row', marginHorizontal: Spacing.md, marginTop: Spacing.md, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, paddingVertical: Spacing.sm },
     quickItem:     { flex: 1, alignItems: 'center', gap: 6, paddingVertical: 4 },
     quickIcon:     { width: 44, height: 44, borderRadius: 14, backgroundColor: c.cherryLighter, alignItems: 'center', justifyContent: 'center' },
-    quickLabel:    { fontSize: 11, fontFamily: 'Jost_500Medium', color: c.textSecondary },
+    quickLabel:    { fontSize: 11, fontFamily: 'CormorantGaramond_500Medium', color: c.textSecondary },
 
     // Phase insight card
     phaseCard:     { marginHorizontal: Spacing.md, marginTop: Spacing.md, backgroundColor: glass, borderRadius: 24, borderWidth: 1, padding: Spacing.md, gap: Spacing.sm },
     phaseTop:      { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
     phasePip:      { width: 10, height: 10, borderRadius: 5, marginTop: 5 },
-    phaseLabel:    { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold' },
-    phaseSub:      { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 1 },
+    phaseLabel:    { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold' },
+    phaseSub:      { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginTop: 1 },
     phaseChips:    { gap: 4, alignItems: 'flex-end' },
     phaseChip:     { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3 },
-    phaseChipText: { fontSize: 10, fontFamily: 'Jost_500Medium' },
-    phaseDesc:     { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textSecondary, lineHeight: 21 },
+    phaseChipText: { fontSize: 10, fontFamily: 'CormorantGaramond_500Medium' },
+    phaseDesc:     { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textSecondary, lineHeight: 21 },
     tipRow:        { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
     tipChip:       { borderRadius: Radius.full, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4 },
-    tipText:       { fontSize: 11, fontFamily: 'Jost_500Medium' },
+    tipText:       { fontSize: 11, fontFamily: 'CormorantGaramond_500Medium' },
 
     // Week strip
     weekCard:      { marginHorizontal: Spacing.md, marginTop: Spacing.md, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, padding: Spacing.md },
-    sectionLabel:  { fontSize: 9.5, fontFamily: 'Jost_600SemiBold', color: c.textMuted, letterSpacing: 1.4, marginBottom: Spacing.sm },
+    sectionLabel:  { fontSize: 9.5, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textMuted, letterSpacing: 1.4, marginBottom: Spacing.sm },
     weekRow:       { flexDirection: 'row', justifyContent: 'space-between' },
     weekDay:       { alignItems: 'center', gap: 4 },
-    weekDayName:   { fontSize: 10, fontFamily: 'Jost_400Regular', color: c.textMuted },
+    weekDayName:   { fontSize: 10, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted },
     weekDayBubble: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
     weekDayBubbleToday: { ...Shadow.sm },
-    weekDayNum:    { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textPrimary },
-    weekPhase:     { fontSize: 9, fontFamily: 'Jost_500Medium' },
+    weekDayNum:    { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textPrimary },
+    weekPhase:     { fontSize: 9, fontFamily: 'CormorantGaramond_500Medium' },
 
     // Events / Coming up
     eventsCard:    { marginHorizontal: Spacing.md, marginTop: Spacing.md, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, padding: Spacing.md },
@@ -443,24 +443,24 @@ function createStyles(c: AppColors) {
     eventRow:      { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, paddingVertical: 10 },
     eventRowBorder:{ borderBottomWidth: 1, borderBottomColor: c.border },
     eventIconWrap: { width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-    eventLabel:    { flex: 1, fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textPrimary },
-    eventDate:     { fontSize: FontSize.sm, fontFamily: 'Jost_600SemiBold' },
+    eventLabel:    { flex: 1, fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textPrimary },
+    eventDate:     { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold' },
     aiRow:         { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: Spacing.sm, paddingTop: Spacing.sm, borderTopWidth: 1, borderTopColor: c.border },
-    aiText:        { flex: 1, fontSize: 10.5, fontFamily: 'Jost_400Regular', color: c.textMuted, lineHeight: 15 },
+    aiText:        { flex: 1, fontSize: 10.5, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, lineHeight: 15 },
 
     // Stats
     statsCard:     { marginHorizontal: Spacing.md, marginTop: Spacing.md, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, padding: Spacing.md },
     statsRow:      { flexDirection: 'row', justifyContent: 'space-around', marginTop: Spacing.sm },
     stat:          { alignItems: 'center' },
-    statValue:     { fontSize: FontSize.xxl, fontFamily: 'Jost_600SemiBold', color: c.textPrimary },
-    statLabel:     { fontSize: FontSize.xs, fontFamily: 'Jost_400Regular', color: c.textMuted, marginTop: 2 },
+    statValue:     { fontSize: FontSize.xxl, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    statLabel:     { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginTop: 2 },
     statDivider:   { width: 1, backgroundColor: c.border },
 
     // Empty state
     emptyCard:     { alignItems: 'center', marginHorizontal: Spacing.md, marginTop: Spacing.md, gap: Spacing.sm, backgroundColor: glass, borderRadius: 24, borderWidth: 1, borderColor: c.border, padding: 36 },
-    emptyTitle:    { fontSize: FontSize.lg, fontFamily: 'Jost_600SemiBold', color: c.textPrimary, textAlign: 'center' },
-    emptySub:      { fontSize: FontSize.sm, fontFamily: 'Jost_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 21 },
+    emptyTitle:    { fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, textAlign: 'center' },
+    emptySub:      { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 21 },
     emptyBtn:      { backgroundColor: c.cherry, borderRadius: Radius.full, paddingHorizontal: Spacing.xl, paddingVertical: Spacing.sm, marginTop: Spacing.sm },
-    emptyBtnText:  { fontSize: FontSize.md, fontFamily: 'Jost_600SemiBold', color: '#FFFFFF' },
+    emptyBtnText:  { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: '#FFFFFF' },
   });
 }
