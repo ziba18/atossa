@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   legendDot: {
     width: 10, height: 10, borderRadius: 5,
   },
-  legendLabel: { ...Type.calendar.label },
+  legendLabel: { ...Type.calendar.legend },
 
   hintCard: {
     flexDirection: 'row',
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.6)',
   },
-  hintCardTitle: { ...Type.calendar.section, fontSize: 16, fontFamily: 'Fraunces_400Regular_Italic' },
+  hintCardTitle: { ...Type.calendar.hintTitle },
   hintRow: {
     flexDirection: 'row',
     gap: 10,

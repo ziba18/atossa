@@ -6,6 +6,7 @@ import { Icon } from '../ui/Icon';
 import { Colors } from '../../constants/colors';
 import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, Radius, Spacing } from '../../constants/theme';
+import { Type } from '../../constants/typography';
 import { Badge } from '../ui/Badge';
 
 interface Props {
@@ -76,8 +77,8 @@ function createStyles(c: AppColors) {
     thumbnailPlaceholder: { width: '100%', height: 120, backgroundColor: c.cherryLighter, alignItems: 'center', justifyContent: 'center' },
     info: { padding: Spacing.md },
     badgeRow: { flexDirection: 'row', gap: Spacing.xs, marginBottom: Spacing.xs },
-    title: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: c.textPrimary, lineHeight: 22 },
+    title: { ...Type.education.cardTitle },
     metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: Spacing.xs },
-    meta: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
+    meta:  { ...Type.education.meta },
   });
 }

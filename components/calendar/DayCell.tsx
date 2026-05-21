@@ -5,7 +5,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { CalendarDay, CalendarPhase } from '../../algorithms/calendarDerive';
 import { FontFamily } from '../../constants/theme';
-import { CalendarDay as CalendarDayType, Accent } from '../../constants/typography';
+import { CalendarDayText, Accent } from '../../constants/typography';
 import { Colors } from '../../constants/colors';
 
 // Phase fills tuned for the cream background — softer than the orb hues.
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Accent.calendar.deep, // calendar's mauve identity
   },
-  dayText: { ...CalendarDayType },
+  dayText: { ...CalendarDayText },
   dayTextOutOfMonth: {
     color: 'rgba(63,47,74,0.35)',
   },

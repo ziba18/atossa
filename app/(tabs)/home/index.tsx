@@ -414,7 +414,7 @@ function createStyles(c: AppColors) {
   badgeText: { fontSize: 9, color: Colors.white, fontFamily: 'Fraunces_500Medium' },
 
   greeting: { ...Type.home.title, marginTop: Spacing.sm },
-  tagline:  { ...Type.home.lede, marginBottom: Spacing.lg, marginTop: Spacing.xs },
+  tagline:  { ...Type.home.tagline, marginBottom: Spacing.lg, marginTop: Spacing.xs },
 
   // Hero card
   heroCard: {
@@ -432,15 +432,9 @@ function createStyles(c: AppColors) {
   },
   heroTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   phaseDotBig: { width: 10, height: 10, borderRadius: 5 },
-  smallcaps: { ...Type.home.section },
-  heroPhase: { ...Type.home.title, fontSize: 26, lineHeight: 32, marginBottom: 4 },
-  heroTagline: {
-    fontSize: FontSize.sm,
-    fontFamily: 'Fraunces_400Regular',
-    color: Colors.textSecondary,
-    lineHeight: 20,
-    marginBottom: Spacing.md,
-  },
+  smallcaps: { ...Type.home.smallcaps },
+  heroPhase: { ...Type.home.heroPhase, marginBottom: 4 },
+  heroTagline: { ...Type.home.tagline, marginBottom: Spacing.md },
   chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: Spacing.md },
   chip: {
     borderRadius: 99,
@@ -492,9 +486,9 @@ function createStyles(c: AppColors) {
   },
   statTileHeader: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 6 },
   statDot: { width: 6, height: 6, borderRadius: 3 },
-  statTileLabel: { fontSize: 10, fontFamily: 'Fraunces_500Medium', color: Colors.textMuted, letterSpacing: 0.6, flex: 1 },
-  statTileValue: { fontSize: 22, fontFamily: 'Fraunces_500Medium', color: Colors.textPrimary, lineHeight: 26 },
-  statTileHint: { fontSize: 10, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted, marginTop: 2 },
+  statTileLabel: { ...Type.home.statLabel, flex: 1 },
+  statTileValue: { ...Type.home.statValue, lineHeight: 28, marginTop: 2 },
+  statTileHint:  { ...Type.home.label, fontSize: 10.5, marginTop: 2 },
 
   // Alerts
   alertBanner: {
@@ -510,7 +504,7 @@ function createStyles(c: AppColors) {
 
   // For you today
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
-  sectionTitle: { fontSize: FontSize.xl, fontFamily: 'Fraunces_500Medium', color: Colors.textPrimary },
+  sectionTitle: { ...Type.home.section },
   carouselContent: { gap: Spacing.sm, paddingBottom: Spacing.xs },
   suggestCard: {
     width: 180,
@@ -524,23 +518,10 @@ function createStyles(c: AppColors) {
     alignItems: 'center', justifyContent: 'center',
     marginBottom: 10,
   },
-  suggestTitle: {
-    fontSize: FontSize.md,
-    fontFamily: 'Fraunces_500Medium',
-    color: Colors.textPrimary,
-    marginBottom: 4,
-    lineHeight: 20,
-  },
-  suggestBody: {
-    fontSize: FontSize.xs,
-    fontFamily: 'Fraunces_400Regular',
-    color: Colors.textSecondary,
-    lineHeight: 17,
-    marginBottom: 12,
-    flex: 1,
-  },
-  suggestCta: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  suggestCtaText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_500Medium' },
+  suggestTitle: { ...Type.home.cardTitle, marginBottom: 4 },
+  suggestBody:  { ...Type.home.small, marginBottom: 12, flex: 1 },
+  suggestCta:   { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  suggestCtaText: { ...Type.home.label, fontSize: 12, fontFamily: 'Fraunces_500Medium' },
 
   disclaimer: {
     fontSize: 10,
