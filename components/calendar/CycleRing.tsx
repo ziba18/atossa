@@ -433,20 +433,20 @@ function useStyles() {
   const theme = useColors();
   return StyleSheet.create({
     wrapper: { alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm },
-    hint: { fontSize: 10, fontFamily: 'CormorantGaramond_400Regular', color: theme.textMuted, letterSpacing: 0.3, marginBottom: Spacing.sm },
+    hint: { fontSize: 10, fontFamily: 'Fraunces_400Regular', color: theme.textMuted, letterSpacing: 0.3, marginBottom: Spacing.sm },
     pulse: { position: 'absolute', width: 30, height: 30, borderRadius: 15, borderWidth: 1.5 },
     center: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', gap: 2 },
-    topLabel: { fontSize: 9, fontFamily: 'CormorantGaramond_600SemiBold', color: theme.textMuted, letterSpacing: 2.5, marginBottom: 2 },
-    dayNum: { fontSize: 64, fontFamily: 'CormorantGaramond_500Medium_Italic', lineHeight: 66, letterSpacing: -2 },
-    dayOf: { fontSize: 11, fontFamily: 'CormorantGaramond_400Regular', color: theme.textMuted, marginTop: -4, marginBottom: 6 },
+    topLabel: { fontSize: 9, fontFamily: 'Fraunces_600SemiBold', color: theme.textMuted, letterSpacing: 2.5, marginBottom: 2 },
+    dayNum: { fontSize: 64, fontFamily: 'Fraunces_500Medium_Italic', lineHeight: 66, letterSpacing: -2 },
+    dayOf: { fontSize: 11, fontFamily: 'Fraunces_400Regular', color: theme.textMuted, marginTop: -4, marginBottom: 6 },
     phaseBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, borderWidth: 1 },
     phaseDot: { width: 7, height: 7, borderRadius: 4 },
-    phaseName: { fontSize: 11, fontFamily: 'CormorantGaramond_600SemiBold', letterSpacing: 0.5 },
-    nextPeriod: { fontSize: 10, fontFamily: 'CormorantGaramond_400Regular', color: theme.textMuted, marginTop: 4 },
+    phaseName: { fontSize: 11, fontFamily: 'Fraunces_600SemiBold', letterSpacing: 0.5 },
+    nextPeriod: { fontSize: 10, fontFamily: 'Fraunces_400Regular', color: theme.textMuted, marginTop: 4 },
     statsRow: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.md, paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: 'rgba(42,31,38,0.10)', width: '100%' },
     statItem: { flex: 1, alignItems: 'center', gap: 4 },
-    statValue: { fontSize: 28, fontFamily: 'CormorantGaramond_500Medium_Italic', color: theme.textPrimary, lineHeight: 30 },
-    statLabel: { fontSize: 8.5, fontFamily: 'CormorantGaramond_600SemiBold', color: theme.textMuted, letterSpacing: 1.2 },
+    statValue: { fontSize: 28, fontFamily: 'Fraunces_500Medium_Italic', color: theme.textPrimary, lineHeight: 30 },
+    statLabel: { fontSize: 8.5, fontFamily: 'Fraunces_600SemiBold', color: theme.textMuted, letterSpacing: 1.2 },
     statDivider: { width: 1, height: 36, backgroundColor: 'rgba(42,31,38,0.10)' },
   });
 }

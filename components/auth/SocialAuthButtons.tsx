@@ -88,7 +88,7 @@ function createStyles(c: AppColors) {
     dividerText: {
       marginHorizontal: Spacing.md,
       fontSize: FontSize.sm,
-      fontFamily: 'CormorantGaramond_400Regular',
+      fontFamily: 'Fraunces_400Regular',
       color: c.textMuted,
     },
     appleBtn: { height: 50, width: '100%' },

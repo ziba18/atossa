@@ -76,8 +76,8 @@ function createStyles(c: AppColors) {
     thumbnailPlaceholder: { width: '100%', height: 120, backgroundColor: c.cherryLighter, alignItems: 'center', justifyContent: 'center' },
     info: { padding: Spacing.md },
     badgeRow: { flexDirection: 'row', gap: Spacing.xs, marginBottom: Spacing.xs },
-    title: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, lineHeight: 22 },
+    title: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary, lineHeight: 22 },
     metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: Spacing.xs },
-    meta: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted },
+    meta: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
   });
 }

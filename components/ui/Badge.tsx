@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.semibold,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Fraunces_600SemiBold',
   },
 });

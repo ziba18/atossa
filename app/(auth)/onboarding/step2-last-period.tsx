@@ -66,14 +66,14 @@ export default function Step2LastPeriod() {
 function createStyles(c: AppColors) {
   return StyleSheet.create({
     progress: { marginBottom: Spacing.xl },
-    step: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
+    step: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
     progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
     fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-    title: { fontSize: 28, fontFamily: 'CormorantGaramond_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
-    subtitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.lg, lineHeight: 22 },
-    selected: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: Colors.cherry, textAlign: 'center', marginTop: Spacing.sm },
+    title: { fontSize: 28, fontFamily: 'Fraunces_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.lg, lineHeight: 22 },
+    selected: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.cherry, textAlign: 'center', marginTop: Spacing.sm },
     btn: { marginTop: Spacing.xl },
     skipBtn: { alignSelf: 'center', paddingVertical: Spacing.md, paddingHorizontal: Spacing.lg, marginTop: Spacing.sm },
-    skipText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: c.textMuted, textDecorationLine: 'underline' },
+    skipText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: c.textMuted, textDecorationLine: 'underline' },
   });
 }

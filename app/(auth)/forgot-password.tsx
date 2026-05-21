@@ -65,10 +65,10 @@ export default function ForgotPasswordScreen() {
 function createStyles(c: AppColors) {
   return StyleSheet.create({
     container: { flex: 1, paddingTop: Spacing.xl },
-    subtitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
+    subtitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
     sentContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     sentIconWrap: { marginBottom: Spacing.lg },
-    sentTitle: { fontSize: 24, fontFamily: 'CormorantGaramond_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
-    sentBody: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 22 },
+    sentTitle: { fontSize: 24, fontFamily: 'Fraunces_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
+    sentBody: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 22 },
   });
 }

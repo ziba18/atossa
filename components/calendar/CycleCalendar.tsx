@@ -91,9 +91,9 @@ export function CycleCalendar({ cycleLogs, prediction, onDayPress }: Props) {
         textDayFontSize: FontSize.sm,
         textMonthFontSize: FontSize.md,
         textDayHeaderFontSize: FontSize.xs,
-        textDayFontFamily: 'CormorantGaramond_400Regular',
-        textMonthFontFamily: 'CormorantGaramond_600SemiBold',
-        textDayHeaderFontFamily: 'CormorantGaramond_500Medium',
+        textDayFontFamily: 'Fraunces_400Regular',
+        textMonthFontFamily: 'Fraunces_600SemiBold',
+        textDayHeaderFontFamily: 'Fraunces_500Medium',
       }}
     />
   );

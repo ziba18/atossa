@@ -188,13 +188,13 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 52,
-    fontFamily: 'CormorantGaramond_500Medium_Italic',
+    fontFamily: 'Fraunces_500Medium_Italic',
     color: Colors.white,
     letterSpacing: 3,
   },
   tagline: {
     fontSize: FontSize.lg,
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     color: 'rgba(255,255,255,0.85)',
     textAlign: 'center',
     marginTop: Spacing.sm,
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   },
   features: { gap: Spacing.md },
   featureRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
-  featureText: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_400Regular', color: Colors.white, flex: 1 },
+  featureText: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: Colors.white, flex: 1 },
   buttons: { gap: Spacing.sm },
   appleBtn: { height: 52, width: '100%' },
   socialLoading: { height: 52, alignItems: 'center', justifyContent: 'center' },
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   googleBtnText: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Fraunces_600SemiBold',
     color: '#1F1F1F',
   },
   secondaryBtn: { backgroundColor: 'rgba(255,255,255,0.15)' },

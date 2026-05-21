@@ -57,20 +57,20 @@ const styles = StyleSheet.create({
   },
   code: {
     fontSize: 96,
-    fontFamily: 'CormorantGaramond_500Medium_Italic',
+    fontFamily: 'Fraunces_500Medium_Italic',
     color: 'rgba(255,255,255,0.15)',
     lineHeight: 100,
   },
   title: {
     fontSize: FontSize.xxl,
-    fontFamily: 'CormorantGaramond_500Medium_Italic',
+    fontFamily: 'Fraunces_500Medium_Italic',
     color: Colors.white,
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     color: 'rgba(255,255,255,0.65)',
     textAlign: 'center',
     lineHeight: 22,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Fraunces_600SemiBold',
     fontWeight: FontWeight.semibold,
     color: Colors.white,
   },
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   backLinkText: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     color: Colors.cherry,
   },
 });

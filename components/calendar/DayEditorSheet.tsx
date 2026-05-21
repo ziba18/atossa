@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   tag: {
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Fraunces_600SemiBold',
     fontSize: 10,
     color: 'rgba(63,47,74,0.50)',
     letterSpacing: 2.5,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   sub: {
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     fontSize: 14,
     color: Colors.textSecondary,
     marginTop: 4,

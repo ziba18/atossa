@@ -47,19 +47,20 @@ export const FontWeight = {
 };
 
 // ─── Font families ────────────────────────────────────────────────────────────
-// Single-typeface system: Cormorant Garamond throughout. Italic variants for
-// hero/display text; non-italic for body, labels, and small UI. The `sans*`
-// aliases are kept (mapped to the Cormorant equivalents) so legacy code that
-// references them still works.
+// Single-typeface system: Fraunces — a modern variable serif with distinctive
+// ball-terminal letterforms (notice the lowercase g, y, e, a — they're what
+// makes the app's text feel hand-crafted instead of generic). Italic variants
+// for hero/display text; non-italic for body, labels, and small UI. Sans*
+// aliases stay mapped to Fraunces so legacy callers don't break.
 export const FontFamily = {
-  sans:           'CormorantGaramond_400Regular',
-  sansMedium:     'CormorantGaramond_500Medium',
-  sansSemibold:   'CormorantGaramond_600SemiBold',
-  display:        'CormorantGaramond_500Medium_Italic',
-  displayMedium:  'CormorantGaramond_500Medium',
-  displayItalic:  'CormorantGaramond_500Medium_Italic',
-  displaySemibold:'CormorantGaramond_600SemiBold',
-  bodyItalic:     'CormorantGaramond_400Regular_Italic',
+  sans:           'Fraunces_400Regular',
+  sansMedium:     'Fraunces_500Medium',
+  sansSemibold:   'Fraunces_600SemiBold',
+  display:        'Fraunces_500Medium_Italic',
+  displayMedium:  'Fraunces_500Medium',
+  displayItalic:  'Fraunces_500Medium_Italic',
+  displaySemibold:'Fraunces_600SemiBold_Italic',
+  bodyItalic:     'Fraunces_400Regular_Italic',
   sansSystem:     'System',
   displaySystem:  'System',
 } as const;

@@ -844,12 +844,12 @@ function createStyles(c: AppColors) {
     },
     titleBarText: {
       fontSize: FontSize.xxl,
-      fontFamily: 'CormorantGaramond_600SemiBold',
+      fontFamily: 'Fraunces_600SemiBold',
       color: c.textPrimary,
     },
     titleBarDate: {
       fontSize: FontSize.sm,
-      fontFamily: 'CormorantGaramond_400Regular',
+      fontFamily: 'Fraunces_400Regular',
       color: c.textMuted,
     },
     historyBtn: {
@@ -885,13 +885,13 @@ function createStyles(c: AppColors) {
     },
     bannerTitle: {
       fontSize: 22,
-      fontFamily: 'CormorantGaramond_600SemiBold',
+      fontFamily: 'Fraunces_600SemiBold',
       color: '#FFFFFF',
       letterSpacing: 0.3,
     },
     bannerDesc: {
       fontSize: FontSize.xs,
-      fontFamily: 'CormorantGaramond_400Regular',
+      fontFamily: 'Fraunces_400Regular',
       color: 'rgba(255,255,255,0.8)',
       marginTop: 2,
     },
@@ -901,17 +901,17 @@ function createStyles(c: AppColors) {
       alignItems: 'center', justifyContent: 'center',
       borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)',
     },
-    countBadgeText: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_600SemiBold', color: '#FFFFFF' },
+    countBadgeText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold', color: '#FFFFFF' },
 
     pageContent: { padding: Spacing.md, paddingBottom: Spacing.xl },
 
     emptyCard: { alignItems: 'center', paddingVertical: Spacing.xxl },
     emptyTitle: {
-      fontSize: FontSize.lg, fontFamily: 'CormorantGaramond_600SemiBold',
+      fontSize: FontSize.lg, fontFamily: 'Fraunces_600SemiBold',
       color: c.textPrimary, marginBottom: Spacing.xs, marginTop: Spacing.sm,
     },
     emptySubtitle: {
-      fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular',
+      fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular',
       color: c.textMuted, textAlign: 'center', lineHeight: 20,
     },
 
@@ -926,23 +926,23 @@ function createStyles(c: AppColors) {
       backgroundColor: c.cherryLighter,
       alignItems: 'center', justifyContent: 'center',
     },
-    medName: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
-    medDetail: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginTop: 2 },
+    medName: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary },
+    medDetail: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginTop: 2 },
     removeBtn: { padding: Spacing.xs },
     medForm: {
       backgroundColor: c.surface, borderRadius: Radius.lg,
       borderWidth: 1, borderColor: c.border,
       padding: Spacing.md, marginBottom: Spacing.md,
     },
-    formTitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary, marginBottom: Spacing.md },
-    unitLabel: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: c.textSecondary, marginBottom: Spacing.xs },
+    formTitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary, marginBottom: Spacing.md },
+    unitLabel: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: c.textSecondary, marginBottom: Spacing.xs },
     unitChip: {
       paddingHorizontal: Spacing.sm, paddingVertical: 6,
       borderRadius: Radius.sm, borderWidth: 1, borderColor: c.border, backgroundColor: c.surface,
     },
     unitChipActive: { backgroundColor: c.cherry, borderColor: c.cherry },
-    unitChipText: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textSecondary },
-    unitChipTextActive: { color: '#FFFFFF', fontFamily: 'CormorantGaramond_600SemiBold' },
+    unitChipText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textSecondary },
+    unitChipTextActive: { color: '#FFFFFF', fontFamily: 'Fraunces_600SemiBold' },
     suggestionsBox: {
       backgroundColor: c.surface, borderWidth: 1, borderColor: c.border,
       borderRadius: Radius.md, marginTop: -Spacing.sm, marginBottom: Spacing.sm, overflow: 'hidden',
@@ -951,21 +951,21 @@ function createStyles(c: AppColors) {
       paddingHorizontal: Spacing.md, paddingVertical: 10,
       borderBottomWidth: 1, borderBottomColor: c.border,
     },
-    suggestionItemText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textPrimary },
+    suggestionItemText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textPrimary },
     addMedBtn: {
       borderWidth: 1.5, borderColor: c.cherry, borderRadius: Radius.lg,
       borderStyle: 'dashed', paddingVertical: Spacing.md, alignItems: 'center', marginTop: Spacing.sm,
     },
-    addMedBtnText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: c.cherry },
+    addMedBtnText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: c.cherry },
 
     bodySection: {
       backgroundColor: c.surface, borderRadius: Radius.lg,
       borderWidth: 1, borderColor: c.border,
       padding: Spacing.md, marginBottom: Spacing.md,
     },
-    bodySectionTitle: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
+    bodySectionTitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary },
     bodySectionSub: {
-      fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular',
+      fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular',
       color: c.textMuted, marginTop: 2, marginBottom: Spacing.md,
     },
     sectionDivider: {
@@ -974,22 +974,22 @@ function createStyles(c: AppColors) {
     },
     dividerLine: { flex: 1, height: 1, backgroundColor: c.border },
     dividerLabel: {
-      fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_600SemiBold',
+      fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold',
       color: c.textMuted, letterSpacing: 0.8,
     },
     dividerSub: {
-      fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular',
+      fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular',
       color: c.textMuted, marginBottom: Spacing.md, textAlign: 'center',
     },
     symptomCategory: { marginBottom: Spacing.lg },
     catLabelRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.sm },
     catDot: { width: 8, height: 8, borderRadius: 4 },
     catLabel: {
-      fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_600SemiBold',
+      fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold',
       color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, flex: 1,
     },
     catCountPill: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: Radius.full },
-    catCountText: { fontSize: 11, fontFamily: 'CormorantGaramond_600SemiBold' },
+    catCountText: { fontSize: 11, fontFamily: 'Fraunces_600SemiBold' },
 
     chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs },
     chip: {
@@ -999,14 +999,14 @@ function createStyles(c: AppColors) {
       borderColor: c.border, backgroundColor: c.surface,
       gap: 5,
     },
-    chipText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textSecondary },
-    chipTextWhite: { color: '#FFFFFF', fontFamily: 'CormorantGaramond_600SemiBold' },
+    chipText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textSecondary },
+    chipTextWhite: { color: '#FFFFFF', fontFamily: 'Fraunces_600SemiBold' },
     severityBadge: {
       width: 18, height: 18, borderRadius: 9,
       backgroundColor: 'rgba(255,255,255,0.3)',
       alignItems: 'center', justifyContent: 'center',
     },
-    severityBadgeText: { fontSize: 10, fontFamily: 'CormorantGaramond_600SemiBold', color: '#FFFFFF' },
+    severityBadgeText: { fontSize: 10, fontFamily: 'Fraunces_600SemiBold', color: '#FFFFFF' },
 
     summaryRow: {
       flexDirection: 'row', alignItems: 'center',
@@ -1020,10 +1020,10 @@ function createStyles(c: AppColors) {
       alignItems: 'center', justifyContent: 'center',
     },
     summaryLabel: {
-      fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_600SemiBold',
+      fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold',
       color: c.textMuted, textTransform: 'uppercase', letterSpacing: 0.5,
     },
-    summaryText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textPrimary, marginTop: 2 },
+    summaryText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textPrimary, marginTop: 2 },
     summaryCheck: {
       width: 24, height: 24, borderRadius: 12,
       backgroundColor: c.emeraldLighter,
@@ -1040,15 +1040,15 @@ function createStyles(c: AppColors) {
     },
     navBtn: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, minWidth: 80 },
     navBtnDisabled: { opacity: 0.3 },
-    navBtnText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textSecondary },
+    navBtnText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: c.textSecondary },
     navBtnTextDisabled: { color: c.textMuted },
     navBtnNext: {
       paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md,
       backgroundColor: c.cherry, borderRadius: Radius.full, minWidth: 80, alignItems: 'center',
     },
-    navBtnNextText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: '#FFFFFF' },
-    pageCounter: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted },
-    pageCounterOf: { fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted },
+    navBtnNextText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: '#FFFFFF' },
+    pageCounter: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
+    pageCounterOf: { fontFamily: 'Fraunces_400Regular', color: c.textMuted },
 
     modalBackdrop: { flex: 1, backgroundColor: 'rgba(42,28,24,0.4)' },
     modalSheet: {
@@ -1068,8 +1068,8 @@ function createStyles(c: AppColors) {
       alignItems: 'flex-start', marginBottom: Spacing.md,
     },
     modalSymptomDot: { width: 8, height: 8, borderRadius: 4, marginBottom: 4 },
-    modalTitle: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: c.textPrimary },
-    modalSub: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: c.textMuted, marginTop: 2 },
+    modalTitle: { fontSize: FontSize.xl, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary },
+    modalSub: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginTop: 2 },
     modalCloseBtn: {
       width: 30, height: 30, borderRadius: 15,
       backgroundColor: c.surfaceElevated,
@@ -1077,7 +1077,7 @@ function createStyles(c: AppColors) {
     },
     modalCloseTxt: { fontSize: FontSize.sm, color: c.textMuted },
     modalSectionLabel: {
-      fontSize: 10, fontFamily: 'CormorantGaramond_600SemiBold',
+      fontSize: 10, fontFamily: 'Fraunces_600SemiBold',
       color: c.textMuted, letterSpacing: 1.2,
       marginBottom: Spacing.sm, marginTop: Spacing.md,
     },
@@ -1086,24 +1086,24 @@ function createStyles(c: AppColors) {
       width: 34, height: 34, borderRadius: 17,
       borderWidth: 1.5, alignItems: 'center', justifyContent: 'center',
     },
-    severityNum: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold' },
-    severityDesc: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', marginTop: Spacing.sm },
+    severityNum: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold' },
+    severityDesc: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', marginTop: Spacing.sm },
     modalNotesInput: {
       backgroundColor: c.surfaceElevated,
       borderRadius: Radius.md, borderWidth: 1, borderColor: c.border,
-      padding: Spacing.md, fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_400Regular',
+      padding: Spacing.md, fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular',
       color: c.textPrimary, minHeight: 80, textAlignVertical: 'top',
     },
     modalActions: { gap: Spacing.sm, marginTop: Spacing.lg },
     modalSaveBtn: {
       borderRadius: Radius.full, paddingVertical: Spacing.md, alignItems: 'center',
     },
-    modalSaveTxt: { fontSize: FontSize.md, fontFamily: 'CormorantGaramond_600SemiBold', color: '#FFFFFF' },
+    modalSaveTxt: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: '#FFFFFF' },
     modalRemoveBtn: {
       borderRadius: Radius.full, paddingVertical: Spacing.sm,
       alignItems: 'center', borderWidth: 1, borderColor: c.border,
       backgroundColor: c.surfaceElevated,
     },
-    modalRemoveTxt: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_500Medium', color: c.textMuted },
+    modalRemoveTxt: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: c.textMuted },
   });
 }

@@ -20,12 +20,13 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { initAIModels } from '../algorithms/aiModel';
 import { useFonts } from 'expo-font';
 import {
-  CormorantGaramond_400Regular,
-  CormorantGaramond_400Regular_Italic,
-  CormorantGaramond_500Medium,
-  CormorantGaramond_500Medium_Italic,
-  CormorantGaramond_600SemiBold,
-} from '@expo-google-fonts/cormorant-garamond';
+  Fraunces_400Regular,
+  Fraunces_400Regular_Italic,
+  Fraunces_500Medium,
+  Fraunces_500Medium_Italic,
+  Fraunces_600SemiBold,
+  Fraunces_600SemiBold_Italic,
+} from '@expo-google-fonts/fraunces';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { MAX_CONTENT_WIDTH } from '../constants/theme';
@@ -48,13 +49,15 @@ function AppShell() {
   const { width } = useWindowDimensions();
 
   const [fontsLoaded] = useFonts({
-    // Cormorant Garamond family — the app-wide typeface. Italic variants
-    // for hero/display text; non-italic for body, labels, and UI.
-    CormorantGaramond_400Regular,
-    CormorantGaramond_400Regular_Italic,
-    CormorantGaramond_500Medium,
-    CormorantGaramond_500Medium_Italic,
-    CormorantGaramond_600SemiBold,
+    // Fraunces — modern variable serif with distinctive ball-terminal
+    // letterforms. Italic variants for hero/display text; non-italic for
+    // body, labels, and UI. Single typeface app-wide.
+    Fraunces_400Regular,
+    Fraunces_400Regular_Italic,
+    Fraunces_500Medium,
+    Fraunces_500Medium_Italic,
+    Fraunces_600SemiBold,
+    Fraunces_600SemiBold_Italic,
   });
 
   // Hide the splash as soon as the visual prerequisites (fonts + theme) are

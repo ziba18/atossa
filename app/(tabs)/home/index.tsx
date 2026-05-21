@@ -391,7 +391,7 @@ function createStyles(c: AppColors) {
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.xs },
   dateSmallcaps: {
     fontSize: 11,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Fraunces_600SemiBold',
     color: Colors.textMuted,
     letterSpacing: 1.4,
     flex: 1,
@@ -410,18 +410,18 @@ function createStyles(c: AppColors) {
     borderRadius: 99, width: 16, height: 16,
     alignItems: 'center', justifyContent: 'center',
   },
-  badgeText: { fontSize: 9, color: Colors.white, fontFamily: 'CormorantGaramond_600SemiBold' },
+  badgeText: { fontSize: 9, color: Colors.white, fontFamily: 'Fraunces_600SemiBold' },
 
   greeting: {
     fontSize: 30,
-    fontFamily: 'CormorantGaramond_500Medium_Italic',
+    fontFamily: 'Fraunces_500Medium_Italic',
     color: Colors.textPrimary,
     marginTop: Spacing.sm,
     lineHeight: 36,
   },
   tagline: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     color: Colors.textSecondary,
     marginBottom: Spacing.lg,
     marginTop: Spacing.xs,
@@ -445,19 +445,19 @@ function createStyles(c: AppColors) {
   phaseDotBig: { width: 10, height: 10, borderRadius: 5 },
   smallcaps: {
     fontSize: 11,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Fraunces_600SemiBold',
     color: Colors.textMuted,
     letterSpacing: 1.4,
   },
   heroPhase: {
     fontSize: 26,
-    fontFamily: 'CormorantGaramond_500Medium_Italic',
+    fontFamily: 'Fraunces_500Medium_Italic',
     lineHeight: 32,
     marginBottom: 4,
   },
   heroTagline: {
     fontSize: FontSize.sm,
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     color: Colors.textSecondary,
     lineHeight: 20,
     marginBottom: Spacing.md,
@@ -473,20 +473,20 @@ function createStyles(c: AppColors) {
   },
   chipText: {
     fontSize: FontSize.xs,
-    fontFamily: 'CormorantGaramond_500Medium',
+    fontFamily: 'Fraunces_500Medium',
     color: Colors.textSecondary,
   },
   selfCareRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginBottom: Spacing.sm },
-  selfCareText: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: Colors.textSecondary, flex: 1, lineHeight: 18 },
+  selfCareText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: Colors.textSecondary, flex: 1, lineHeight: 18 },
   affirmation: {
     fontSize: FontSize.sm,
-    fontFamily: 'CormorantGaramond_500Medium',
+    fontFamily: 'Fraunces_500Medium',
     color: Colors.textPrimary,
     marginBottom: Spacing.md,
     lineHeight: 20,
   },
   heroLink: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  heroLinkText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary },
+  heroLinkText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.textPrimary },
   heroCta: {
     alignSelf: 'flex-start',
     backgroundColor: Colors.cherry,
@@ -495,7 +495,7 @@ function createStyles(c: AppColors) {
     paddingVertical: 10,
     marginTop: Spacing.sm,
   },
-  heroCtaText: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.white },
+  heroCtaText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.white },
 
   // Stat tiles
   statsRow: {
@@ -513,9 +513,9 @@ function createStyles(c: AppColors) {
   },
   statTileHeader: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 6 },
   statDot: { width: 6, height: 6, borderRadius: 3 },
-  statTileLabel: { fontSize: 10, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textMuted, letterSpacing: 0.6, flex: 1 },
-  statTileValue: { fontSize: 22, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary, lineHeight: 26 },
-  statTileHint: { fontSize: 10, fontFamily: 'CormorantGaramond_400Regular', color: Colors.textMuted, marginTop: 2 },
+  statTileLabel: { fontSize: 10, fontFamily: 'Fraunces_600SemiBold', color: Colors.textMuted, letterSpacing: 0.6, flex: 1 },
+  statTileValue: { fontSize: 22, fontFamily: 'Fraunces_600SemiBold', color: Colors.textPrimary, lineHeight: 26 },
+  statTileHint: { fontSize: 10, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted, marginTop: 2 },
 
   // Alerts
   alertBanner: {
@@ -526,12 +526,12 @@ function createStyles(c: AppColors) {
     marginBottom: Spacing.sm,
   },
   alertEmergency: { borderColor: Colors.roseDeep + '55', backgroundColor: 'rgba(176,69,90,0.08)' },
-  alertTitle: { fontSize: FontSize.sm, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary },
-  alertBody: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_400Regular', color: Colors.textSecondary, marginTop: 2, lineHeight: 18 },
+  alertTitle: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.textPrimary },
+  alertBody: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: Colors.textSecondary, marginTop: 2, lineHeight: 18 },
 
   // For you today
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
-  sectionTitle: { fontSize: FontSize.xl, fontFamily: 'CormorantGaramond_600SemiBold', color: Colors.textPrimary },
+  sectionTitle: { fontSize: FontSize.xl, fontFamily: 'Fraunces_600SemiBold', color: Colors.textPrimary },
   carouselContent: { gap: Spacing.sm, paddingBottom: Spacing.xs },
   suggestCard: {
     width: 180,
@@ -547,25 +547,25 @@ function createStyles(c: AppColors) {
   },
   suggestTitle: {
     fontSize: FontSize.md,
-    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontFamily: 'Fraunces_600SemiBold',
     color: Colors.textPrimary,
     marginBottom: 4,
     lineHeight: 20,
   },
   suggestBody: {
     fontSize: FontSize.xs,
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     color: Colors.textSecondary,
     lineHeight: 17,
     marginBottom: 12,
     flex: 1,
   },
   suggestCta: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  suggestCtaText: { fontSize: FontSize.xs, fontFamily: 'CormorantGaramond_600SemiBold' },
+  suggestCtaText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold' },
 
   disclaimer: {
     fontSize: 10,
-    fontFamily: 'CormorantGaramond_400Regular',
+    fontFamily: 'Fraunces_400Regular',
     color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: 16,

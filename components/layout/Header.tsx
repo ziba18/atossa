@@ -59,18 +59,18 @@ function createStyles(c: AppColors) {
     title: {
       fontSize: FontSize.lg,
       fontWeight: FontWeight.semibold,
-      fontFamily: 'CormorantGaramond_500Medium_Italic',
+      fontFamily: 'Fraunces_500Medium_Italic',
       color: c.textPrimary,
       letterSpacing: 0.01,
     },
     titleDisplay: {
-      fontFamily: 'CormorantGaramond_500Medium_Italic',
+      fontFamily: 'Fraunces_500Medium_Italic',
       fontSize: FontSize.xl,
       letterSpacing: 0.02,
     },
     subtitle: {
       fontSize: FontSize.xs,
-      fontFamily: 'CormorantGaramond_400Regular',
+      fontFamily: 'Fraunces_400Regular',
       color: c.textMuted,
       marginTop: 2,
     },

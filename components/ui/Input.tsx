@@ -52,7 +52,7 @@ function createStyles(c: AppColors) {
     label: {
       fontSize: FontSize.sm,
       fontWeight: FontWeight.medium,
-      fontFamily: 'CormorantGaramond_500Medium',
+      fontFamily: 'Fraunces_500Medium',
       color: c.textSecondary,
       marginBottom: 6,
     },
@@ -76,7 +76,7 @@ function createStyles(c: AppColors) {
     input: {
       flex: 1,
       fontSize: FontSize.md,
-      fontFamily: 'CormorantGaramond_400Regular',
+      fontFamily: 'Fraunces_400Regular',
       color: c.textPrimary,
       paddingVertical: Spacing.sm,
     },
