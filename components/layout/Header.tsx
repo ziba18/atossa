@@ -59,12 +59,12 @@ function createStyles(c: AppColors) {
     title: {
       fontSize: FontSize.lg,
       fontWeight: FontWeight.semibold,
-      fontFamily: 'Fraunces_500Medium_Italic',
+      fontFamily: 'Fraunces_400Regular_Italic',
       color: c.textPrimary,
       letterSpacing: 0.01,
     },
     titleDisplay: {
-      fontFamily: 'Fraunces_500Medium_Italic',
+      fontFamily: 'Fraunces_400Regular_Italic',
       fontSize: FontSize.xl,
       letterSpacing: 0.02,
     },

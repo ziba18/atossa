@@ -47,19 +47,19 @@ export const FontWeight = {
 };
 
 // ─── Font families ────────────────────────────────────────────────────────────
-// Single-typeface system: Fraunces — a modern variable serif with distinctive
-// ball-terminal letterforms (notice the lowercase g, y, e, a — they're what
-// makes the app's text feel hand-crafted instead of generic). Italic variants
-// for hero/display text; non-italic for body, labels, and small UI. Sans*
-// aliases stay mapped to Fraunces so legacy callers don't break.
+// Fraunces, soft-weight palette. Heavier weights (600+) intentionally
+// omitted to keep the whole app warm and airy — emphasis comes from
+// italic variants and size, not from bold weight.
 export const FontFamily = {
+  sansLight:      'Fraunces_300Light',
   sans:           'Fraunces_400Regular',
   sansMedium:     'Fraunces_500Medium',
-  sansSemibold:   'Fraunces_600SemiBold',
-  display:        'Fraunces_500Medium_Italic',
-  displayMedium:  'Fraunces_500Medium',
-  displayItalic:  'Fraunces_500Medium_Italic',
-  displaySemibold:'Fraunces_600SemiBold_Italic',
+  sansSemibold:   'Fraunces_500Medium',   // alias — heavier text now uses Medium
+  display:        'Fraunces_400Regular_Italic',
+  displayLight:   'Fraunces_300Light_Italic',
+  displayMedium:  'Fraunces_400Regular',
+  displayItalic:  'Fraunces_400Regular_Italic',
+  displaySemibold:'Fraunces_500Medium_Italic',
   bodyItalic:     'Fraunces_400Regular_Italic',
   sansSystem:     'System',
   displaySystem:  'System',

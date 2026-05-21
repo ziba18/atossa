@@ -233,10 +233,10 @@ function createStyles(c: AppColors) {
     dateCardActive: { borderColor: Colors.cherry, backgroundColor: Colors.cherryLighter },
     dateCardDisabled: { opacity: 0.5 },
     dateCardLabel: {
-      fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold',
+      fontSize: FontSize.xs, fontFamily: 'Fraunces_500Medium',
       color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4,
     },
-    dateCardValue: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.textPrimary },
+    dateCardValue: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.textPrimary },
     dateCardPlaceholder: { color: Colors.textMuted, fontFamily: 'Fraunces_400Regular' },
     dateSeparator: { alignItems: 'center' },
     dateSeparatorText: { fontSize: FontSize.lg, color: Colors.textMuted },
@@ -246,14 +246,14 @@ function createStyles(c: AppColors) {
       marginBottom: Spacing.md, minHeight: 20,
     },
     summaryContent: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    summaryText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.cherry },
+    summaryText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
     summaryHint: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted },
-    clearText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.cherry },
+    clearText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
 
     calendar: { borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
 
     section: { marginTop: Spacing.lg },
-    label: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: Colors.textPrimary, marginBottom: Spacing.sm },
+    label: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.textPrimary, marginBottom: Spacing.sm },
     btn: { marginTop: Spacing.xl },
   });
 }

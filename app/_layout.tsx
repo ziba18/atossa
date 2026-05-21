@@ -20,12 +20,12 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { initAIModels } from '../algorithms/aiModel';
 import { useFonts } from 'expo-font';
 import {
+  Fraunces_300Light,
+  Fraunces_300Light_Italic,
   Fraunces_400Regular,
   Fraunces_400Regular_Italic,
   Fraunces_500Medium,
   Fraunces_500Medium_Italic,
-  Fraunces_600SemiBold,
-  Fraunces_600SemiBold_Italic,
 } from '@expo-google-fonts/fraunces';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -49,15 +49,16 @@ function AppShell() {
   const { width } = useWindowDimensions();
 
   const [fontsLoaded] = useFonts({
-    // Fraunces — modern variable serif with distinctive ball-terminal
-    // letterforms. Italic variants for hero/display text; non-italic for
-    // body, labels, and UI. Single typeface app-wide.
+    // Fraunces — modern variable serif used throughout the app. Light + Regular
+    // for body and labels (soft warm vibe), Medium for emphasis, italics for
+    // hero/display text. Heavier weights (SemiBold+) intentionally not loaded
+    // to keep the whole typography palette soft.
+    Fraunces_300Light,
+    Fraunces_300Light_Italic,
     Fraunces_400Regular,
     Fraunces_400Regular_Italic,
     Fraunces_500Medium,
     Fraunces_500Medium_Italic,
-    Fraunces_600SemiBold,
-    Fraunces_600SemiBold_Italic,
   });
 
   // Hide the splash as soon as the visual prerequisites (fonts + theme) are

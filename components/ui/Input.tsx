@@ -52,7 +52,7 @@ function createStyles(c: AppColors) {
     label: {
       fontSize: FontSize.sm,
       fontWeight: FontWeight.medium,
-      fontFamily: 'Fraunces_500Medium',
+      fontFamily: 'Fraunces_400Regular',
       color: c.textSecondary,
       marginBottom: 6,
     },

@@ -37,7 +37,7 @@ function createStyles(c: AppColors) {
     title: {
       fontSize: FontSize.lg,
       fontWeight: FontWeight.semibold,
-      fontFamily: 'Fraunces_600SemiBold',
+      fontFamily: 'Fraunces_500Medium',
       color: c.textPrimary,
       textAlign: 'center',
       marginBottom: Spacing.sm,

@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   tag: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Fraunces_500Medium',
     fontSize: 10,
     color: 'rgba(63,47,74,0.50)',
     letterSpacing: 2.5,

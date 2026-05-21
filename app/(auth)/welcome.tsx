@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   appName: {
     fontSize: 52,
-    fontFamily: 'Fraunces_500Medium_Italic',
+    fontFamily: 'Fraunces_400Regular_Italic',
     color: Colors.white,
     letterSpacing: 3,
   },
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   googleBtnText: {
     fontSize: FontSize.md,
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Fraunces_500Medium',
     color: '#1F1F1F',
   },
   secondaryBtn: { backgroundColor: 'rgba(255,255,255,0.15)' },

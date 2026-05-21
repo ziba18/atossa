@@ -86,7 +86,7 @@ function createStyles(c: AppColors) {
     step: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
     progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
     fill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-    title: { fontSize: 28, fontFamily: 'Fraunces_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
+    title: { fontSize: 28, fontFamily: 'Fraunces_400Regular_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
     subtitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
     relationshipRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.xl },
     relBtn: { flex: 1 },

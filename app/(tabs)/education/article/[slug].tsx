@@ -93,8 +93,8 @@ function createStyles(c: AppColors) {
     hero: { width: '100%', height: 220, backgroundColor: c.cherryLighter },
     container: { padding: Spacing.lg },
     categoryBadge: { alignSelf: 'flex-start', backgroundColor: c.cherryLighter, borderRadius: 99, paddingHorizontal: 10, paddingVertical: 4, marginBottom: Spacing.sm },
-    categoryText: { fontSize: 10, fontFamily: 'Fraunces_600SemiBold', color: c.cherry, letterSpacing: 1.2 },
-    title: { fontSize: 26, fontFamily: 'Fraunces_500Medium_Italic', color: c.textPrimary, lineHeight: 32, marginBottom: Spacing.sm },
+    categoryText: { fontSize: 10, fontFamily: 'Fraunces_300Light', color: c.cherry, letterSpacing: 1.2 },
+    title: { fontSize: 26, fontFamily: 'Fraunces_400Regular_Italic', color: c.textPrimary, lineHeight: 32, marginBottom: Spacing.sm },
     metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.md },
     metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
     metaText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
@@ -103,18 +103,18 @@ function createStyles(c: AppColors) {
     sourceCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: c.surface, borderRadius: 14, borderWidth: 1, borderColor: c.border, padding: Spacing.md, marginTop: Spacing.xl, ...Shadow.sm },
     sourceLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
     sourceLabel: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
-    sourceName: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary, marginTop: 1 },
+    sourceName: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: c.textPrimary, marginTop: 1 },
   });
 }
 
 function createMarkdownStyles(c: AppColors) {
   return {
     body: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textPrimary, lineHeight: 26 },
-    heading1: { fontSize: 26, fontFamily: 'Fraunces_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.md, marginTop: Spacing.sm },
-    heading2: { fontSize: 20, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.lg },
-    heading3: { fontSize: 16, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary, marginBottom: Spacing.xs, marginTop: Spacing.md },
-    link: { color: c.cherry, fontFamily: 'Fraunces_500Medium' },
-    strong: { fontFamily: 'Fraunces_600SemiBold' },
+    heading1: { fontSize: 26, fontFamily: 'Fraunces_400Regular_Italic', color: c.textPrimary, marginBottom: Spacing.md, marginTop: Spacing.sm },
+    heading2: { fontSize: 20, fontFamily: 'Fraunces_500Medium', color: c.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.lg },
+    heading3: { fontSize: 16, fontFamily: 'Fraunces_500Medium', color: c.textPrimary, marginBottom: Spacing.xs, marginTop: Spacing.md },
+    link: { color: c.cherry, fontFamily: 'Fraunces_400Regular' },
+    strong: { fontFamily: 'Fraunces_500Medium' },
     paragraph: { fontFamily: 'Fraunces_400Regular', lineHeight: 26, marginBottom: Spacing.sm },
     hr: { backgroundColor: 'rgba(42,31,38,0.12)', height: 1, marginVertical: Spacing.md },
     blockquote: { backgroundColor: c.cherryLighter, borderLeftColor: c.cherry, borderLeftWidth: 3, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderRadius: 4 },

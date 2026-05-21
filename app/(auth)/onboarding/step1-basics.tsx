@@ -171,9 +171,9 @@ function createStyles(c: AppColors) {
     step: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xs },
     progressBar: { height: 4, backgroundColor: c.border, borderRadius: 2 },
     progressFill: { height: 4, backgroundColor: Colors.cherry, borderRadius: 2 },
-    title: { fontSize: 28, fontFamily: 'Fraunces_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
+    title: { fontSize: 28, fontFamily: 'Fraunces_400Regular_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
     subtitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
-    label: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
+    label: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: c.textPrimary, marginBottom: Spacing.sm, marginTop: Spacing.md },
     options: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
     option: {
       paddingHorizontal: Spacing.md,
@@ -183,8 +183,8 @@ function createStyles(c: AppColors) {
       borderColor: c.border,
     },
     optionSelected: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
-    optionText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: c.textSecondary },
-    optionTextSelected: { color: Colors.white, fontFamily: 'Fraunces_600SemiBold' },
+    optionText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textSecondary },
+    optionTextSelected: { color: Colors.white, fontFamily: 'Fraunces_500Medium' },
     btn: { marginTop: Spacing.xxl },
 
     modalBackdrop: {
@@ -202,7 +202,7 @@ function createStyles(c: AppColors) {
       padding: Spacing.lg,
       gap: Spacing.sm,
     },
-    modalTitle: { fontSize: FontSize.lg, fontFamily: 'Fraunces_600SemiBold', color: c.textPrimary },
+    modalTitle: { fontSize: FontSize.lg, fontFamily: 'Fraunces_500Medium', color: c.textPrimary },
     modalHint: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
     modalInput: {
       borderWidth: 1.5,
@@ -211,14 +211,14 @@ function createStyles(c: AppColors) {
       paddingHorizontal: Spacing.md,
       paddingVertical: 12,
       fontSize: FontSize.lg,
-      fontFamily: 'Fraunces_500Medium',
+      fontFamily: 'Fraunces_400Regular',
       color: c.textPrimary,
       marginTop: Spacing.xs,
     },
     modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.sm, marginTop: Spacing.sm },
     modalCancel: { paddingVertical: 10, paddingHorizontal: 16 },
-    modalCancelText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: c.textSecondary },
+    modalCancelText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textSecondary },
     modalSave: { backgroundColor: Colors.cherry, borderRadius: 99, paddingVertical: 10, paddingHorizontal: 20 },
-    modalSaveText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.white },
+    modalSaveText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.white },
   });
 }

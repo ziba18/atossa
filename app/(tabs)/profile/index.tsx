@@ -188,20 +188,20 @@ function createStyles(c: AppColors) {
       backgroundColor: 'rgba(255,255,255,0.25)',
       alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
     },
-    avatarText: { fontSize: 36, fontFamily: 'Fraunces_500Medium_Italic', color: '#FFFFFF' },
-    name: { fontSize: FontSize.xl, fontFamily: 'Fraunces_600SemiBold', color: '#FFFFFF', marginBottom: 4 },
+    avatarText: { fontSize: 36, fontFamily: 'Fraunces_400Regular_Italic', color: '#FFFFFF' },
+    name: { fontSize: FontSize.xl, fontFamily: 'Fraunces_500Medium', color: '#FFFFFF', marginBottom: 4 },
     email: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: 'rgba(255,255,255,0.85)', marginBottom: 4 },
     memberSince: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: 'rgba(255,255,255,0.7)' },
 
     statsSection: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
     statsGrid: { flexDirection: 'row', gap: Spacing.sm },
     statCell: { flex: 1, alignItems: 'center', paddingVertical: Spacing.md },
-    statValue: { fontSize: FontSize.xxl, fontFamily: 'Fraunces_600SemiBold', color: Colors.textPrimary },
+    statValue: { fontSize: FontSize.xxl, fontFamily: 'Fraunces_500Medium', color: Colors.textPrimary },
     statLabel: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted, marginTop: 2, textAlign: 'center' },
 
     section: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
     sectionTitle: {
-      fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold',
+      fontSize: FontSize.xs, fontFamily: 'Fraunces_500Medium',
       color: Colors.textMuted, textTransform: 'uppercase',
       letterSpacing: 0.8, marginBottom: Spacing.sm,
     },
@@ -210,26 +210,26 @@ function createStyles(c: AppColors) {
       paddingVertical: Spacing.sm,
     },
     infoLabel: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: Colors.textSecondary, flex: 1 },
-    infoValue: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.textPrimary },
+    infoValue: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: Colors.textPrimary },
     divider: { height: 1, backgroundColor: Colors.border },
     regularityBadge: { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 3 },
-    regularityText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_600SemiBold', textTransform: 'capitalize' },
+    regularityText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_500Medium', textTransform: 'capitalize' },
     editBtn: {
       flexDirection: 'row', gap: Spacing.xs,
       paddingVertical: Spacing.sm, alignItems: 'center', justifyContent: 'center',
       borderRadius: Radius.md, backgroundColor: Colors.cherryLighter, marginTop: Spacing.md,
     },
-    editBtnText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_600SemiBold', color: Colors.cherry },
+    editBtnText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
 
     menuItem: {
       flexDirection: 'row', alignItems: 'center',
       padding: Spacing.md, gap: Spacing.sm,
     },
     menuItemBorder: { borderBottomWidth: 1, borderBottomColor: Colors.border },
-    menuLabel: { flex: 1, fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.textPrimary },
+    menuLabel: { flex: 1, fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: Colors.textPrimary },
 
     signOutBtn: { margin: Spacing.xl, padding: Spacing.md, alignItems: 'center' },
-    signOutText: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: Colors.cherry },
+    signOutText: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
     footer: { textAlign: 'center', fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted },
   });
 }

@@ -57,13 +57,13 @@ const styles = StyleSheet.create({
   },
   code: {
     fontSize: 96,
-    fontFamily: 'Fraunces_500Medium_Italic',
+    fontFamily: 'Fraunces_400Regular_Italic',
     color: 'rgba(255,255,255,0.15)',
     lineHeight: 100,
   },
   title: {
     fontSize: FontSize.xxl,
-    fontFamily: 'Fraunces_500Medium_Italic',
+    fontFamily: 'Fraunces_400Regular_Italic',
     color: Colors.white,
     marginBottom: Spacing.sm,
     textAlign: 'center',
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontSize: FontSize.md,
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Fraunces_500Medium',
     fontWeight: FontWeight.semibold,
     color: Colors.white,
   },

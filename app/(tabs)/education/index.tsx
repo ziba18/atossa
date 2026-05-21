@@ -58,7 +58,7 @@ function createStyles(c: AppColors) {
     },
     title: {
       fontSize: 28,
-      fontFamily: 'Fraunces_500Medium_Italic',
+      fontFamily: 'Fraunces_400Regular_Italic',
       color: c.textPrimary,
       lineHeight: 34,
       marginBottom: 6,

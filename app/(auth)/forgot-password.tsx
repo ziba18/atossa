@@ -68,7 +68,7 @@ function createStyles(c: AppColors) {
     subtitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xl, lineHeight: 22 },
     sentContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     sentIconWrap: { marginBottom: Spacing.lg },
-    sentTitle: { fontSize: 24, fontFamily: 'Fraunces_500Medium_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
+    sentTitle: { fontSize: 24, fontFamily: 'Fraunces_400Regular_Italic', color: c.textPrimary, marginBottom: Spacing.sm },
     sentBody: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 22 },
   });
 }

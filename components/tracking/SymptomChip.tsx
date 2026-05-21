@@ -41,7 +41,7 @@ function createStyles(c: AppColors) {
       margin: Spacing.xs / 2,
     },
     chipSelected: { backgroundColor: c.cherry },
-    label: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: c.textSecondary },
-    labelSelected: { color: '#FFFFFF', fontFamily: 'Fraunces_600SemiBold' },
+    label: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: c.textSecondary },
+    labelSelected: { color: '#FFFFFF', fontFamily: 'Fraunces_500Medium' },
   });
 }

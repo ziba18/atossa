@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   weekday: {
     flex: 1,
     textAlign: 'center',
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Fraunces_500Medium',
     fontSize: 10,
     color: 'rgba(63,47,74,0.45)',
     letterSpacing: 2,

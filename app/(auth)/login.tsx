@@ -109,10 +109,10 @@ function createStyles(c: AppColors) {
     container: { flex: 1, paddingTop: Spacing.xl },
     subtitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xl },
     forgotBtn: { alignSelf: 'flex-end', marginBottom: Spacing.lg, marginTop: -Spacing.sm },
-    forgotText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
+    forgotText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: Colors.cherry },
     loginBtn: { marginBottom: Spacing.xl },
     registerRow: { flexDirection: 'row', justifyContent: 'center' },
     registerText: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
-    registerLink: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: Colors.cherry },
+    registerLink: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
   });
 }

@@ -212,7 +212,7 @@ function createStyles(c: AppColors) {
     size_md: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 4, minHeight: 44 },
     size_lg: { paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md,     minHeight: 52 },
 
-    text:           { fontWeight: FontWeight.semibold, letterSpacing: 0.3, fontFamily: 'Fraunces_600SemiBold' },
+    text:           { fontWeight: FontWeight.semibold, letterSpacing: 0.3, fontFamily: 'Fraunces_500Medium' },
     text_primary:   { color: '#FFFFFF' },
     text_secondary: { color: c.cherry },
     text_outline:   { color: c.cherry },

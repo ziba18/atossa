@@ -92,8 +92,8 @@ export function CycleCalendar({ cycleLogs, prediction, onDayPress }: Props) {
         textMonthFontSize: FontSize.md,
         textDayHeaderFontSize: FontSize.xs,
         textDayFontFamily: 'Fraunces_400Regular',
-        textMonthFontFamily: 'Fraunces_600SemiBold',
-        textDayHeaderFontFamily: 'Fraunces_500Medium',
+        textMonthFontFamily: 'Fraunces_500Medium',
+        textDayHeaderFontFamily: 'Fraunces_400Regular',
       }}
     />
   );

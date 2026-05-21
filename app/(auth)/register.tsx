@@ -101,7 +101,7 @@ function createStyles(c: AppColors) {
     btn: { marginTop: Spacing.md, marginBottom: Spacing.xl },
     loginRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: Spacing.lg },
     loginText: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
-    loginLink: { fontSize: FontSize.md, fontFamily: 'Fraunces_600SemiBold', color: Colors.cherry },
+    loginLink: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
     terms: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 18 },
   });
 }

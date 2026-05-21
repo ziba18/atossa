@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
   },
   kicker: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Fraunces_500Medium',
     fontSize: 10,
     color: 'rgba(63,47,74,0.50)',
     letterSpacing: 3.5,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     width: 10, height: 10, borderRadius: 5,
   },
   legendLabel: {
-    fontFamily: 'Fraunces_500Medium',
+    fontFamily: 'Fraunces_400Regular',
     fontSize: 11,
     color: 'rgba(63,47,74,0.78)',
   },
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     width: 10, height: 10, borderRadius: 4,
   },
   hintText: {
-    fontFamily: 'Fraunces_500Medium',
+    fontFamily: 'Fraunces_400Regular',
     fontSize: 10,
     color: 'rgba(63,47,74,0.65)',
     letterSpacing: 1,
