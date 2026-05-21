@@ -11,6 +11,7 @@ import { Icon, type IconName } from '../../../components/ui/Icon';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing, Radius } from '../../../constants/theme';
+import { Type } from '../../../constants/typography';
 import { AuroraBackground } from '../../../components/layout/AuroraBackground';
 import { formatDisplayDate } from '../../../algorithms/dateHelpers';
 import { differenceInDays, parseISO, format } from 'date-fns';
@@ -412,20 +413,8 @@ function createStyles(c: AppColors) {
   },
   badgeText: { fontSize: 9, color: Colors.white, fontFamily: 'Fraunces_500Medium' },
 
-  greeting: {
-    fontSize: 30,
-    fontFamily: 'Fraunces_400Regular_Italic',
-    color: Colors.textPrimary,
-    marginTop: Spacing.sm,
-    lineHeight: 36,
-  },
-  tagline: {
-    fontSize: FontSize.md,
-    fontFamily: 'Fraunces_400Regular',
-    color: Colors.textSecondary,
-    marginBottom: Spacing.lg,
-    marginTop: Spacing.xs,
-  },
+  greeting: { ...Type.home.title, marginTop: Spacing.sm },
+  tagline:  { ...Type.home.tagline, marginBottom: Spacing.lg, marginTop: Spacing.xs },
 
   // Hero card
   heroCard: {
@@ -443,18 +432,8 @@ function createStyles(c: AppColors) {
   },
   heroTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   phaseDotBig: { width: 10, height: 10, borderRadius: 5 },
-  smallcaps: {
-    fontSize: 11,
-    fontFamily: 'Fraunces_500Medium',
-    color: Colors.textMuted,
-    letterSpacing: 1.4,
-  },
-  heroPhase: {
-    fontSize: 26,
-    fontFamily: 'Fraunces_400Regular_Italic',
-    lineHeight: 32,
-    marginBottom: 4,
-  },
+  smallcaps: { ...Type.home.section },
+  heroPhase: { ...Type.home.title, fontSize: 26, lineHeight: 32, marginBottom: 4 },
   heroTagline: {
     fontSize: FontSize.sm,
     fontFamily: 'Fraunces_400Regular',

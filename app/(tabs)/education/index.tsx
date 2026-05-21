@@ -6,6 +6,7 @@ import { CategoryFilter } from '../../../components/education/CategoryFilter';
 import type { ContentCategory } from '../../../types/database';
 import { ARTICLES, getArticlesByCategory } from '../../../constants/articles';
 import { Spacing } from '../../../constants/theme';
+import { Type } from '../../../constants/typography';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { AuroraBackground } from '../../../components/layout/AuroraBackground';
 
@@ -22,7 +23,8 @@ export default function EducationScreen() {
     <View>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Knowledge that fits your body</Text>
+        <Text style={styles.kicker}>THE LIBRARY</Text>
+        <Text style={styles.title}>Knowledge{'\n'}that fits your body</Text>
       </View>
 
       {/* Category filter */}
@@ -56,13 +58,7 @@ function createStyles(c: AppColors) {
       paddingTop: Spacing.md,
       paddingBottom: Spacing.sm,
     },
-    title: {
-      fontSize: 28,
-      fontFamily: 'Fraunces_400Regular_Italic',
-      color: c.textPrimary,
-      lineHeight: 34,
-      marginBottom: 6,
-    },
-
+    kicker: { ...Type.education.kicker },
+    title:  { ...Type.education.title, marginBottom: 6, marginTop: 2 },
   });
 }

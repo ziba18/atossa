@@ -9,6 +9,7 @@ import { CycleOrb } from '../../../components/cycle/CycleOrb';
 import { Icon } from '../../../components/ui/Icon';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { FontFamily, FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
+import { Type } from '../../../constants/typography';
 import { AuroraBackground } from '../../../components/layout/AuroraBackground';
 
 // ── Phase palette ─────────────────────────────────────────────────────────────
@@ -400,8 +401,8 @@ function createStyles(c: AppColors) {
 
     // Header — Cormorant italic display
     header:        { paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.xs },
-    kicker:        { fontSize: 10, fontFamily: 'Fraunces_300Light', color: 'rgba(63,47,74,0.50)', letterSpacing: 3.5 },
-    title:         { fontSize: 40, fontFamily: FontFamily.displayItalic, color: c.textPrimary, marginTop: 2 },
+    kicker:        { ...Type.cycle.kicker },
+    title:         { ...Type.cycle.title, marginTop: 4 },
 
     // Orb wrapper — transparent, lets the orb float over the aurora background
     orbWrap:       { marginHorizontal: Spacing.md, marginTop: Spacing.lg, marginBottom: Spacing.md, alignItems: 'center' },

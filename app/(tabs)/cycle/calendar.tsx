@@ -13,6 +13,7 @@ import { deriveCalendar } from '../../../algorithms/calendarDerive';
 import { toDateStr } from '../../../algorithms/dateHelpers';
 import { Colors } from '../../../constants/colors';
 import { FontFamily, Spacing } from '../../../constants/theme';
+import { Type } from '../../../constants/typography';
 import type { CycleLog } from '../../../types/database';
 
 // ── Phase legend chips (Aura-style) ─────────────────────────────────────────
@@ -191,18 +192,8 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
     paddingBottom: Spacing.sm,
   },
-  kicker: {
-    fontFamily: 'Fraunces_500Medium',
-    fontSize: 10,
-    color: 'rgba(63,47,74,0.50)',
-    letterSpacing: 3.5,
-  },
-  title: {
-    fontFamily: FontFamily.displayItalic,
-    fontSize: 40,
-    color: Colors.ink,
-    marginTop: 2,
-  },
+  kicker: { ...Type.calendar.kicker },
+  title:  { ...Type.calendar.title, marginTop: 4 },
 
   legendCard: {
     flexDirection: 'row',
@@ -223,11 +214,7 @@ const styles = StyleSheet.create({
   legendDot: {
     width: 10, height: 10, borderRadius: 5,
   },
-  legendLabel: {
-    fontFamily: 'Fraunces_400Regular',
-    fontSize: 11,
-    color: 'rgba(63,47,74,0.78)',
-  },
+  legendLabel: { ...Type.calendar.label },
 
   hintCard: {
     flexDirection: 'row',
@@ -242,11 +229,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.6)',
   },
-  hintCardTitle: {
-    fontFamily: FontFamily.displayItalic,
-    fontSize: 16,
-    color: Colors.ink,
-  },
+  hintCardTitle: { ...Type.calendar.section, fontSize: 16, fontFamily: 'Fraunces_400Regular_Italic' },
   hintRow: {
     flexDirection: 'row',
     gap: 10,

@@ -12,6 +12,7 @@ import { Icon, type IconName } from '../../../components/ui/Icon';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../../constants/theme';
+import { Type } from '../../../constants/typography';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -189,7 +190,7 @@ function createStyles(c: AppColors) {
       alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
     },
     avatarText: { fontSize: 36, fontFamily: 'Fraunces_400Regular_Italic', color: '#FFFFFF' },
-    name: { fontSize: FontSize.xl, fontFamily: 'Fraunces_500Medium', color: '#FFFFFF', marginBottom: 4 },
+    name: { fontSize: 30, fontFamily: 'Fraunces_400Regular_Italic', color: '#FFFFFF', marginBottom: 4, letterSpacing: -0.3 },
     email: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: 'rgba(255,255,255,0.85)', marginBottom: 4 },
     memberSince: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: 'rgba(255,255,255,0.7)' },
 
@@ -200,11 +201,7 @@ function createStyles(c: AppColors) {
     statLabel: { fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted, marginTop: 2, textAlign: 'center' },
 
     section: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
-    sectionTitle: {
-      fontSize: FontSize.xs, fontFamily: 'Fraunces_500Medium',
-      color: Colors.textMuted, textTransform: 'uppercase',
-      letterSpacing: 0.8, marginBottom: Spacing.sm,
-    },
+    sectionTitle: { ...Type.profile.label, textTransform: 'uppercase' as const, marginBottom: Spacing.sm },
     infoRow: {
       flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
       paddingVertical: Spacing.sm,

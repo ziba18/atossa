@@ -4,6 +4,7 @@ import { addDays, endOfMonth, format, isSameDay, parseISO, startOfMonth, startOf
 import { DayCell } from './DayCell';
 import type { CalendarDay } from '../../algorithms/calendarDerive';
 import { FontFamily, Spacing } from '../../constants/theme';
+import { Type } from '../../constants/typography';
 import { Colors } from '../../constants/colors';
 import { toDateStr } from '../../algorithms/dateHelpers';
 
@@ -91,29 +92,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     marginBottom: 10,
   },
-  monthTitle: {
-    fontFamily: FontFamily.displayItalic,
-    fontSize: 26,
-    color: Colors.ink,
-  },
-  year: {
-    fontFamily: FontFamily.displayMedium,
-    fontSize: 13,
-    color: 'rgba(63,47,74,0.50)',
-    letterSpacing: 3,
-  },
+  monthTitle: { ...Type.calendar.month },
+  year:       { ...Type.calendar.year, textAlign: 'right' as const },
   weekdayRow: {
     flexDirection: 'row',
     marginBottom: 4,
   },
-  weekday: {
-    flex: 1,
-    textAlign: 'center',
-    fontFamily: 'Fraunces_500Medium',
-    fontSize: 10,
-    color: 'rgba(63,47,74,0.45)',
-    letterSpacing: 2,
-  },
+  weekday: { ...Type.calendar.weekday, flex: 1, textAlign: 'center' as const },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

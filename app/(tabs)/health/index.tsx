@@ -12,6 +12,7 @@ import { Button } from '../../../components/ui/Button';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontSize, Spacing, Radius, Shadow } from '../../../constants/theme';
+import { Type } from '../../../constants/typography';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { today } from '../../../algorithms/dateHelpers';
 import { BodyPainMap, type PainEntry } from '../../../components/tracking/BodyPainMap';
@@ -402,7 +403,10 @@ export default function HealthLogScreen() {
     <SafeAreaView style={styles.screen}>
       {/* Title header (no back button — this is a tab) */}
       <View style={styles.titleBar}>
-        <Text style={styles.titleBarText}>Health Log</Text>
+        <View>
+          <Text style={styles.kicker}>FIELD NOTES</Text>
+          <Text style={styles.titleBarText}>Today, gently</Text>
+        </View>
         <View style={styles.titleBarRight}>
           <Text style={styles.titleBarDate}>
             {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -842,16 +846,9 @@ function createStyles(c: AppColors) {
       alignItems: 'center',
       gap: Spacing.sm,
     },
-    titleBarText: {
-      fontSize: FontSize.xxl,
-      fontFamily: 'Fraunces_500Medium',
-      color: c.textPrimary,
-    },
-    titleBarDate: {
-      fontSize: FontSize.sm,
-      fontFamily: 'Fraunces_400Regular',
-      color: c.textMuted,
-    },
+    kicker:       { ...Type.health.kicker },
+    titleBarText: { ...Type.health.title, fontSize: 30, lineHeight: 36, marginTop: 2 },
+    titleBarDate: { ...Type.health.date },
     historyBtn: {
       width: 32,
       height: 32,
