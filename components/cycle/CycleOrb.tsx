@@ -17,6 +17,7 @@ try {
 import type { CycleLog, CyclePrediction } from '../../types/database';
 import { Colors } from '../../constants/colors';
 import { FontFamily, Spacing } from '../../constants/theme';
+import { OrbDayNum, Accent, Ink } from '../../constants/typography';
 import { daysBetween, today } from '../../algorithms/dateHelpers';
 
 const W = Dimensions.get('window').width;
@@ -286,23 +287,17 @@ const styles = StyleSheet.create({
   },
   day: {
     fontSize: 10,
-    fontFamily: FontFamily.displayItalic,
-    color: 'rgba(63,47,74,0.55)',
-    letterSpacing: 4,
+    fontFamily: 'Fraunces_300Light',
+    color: Ink.muted,
+    letterSpacing: 2.8,
     marginBottom: -2,
   },
-  dayNum: {
-    fontSize: 78,
-    lineHeight: 84,
-    fontFamily: FontFamily.displayMedium,
-    color: Colors.ink,
-    letterSpacing: -2,
-  },
+  dayNum: { ...OrbDayNum },
   phase: {
     marginTop: 4,
     fontSize: 20,
-    fontFamily: FontFamily.displayItalic,
-    color: 'rgba(63,47,74,0.80)',
-    letterSpacing: 0.2,
+    fontFamily: 'Fraunces_400Regular_Italic',
+    color: Accent.cycle.deep,
+    letterSpacing: -0.2,
   },
 });

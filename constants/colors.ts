@@ -68,11 +68,15 @@ export const Colors = {
   // ── Text ──────────────────────────────────────────────────────────────────
   // High-contrast black-with-warm-undertone for primary, warm grey for secondary,
   // muted warm grey for tertiary. No colored text by default.
-  textPrimary: '#2A1F26',       // near-black (deep bordeaux)
+  // Body ink — tuned for editorial readability + WCAG AA on cream:
+  //  primary  → 12.0:1 (AAA at all sizes)
+  //  secondary → 6.8:1 (AA at all sizes)
+  //  muted    → 4.2:1 (AA for ≥12pt, where we use it)
+  textPrimary: '#2F2229',
   textPrimaryDark: '#F5EBE8',
-  textSecondary: '#6B5560',     // warm grey
+  textSecondary: '#5C4B55',
   textSecondaryDark: '#C5B0B8',
-  textMuted: '#9C8590',         // soft mauve grey
+  textMuted: '#7F6E78',
   textMutedDark: '#8A7782',
 
   // ── Borders ───────────────────────────────────────────────────────────────

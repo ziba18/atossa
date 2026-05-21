@@ -848,7 +848,7 @@ function createStyles(c: AppColors) {
     },
     kicker:       { ...Type.health.kicker },
     titleBarText: { ...Type.health.title, fontSize: 30, lineHeight: 36, marginTop: 2 },
-    titleBarDate: { ...Type.health.date },
+    titleBarDate: { fontSize: 12, fontFamily: 'Fraunces_400Regular_Italic', color: '#5E7E62', letterSpacing: 0.8 },
     historyBtn: {
       width: 32,
       height: 32,

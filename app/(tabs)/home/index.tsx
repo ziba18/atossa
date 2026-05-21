@@ -414,7 +414,7 @@ function createStyles(c: AppColors) {
   badgeText: { fontSize: 9, color: Colors.white, fontFamily: 'Fraunces_500Medium' },
 
   greeting: { ...Type.home.title, marginTop: Spacing.sm },
-  tagline:  { ...Type.home.tagline, marginBottom: Spacing.lg, marginTop: Spacing.xs },
+  tagline:  { ...Type.home.lede, marginBottom: Spacing.lg, marginTop: Spacing.xs },
 
   // Hero card
   heroCard: {
