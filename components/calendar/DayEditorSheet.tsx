@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { format, parseISO } from 'date-fns';
@@ -25,73 +25,118 @@ interface Props {
   onClear:     (date: string) => void;
 }
 
-export function DayEditorSheet({ open, date, info, onClose, onMarkStart, onMarkEnd, onClear }: Props) {
+/**
+ * Bottom sheet editor for a calendar day.
+ *
+ * Important: the sheet is ALWAYS mounted. Open/close is controlled
+ * declaratively via the `index` prop (open ? 0 : -1). The `onChange`
+ * callback notifies the parent when the sheet has actually closed
+ * (whether via drag, backdrop tap, or programmatic close) so React
+ * state stays in sync.
+ */
+export function DayEditorSheet({
+  open, date, info, onClose,
+  onMarkStart, onMarkEnd, onClear,
+}: Props) {
   const sheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['46%'], []);
+  const snapPoints = useMemo(() => ['48%'], []);
 
-  useEffect(() => {
-    if (open) sheetRef.current?.expand();
-    else sheetRef.current?.close();
-  }, [open]);
+  // Render the backdrop only when the sheet is open.
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.35}
+        pressBehavior="close"
+      />
+    ),
+    [],
+  );
 
-  if (!date) return null;
+  // Fires when the sheet finishes a snap transition. -1 = fully closed.
+  const handleChange = useCallback((index: number) => {
+    if (index === -1 && open) onClose();
+  }, [open, onClose]);
+
+  // Button handlers: trigger the action, then close the sheet.
+  const handleStart = useCallback(() => {
+    if (!date) return;
+    onMarkStart(date);
+    onClose();
+  }, [date, onMarkStart, onClose]);
+
+  const handleEnd = useCallback(() => {
+    if (!date) return;
+    onMarkEnd(date);
+    onClose();
+  }, [date, onMarkEnd, onClose]);
+
+  const handleClear = useCallback(() => {
+    if (!date) return;
+    onClear(date);
+    onClose();
+  }, [date, onClear, onClose]);
 
   return (
     <BottomSheet
       ref={sheetRef}
-      index={-1}
+      index={open ? 0 : -1}
       snapPoints={snapPoints}
       enablePanDownToClose
-      onClose={onClose}
+      onChange={handleChange}
       backgroundStyle={styles.bg}
       handleIndicatorStyle={styles.handle}
-      backdropComponent={(props) => (
-        <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.35} />
-      )}
+      backdropComponent={renderBackdrop}
     >
       <BottomSheetView style={styles.content}>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.tag}>{info?.predicted ? 'PREDICTED' : 'LOGGED'}</Text>
-            <Text style={styles.title}>{format(parseISO(date), 'EEEE, MMM d')}</Text>
-            {info && (
-              <Text style={styles.sub}>
-                Day {info.cycleDay} · {PHASE_LABEL[info.phase]}
-              </Text>
-            )}
-          </View>
-          <Pressable onPress={onClose} hitSlop={10} style={styles.close}>
-            <Icon name="x" size={16} color={Colors.textSecondary} />
-          </Pressable>
-        </View>
+        {date && (
+          <>
+            {/* Header */}
+            <View style={styles.headerRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.tag}>
+                  {info?.predicted ? 'PREDICTED' : 'LOGGED'}
+                </Text>
+                <Text style={styles.title}>{format(parseISO(date), 'EEEE, MMM d')}</Text>
+                {info && (
+                  <Text style={styles.sub}>
+                    Day {info.cycleDay} · {PHASE_LABEL[info.phase]}
+                  </Text>
+                )}
+              </View>
+              <Pressable onPress={onClose} hitSlop={10} style={styles.close}>
+                <Icon name="x" size={16} color={Colors.textSecondary} />
+              </Pressable>
+            </View>
 
-        {/* Actions */}
-        <View style={{ gap: Spacing.sm, marginTop: Spacing.md }}>
-          <Button
-            label="Mark period start"
-            variant="primary"
-            size="lg"
-            fullWidth
-            onPress={() => { onMarkStart(date); onClose(); }}
-          />
-          <Button
-            label="Mark period end"
-            variant="secondary"
-            size="lg"
-            fullWidth
-            onPress={() => { onMarkEnd(date); onClose(); }}
-          />
-          {!info?.predicted && (
-            <Button
-              label="Clear this day"
-              variant="ghost"
-              size="lg"
-              fullWidth
-              onPress={() => { onClear(date); onClose(); }}
-            />
-          )}
-        </View>
+            {/* Actions */}
+            <View style={{ gap: Spacing.sm, marginTop: Spacing.md }}>
+              <Button
+                label="Mark period start"
+                variant="primary"
+                size="lg"
+                fullWidth
+                onPress={handleStart}
+              />
+              <Button
+                label="Mark period end"
+                variant="secondary"
+                size="lg"
+                fullWidth
+                onPress={handleEnd}
+              />
+              <Button
+                label="Clear this day"
+                variant="ghost"
+                size="lg"
+                fullWidth
+                onPress={handleClear}
+              />
+            </View>
+          </>
+        )}
       </BottomSheetView>
     </BottomSheet>
   );

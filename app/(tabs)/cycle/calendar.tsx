@@ -8,7 +8,6 @@ import { supabase } from '../../../lib/supabase';
 import { AuroraBackground } from '../../../components/layout/AuroraBackground';
 import { MonthGrid } from '../../../components/calendar/MonthGrid';
 import { DayEditorSheet } from '../../../components/calendar/DayEditorSheet';
-import { Icon } from '../../../components/ui/Icon';
 import { deriveCalendar } from '../../../algorithms/calendarDerive';
 import { toDateStr } from '../../../algorithms/dateHelpers';
 import { Colors } from '../../../constants/colors';
@@ -53,29 +52,56 @@ export default function CycleCalendarScreen() {
 
   const selectedInfo = selected ? calendar.get(selected) : undefined;
 
-  // ── Edit handlers — all go through the store so AI + EWMA pipeline reruns ─
+  // ── Edit handlers — semantics match Aura's lib/cycle/store.ts exactly ────
+  //   markStart: if a logged period exists within 10 days, REPLACE its start.
+  //              Otherwise INSERT a new period.
+  //   markEnd:   find most recent period with start ≤ date, set its end.
+  //              If no such period exists, no-op.
+  //   clear:     if the date IS a period_start → delete the period.
+  //              If the date IS a period_end   → clear the end (keep period).
+  // After every mutation we re-fetch + re-compute so the prediction layer
+  // (AI/EWMA) updates and the calendar visually refreshes.
+
   const refresh = useCallback(async () => {
     if (!user) return;
     await fetchCycleLogs(user.id);
     await recomputePrediction(user.id);
-  }, [user]);
+  }, [user, fetchCycleLogs, recomputePrediction]);
 
   const onMarkStart = useCallback(async (date: string) => {
     if (!user) return;
-    // If there's an existing log within 12 days, treat as edit-start.
+    const tenDaysMs = 10 * 86400000;
+    const dateMs = parseISO(date).getTime();
+    // Match Aura: any logged period within 10 days → edit its start.
     const nearby = cycleLogs.find(
-      (l) => Math.abs(
-        parseISO(l.period_start).getTime() - parseISO(date).getTime(),
-      ) < 12 * 86400000,
+      (l) => Math.abs(parseISO(l.period_start).getTime() - dateMs) < tenDaysMs,
     );
     if (nearby) {
-      await supabase.from('cycle_logs').update({ period_start: date }).eq('id', nearby.id);
+      // If we're moving the start earlier than its current end, recompute the
+      // period_length to keep the row internally consistent.
+      let patch: { period_start: string; period_length?: number | null } = { period_start: date };
+      if (nearby.period_end) {
+        const lenDays = Math.round(
+          (parseISO(nearby.period_end).getTime() - dateMs) / 86400000,
+        ) + 1;
+        if (lenDays < 1) {
+          // Start moved past the end → clear the end, since it's now invalid.
+          patch = { period_start: date, period_length: null };
+          await supabase.from('cycle_logs')
+            .update({ ...patch, period_end: null })
+            .eq('id', nearby.id);
+        } else {
+          patch.period_length = Math.min(10, lenDays);
+          await supabase.from('cycle_logs').update(patch).eq('id', nearby.id);
+        }
+      } else {
+        await supabase.from('cycle_logs').update(patch).eq('id', nearby.id);
+      }
     } else {
+      // Bare insert — period_end / period_length stay null until markEnd.
       await supabase.from('cycle_logs').insert({
         user_id: user.id,
         period_start: date,
-        period_length: 5,
-        flow_intensity: 'medium',
         is_confirmed: true,
       });
     }
@@ -84,32 +110,41 @@ export default function CycleCalendarScreen() {
 
   const onMarkEnd = useCallback(async (date: string) => {
     if (!user) return;
-    // Find the most recent log whose start ≤ date.
-    const candidate = [...cycleLogs]
-      .filter((l) => l.period_start <= date)
-      .sort((a, b) => b.period_start.localeCompare(a.period_start))[0];
-    if (!candidate) return;
-    const periodLength = Math.max(2, Math.min(10,
-      Math.round((parseISO(date).getTime() - parseISO(candidate.period_start).getTime()) / 86400000) + 1
-    ));
+    // Most recent period whose start is ≤ date (sorted ASC for the scan).
+    const sorted = [...cycleLogs].sort((a, b) => a.period_start.localeCompare(b.period_start));
+    let target: CycleLog | undefined;
+    for (const p of sorted) {
+      if (p.period_start <= date) target = p;
+    }
+    if (!target) return;
+    if (date < target.period_start) return; // sanity guard
+    const periodLength = Math.max(
+      1,
+      Math.min(10, Math.round(
+        (parseISO(date).getTime() - parseISO(target.period_start).getTime()) / 86400000,
+      ) + 1),
+    );
     await supabase
       .from('cycle_logs')
       .update({ period_end: date, period_length: periodLength })
-      .eq('id', candidate.id);
+      .eq('id', target.id);
     await refresh();
   }, [user, cycleLogs, refresh]);
 
   const onClear = useCallback(async (date: string) => {
     if (!user) return;
-    const log = cycleLogs.find((l: CycleLog) => l.period_start === date);
-    if (log) {
-      await supabase.from('cycle_logs').delete().eq('id', log.id);
-    } else {
-      // Date falls inside an existing range — clear the end so the cycle re-opens.
-      const inRange = cycleLogs.find((l) => l.period_start <= date && (l.period_end ?? '') >= date);
-      if (inRange) {
-        await supabase.from('cycle_logs').update({ period_end: null }).eq('id', inRange.id);
-      }
+    // First: any log whose end is exactly this date → clear the end.
+    const endsHere = cycleLogs.find((l) => l.period_end === date);
+    if (endsHere) {
+      await supabase
+        .from('cycle_logs')
+        .update({ period_end: null, period_length: null })
+        .eq('id', endsHere.id);
+    }
+    // Then: any log whose start is exactly this date → delete the period.
+    const startsHere = cycleLogs.find((l) => l.period_start === date);
+    if (startsHere) {
+      await supabase.from('cycle_logs').delete().eq('id', startsHere.id);
     }
     await refresh();
   }, [user, cycleLogs, refresh]);
