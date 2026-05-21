@@ -24,7 +24,9 @@ export default function EducationScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.kicker}>THE LIBRARY</Text>
-        <Text style={styles.title}>Knowledge{'\n'}that fits your body</Text>
+        <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+          Knowledge for you
+        </Text>
       </View>
 
       {/* Category filter */}
