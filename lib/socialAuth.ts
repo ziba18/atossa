@@ -1,39 +1,38 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
 import { supabase } from './supabase';
 import { Config } from '../constants/config';
 
-// ─── Google Sign-In setup ───────────────────────────────────────────────────
-//
-// Required Google Cloud OAuth client IDs (set in .env):
-//   EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID      — Web client; Supabase verifies tokens
-//                                           against this audience, so we must
-//                                           pass it as `webClientId` on every
-//                                           platform.
-//   EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID      — iOS native client (bundle id
-//                                           com.attosa.app).
-//   EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID  — Android native client (package
-//                                           com.attosa.app + SHA-1 fingerprint).
-//   EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME     — Reversed iOS client id, baked into
-//                                           Info.plist by the config plugin
-//                                           (see app.config.ts).
-//
-// Configure once at module load. GoogleSignin.configure() is sync and safe to
-// call before the first sign-in; subsequent calls are no-ops.
-GoogleSignin.configure({
-  webClientId: Config.googleWebClientId,
-  iosClientId: Config.googleIosClientId,
-  ...(Platform.OS === 'android'
-    ? { androidClientId: Config.googleAndroidClientId }
-    : {}),
-  // Request the user's profile so we can read name on first sign-in.
-  scopes: ['profile', 'email'],
-});
+// Lazy-require Google Sign-In so the bundle still loads in Expo Go (and on
+// dev clients that don't have the native module linked). We replace the
+// real module with a stub whose .signIn() throws a friendly error — the UI
+// can catch and tell the user "Google Sign-In requires a dev/release build".
+let GoogleSignin: any;
+let statusCodes: any = { SIGN_IN_CANCELLED: 'SIGN_IN_CANCELLED', IN_PROGRESS: 'IN_PROGRESS' };
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mod = require('@react-native-google-signin/google-signin');
+  GoogleSignin = mod.GoogleSignin;
+  statusCodes = mod.statusCodes;
+  // Configure once at module load. Safe to call before first sign-in;
+  // subsequent calls are no-ops.
+  GoogleSignin.configure({
+    webClientId: Config.googleWebClientId,
+    iosClientId: Config.googleIosClientId,
+    ...(Platform.OS === 'android'
+      ? { androidClientId: Config.googleAndroidClientId }
+      : {}),
+    scopes: ['profile', 'email'],
+  });
+} catch {
+  GoogleSignin = {
+    hasPlayServices: async () => true,
+    signIn: async () => {
+      throw new Error('Google Sign-In requires a dev or release build of Atossa.');
+    },
+  };
+}
 
 async function generateNonce(): Promise<{ raw: string; hashed: string }> {
   const bytes = await Crypto.getRandomBytesAsync(32);
