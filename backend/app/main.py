@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth
+from app.routers import auth, profiles, cycles
 
 app = FastAPI(title="Atossa API", version="1.0.0")
 
@@ -12,6 +12,8 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(profiles.router)
+app.include_router(cycles.router)
 
 
 @app.get("/health")
