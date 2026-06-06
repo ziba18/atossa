@@ -3,68 +3,108 @@
 
   # Atossa
 
-  **A modern cycle & women's health companion, built with Expo and React Native.**
+  **A cycle & women's health companion built with Expo, React Native, and a Python/ML backend.**
 
-  Track your cycle, log how you feel, surface trends, and learn — all in one calm, beautifully designed app.
+  Track your cycle, log symptoms, surface trends, and get data-driven phase predictions — all in one calm, beautifully designed app.
 </div>
 
 ---
 
-## ✨ Features
+## Features
 
 - **Cycle tracking** — log periods, get phase predictions (menstrual, follicular, ovulatory, luteal), and see your full cycle on an animated ring.
-- **Health log** — capture symptoms, mood, sleep, energy, flow, and notes in a fast multi-page flow.
-- **Insights & metrics** — visualize trends across cycles with charts that surface what your body is telling you.
-- **Education hub** — curated, evidence-based articles on hormones, fertility, and well-being.
-- **Secure by default** — sessions are stored in the device secure enclave (Expo SecureStore); no analytics, no tracking.
-- **Apple & email sign-in** — frictionless onboarding via Supabase Auth.
+- **Health log** — carousel-style logger for symptoms, mood, sleep, energy, flow, and notes.
+- **Insights & metrics** — visualize trends across cycles with charts.
+- **Education hub** — curated articles and videos on hormones, fertility, and well-being.
+- **Onboarding flow** — multi-step setup: basics, last period date, tracked symptoms, notification preferences.
+- **Profile & social** — edit profile, manage emergency contacts, connected accounts.
+- **Secure by default** — sessions stored in the device secure enclave (Expo SecureStore); no analytics SDKs.
+- **Apple & email sign-in** — Supabase Auth with Apple Sign-In on iOS.
 
-## 📱 Screens
+## Tech stack
 
-| Cycle | Health Log | Insights |
-|---|---|---|
-| Animated cycle ring with phase legend and quick-log shortcuts. | Carousel-style logger for symptoms, mood, sleep & flow. | Charts and patterns across cycles. |
-
-## 🛠 Tech stack
-
-- **App** — [Expo SDK 54](https://expo.dev) · React Native 0.81 · React 19 · TypeScript
-- **Routing** — [expo-router](https://docs.expo.dev/router/introduction/) (typed routes)
+### Mobile app
+- **Framework** — [Expo SDK 54](https://expo.dev) · React Native 0.81 · React 19 · TypeScript
+- **Routing** — [expo-router](https://docs.expo.dev/router/introduction/) (typed file-based routes)
 - **State** — Zustand stores (`stores/`)
 - **UI** — Custom design tokens (`constants/theme.ts`), Cormorant Garamond + Jost fonts, gradient + SVG accents
-- **Charts & calendars** — `react-native-chart-kit`, `react-native-calendars`, `react-native-svg`
-- **Backend** — [Supabase](https://supabase.com) (Postgres + Auth + Row-level security)
+- **Charts** — `react-native-chart-kit`, `react-native-calendars`, `react-native-svg`
 - **Auth** — Supabase Auth, Apple Sign-In (`expo-apple-authentication`)
-- **Native modules** — Notifications, Secure Store, Contacts
+- **Native modules** — Expo Notifications, SecureStore, Contacts
 - **Build** — [EAS Build](https://docs.expo.dev/build/introduction/)
 
-## 📂 Project structure
+### Python backend
+- **API** — [FastAPI](https://fastapi.tiangolo.com) with routers for auth, profiles, and cycles
+- **Database** — PostgreSQL via SQLAlchemy 2 ORM; [Alembic](https://alembic.sqlalchemy.org) migrations
+- **Auth service** — Supabase JWT verification
+- **ML prediction layer** (`backend/app/ml/predict.py`) — hybrid EWMA + Bayesian forecaster (see below)
+
+### Machine learning
+- **Client-side algorithms** (`algorithms/`) — TypeScript port of the cycle predictor, runs on-device
+- **Server-side predictor** (`backend/app/ml/predict.py`) — Python mirror of the same hybrid algorithm using NumPy
+- **Deep learning forecaster** (`training/`) — LSTM model trained with Gaussian NLL loss, exported to TFLite (~120 KB)
+
+## Project structure
 
 ```
 atossa/
-├── app/                  # expo-router screens
-│   ├── (tabs)/           # tab navigator: cycle, health, insights, education, profile
-│   └── _layout.tsx       # root layout, fonts, splash, theme
-├── algorithms/           # cycle prediction, date helpers
-├── components/           # reusable UI: calendar, layout, ui primitives
-├── constants/theme.ts    # design tokens (color, spacing, radius, shadow, typography)
-├── contexts/             # ThemeContext (light/dark colors)
-├── hooks/                # useAuth, useColorScheme, etc.
-├── lib/                  # supabase client, storage adapter, integrations
-├── stores/               # Zustand stores (auth, cycle, health, profile)
-├── supabase/             # SQL migrations & schema
-└── assets/               # icons, splash, logo
+├── app/
+│   ├── (auth)/                   # auth & onboarding screens
+│   │   └── onboarding/           # 5-step onboarding flow
+│   └── (tabs)/                   # tab navigator
+│       ├── home/                 # dashboard + notifications
+│       ├── cycle/                # ring view, calendar, log period
+│       ├── health/               # symptom logger + history
+│       ├── education/            # articles, videos, categories
+│       └── profile/              # edit profile, contacts, connections
+├── algorithms/                   # TypeScript cycle prediction + date helpers
+│   ├── cyclePrediction.ts        # EWMA / Bayesian / median predictor
+│   ├── aiCyclePrediction.ts      # AI-enhanced prediction helpers
+│   ├── healthRiskDetection.ts    # anomaly / risk flags
+│   └── predict.ts                # prediction entry point
+├── backend/
+│   ├── app/
+│   │   ├── main.py               # FastAPI app, CORS, router wiring
+│   │   ├── ml/predict.py         # hybrid EWMA + Bayesian forecaster (Python)
+│   │   ├── models/               # SQLAlchemy ORM models (user, cycle, health, social)
+│   │   ├── routers/              # auth, profiles, cycles
+│   │   ├── schemas/              # Pydantic request/response schemas
+│   │   └── services/             # auth service (Supabase JWT)
+│   └── alembic/                  # database migration versions
+├── training/
+│   ├── forecaster.py             # LSTM(64) → Dense(2) [mean, log_var], Gaussian NLL loss
+│   ├── features.py               # feature engineering (12-step windows, 6 features each)
+│   └── data/                     # fetch.py, prepare.py, synthetic.py
+├── components/                   # reusable UI: calendar, layout, primitives
+├── constants/theme.ts            # design tokens (color, spacing, radius, typography)
+├── contexts/                     # ThemeContext (light/dark)
+├── hooks/                        # useAuth, useColorScheme, etc.
+├── lib/                          # Supabase client, storage adapter
+├── stores/                       # Zustand stores (auth, cycle, health, profile)
+├── supabase/                     # SQL migrations & RLS policies
+└── assets/                       # icons, splash, logo
 ```
 
-## 🚀 Getting started
+## Cycle prediction
+
+Atossa uses a three-layer prediction stack:
+
+1. **TypeScript (on-device)** — `algorithms/cyclePrediction.ts` runs locally in the app. It classifies cycle regularity (regular / variable / irregular) and picks the right estimator: EWMA for regular cycles, median for irregular (PCOS-friendly), or Bayesian shrinkage toward the user's profile prior when data is sparse.
+
+2. **Python (server-side)** — `backend/app/ml/predict.py` is a NumPy port of the same algorithm, called by the `/cycles/predict` endpoint. Predictions are persisted to the `cycle_predictions` table with a confidence score and method label.
+
+3. **LSTM forecaster (training artifact)** — `training/forecaster.py` trains a `LSTM(64) → Dropout → Dense(32) → Dense(2)` model with a Gaussian negative log-likelihood loss. The two outputs are `[mean, log_var]`; the variance head lets the model express its own uncertainty, which is used to widen the fertile window for high-variance forecasts. The model exports to TFLite (~120 KB) for potential on-device inference.
+
+## Getting started
 
 ### Prerequisites
 
-- Node 20+
-- Bun, pnpm, or npm
-- An iOS Simulator (Xcode) or Android Emulator (Android Studio), or the [Expo Go](https://expo.dev/client) app on your device
-- A [Supabase](https://supabase.com) project for the backend
+- Node 20+ and npm
+- Python 3.10+
+- iOS Simulator (Xcode) or Android Emulator, or the [Expo Go](https://expo.dev/client) app
+- A [Supabase](https://supabase.com) project
 
-### 1. Install
+### 1. Install the mobile app
 
 ```bash
 git clone https://github.com/ziba18/atossa.git
@@ -72,52 +112,78 @@ cd atossa
 npm install
 ```
 
-### 2. Configure environment
+### 2. Configure mobile environment
 
-Create a `.env` file in the project root:
+Create `.env` in the project root:
 
 ```env
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-Run the SQL migrations in `supabase/` against your Supabase project to create the tables and RLS policies.
+Run the SQL migrations in `supabase/` against your Supabase project to create tables and RLS policies.
 
-### 3. Run the app
+### 3. Run the mobile app
 
 ```bash
 npm run ios       # iOS simulator
 npm run android   # Android emulator
-npm start         # Pick your target via the Expo CLI
+npm start         # Expo CLI — pick your target
 ```
 
-### 4. Build for the App Store / Play Store
+### 4. Run the Python backend
+
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Create `backend/.env`:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/atossa
+SUPABASE_JWT_SECRET=your-supabase-jwt-secret
+```
+
+Run migrations and start the server:
+
+```bash
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+API docs available at `http://localhost:8000/docs`.
+
+### 5. Train the LSTM forecaster (optional)
+
+```bash
+cd training
+pip install -r requirements.txt
+python data/synthetic.py   # generate synthetic training data
+python data/prepare.py     # build windowed feature arrays
+python forecaster.py       # train + export forecaster.tflite
+```
+
+### 6. Build for the App Store / Play Store
 
 ```bash
 npx eas build --platform ios
 npx eas build --platform android
 ```
 
-EAS configuration lives in `eas.json`. Bundle IDs and platform settings are wired up in `app.json`.
+EAS configuration lives in `eas.json`.
 
-## 🧠 Cycle prediction
-
-Predictions live in `algorithms/` and combine logged period start dates with rolling cycle-length averages to estimate the four phases. Predictions degrade gracefully when there is little data and improve with each logged cycle.
-
-## 🔐 Privacy
+## Privacy
 
 - All session tokens are stored in the device's secure enclave via `expo-secure-store`.
-- Health data stays in your Supabase project under your control.
+- Health data stays in your own Supabase project.
 - Apple Sign-In is supported and recommended on iOS.
 - No third-party analytics SDKs are bundled.
 
-## 🤝 Contributing
+## License
 
-This is currently a solo project, but issues, ideas, and PRs are welcome. If you spot a bug or have a feature suggestion, please [open an issue](https://github.com/ziba18/atossa/issues).
-
-## 📄 License
-
-All rights reserved © 2026 Atossa. The code is published here for transparency and portfolio purposes; please do not redistribute without permission.
+All rights reserved © 2026 Atossa. Published for transparency and portfolio purposes — please do not redistribute without permission.
 
 ---
 
