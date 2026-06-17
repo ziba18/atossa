@@ -34,7 +34,7 @@ export default function Step5Connected() {
     await supabase.from('profiles').update({ onboarding_complete: true }).eq('id', user.id);
     await fetchProfile();
     setLoading(false);
-    router.replace('/(tabs)/home');
+    router.replace('/(tabs)/chat' as any);
   };
 
   const theme = useColors();

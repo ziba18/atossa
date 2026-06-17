@@ -30,7 +30,7 @@ export default function Index() {
         router.replace('/(auth)/onboarding/step1-basics');
       }
     } else {
-      router.replace('/(tabs)/home');
+      router.replace('/(tabs)/chat' as any);
     }
   }, [isInitialized, session, profile]);
 

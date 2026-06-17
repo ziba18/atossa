@@ -28,7 +28,7 @@ export default function NotFoundScreen() {
       <View style={styles.body}>
         <TouchableOpacity
           style={styles.btn}
-          onPress={() => router.replace('/(tabs)/home')}
+          onPress={() => router.replace('/(tabs)/chat' as any)}
           activeOpacity={0.85}
         >
           <Text style={styles.btnText}>Go to Home</Text>

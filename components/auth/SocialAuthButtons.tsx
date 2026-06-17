@@ -36,7 +36,7 @@ export function SocialAuthButtons({ mode = 'signin', dividerLabel }: Props) {
       .maybeSingle();
 
     if (profile?.onboarding_complete) {
-      router.replace('/(tabs)/home');
+      router.replace('/(tabs)/chat' as any);
     } else {
       router.replace('/(auth)/onboarding/step1-basics');
     }

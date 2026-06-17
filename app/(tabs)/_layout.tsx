@@ -8,45 +8,35 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon, type IconName } from '../../components/ui/Icon';
 
-// Lazy-require expo-blur so the app loads on dev clients that don't have
-// the native module linked yet. Falls back to a plain translucent View.
 let BlurView: React.ComponentType<any>;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   BlurView = require('expo-blur').BlurView;
 } catch {
   BlurView = ({ style, children }: any) => (
-    <View style={[style, { backgroundColor: 'rgba(255,255,255,0.55)' }]}>{children}</View>
+    <View style={[style, { backgroundColor: 'rgba(20,5,30,0.92)' }]}>{children}</View>
   );
 }
-import { Colors } from '../../constants/colors';
-import { FontFamily } from '../../constants/theme';
-import { useColors } from '../../contexts/ThemeContext';
 
-// ── Visible tabs (profile is hidden) ────────────────────────────────────────
+const DARK_BG = 'rgba(20,5,35,0.94)';
+const PINK = '#C2607A';
+const CREAM = '#EAD9D9';
+const MUTED = '#9A6A7A';
+
 const TAB_ICONS: Record<string, IconName> = {
-  home:      'house',
-  cycle:     'droplets',
-  health:    'heart',
-  education: 'book-open',
+  chat:      'message-circle',
+  dashboard: 'activity',
+  report:    'file-text',
 };
 const TAB_LABELS: Record<string, string> = {
-  home: 'Home', cycle: 'Cycle', health: 'Log', education: 'Learn',
+  chat: 'Chat', dashboard: 'Insights', report: 'GP Report',
 };
-const VISIBLE_ORDER = ['home', 'cycle', 'health', 'education'];
+const VISIBLE_ORDER = ['chat', 'dashboard', 'report'];
 
-// ── Custom tab bar with sliding gradient pill ───────────────────────────────
 function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
-  const theme = useColors();
-  // Each item's layout (x position + width) once measured.
   const layouts = useRef<Record<string, { x: number; width: number }>>({});
-
   const pillX = useSharedValue(0);
   const pillW = useSharedValue(0);
-
   const activeName = state.routes[state.index]?.name;
-
-  // Build the visible-route list once per render (preserves order).
   const visibleRoutes = state.routes.filter((r) => VISIBLE_ORDER.includes(r.name));
 
   const onLayout = (name: string) => (e: LayoutChangeEvent) => {
@@ -74,22 +64,19 @@ function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   return (
     <View style={styles.wrapper} pointerEvents="box-none">
       <View style={styles.bar}>
-        <BlurView intensity={36} tint="light" style={StyleSheet.absoluteFill} />
-        <View style={[StyleSheet.absoluteFill, styles.barTint]} />
+        <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: DARK_BG, borderRadius: 32 }]} />
 
-        {/* Sliding gradient pill behind the active tab */}
         <Animated.View style={[styles.pill, pillStyle]} pointerEvents="none">
           <LinearGradient
-            colors={['#F2C5C9', '#C5DAE5']}  // rose → sky, mirroring Aura
+            colors={['#5A1A32', '#3D1228']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
-          {/* Glossy inner top highlight */}
           <View style={styles.pillHighlight} />
         </Animated.View>
 
-        {/* Tabs */}
         {visibleRoutes.map((route) => {
           const focused = activeName === route.name;
           return (
@@ -107,15 +94,10 @@ function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
               <Icon
                 name={TAB_ICONS[route.name]}
                 size={18}
-                color={focused ? Colors.ink : Colors.textMuted}
+                color={focused ? CREAM : MUTED}
                 strokeWidth={focused ? 2.2 : 1.8}
               />
-              <Text
-                style={[
-                  styles.tabLabel,
-                  { color: focused ? Colors.ink : Colors.textMuted },
-                ]}
-              >
+              <Text style={[styles.tabLabel, { color: focused ? CREAM : MUTED }]}>
                 {TAB_LABELS[route.name]}
               </Text>
             </Pressable>
@@ -126,17 +108,15 @@ function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   );
 }
 
-// ── Tabs declaration ────────────────────────────────────────────────────────
 export default function TabsLayout() {
   return (
     <Tabs
       tabBar={(props) => <FloatingTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      <Tabs.Screen name="home"      options={{ title: 'Home' }} />
-      <Tabs.Screen name="cycle"     options={{ title: 'Cycle' }} />
-      <Tabs.Screen name="health"    options={{ title: 'Log' }} />
-      <Tabs.Screen name="education" options={{ title: 'Learn' }} />
+      <Tabs.Screen name="chat"      options={{ title: 'Chat' }} />
+      <Tabs.Screen name="dashboard" options={{ title: 'Insights' }} />
+      <Tabs.Screen name="report"    options={{ title: 'GP Report' }} />
       <Tabs.Screen name="profile"   options={{ href: null }} />
     </Tabs>
   );
@@ -158,17 +138,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.65)',
-    // Floating glass shadow
-    shadowColor: '#3F2F4A',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.18,
-    shadowRadius: 28,
+    borderColor: 'rgba(194,96,122,0.35)',
+    shadowColor: '#C2607A',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
     elevation: 10,
-  },
-  barTint: {
-    backgroundColor: 'rgba(255,255,255,0.55)',
-    borderRadius: 32,
   },
   pill: {
     position: 'absolute',
@@ -176,17 +151,17 @@ const styles = StyleSheet.create({
     left: 0,
     borderRadius: 26,
     overflow: 'hidden',
-    shadowColor: '#3F2F4A',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
+    shadowColor: '#C2607A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   pillHighlight: {
     position: 'absolute',
     top: 0, left: 0, right: 0, height: '55%',
     borderTopLeftRadius: 26,
     borderTopRightRadius: 26,
-    backgroundColor: 'rgba(255,255,255,0.45)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   tabBtn: {
     flexDirection: 'row',
@@ -198,8 +173,8 @@ const styles = StyleSheet.create({
     borderRadius: 26,
   },
   tabLabel: {
-    fontFamily: FontFamily.displayItalic,
-    fontSize: 15,
+    fontSize: 14,
+    fontWeight: '500',
     letterSpacing: 0.1,
   },
 });

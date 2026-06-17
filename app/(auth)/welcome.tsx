@@ -53,7 +53,7 @@ export default function WelcomeScreen() {
       .eq('id', userId)
       .maybeSingle();
     if (profile?.onboarding_complete) {
-      router.replace('/(tabs)/home');
+      router.replace('/(tabs)/chat' as any);
       return;
     }
     if (!isHumanName(profile?.display_name)) {

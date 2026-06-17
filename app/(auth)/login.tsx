@@ -46,7 +46,7 @@ export default function LoginScreen() {
         .maybeSingle();
 
       if (profile?.onboarding_complete) {
-        router.replace('/(tabs)/home');
+        router.replace('/(tabs)/chat' as any);
       } else {
         router.replace('/(auth)/onboarding/step1-basics');
       }
