@@ -18,7 +18,7 @@ export interface Article {
   view_count: number;
   created_at: string;
   updated_at: string;
-  video_url: null;
+  video_url?: null;
 }
 
 export const ARTICLES: Article[] = [
