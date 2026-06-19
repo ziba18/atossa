@@ -49,3 +49,6 @@ google-play-service-account.json
 # generated native folders
 /ios
 /android
+
+# Supabase CLI local state
+supabase/.temp
