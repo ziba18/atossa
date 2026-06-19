@@ -57,6 +57,14 @@ const config: ExpoConfig = {
     'expo-router',
     'expo-secure-store',
     [
+      'expo-build-properties',
+      {
+        ios: {
+          useFrameworks: 'static',
+        },
+      },
+    ],
+    [
       'expo-notifications',
       {
         icon: './assets/icon.png',
