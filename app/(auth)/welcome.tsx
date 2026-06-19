@@ -90,7 +90,7 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={[Colors.cherry, Colors.cherryDark, '#6B0020']}
+        colors={[Colors.cherry, Colors.cherryDark, '#6B2D40']}
         style={styles.gradient}
       >
         <View style={styles.content}>

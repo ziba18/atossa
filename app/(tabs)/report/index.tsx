@@ -4,15 +4,16 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const BG    = '#0A1628';
-const CARD  = '#0E1E3E';
+const BG    = '#E6F2FA';
+const CARD  = '#FFFFFF';
 const BLUE  = '#3A6A9A';
 const LBLUE = '#A8C8E8';
+const BLUE_SOFT = '#D5E6F4';
 const PINK  = '#C2607A';
-const MATCHA= '#B5CDA3';
-const CREAM = '#EAD9D9';
-const MUTED = '#6A7A8A';
-const RED   = '#E85A6A';
+const MATCHA= '#7FA86A';
+const CREAM = '#1F2E3F';
+const MUTED = '#5f7791';
+const RED   = '#D04B6F';
 
 // ── Key findings ───────────────────────────────────────────────────────────────
 const FINDINGS = [
@@ -174,25 +175,25 @@ const styles = StyleSheet.create({
   title: { color: CREAM, fontSize: 22, fontWeight: '700' },
   sub:   { color: MUTED, fontSize: 12, marginTop: 2 },
   badge: {
-    backgroundColor: MATCHA + '22',
-    borderWidth: 1, borderColor: MATCHA,
+    backgroundColor: '#FBE3EC',
+    borderWidth: 1, borderColor: PINK,
     borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4,
   },
-  badgeText: { color: MATCHA, fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
+  badgeText: { color: PINK, fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
 
   patientCard: {
     backgroundColor: CARD,
     borderRadius: 14, padding: 16,
-    borderWidth: 1, borderColor: BLUE + '55',
+    borderWidth: 1, borderColor: BLUE_SOFT,
     marginBottom: 20,
   },
   patientRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   patientName: { color: CREAM, fontSize: 16, fontWeight: '700' },
-  patientAge:  { color: LBLUE, fontSize: 13, fontWeight: '600' },
+  patientAge:  { color: BLUE, fontSize: 13, fontWeight: '600' },
   patientSub:  { color: MUTED, fontSize: 12, marginTop: 6 },
 
   sectionTitle: {
-    color: LBLUE,
+    color: BLUE,
     fontSize: 13,
     fontWeight: '700',
     letterSpacing: 0.4,
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 8,
-    borderWidth: 1, borderColor: MUTED + '33',
+    borderWidth: 1, borderColor: BLUE_SOFT,
   },
   findingBar:  { width: 4, backgroundColor: RED },
   findingBody: { flex: 1, padding: 12 },
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
     backgroundColor: CARD,
     borderRadius: 14, padding: 16,
     marginBottom: 20,
-    borderWidth: 1, borderColor: MUTED + '33',
+    borderWidth: 1, borderColor: BLUE_SOFT,
   },
   shapAiLabel: { color: MUTED, fontSize: 10, fontWeight: '600', letterSpacing: 0.4, marginBottom: 12 },
   shapRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
@@ -235,13 +236,13 @@ const styles = StyleSheet.create({
     borderRadius: 4, overflow: 'hidden',
   },
   shapFill: { height: '100%', backgroundColor: BLUE, borderRadius: 4 },
-  shapPct:  { color: LBLUE, fontSize: 11, fontWeight: '700', width: 34, textAlign: 'right' },
+  shapPct:  { color: BLUE, fontSize: 11, fontWeight: '700', width: 34, textAlign: 'right' },
 
   questionsCard: {
     backgroundColor: CARD,
     borderRadius: 14, padding: 16,
     marginBottom: 20,
-    borderWidth: 1, borderColor: MUTED + '33',
+    borderWidth: 1, borderColor: BLUE_SOFT,
     gap: 12,
   },
   questionRow:  { flexDirection: 'row', gap: 8 },
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
     borderRadius: 12, padding: 14,
     alignItems: 'center',
   },
-  exportOutlinedText: { color: LBLUE, fontSize: 13, fontWeight: '700' },
+  exportOutlinedText: { color: BLUE, fontSize: 13, fontWeight: '700' },
   exportOutlinedSub:  { color: MUTED, fontSize: 10, marginTop: 3 },
 
   footer: {

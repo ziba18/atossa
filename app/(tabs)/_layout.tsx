@@ -13,14 +13,16 @@ try {
   BlurView = require('expo-blur').BlurView;
 } catch {
   BlurView = ({ style, children }: any) => (
-    <View style={[style, { backgroundColor: 'rgba(20,5,30,0.92)' }]}>{children}</View>
+    <View style={[style, { backgroundColor: 'rgba(255,255,255,0.92)' }]}>{children}</View>
   );
 }
 
-const DARK_BG = 'rgba(20,5,35,0.94)';
+const LIGHT_BG = 'rgba(255,255,255,0.92)';
 const PINK = '#C2607A';
-const CREAM = '#EAD9D9';
-const MUTED = '#9A6A7A';
+const PINK_SOFT = '#FBD9E3';
+const CREAM = '#FFFFFF';
+const INK = '#3A2A30';
+const MUTED = '#A78896';
 
 const TAB_ICONS: Record<string, IconName> = {
   chat:      'message-circle',
@@ -64,12 +66,12 @@ function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   return (
     <View style={styles.wrapper} pointerEvents="box-none">
       <View style={styles.bar}>
-        <BlurView intensity={24} tint="dark" style={StyleSheet.absoluteFill} />
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: DARK_BG, borderRadius: 32 }]} />
+        <BlurView intensity={24} tint="light" style={StyleSheet.absoluteFill} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: LIGHT_BG, borderRadius: 32 }]} />
 
         <Animated.View style={[styles.pill, pillStyle]} pointerEvents="none">
           <LinearGradient
-            colors={['#5A1A32', '#3D1228']}
+            colors={['#F2A7BB', '#C2607A']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFill}
@@ -94,10 +96,10 @@ function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
               <Icon
                 name={TAB_ICONS[route.name]}
                 size={18}
-                color={focused ? CREAM : MUTED}
+                color={focused ? CREAM : PINK}
                 strokeWidth={focused ? 2.2 : 1.8}
               />
-              <Text style={[styles.tabLabel, { color: focused ? CREAM : MUTED }]}>
+              <Text style={[styles.tabLabel, { color: focused ? CREAM : INK }]}>
                 {TAB_LABELS[route.name]}
               </Text>
             </Pressable>

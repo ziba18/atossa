@@ -9,13 +9,25 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const Colors = {
-  // ── Primary brand (deep rose) ─────────────────────────────────────────────
-  // Was sage green — now deep rose so CTAs feel warm and feminine without
-  // tipping into pastel.
-  cherry: '#B0455A',            // primary CTA, active states (deep rose)
-  cherryLight: '#E8A5B0',       // soft blush
-  cherryLighter: '#FBEEF1',     // very soft rose tint
-  cherryDark: '#7A2A3D',        // bordeaux gradients
+  // ── Primary brand (Lovable pastel pink) ───────────────────────────────────
+  // Matches the chat screen accent from the Lovable design — soft, warm pink
+  // rather than the previous deep rose/bordeaux.
+  cherry: '#C2607A',            // primary CTA, active states (Lovable pink)
+  cherryLight: '#F2A7BB',       // soft pink border/accent
+  cherryLighter: '#FDE8EE',     // very soft pink tint (chat bg)
+  cherryDark: '#9A4A60',        // deeper pink for pressed states
+
+  // ── Dashboard accent (Lovable pastel green) ───────────────────────────────
+  dashboardGreen: '#4A7A3A',
+  dashboardGreenLight: '#B5CDA3',
+  dashboardGreenLighter: '#EBF3E6',
+  dashboardGreenSoft: '#DCE8D2',
+
+  // ── Report accent (Lovable pastel blue) ───────────────────────────────────
+  reportBlue: '#3A6A9A',
+  reportBlueLight: '#A8C8E8',
+  reportBlueLighter: '#E6F2FA',
+  reportBlueSoft: '#D5E6F4',
 
   // ── Ink surfaces ──────────────────────────────────────────────────────────
   bordeaux: '#2A1F26',          // near-black with warm undertone (text)

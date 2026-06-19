@@ -6,14 +6,16 @@ import Svg, { Path, Line, Text as SvgText, Circle, G } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-const BG     = '#1A0A2E';
-const CARD   = '#1E0A3E';
+const BG     = '#EBF3E6';
+const CARD   = '#FFFFFF';
 const PINK   = '#C2607A';
-const MATCHA = '#B5CDA3';
-const BLUE   = '#A8C8E8';
-const CREAM  = '#EAD9D9';
-const MUTED  = '#7A5A6A';
-const LPINK  = '#E8829A';
+const MATCHA = '#7FA86A';
+const BLUE   = '#3A6A9A';
+const CREAM  = '#26321F';
+const MUTED  = '#789972';
+const LPINK  = '#D04B6F';
+const GREEN_DEEP = '#4A7A3A';
+const GREEN_SOFT = '#DCE8D2';
 
 // ── Chart helpers ──────────────────────────────────────────────────────────────
 function ptc(cx: number, cy: number, r: number, deg: number) {
@@ -283,16 +285,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingTop: 8,
   },
-  title: { color: CREAM, fontSize: 20, fontWeight: '700' },
+  title: { color: GREEN_DEEP, fontSize: 20, fontWeight: '700' },
   sub:   { color: MUTED, fontSize: 12, marginTop: 2 },
   badge: {
-    backgroundColor: MATCHA + '22',
-    borderWidth: 1, borderColor: MATCHA,
+    backgroundColor: '#FBE3EC',
+    borderWidth: 1, borderColor: PINK,
     borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4,
   },
-  badgeText: { color: MATCHA, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  badgeText: { color: PINK, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
 
-  sectionTitle: { color: CREAM, fontSize: 13, fontWeight: '600', marginBottom: 8 },
+  sectionTitle: { color: GREEN_DEEP, fontSize: 13, fontWeight: '700', marginBottom: 8 },
 
   chartCard: {
     backgroundColor: CARD,
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: MUTED + '33',
+    borderColor: GREEN_SOFT,
   },
 
   row: { flexDirection: 'row', gap: 10, marginBottom: 12 },
@@ -323,18 +325,18 @@ const styles = StyleSheet.create({
     flex: 1, backgroundColor: CARD,
     borderRadius: 12, padding: 10,
     alignItems: 'center',
-    borderWidth: 1, borderColor: MUTED + '33',
+    borderWidth: 1, borderColor: GREEN_SOFT,
   },
   wearLabel: { color: MUTED, fontSize: 9, fontWeight: '600' },
   wearValue: { color: CREAM, fontSize: 14, fontWeight: '700', marginVertical: 2 },
   wearArrow: { fontSize: 16, fontWeight: '700' },
 
   insightCard: {
-    backgroundColor: '#0A1A0A',
-    borderWidth: 1, borderColor: '#4A7A3A',
+    backgroundColor: CARD,
+    borderWidth: 1, borderColor: GREEN_SOFT,
     borderRadius: 14, padding: 16, marginBottom: 14,
   },
-  insightText: { color: MATCHA, fontSize: 14, lineHeight: 22 },
+  insightText: { color: GREEN_DEEP, fontSize: 14, lineHeight: 22, fontWeight: '500' },
 
   ctaBtn: {
     backgroundColor: PINK,

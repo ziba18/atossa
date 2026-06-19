@@ -6,12 +6,14 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const BG     = '#2A0A1E';
-const CARD   = '#3D1228';
-const PINK   = '#C2607A';
-const LPINK  = '#F2A7BB';
-const CREAM  = '#EAD9D9';
-const MUTED  = '#9A6A7A';
+const BG       = '#FDE8EE';
+const COMPOSER = '#FBE3EC';
+const CARD     = '#FFFFFF';
+const PINK     = '#F2A7BB';
+const PINK_DEEP = '#C2607A';
+const PINK_SOFT = '#FBD9E3';
+const INK      = '#3A2A30';
+const MUTED    = '#A78896';
 
 interface Message {
   id: string;
@@ -100,8 +102,21 @@ export default function ChatScreen() {
       >
         {/* ── Header ── */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Atossa</Text>
-          <Text style={styles.headerSub}>PCOS-aware · multimodal</Text>
+          <View style={styles.logo}>
+            <Text style={styles.logoGlyph}>✦</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.headerTitle}>Atossa</Text>
+            <Text style={styles.headerSub}>Your cycle companion</Text>
+          </View>
+          <View style={styles.chip}>
+            <Text style={styles.chipText}>Apple Health</Text>
+          </View>
+        </View>
+        <View style={styles.chipRow}>
+          <View style={styles.chip}><Text style={styles.chipText}>Oura</Text></View>
+          <View style={styles.chip}><Text style={styles.chipText}>Fitbit</Text></View>
+          <View style={styles.chip}><Text style={styles.chipText}>Clue</Text></View>
         </View>
 
         {/* ── Messages ── */}
@@ -175,7 +190,7 @@ export default function ChatScreen() {
             style={styles.input}
             value={input}
             onChangeText={setInput}
-            placeholder="Describe how you feel…"
+            placeholder="Message Atossa…"
             placeholderTextColor={MUTED}
             multiline
             returnKeyType="send"
@@ -194,16 +209,42 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: BG },
 
   header: {
-    backgroundColor: CARD,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: BG,
     paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingTop: 12,
+    paddingBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: PINK + '33',
+    borderBottomColor: PINK_SOFT,
   },
-  headerTitle: { color: CREAM, fontSize: 20, fontWeight: '700', letterSpacing: 0.4 },
-  headerSub:   { color: MUTED, fontSize: 12, marginTop: 2 },
+  logo: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: '#fff',
+    borderWidth: 1.5, borderColor: PINK,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  logoGlyph: { color: PINK_DEEP, fontSize: 16 },
+  headerTitle: { color: PINK_DEEP, fontSize: 18, fontWeight: '700', letterSpacing: 0.2 },
+  headerSub:   { color: MUTED, fontSize: 11, marginTop: 1 },
+  chipRow: {
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+    backgroundColor: BG,
+  },
+  chip: {
+    paddingHorizontal: 10, paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: '#fff',
+    borderWidth: 1, borderColor: PINK,
+  },
+  chipText: { fontSize: 11, fontWeight: '600', color: PINK_DEEP },
 
-  scroll: { flex: 1 },
+  scroll: { flex: 1, backgroundColor: BG },
   scrollContent: { padding: 16, gap: 10, paddingBottom: 4 },
 
   aiBubble: {
@@ -211,12 +252,12 @@ const styles = StyleSheet.create({
     maxWidth: '82%',
     backgroundColor: CARD,
     borderWidth: 1,
-    borderColor: PINK,
+    borderColor: PINK_SOFT,
     borderRadius: 18,
     borderTopLeftRadius: 4,
     padding: 14,
   },
-  aiText: { color: CREAM, fontSize: 14, lineHeight: 21 },
+  aiText: { color: INK, fontSize: 14, lineHeight: 21 },
 
   userBubble: {
     alignSelf: 'flex-end',
@@ -231,13 +272,13 @@ const styles = StyleSheet.create({
   processingCard: {
     backgroundColor: CARD,
     borderWidth: 1,
-    borderColor: MUTED + '88',
+    borderColor: PINK_SOFT,
     borderRadius: 14,
     padding: 14,
     gap: 8,
   },
-  processingTitle: { color: LPINK, fontSize: 13, fontWeight: '600' },
-  processingStep:  { color: CREAM, fontSize: 13, lineHeight: 20 },
+  processingTitle: { color: PINK_DEEP, fontSize: 13, fontWeight: '600' },
+  processingStep:  { color: INK, fontSize: 13, lineHeight: 20 },
 
   painRow: {
     flexDirection: 'row',
@@ -245,33 +286,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     gap: 4,
+    backgroundColor: BG,
     borderTopWidth: 1,
-    borderTopColor: CARD,
+    borderTopColor: PINK_SOFT,
   },
   painLabel: { color: MUTED, fontSize: 11, fontWeight: '600', marginRight: 4, width: 28 },
   painBtn: {
     width: 27, height: 27, borderRadius: 14,
-    backgroundColor: CARD,
-    borderWidth: 1, borderColor: MUTED + '88',
+    backgroundColor: '#fff',
+    borderWidth: 1, borderColor: PINK,
     alignItems: 'center', justifyContent: 'center',
   },
-  painBtnOn: { backgroundColor: PINK, borderColor: PINK },
-  painNum:   { color: MUTED, fontSize: 10, fontWeight: '700' },
+  painBtnOn: { backgroundColor: PINK_DEEP, borderColor: PINK_DEEP },
+  painNum:   { color: PINK_DEEP, fontSize: 10, fontWeight: '700' },
   painNumOn: { color: '#fff' },
 
-  strip:        { maxHeight: 90, flexShrink: 0 },
+  strip:        { maxHeight: 90, flexShrink: 0, backgroundColor: BG },
   stripContent: { paddingHorizontal: 14, gap: 8, paddingBottom: 4 },
   modalCard: {
-    backgroundColor: CARD,
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: MUTED + '66',
-    borderRadius: 10,
+    borderColor: PINK,
+    borderRadius: 14,
     padding: 10,
     width: 112,
     alignItems: 'center',
   },
   modalIcon:  { fontSize: 20 },
-  modalLabel: { color: CREAM, fontSize: 11, fontWeight: '600', marginTop: 4 },
+  modalLabel: { color: PINK_DEEP, fontSize: 11, fontWeight: '600', marginTop: 4 },
   modalSub:   { color: MUTED, fontSize: 9, textAlign: 'center', marginTop: 2, lineHeight: 13 },
 
   inputBar: {
@@ -280,24 +322,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingTop: 10,
     gap: 8,
+    backgroundColor: COMPOSER,
     borderTopWidth: 1,
-    borderTopColor: CARD,
+    borderTopColor: PINK_SOFT,
   },
   input: {
     flex: 1,
-    backgroundColor: CARD,
-    color: CREAM,
+    backgroundColor: '#fff',
+    color: INK,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 14,
     maxHeight: 90,
     borderWidth: 1,
-    borderColor: MUTED + '55',
+    borderColor: PINK,
   },
   sendBtn: {
     width: 42, height: 42, borderRadius: 21,
-    backgroundColor: PINK,
+    backgroundColor: PINK_DEEP,
     alignItems: 'center', justifyContent: 'center',
   },
   sendIcon: { color: '#fff', fontSize: 16 },
