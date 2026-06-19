@@ -2,9 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TextInput,
   Pressable, Alert, KeyboardAvoidingView, Platform,
-  Animated, SafeAreaView,
+  Animated, SafeAreaView, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import { Audio } from 'expo-av';
 
 const BG       = '#FDE8EE';
 const COMPOSER = '#FBE3EC';
@@ -19,6 +21,9 @@ interface Message {
   id: string;
   type: 'ai' | 'user';
   text: string;
+  imageUri?: string;
+  audioUri?: string;
+  audioDurationMs?: number;
 }
 
 const INITIAL: Message = {
@@ -50,7 +55,10 @@ export default function ChatScreen() {
   const [pain, setPain]         = useState<number | null>(null);
   const [processing, setProcessing] = useState(false);
   const [step, setStep]         = useState(0);
+  const [recording, setRecording] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+  const recordingRef = useRef<Audio.Recording | null>(null);
+  const recordingStartRef = useRef<number>(0);
 
   const fadeAnims = useRef([
     new Animated.Value(0),
@@ -93,6 +101,55 @@ export default function ChatScreen() {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 80);
   }, [messages, processing]);
 
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Camera access needed', 'Enable camera access in Settings to scan photos.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
+    if (result.canceled || !result.assets?.[0]) return;
+    setMessages(prev => [
+      ...prev,
+      { id: Date.now().toString(), type: 'user', text: '', imageUri: result.assets[0].uri },
+    ]);
+  };
+
+  const toggleRecording = async () => {
+    if (recording) {
+      const rec = recordingRef.current;
+      recordingRef.current = null;
+      setRecording(false);
+      if (!rec) return;
+      await rec.stopAndUnloadAsync();
+      const uri = rec.getURI();
+      const durationMs = Date.now() - recordingStartRef.current;
+      if (uri) {
+        setMessages(prev => [
+          ...prev,
+          { id: Date.now().toString(), type: 'user', text: '', audioUri: uri, audioDurationMs: durationMs },
+        ]);
+      }
+      return;
+    }
+
+    const { status } = await Audio.requestPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Microphone access needed', 'Enable microphone access in Settings to record voice notes.');
+      return;
+    }
+    await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+    const { recording: rec } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+    recordingRef.current = rec;
+    recordingStartRef.current = Date.now();
+    setRecording(true);
+  };
+
+  const playAudio = async (uri: string) => {
+    const { sound } = await Audio.Sound.createAsync({ uri });
+    await sound.playAsync();
+  };
+
   return (
     <View style={[styles.safe, { paddingTop: insets.top }]}>
       <KeyboardAvoidingView
@@ -131,6 +188,16 @@ export default function ChatScreen() {
               <View key={msg.id} style={styles.aiBubble}>
                 <Text style={styles.aiText}>{msg.text}</Text>
               </View>
+            ) : msg.imageUri ? (
+              <View key={msg.id} style={styles.imageBubble}>
+                <Image source={{ uri: msg.imageUri }} style={styles.bubbleImage} />
+              </View>
+            ) : msg.audioUri ? (
+              <Pressable key={msg.id} style={styles.userBubble} onPress={() => playAudio(msg.audioUri!)}>
+                <Text style={styles.userText}>
+                  ▶ Voice note · {Math.round((msg.audioDurationMs ?? 0) / 1000)}s
+                </Text>
+              </Pressable>
             ) : (
               <View key={msg.id} style={styles.userBubble}>
                 <Text style={styles.userText}>{msg.text}</Text>
@@ -174,12 +241,22 @@ export default function ChatScreen() {
           {MODAL_CARDS.map((c, i) => (
             <Pressable
               key={i}
-              style={styles.modalCard}
-              onPress={() => Alert.alert('Feature coming soon')}
+              style={[styles.modalCard, c.label === 'Voice' && recording && styles.modalCardActive]}
+              onPress={() => {
+                if (c.label === 'Voice') return toggleRecording();
+                if (c.label === 'Image') return takePhoto();
+                Alert.alert('Feature coming soon');
+              }}
             >
-              <Text style={styles.modalIcon}>{c.icon}</Text>
-              <Text style={styles.modalLabel}>{c.label}</Text>
-              <Text style={styles.modalSub}>{c.sub}</Text>
+              <Text style={styles.modalIcon}>
+                {c.label === 'Voice' && recording ? '⏹️' : c.icon}
+              </Text>
+              <Text style={[styles.modalLabel, c.label === 'Voice' && recording && styles.modalTextActive]}>
+                {c.label === 'Voice' && recording ? 'Stop' : c.label}
+              </Text>
+              <Text style={[styles.modalSub, c.label === 'Voice' && recording && styles.modalTextActive]}>
+                {c.sub}
+              </Text>
             </Pressable>
           ))}
         </ScrollView>
@@ -269,6 +346,15 @@ const styles = StyleSheet.create({
   },
   userText: { color: '#fff', fontSize: 14, lineHeight: 21 },
 
+  imageBubble: {
+    alignSelf: 'flex-end',
+    maxWidth: '80%',
+    borderRadius: 18,
+    borderTopRightRadius: 4,
+    overflow: 'hidden',
+  },
+  bubbleImage: { width: 200, height: 200 },
+
   processingCard: {
     backgroundColor: CARD,
     borderWidth: 1,
@@ -312,6 +398,8 @@ const styles = StyleSheet.create({
     width: 112,
     alignItems: 'center',
   },
+  modalCardActive: { backgroundColor: PINK_DEEP, borderColor: PINK_DEEP },
+  modalTextActive: { color: '#fff' },
   modalIcon:  { fontSize: 20 },
   modalLabel: { color: PINK_DEEP, fontSize: 11, fontWeight: '600', marginTop: 4 },
   modalSub:   { color: MUTED, fontSize: 9, textAlign: 'center', marginTop: 2, lineHeight: 13 },

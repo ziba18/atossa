@@ -75,6 +75,7 @@ const config: ExpoConfig = {
       'expo-image-picker',
       {
         photosPermission: 'Atossa needs access to your photo library.',
+        cameraPermission: 'Atossa needs access to your camera to scan lab results and photos.',
       },
     ],
     [
@@ -83,7 +84,12 @@ const config: ExpoConfig = {
         contactsPermission: 'Atossa needs access to your contacts for emergency alerts.',
       },
     ],
-    'expo-av',
+    [
+      'expo-av',
+      {
+        microphonePermission: 'Atossa needs access to your microphone to record voice notes about how you feel.',
+      },
+    ],
     'expo-apple-authentication',
     'expo-web-browser',
     ...googlePlugin,
