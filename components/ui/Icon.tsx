@@ -42,7 +42,17 @@ export type IconName =
   | 'log-out'
   | 'map-pin'
   | 'message-circle'
+  | 'mic'
+  | 'camera'
+  | 'watch'
+  | 'cycle'
+  | 'data-import'
+  | 'crow'
+  | 'witch-hat'
+  | 'broom'
+  | 'potion'
   | 'minus'
+  | 'moon'
   | 'pencil'
   | 'pill'
   | 'play'
@@ -51,6 +61,7 @@ export type IconName =
   | 'scroll-text'
   | 'send'
   | 'settings'
+  | 'square'
   | 'shield'
   | 'sparkles'
   | 'star'
@@ -60,6 +71,7 @@ export type IconName =
   | 'trending-up'
   | 'triangle-alert'
   | 'user'
+  | 'users'
   | 'x'
   | 'zap';
 
@@ -363,6 +375,100 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = 2 
       case 'minus':
         return <Path {...shared} d="M5 12h14" />;
 
+      case 'moon':
+        return <Path {...shared} d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401Z" />;
+
+      case 'mic':
+        return (
+          <>
+            <Path {...shared} d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
+            <Path {...shared} d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <Line {...shared} x1="12" y1="19" x2="12" y2="22" />
+            <Line {...shared} x1="8" y1="22" x2="16" y2="22" />
+          </>
+        );
+
+      case 'camera':
+        return (
+          <>
+            <Path {...shared} d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+            <Circle {...shared} cx="12" cy="13" r="3.5" />
+          </>
+        );
+
+      case 'watch':
+        return (
+          <>
+            <Circle {...shared} cx="12" cy="12" r="6" />
+            <Path {...shared} d="M12 9.5V12l1.8 1.2" />
+            <Path {...shared} d="M8.5 6 7.6 2.6a1 1 0 0 1 .97-1.25h6.86a1 1 0 0 1 .97 1.25L15.5 6" />
+            <Path {...shared} d="M8.5 18l-.9 3.4a1 1 0 0 0 .97 1.25h6.86a1 1 0 0 0 .97-1.25L15.5 18" />
+          </>
+        );
+
+      case 'cycle':
+        return (
+          <>
+            <Path {...shared} d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <Path {...shared} d="M21 3v5h-5" />
+            <Path {...shared} d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <Path {...shared} d="M8 16H3v5" />
+            <Circle {...shared} cx="12" cy="12" r="1.6" fill={color} stroke="none" />
+          </>
+        );
+
+      case 'data-import':
+        return (
+          <>
+            <Path {...shared} d="M12 3v12" />
+            <Path {...shared} d="m8 11 4 4 4-4" />
+            <Path {...shared} d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </>
+        );
+
+      case 'crow':
+        return (
+          <>
+            <Path {...shared} d="M2 16c4 1 7-2 8-6" />
+            <Path {...shared} d="M22 16c-4 1-7-2-8-6" />
+            <Circle cx="12" cy="9" r="1.1" fill={color} stroke="none" />
+          </>
+        );
+
+      case 'witch-hat':
+        return (
+          <>
+            <Path {...shared} d="M12 3c-1 0-1.8.8-2 1.8L7 17" />
+            <Path {...shared} d="M12 3c1 0 1.8.8 2 1.8l3 12.2" />
+            <Path {...shared} d="M4 17.5c2-1 5-1.5 8-1.5s6 .5 8 1.5" />
+            <Line {...shared} x1="9" y1="13" x2="15" y2="13" />
+          </>
+        );
+
+      case 'broom':
+        return (
+          <>
+            <Line {...shared} x1="14" y1="2" x2="10" y2="13" />
+            <Path {...shared} d="M10 13l-5.5 8" />
+            <Path {...shared} d="M10 13l-2.3 8.5" />
+            <Path {...shared} d="M10 13l1 9" />
+            <Path {...shared} d="M10 13l4 8" />
+            <Path {...shared} d="M10 13l6.5 7" />
+            <Line {...shared} x1="7.5" y1="12" x2="12" y2="14" />
+          </>
+        );
+
+      case 'potion':
+        return (
+          <>
+            <Path {...shared} d="M9 2h6" />
+            <Path {...shared} d="M10 2v5l-5.2 9a3 3 0 0 0 2.6 4.5h9.2a3 3 0 0 0 2.6-4.5L14 7V2" />
+            <Path {...shared} d="M7.5 14.5h9" />
+            <Circle cx="10" cy="17.5" r="0.7" fill={color} stroke="none" />
+            <Circle cx="14" cy="18.8" r="0.6" fill={color} stroke="none" />
+          </>
+        );
+
       case 'pencil':
         return (
           <>
@@ -425,6 +531,9 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = 2 
             <Circle {...shared} cx="12" cy="12" r="3" />
           </>
         );
+
+      case 'square':
+        return <Rect {...shared} x="3" y="3" width="18" height="18" rx="2" />;
 
       case 'shield':
         return <Path {...shared} d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />;
@@ -490,6 +599,16 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = 2 
           <>
             <Path {...shared} d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
             <Circle {...shared} cx="12" cy="7" r="4" />
+          </>
+        );
+
+      case 'users':
+        return (
+          <>
+            <Path {...shared} d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <Circle {...shared} cx="9" cy="7" r="4" />
+            <Path {...shared} d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <Path {...shared} d="M16 3.13a4 4 0 0 1 0 7.75" />
           </>
         );
 

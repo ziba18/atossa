@@ -1,46 +1,41 @@
 import { useEffect, useRef } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../stores/authStore';
+import { api, clearTokens, getStoredAccessToken, setSessionExpiredHandler } from '../lib/api';
+import { useAuthStore, type AuthUser } from '../stores/authStore';
 import { useUIStore } from '../stores/uiStore';
+import type { Profile } from '../types/database';
 
 let authInitStarted = false;
-
-async function clearLocalSession() {
-  // Stale/invalid refresh token: clear locally without hitting the server,
-  // which would just fail again with the same dead token.
-  try {
-    await supabase.auth.signOut({ scope: 'local' });
-  } catch {}
-}
 
 function startAuthInit() {
   if (authInitStarted) return;
   authInitStarted = true;
 
+  setSessionExpiredHandler(() => {
+    useAuthStore.getState().signOut();
+  });
+
   (async () => {
-    const { setSession, fetchProfile } = useAuthStore.getState();
+    const { setSession, setUser, setProfile } = useAuthStore.getState();
+    const token = await getStoredAccessToken();
+
+    if (!token) {
+      setSession(null);
+      return;
+    }
+
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error || !session) {
-        if (error) await clearLocalSession();
-        setSession(null);
-        return;
-      }
-      setSession(session);
-      if (session.user) fetchProfile();
+      const [user, profile] = await Promise.all([
+        api.get<AuthUser>('/auth/me'),
+        api.get<Profile>('/me'),
+      ]);
+      setUser(user);
+      setProfile(profile);
+      setSession({ access_token: token });
     } catch {
-      await clearLocalSession();
+      await clearTokens();
       setSession(null);
     }
   })();
-
-  supabase.auth.onAuthStateChange((event, session) => {
-    const prev = useAuthStore.getState().user;
-    const { setSession, fetchProfile } = useAuthStore.getState();
-    setSession(session);
-    if (event === 'SIGNED_OUT') return;
-    if (session?.user && session.user.id !== prev?.id) fetchProfile();
-  });
 }
 
 // Kick off auth as soon as this module is imported, before React mounts.

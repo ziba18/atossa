@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import type { CycleLog, SymptomLog, CyclePrediction } from '../types/database';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import {
-  predictCycle,
   predictMissedPeriods,
   type MissedPeriodSuggestion,
 } from '../algorithms/predict';
@@ -14,11 +13,11 @@ interface CycleState {
   prediction: CyclePrediction | null;
   missedPeriodSuggestions: MissedPeriodSuggestion[];
   isLoading: boolean;
-  fetchCycleLogs: (userId: string) => Promise<void>;
-  fetchSymptomLogs: (userId: string, date?: string) => Promise<void>;
-  fetchPrediction: (userId: string) => Promise<void>;
-  recomputePrediction: (userId: string) => Promise<CyclePrediction | null>;
-  refreshMissedPeriods: (userId: string) => Promise<void>;
+  fetchCycleLogs: (userId?: string) => Promise<void>;
+  fetchSymptomLogs: (userId?: string, date?: string) => Promise<void>;
+  fetchPrediction: (userId?: string) => Promise<void>;
+  recomputePrediction: (userId?: string) => Promise<CyclePrediction | null>;
+  refreshMissedPeriods: (userId?: string) => Promise<void>;
   dismissMissedPeriod: (date: string) => void;
   addCycleLog: (log: Partial<CycleLog>) => Promise<CycleLog | null>;
   addSymptomLog: (log: Partial<SymptomLog>) => Promise<SymptomLog | null>;
@@ -31,115 +30,60 @@ export const useCycleStore = create<CycleState>((set, get) => ({
   missedPeriodSuggestions: [],
   isLoading: false,
 
-  fetchCycleLogs: async (userId) => {
+  fetchCycleLogs: async () => {
     set({ isLoading: true });
-    const { data } = await supabase
-      .from('cycle_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .order('period_start', { ascending: false })
-      .limit(24);
-    set({ cycleLogs: (data ?? []) as CycleLog[], isLoading: false });
+    try {
+      const data = await api.get<CycleLog[]>('/cycles?limit=24');
+      set({ cycleLogs: data, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
   },
 
-  fetchSymptomLogs: async (userId, date) => {
-    let query = supabase
-      .from('symptom_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .order('logged_time', { ascending: false });
-    if (date) query = query.eq('logged_date', date);
-    const { data } = await query.limit(100);
-    set({ symptomLogs: (data ?? []) as SymptomLog[] });
+  fetchSymptomLogs: async (_userId, date) => {
+    try {
+      const path = date
+        ? `/cycles/symptoms?date=${date}&limit=100`
+        : '/cycles/symptoms?limit=100';
+      const data = await api.get<SymptomLog[]>(path);
+      set({ symptomLogs: data });
+    } catch {}
   },
 
-  fetchPrediction: async (userId) => {
-    const { data } = await supabase
-      .from('cycle_predictions')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-    set({ prediction: data as CyclePrediction | null });
+  fetchPrediction: async () => {
+    try {
+      const data = await api.get<CyclePrediction | null>('/cycles/prediction');
+      set({ prediction: data });
+    } catch {}
   },
 
-  recomputePrediction: async (userId) => {
-    const { data: allLogs } = await supabase
-      .from('cycle_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .order('period_start', { ascending: true });
+  recomputePrediction: async () => {
+    try {
+      const prediction = await api.post<CyclePrediction>('/cycles/prediction/recompute');
+      set({ prediction });
 
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('average_cycle_length, average_period_length')
-      .eq('id', userId)
-      .maybeSingle();
+      await cancelAllScheduledNotifications();
+      if (prediction.next_period_start) await schedulePeriodReminder(prediction.next_period_start);
+      if (prediction.next_ovulation) await scheduleOvulationReminder(prediction.next_ovulation);
 
-    const sortedLogs = (allLogs ?? []) as CycleLog[];
-    const result = await predictCycle({
-      cycleLogs: sortedLogs,
-      defaultCycleLength: profileData?.average_cycle_length ?? 28,
-      defaultPeriodLength: profileData?.average_period_length ?? 5,
-      userId,
-    });
+      await get().refreshMissedPeriods();
 
-    const predictionRow = {
-      user_id: userId,
-      computed_at: new Date().toISOString(),
-      next_period_start: result.nextPeriodStart,
-      next_period_end: result.nextPeriodEnd,
-      next_ovulation: result.nextOvulation,
-      fertile_window_start: result.fertileWindowStart,
-      fertile_window_end: result.fertileWindowEnd,
-      predicted_cycle_length: result.predictedCycleLength,
-      confidence_score: result.confidenceScore,
-      method_used: result.methodUsed,
-    };
-
-    const { data: upserted } = await supabase
-      .from('cycle_predictions')
-      .upsert(predictionRow, { onConflict: 'user_id' })
-      .select()
-      .maybeSingle();
-
-    if (!upserted) return null;
-
-    const prediction = upserted as CyclePrediction;
-    set({ prediction });
-
-    await cancelAllScheduledNotifications();
-    await schedulePeriodReminder(result.nextPeriodStart);
-    await scheduleOvulationReminder(result.nextOvulation);
-
-    // Refresh backfill suggestions after a recompute too — a new log may
-    // resolve a previously-suggested missed period.
-    await get().refreshMissedPeriods(userId);
-
-    return prediction;
+      return prediction;
+    } catch {
+      return null;
+    }
   },
 
-  refreshMissedPeriods: async (userId) => {
-    // Pull a broader window of symptoms (90d backfill horizon) so the
-    // classifier has enough signal. We don't disturb the main symptomLogs
-    // slice (which is scoped to a viewing date) — we fetch ad-hoc here.
-    const cutoff = new Date(Date.now() - 100 * 86400000).toISOString().slice(0, 10);
-    const [{ data: logs }, { data: symptoms }] = await Promise.all([
-      supabase
-        .from('cycle_logs')
-        .select('*')
-        .eq('user_id', userId)
-        .order('period_start', { ascending: true }),
-      supabase
-        .from('symptom_logs')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('logged_date', cutoff),
-    ]);
-    const suggestions = await predictMissedPeriods(
-      (logs ?? []) as CycleLog[],
-      (symptoms ?? []) as SymptomLog[],
-    );
-    set({ missedPeriodSuggestions: suggestions });
+  refreshMissedPeriods: async () => {
+    try {
+      const cutoff = new Date(Date.now() - 100 * 86400000).toISOString().slice(0, 10);
+      const [logs, symptoms] = await Promise.all([
+        api.get<CycleLog[]>('/cycles?limit=100'),
+        api.get<SymptomLog[]>(`/cycles/symptoms?since=${cutoff}&limit=500`),
+      ]);
+      const suggestions = await predictMissedPeriods(logs, symptoms);
+      set({ missedPeriodSuggestions: suggestions });
+    } catch {}
   },
 
   dismissMissedPeriod: (date) => {
@@ -149,34 +93,37 @@ export const useCycleStore = create<CycleState>((set, get) => ({
   },
 
   addCycleLog: async (log) => {
-    const { data, error } = await supabase
-      .from('cycle_logs')
-      .insert(log)
-      .select()
-      .single();
-    if (error) return null;
-    const newLog = data as CycleLog;
-    set((state) => ({
-      cycleLogs: [newLog, ...state.cycleLogs],
-    }));
-
-    const userId = log.user_id as string;
-    if (userId) await get().recomputePrediction(userId);
-
-    return newLog;
+    try {
+      const newLog = await api.post<CycleLog>('/cycles', {
+        period_start: log.period_start,
+        period_end: log.period_end ?? null,
+        cycle_length: log.cycle_length ?? null,
+        period_length: log.period_length ?? null,
+        flow_intensity: log.flow_intensity ?? null,
+        notes: log.notes ?? null,
+      });
+      set((state) => ({ cycleLogs: [newLog, ...state.cycleLogs] }));
+      await get().recomputePrediction();
+      return newLog;
+    } catch {
+      return null;
+    }
   },
 
   addSymptomLog: async (log) => {
-    const { data, error } = await supabase
-      .from('symptom_logs')
-      .insert(log)
-      .select()
-      .single();
-    if (error) return null;
-    const newLog = data as SymptomLog;
-    set((state) => ({
-      symptomLogs: [newLog, ...state.symptomLogs],
-    }));
-    return newLog;
+    try {
+      const newLog = await api.post<SymptomLog>('/cycles/symptoms', {
+        logged_date: log.logged_date,
+        logged_time: log.logged_time,
+        symptom_type: log.symptom_type,
+        severity: log.severity ?? null,
+        custom_label: log.custom_label ?? null,
+        notes: log.notes ?? null,
+      });
+      set((state) => ({ symptomLogs: [newLog, ...state.symptomLogs] }));
+      return newLog;
+    } catch {
+      return null;
+    }
   },
 }));

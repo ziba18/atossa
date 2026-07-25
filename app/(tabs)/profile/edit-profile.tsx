@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../stores/authStore';
-import { supabase } from '../../../lib/supabase';
+import { api, ApiError } from '../../../lib/api';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Header } from '../../../components/layout/Header';
@@ -25,38 +25,24 @@ export default function EditProfileScreen() {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   const handleSaveProfile = async () => {
-    if (!user) return;
     setProfileLoading(true);
-    const { error } = await supabase
-      .from('profiles')
-      .update({
+    try {
+      await api.patch('/me', {
         display_name: name || null,
         date_of_birth: dob || null,
         average_cycle_length: parseInt(cycleLength) || 28,
-      })
-      .eq('id', user.id);
-    setProfileLoading(false);
-    if (error) { Alert.alert('Error', error.message); return; }
-    await fetchProfile();
-    Alert.alert('Saved!', 'Your profile has been updated.');
+      });
+      await fetchProfile();
+      Alert.alert('Saved!', 'Your profile has been updated.');
+    } catch (err) {
+      Alert.alert('Error', err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setProfileLoading(false);
+    }
   };
 
   const handleChangePassword = async () => {
-    if (!newPassword || newPassword.length < 6) {
-      Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      Alert.alert('Mismatch', 'Passwords do not match.');
-      return;
-    }
-    setPasswordLoading(true);
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
-    setPasswordLoading(false);
-    if (error) { Alert.alert('Error', error.message); return; }
-    setNewPassword('');
-    setConfirmPassword('');
-    Alert.alert('Password Updated', 'Your password has been changed successfully.');
+    Alert.alert('Coming soon', 'Password change will be available in a future update.');
   };
 
   return (

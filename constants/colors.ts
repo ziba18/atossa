@@ -1,145 +1,145 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Atossa Design System — warm rose + bordeaux palette
-// Soft blush · Deep rose · Bordeaux · Warm cream · Ink
+// Atossa Design System — cottagecore / botanical herbalist
+// Paper · Cream · Moss · Bark · Amber · Ink
 //
-// Naming convention: the legacy aliases (cherry, gold, whiskey, forest, etc.)
-// are kept as keys so existing components don't break — only the underlying
-// hex values change. New code should prefer the semantic names at the bottom
-// (rose, roseDeep, bordeaux, blush, etc.).
+// Mood: the knowledgeable herbalist, earthy, warm, close to the soil.
+// Gender-neutral; no pink/girly framing anywhere.
+//
+// Palette tokens from the verdant-cycles design:
+//   paper #f7f3eb · cream #fdf8f1 · moss #3a4d39 · bark #4a3728
+//   amber-brand #b45309 · ink #1c1e1c
+//
+// Naming convention: legacy aliases (cherry, gold, whiskey, forest, etc.)
+// are kept so existing components don't break — only the underlying hex
+// values changed. New code should prefer the semantic names at the bottom.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const Colors = {
-  // ── Primary brand (Lovable pastel pink) ───────────────────────────────────
-  // Matches the chat screen accent from the Lovable design — soft, warm pink
-  // rather than the previous deep rose/bordeaux.
-  cherry: '#C2607A',            // primary CTA, active states (Lovable pink)
-  cherryLight: '#F2A7BB',       // soft pink border/accent
-  cherryLighter: '#FDE8EE',     // very soft pink tint (chat bg)
-  cherryDark: '#9A4A60',        // deeper pink for pressed states
+  // ── Primary brand (moss — herbalist green) ───────────────────────────────
+  cherry: '#3a4d39',            // primary CTA, active states
+  cherryLight: '#4d6b4c',       // lighter moss border/accent
+  cherryLighter: '#e6ede4',     // very soft moss tint (chat bg)
+  cherryDark: '#273327',        // deep moss, pressed states
 
-  // ── Dashboard accent (Lovable pastel green) ───────────────────────────────
-  dashboardGreen: '#4A7A3A',
-  dashboardGreenLight: '#B5CDA3',
-  dashboardGreenLighter: '#EBF3E6',
-  dashboardGreenSoft: '#DCE8D2',
+  // ── Dashboard accent (bark brown) ─────────────────────────────────────────
+  dashboardGreen: '#4a3728',
+  dashboardGreenLight: '#7a5c46',
+  dashboardGreenLighter: '#f0e8dc',
+  dashboardGreenSoft: '#e2d5c3',
 
-  // ── Report accent (Lovable pastel blue) ───────────────────────────────────
-  reportBlue: '#3A6A9A',
-  reportBlueLight: '#A8C8E8',
-  reportBlueLighter: '#E6F2FA',
-  reportBlueSoft: '#D5E6F4',
+  // ── Report accent (amber / warm gold) ─────────────────────────────────────
+  reportBlue: '#b45309',
+  reportBlueLight: '#d97706',
+  reportBlueLighter: '#fef3c7',
+  reportBlueSoft: '#fde68a',
 
   // ── Ink surfaces ──────────────────────────────────────────────────────────
-  bordeaux: '#2A1F26',          // near-black with warm undertone (text)
-  bordeauxMid: '#FAF6F1',       // warm cream (background mapping)
+  bordeaux: '#1c1e1c',          // near-black ink (text)
+  bordeauxMid: '#f7f3eb',       // paper (background mapping)
   bordeauxLight: '#FFFFFF',     // surface mapping
 
-  // ── Accent (warm taupe / dusty rose) ──────────────────────────────────────
-  // Was muted lavender — replaced with a warm dusty rose that complements
-  // the bordeaux primary.
-  gold: '#C49B89',              // dusty rose accent
-  goldLight: '#E8C8B8',         // soft blush-tan
-  goldLighter: '#FAF1ED',       // tinted bg
-  goldDark: '#8B5C4A',          // deep terracotta text
+  // ── Accent (lighter moss / dried herb) ────────────────────────────────────
+  gold: '#4d6b4c',
+  goldLight: '#7a9678',
+  goldLighter: '#e9efe7',
+  goldDark: '#3a4d39',
 
-  // ── Cream backgrounds ─────────────────────────────────────────────────────
-  cream: '#FAF6F1',             // warm cream bg
-  creamDark: '#F2EBE2',         // slightly deeper cream
+  // ── Paper backgrounds ─────────────────────────────────────────────────────
+  cream: '#f7f3eb',             // paper bg
+  creamDark: '#ede7d9',         // slightly deeper parchment
 
-  // ── Sage Green (kept for follicular phase, but desaturated) ───────────────
-  // Reduced saturation so it sits in the warm rose palette without clashing.
-  forest: '#8FA88E',            // muted sage
-  forestDark: '#FFFFFF',        // tab bar background (white)
-  forestMuted: '#B5C8B5',       // light muted sage
-  forestLighter: '#EFF3EE',     // sage tinted bg
+  // ── Forest (moss tones) ───────────────────────────────────────────────────
+  forest: '#4d6b4c',            // lighter moss
+  forestDark: '#1c1e1c',        // near-black ink (dark surfaces)
+  forestMuted: '#8ea38c',       // light forest
+  forestLighter: '#e6ede4',     // forest tinted bg
 
-  // ── Rose family (status/phase) ────────────────────────────────────────────
-  whiskey: '#B0455A',           // alias for primary deep rose
-  whiskeyLight: '#E8A5B0',
-  whiskeyLighter: '#FBEEF1',
-  whiskeyDark: '#7A2A3D',
+  // ── Oxblood (status/phase — period colour) ────────────────────────────────
+  whiskey: '#6E1F1F',           // deep oxblood — alias for primary danger/period
+  whiskeyLight: '#A85C5C',
+  whiskeyLighter: '#F4E3E0',
+  whiskeyDark: '#3D0F0F',
 
-  // ── Emerald (success) — kept distinguishable but warm ─────────────────────
-  emerald: '#7A9C7E',
-  emeraldLight: '#A5BFA8',
-  emeraldLighter: '#EFF3EE',
-  emeraldDark: '#4F6F54',
+  // ── Emerald (success) — brighter for contrast ─────────────────────────────
+  emerald: '#3F7D58',
+  emeraldLight: '#7FB08A',
+  emeraldLighter: '#E5F0E7',
+  emeraldDark: '#234A33',
 
-  // ── Silver / mauve (informational) ────────────────────────────────────────
-  silver: '#E2D6DC',
-  silverDark: '#9C8590',
+  // ── Plum (informational / mystic) ─────────────────────────────────────────
+  silver: '#5B4B73',
+  silverDark: '#3A2E4D',
 
   // ── Backgrounds ───────────────────────────────────────────────────────────
-  background: '#FAF6F1',        // warm cream
-  backgroundDark: '#241A21',    // deep bordeaux-tinted dark
+  background: '#f7f3eb',        // paper
+  backgroundDark: '#14110E',    // near-black warm dark
   surface: '#FFFFFF',
-  surfaceDark: '#2E2229',
-  surfaceElevated: '#FFFCF8',
-  surfaceElevatedDark: '#3A2A33',
+  surfaceDark: '#1F1A16',
+  surfaceElevated: '#fdf8f1',   // cream
+  surfaceElevatedDark: '#2A231D',
 
   // ── Text ──────────────────────────────────────────────────────────────────
-  // High-contrast black-with-warm-undertone for primary, warm grey for secondary,
-  // muted warm grey for tertiary. No colored text by default.
-  // Body ink — tuned for editorial readability + WCAG AA on cream:
-  //  primary  → 12.0:1 (AAA at all sizes)
-  //  secondary → 6.8:1 (AA at all sizes)
-  //  muted    → 4.2:1 (AA for ≥12pt, where we use it)
-  textPrimary: '#2F2229',
-  textPrimaryDark: '#F5EBE8',
-  textSecondary: '#5C4B55',
-  textSecondaryDark: '#C5B0B8',
-  textMuted: '#7F6E78',
-  textMutedDark: '#8A7782',
+  textPrimary: '#1c1e1c',
+  textPrimaryDark: '#F0E9DC',
+  textSecondary: '#4a3728',     // bark
+  textSecondaryDark: '#C9BFAE',
+  textMuted: '#7a6e60',
+  textMutedDark: '#8C8071',
 
   // ── Borders ───────────────────────────────────────────────────────────────
-  border: 'rgba(42,31,38,0.10)',
-  borderStrong: 'rgba(42,31,38,0.20)',
-  borderDark: 'rgba(245,235,232,0.12)',
+  border: 'rgba(28,30,28,0.12)',
+  borderStrong: 'rgba(28,30,28,0.24)',
+  borderDark: 'rgba(240,233,220,0.12)',
 
   // ── Cycle phase colours ───────────────────────────────────────────────────
-  // All phase colours sit in the warm rose palette family, but stay
-  // distinguishable from each other.
-  menstrual: '#B0455A',         // deep rose
-  predictedPeriod: '#FBEEF1',   // soft rose tint
-  follicular: '#8FA88E',        // muted sage
-  ovulation: '#D4A65C',         // warm honey
-  luteal: '#A89AB5',            // soft mauve
+  menstrual: '#6E1F1F',         // oxblood
+  predictedPeriod: '#F4E3E0',   // soft oxblood tint
+  follicular: '#3a4d39',        // moss
+  ovulation: '#b45309',         // amber-brand
+  luteal: '#5B4B73',            // plum
 
-  // ── Direct semantic palette (preferred for new code) ──────────────────────
-  matcha: '#B5C8B5',            // legacy alias → light muted sage
-  matchaDeep: '#8FA88E',        // legacy alias → muted sage
-  rose: '#E8A5B0',              // soft blush
-  roseDeep: '#B0455A',          // primary deep rose
-  sky: '#A89AB5',               // legacy alias → soft mauve
-  skyDeep: '#7C6E89',           // legacy alias → deep mauve
-  ink: '#2A1F26',               // near-black warm
-  lavender: '#A89AB5',          // legacy alias → soft mauve
-  apricot: '#D4A65C',           // warm honey
+  // ── Direct semantic palette (preferred for new code) ─────────────────────
+  matcha: '#8ea38c',            // light moss
+  matchaDeep: '#4d6b4c',        // lighter moss
+  rose: '#A85C5C',              // dusty oxblood-light
+  roseDeep: '#6E1F1F',          // oxblood
+  sky: '#5B4B73',               // plum
+  skyDeep: '#3A2E4D',           // deep plum
+  ink: '#1c1e1c',               // near-black
+  lavender: '#5B4B73',          // plum
+  apricot: '#b45309',           // amber
+
+  // ── Verdant-cycles palette tokens (new code should use these) ────────────
+  paper: '#f7f3eb',             // page background
+  paperCream: '#fdf8f1',        // surface / elevated
+  moss: '#3a4d39',              // primary brand
+  bark: '#4a3728',              // secondary / bark brown
+  amberBrand: '#b45309',        // report / amber glow
 
   // ── Status ────────────────────────────────────────────────────────────────
-  success: '#7A9C7E',           // muted sage (warm)
-  warning: '#D4A65C',           // warm honey
-  error: '#B0455A',             // deep rose
-  info: '#7C6E89',              // deep mauve
+  success: '#3F7D58',
+  warning: '#C9A227',
+  error: '#6E1F1F',
+  info: '#5B4B73',
 
   // ── Severity scale (pain slider) ──────────────────────────────────────────
-  severity1: '#7A9C7E',         // low — muted sage
-  severity4: '#D4A65C',         // moderate — warm honey
-  severity7: '#B0455A',         // high — deep rose
-  severity10: '#7A2A3D',        // severe — bordeaux
+  severity1: '#3F7D58',
+  severity4: '#C9A227',
+  severity7: '#8B3A3A',
+  severity10: '#3D0F0F',
 
   // ── Translucent glass surfaces ────────────────────────────────────────────
-  glassBg: 'rgba(255,255,255,0.78)',          // hero / main glass card
-  glassBgSoft: 'rgba(255,255,255,0.68)',      // stat tiles, alert card
-  glassBgSubtle: 'rgba(255,255,255,0.55)',    // small tiles
-  glassBgFaint: 'rgba(255,255,255,0.30)',     // chips on coloured banners
-  glassBorder: 'rgba(42,31,38,0.08)',         // glass card border
+  glassBg: 'rgba(255,255,255,0.78)',
+  glassBgSoft: 'rgba(255,255,255,0.68)',
+  glassBgSubtle: 'rgba(255,255,255,0.55)',
+  glassBgFaint: 'rgba(255,255,255,0.30)',
+  glassBorder: 'rgba(28,30,28,0.08)',
 
   // ── Utility ───────────────────────────────────────────────────────────────
   white: '#FFFFFF',
   black: '#000000',
-  overlay: 'rgba(42,31,38,0.5)',
-  overlayLight: 'rgba(176,69,90,0.06)',
+  overlay: 'rgba(28,30,28,0.5)',
+  overlayLight: 'rgba(58,77,57,0.08)',
 } as const;
 
 export type ColorKey = keyof typeof Colors;

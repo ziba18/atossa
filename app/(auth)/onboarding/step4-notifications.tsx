@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../stores/authStore';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { registerForPushNotifications } from '../../../lib/notifications';
 import { Button } from '../../../components/ui/Button';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
@@ -25,7 +25,7 @@ export default function Step4Notifications() {
     if (enabled) {
       try { await registerForPushNotifications(); } catch { /* not critical */ }
     }
-    await supabase.from('profiles').update({ notifications_enabled: enabled }).eq('id', user.id);
+    await api.patch('/me', { notifications_enabled: enabled });
     setLoading(false);
     router.push('/(auth)/onboarding/step5-connected');
   };

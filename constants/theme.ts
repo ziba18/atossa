@@ -88,6 +88,21 @@ export const Shadow = {
     shadowRadius: 30,
     elevation: 8,
   },
+  // Sticker-card style: flat offset shadow + hard ink border
+  sticker: {
+    shadowColor: '#1c1e1c',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 0,
+    elevation: 3,
+  },
+  stickerLg: {
+    shadowColor: '#1c1e1c',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 0,
+    elevation: 4,
+  },
 } as const;
 
 // ─── Themes ───────────────────────────────────────────────────────────────────

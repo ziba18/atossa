@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Calendar } from 'react-native-calendars';
 import { useAuthStore } from '../../../stores/authStore';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { Button } from '../../../components/ui/Button';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
@@ -18,13 +18,9 @@ export default function Step2LastPeriod() {
   const [loading, setLoading] = useState(false);
 
   const handleNext = async () => {
-    if (!selectedDate || !user) { Alert.alert('Please select a date.'); return; }
+    if (!selectedDate) { Alert.alert('Please select a date.'); return; }
     setLoading(true);
-    await supabase.from('cycle_logs').insert({
-      user_id: user.id,
-      period_start: selectedDate,
-      is_confirmed: true,
-    });
+    await api.post('/cycles', { period_start: selectedDate });
     setLoading(false);
     router.push('/(auth)/onboarding/step3-symptoms');
   };

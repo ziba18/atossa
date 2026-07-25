@@ -20,3 +20,11 @@ class TokenResponse(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
+
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+
+    class Config:
+        from_attributes = True

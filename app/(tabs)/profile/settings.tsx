@@ -3,7 +3,7 @@ import { View, Text, Switch, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../stores/authStore';
 import { useUIStore } from '../../../stores/uiStore';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { Header } from '../../../components/layout/Header';
 import { Card } from '../../../components/ui/Card';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
@@ -41,12 +41,11 @@ export default function SettingsScreen() {
 
   const persistProfile = useCallback(
     (updates: Record<string, unknown>) => {
-      if (!user) return;
       const current = useAuthStore.getState().profile;
       if (current) setProfile({ ...current, ...updates } as typeof current);
-      supabase.from('profiles').update(updates).eq('id', user.id).then(() => {});
+      api.patch('/me', updates).catch(() => {});
     },
-    [user, setProfile],
+    [setProfile],
   );
 
   const handleDarkModeChange = useCallback(

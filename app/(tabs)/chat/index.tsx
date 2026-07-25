@@ -2,20 +2,24 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TextInput,
   Pressable, Alert, KeyboardAvoidingView, Platform,
-  Animated, SafeAreaView, Image,
+  Animated, SafeAreaView, Image, AppState, Keyboard,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Audio } from 'expo-av';
+import { Icon, type IconName } from '../../../components/ui/Icon';
+import { useAuthStore } from '../../../stores/authStore';
+import { isHumanName } from '../../../lib/humanName';
 
-const BG       = '#FDE8EE';
-const COMPOSER = '#FBE3EC';
-const CARD     = '#FFFFFF';
-const PINK     = '#F2A7BB';
-const PINK_DEEP = '#C2607A';
-const PINK_SOFT = '#FBD9E3';
-const INK      = '#3A2A30';
-const MUTED    = '#A78896';
+const BG       = '#f7f3eb';
+const COMPOSER = '#ede7d9';
+const CARD     = '#fdf8f1';
+const PINK     = '#8ea38c';
+const PINK_DEEP = '#3a4d39';
+const PINK_SOFT = '#e2d5c3';
+const INK      = '#1c1e1c';
+const MUTED    = '#7a6e60';
 
 interface Message {
   id: string;
@@ -26,20 +30,20 @@ interface Message {
   audioDurationMs?: number;
 }
 
-const INITIAL: Message = {
+const greeting = (name?: string | null): Message => ({
   id: '0',
   type: 'ai',
-  text: "Hi 👋 I noticed your pain has been 7+ for 3 consecutive weeks. This is NOT normal. You deserve answers. 💙",
-};
+  text: `Hello ${isHumanName(name) ? name!.trim() : 'there'}! How are you feeling today?`,
+});
 
 const AI_RESPONSE =
   "I've analysed your input. Your pain pattern combined with HRV and cycle data shows elevated inflammation markers. I recommend adding this to your GP report — your doctor needs to see this trend. 💙";
 
-const MODAL_CARDS = [
-  { icon: '🎙️', label: 'Voice',      sub: 'Describe pain in your words' },
-  { icon: '📸', label: 'Image',      sub: 'Scan results, lab reports' },
-  { icon: '⌚', label: 'Wearable',   sub: 'HRV, sleep, temperature' },
-  { icon: '📊', label: 'Cycle data', sub: 'Hormones, flow, phases' },
+const MODAL_CARDS: { icon: IconName; label: string; sub: string }[] = [
+  { icon: 'mic',       label: 'Voice',      sub: 'Describe pain in your words' },
+  { icon: 'camera',    label: 'Image',      sub: 'Scan results, lab reports' },
+  { icon: 'data-import', label: 'External Data', sub: 'HRV, sleep, temperature' },
+  { icon: 'cycle',       label: 'Cycle data',    sub: 'Hormones, flow, phases' },
 ];
 
 const STEPS = [
@@ -50,15 +54,30 @@ const STEPS = [
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets();
-  const [messages, setMessages] = useState<Message[]>([INITIAL]);
+  const router = useRouter();
+  const displayName = useAuthStore((s) => s.profile?.display_name);
+  const [messages, setMessages] = useState<Message[]>([greeting(displayName)]);
   const [input, setInput]       = useState('');
   const [pain, setPain]         = useState<number | null>(null);
   const [processing, setProcessing] = useState(false);
   const [step, setStep]         = useState(0);
   const [recording, setRecording] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+  const inputRef = useRef<TextInput>(null);
   const recordingRef = useRef<Audio.Recording | null>(null);
   const recordingStartRef = useRef<number>(0);
+
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvt, () => setKeyboardVisible(true));
+    const hideSub = Keyboard.addListener(hideEvt, () => setKeyboardVisible(false));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const fadeAnims = useRef([
     new Animated.Value(0),
@@ -66,11 +85,19 @@ export default function ChatScreen() {
     new Animated.Value(0),
   ]).current;
 
+  useEffect(() => {
+    setMessages(prev =>
+      prev[0]?.id === '0' ? [greeting(displayName), ...prev.slice(1)] : prev
+    );
+  }, [displayName]);
+
   const send = () => {
     const text = input.trim();
     if (!text || processing) return;
     setMessages(prev => [...prev, { id: Date.now().toString(), type: 'user', text }]);
     setInput('');
+    inputRef.current?.blur();
+    Keyboard.dismiss();
     beginProcessing();
   };
 
@@ -115,6 +142,18 @@ export default function ChatScreen() {
     ]);
   };
 
+  const waitForActiveAppState = () => {
+    if (AppState.currentState === 'active') return Promise.resolve();
+    return new Promise<void>((resolve) => {
+      const sub = AppState.addEventListener('change', (state) => {
+        if (state === 'active') {
+          sub.remove();
+          resolve();
+        }
+      });
+    });
+  };
+
   const toggleRecording = async () => {
     if (recording) {
       const rec = recordingRef.current;
@@ -138,6 +177,10 @@ export default function ChatScreen() {
       Alert.alert('Microphone access needed', 'Enable microphone access in Settings to record voice notes.');
       return;
     }
+    // The permission dialog backgrounds the app momentarily; activating the
+    // audio session before iOS reports the app as active again throws
+    // "experience is currently in the background" on the first request.
+    await waitForActiveAppState();
     await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
     const { recording: rec } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
     recordingRef.current = rec;
@@ -160,20 +203,19 @@ export default function ChatScreen() {
         {/* ── Header ── */}
         <View style={styles.header}>
           <View style={styles.logo}>
-            <Text style={styles.logoGlyph}>✦</Text>
+            <Icon name="witch-hat" size={18} color={PINK_DEEP} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.headerTitle}>Atossa</Text>
-            <Text style={styles.headerSub}>Your cycle companion</Text>
+            <Text style={styles.headerSub}>Sage · your cycle companion</Text>
           </View>
-          <View style={styles.chip}>
-            <Text style={styles.chipText}>Apple Health</Text>
-          </View>
-        </View>
-        <View style={styles.chipRow}>
-          <View style={styles.chip}><Text style={styles.chipText}>Oura</Text></View>
-          <View style={styles.chip}><Text style={styles.chipText}>Fitbit</Text></View>
-          <View style={styles.chip}><Text style={styles.chipText}>Clue</Text></View>
+          <Pressable
+            onPress={() => router.push('/(tabs)/profile' as any)}
+            style={styles.avatarBtn}
+            hitSlop={8}
+          >
+            <Icon name="user" size={18} color={PINK_DEEP} />
+          </Pressable>
         </View>
 
         {/* ── Messages ── */}
@@ -207,7 +249,7 @@ export default function ChatScreen() {
 
           {processing && (
             <View style={styles.processingCard}>
-              <Text style={styles.processingTitle}>Atossa is analysing…</Text>
+              <Text style={styles.processingTitle}>Sage is analysing…</Text>
               {STEPS.slice(0, step).map((s, i) => (
                 <Animated.Text key={i} style={[styles.processingStep, { opacity: fadeAnims[i] }]}>
                   {s}
@@ -245,12 +287,15 @@ export default function ChatScreen() {
               onPress={() => {
                 if (c.label === 'Voice') return toggleRecording();
                 if (c.label === 'Image') return takePhoto();
+                if (c.label === 'Cycle data') return router.push('/(tabs)/chat/cycle-data' as any);
                 Alert.alert('Feature coming soon');
               }}
             >
-              <Text style={styles.modalIcon}>
-                {c.label === 'Voice' && recording ? '⏹️' : c.icon}
-              </Text>
+              <Icon
+                name={c.label === 'Voice' && recording ? 'square' : c.icon}
+                size={20}
+                color={c.label === 'Voice' && recording ? '#fff' : PINK_DEEP}
+              />
               <Text style={[styles.modalLabel, c.label === 'Voice' && recording && styles.modalTextActive]}>
                 {c.label === 'Voice' && recording ? 'Stop' : c.label}
               </Text>
@@ -262,19 +307,25 @@ export default function ChatScreen() {
         </ScrollView>
 
         {/* ── Input bar ── */}
-        <View style={[styles.inputBar, { paddingBottom: insets.bottom + 80 }]}>
+        <View style={[styles.inputBar, { paddingBottom: keyboardVisible ? 10 : insets.bottom + 80 }]}>
           <TextInput
+            ref={inputRef}
             style={styles.input}
             value={input}
             onChangeText={setInput}
-            placeholder="Message Atossa…"
+            placeholder="Message Sage…"
             placeholderTextColor={MUTED}
             multiline
+            blurOnSubmit
             returnKeyType="send"
             onSubmitEditing={send}
           />
-          <Pressable style={[styles.sendBtn, processing && { opacity: 0.5 }]} onPress={send}>
-            <Text style={styles.sendIcon}>➤</Text>
+          <Pressable
+            style={[styles.sendBtn, (!input.trim() || processing) && styles.sendBtnDisabled]}
+            onPress={send}
+            disabled={!input.trim() || processing}
+          >
+            <Icon name="send" size={18} color="#fff" />
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -302,24 +353,14 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: PINK,
     alignItems: 'center', justifyContent: 'center',
   },
-  logoGlyph: { color: PINK_DEEP, fontSize: 16 },
+  avatarBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: '#fff',
+    borderWidth: 1.5, borderColor: PINK,
+    alignItems: 'center', justifyContent: 'center',
+  },
   headerTitle: { color: PINK_DEEP, fontSize: 18, fontWeight: '700', letterSpacing: 0.2 },
   headerSub:   { color: MUTED, fontSize: 11, marginTop: 1 },
-  chipRow: {
-    flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 8,
-    backgroundColor: BG,
-  },
-  chip: {
-    paddingHorizontal: 10, paddingVertical: 4,
-    borderRadius: 999,
-    backgroundColor: '#fff',
-    borderWidth: 1, borderColor: PINK,
-  },
-  chipText: { fontSize: 11, fontWeight: '600', color: PINK_DEEP },
 
   scroll: { flex: 1, backgroundColor: BG },
   scrollContent: { padding: 16, gap: 10, paddingBottom: 4 },
@@ -328,11 +369,16 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     maxWidth: '82%',
     backgroundColor: CARD,
-    borderWidth: 1,
-    borderColor: PINK_SOFT,
+    borderWidth: 2,
+    borderColor: PINK_DEEP,
     borderRadius: 18,
     borderTopLeftRadius: 4,
     padding: 14,
+    shadowColor: PINK_DEEP,
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 0,
+    elevation: 2,
   },
   aiText: { color: INK, fontSize: 14, lineHeight: 21 },
 
@@ -357,11 +403,16 @@ const styles = StyleSheet.create({
 
   processingCard: {
     backgroundColor: CARD,
-    borderWidth: 1,
-    borderColor: PINK_SOFT,
+    borderWidth: 2,
+    borderColor: PINK_DEEP,
     borderRadius: 14,
     padding: 14,
     gap: 8,
+    shadowColor: PINK_DEEP,
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 0,
+    elevation: 2,
   },
   processingTitle: { color: PINK_DEEP, fontSize: 13, fontWeight: '600' },
   processingStep:  { color: INK, fontSize: 13, lineHeight: 20 },
@@ -390,17 +441,21 @@ const styles = StyleSheet.create({
   strip:        { maxHeight: 90, flexShrink: 0, backgroundColor: BG },
   stripContent: { paddingHorizontal: 14, gap: 8, paddingBottom: 4 },
   modalCard: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: PINK,
+    backgroundColor: CARD,
+    borderWidth: 2,
+    borderColor: PINK_DEEP,
     borderRadius: 14,
     padding: 10,
     width: 112,
     alignItems: 'center',
+    shadowColor: PINK_DEEP,
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 0,
+    elevation: 2,
   },
   modalCardActive: { backgroundColor: PINK_DEEP, borderColor: PINK_DEEP },
   modalTextActive: { color: '#fff' },
-  modalIcon:  { fontSize: 20 },
   modalLabel: { color: PINK_DEEP, fontSize: 11, fontWeight: '600', marginTop: 4 },
   modalSub:   { color: MUTED, fontSize: 9, textAlign: 'center', marginTop: 2, lineHeight: 13 },
 
@@ -431,5 +486,5 @@ const styles = StyleSheet.create({
     backgroundColor: PINK_DEEP,
     alignItems: 'center', justifyContent: 'center',
   },
-  sendIcon: { color: '#fff', fontSize: 16 },
+  sendBtnDisabled: { backgroundColor: PINK },
 });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../stores/authStore';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { Button } from '../../../components/ui/Button';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
@@ -21,10 +21,7 @@ export default function OnboardingNameScreen() {
     const trimmed = name.trim();
     if (trimmed.length < 1) return;
     setLoading(true);
-    await supabase.from('profiles').upsert(
-      { id: user.id, display_name: trimmed },
-      { onConflict: 'id' },
-    );
+    await api.patch('/me', { display_name: trimmed });
     await fetchProfile();
     setLoading(false);
     router.replace('/(auth)/onboarding/step1-basics');

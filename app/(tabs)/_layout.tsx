@@ -17,22 +17,24 @@ try {
   );
 }
 
-const LIGHT_BG = 'rgba(255,255,255,0.92)';
-const PINK = '#C2607A';
-const PINK_SOFT = '#FBD9E3';
-const CREAM = '#FFFFFF';
-const INK = '#3A2A30';
-const MUTED = '#A78896';
+const LIGHT_BG = 'rgba(247,243,235,0.92)';
+const EMERALD = '#3a4d39';
+const EMERALD_SOFT = '#e6ede4';
+const CREAM = '#f7f3eb';
+const INK = '#1c1e1c';
+const MUTED = '#7a6e60';
 
 const TAB_ICONS: Record<string, IconName> = {
-  chat:      'message-circle',
+  chat:      'crow',
+  analysis:  'brain',
   dashboard: 'activity',
   report:    'file-text',
+  community: 'users',
 };
 const TAB_LABELS: Record<string, string> = {
-  chat: 'Chat', dashboard: 'Insights', report: 'GP Report',
+  chat: 'Chat', analysis: 'Analyse', dashboard: 'Data', report: 'Report', community: 'People',
 };
-const VISIBLE_ORDER = ['chat', 'dashboard', 'report'];
+const VISIBLE_ORDER = ['chat', 'analysis', 'dashboard', 'report', 'community'];
 
 function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   const layouts = useRef<Record<string, { x: number; width: number }>>({});
@@ -71,7 +73,7 @@ function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
 
         <Animated.View style={[styles.pill, pillStyle]} pointerEvents="none">
           <LinearGradient
-            colors={['#F2A7BB', '#C2607A']}
+            colors={['#4d6b4c', '#3a4d39']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFill}
@@ -95,8 +97,8 @@ function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
             >
               <Icon
                 name={TAB_ICONS[route.name]}
-                size={18}
-                color={focused ? CREAM : PINK}
+                size={16}
+                color={focused ? CREAM : EMERALD}
                 strokeWidth={focused ? 2.2 : 1.8}
               />
               <Text style={[styles.tabLabel, { color: focused ? CREAM : INK }]}>
@@ -117,8 +119,10 @@ export default function TabsLayout() {
       screenOptions={{ headerShown: false }}
     >
       <Tabs.Screen name="chat"      options={{ title: 'Chat' }} />
-      <Tabs.Screen name="dashboard" options={{ title: 'Insights' }} />
-      <Tabs.Screen name="report"    options={{ title: 'GP Report' }} />
+      <Tabs.Screen name="analysis"  options={{ title: 'Analyse' }} />
+      <Tabs.Screen name="dashboard" options={{ title: 'Data' }} />
+      <Tabs.Screen name="report"    options={{ title: 'Report' }} />
+      <Tabs.Screen name="community" options={{ title: 'People' }} />
       <Tabs.Screen name="profile"   options={{ href: null }} />
     </Tabs>
   );
@@ -140,8 +144,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(194,96,122,0.35)',
-    shadowColor: '#C2607A',
+    borderColor: 'rgba(58,77,57,0.35)',
+    shadowColor: '#3a4d39',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 20,
@@ -153,7 +157,7 @@ const styles = StyleSheet.create({
     left: 0,
     borderRadius: 26,
     overflow: 'hidden',
-    shadowColor: '#C2607A',
+    shadowColor: '#3a4d39',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -166,17 +170,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
   },
   tabBtn: {
-    flexDirection: 'row',
+    flex: 1,
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    gap: 6,
+    paddingVertical: 9,
+    gap: 3,
     borderRadius: 26,
   },
   tabLabel: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 9.5,
+    fontWeight: '600',
     letterSpacing: 0.1,
   },
 });

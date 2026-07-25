@@ -3,17 +3,19 @@ import {
   View, Text, StyleSheet, ScrollView, Pressable, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Icon } from '../../../components/ui/Icon';
 
-const BG    = '#E6F2FA';
-const CARD  = '#FFFFFF';
-const BLUE  = '#3A6A9A';
-const LBLUE = '#A8C8E8';
-const BLUE_SOFT = '#D5E6F4';
-const PINK  = '#C2607A';
-const MATCHA= '#7FA86A';
-const CREAM = '#1F2E3F';
-const MUTED = '#5f7791';
-const RED   = '#D04B6F';
+const BG    = '#f7f3eb';
+const CARD  = '#fdf8f1';
+const BLUE  = '#5B4B73';
+const LBLUE = '#A89AC0';
+const BLUE_SOFT = '#E5DEEC';
+const PINK  = '#3a4d39';
+const MATCHA= '#4d6b4c';
+const CREAM = '#1c1e1c';
+const MUTED = '#7a6e60';
+const RED   = '#8B3A3A';
 
 // ── Key findings ───────────────────────────────────────────────────────────────
 const FINDINGS = [
@@ -64,6 +66,7 @@ const GP_QUESTIONS = [
 
 export default function GPReportScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <ScrollView
@@ -77,8 +80,13 @@ export default function GPReportScreen() {
           <Text style={styles.title}>GP Report</Text>
           <Text style={styles.sub}>Your data. Your story. — Atossa</Text>
         </View>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>READY TO SHARE</Text>
+        <View style={styles.headerRight}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>READY TO SHARE</Text>
+          </View>
+          <Pressable onPress={() => router.push('/(tabs)/profile' as any)} style={styles.avatarBtn} hitSlop={8}>
+            <Icon name="user" size={16} color={PINK} />
+          </Pressable>
         </View>
       </View>
 
@@ -174,18 +182,30 @@ const styles = StyleSheet.create({
   },
   title: { color: CREAM, fontSize: 22, fontWeight: '700' },
   sub:   { color: MUTED, fontSize: 12, marginTop: 2 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   badge: {
-    backgroundColor: '#FBE3EC',
+    backgroundColor: '#E3DCC6',
     borderWidth: 1, borderColor: PINK,
     borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4,
   },
   badgeText: { color: PINK, fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
+  avatarBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: CARD,
+    borderWidth: 1.5, borderColor: PINK,
+    alignItems: 'center', justifyContent: 'center',
+  },
 
   patientCard: {
     backgroundColor: CARD,
     borderRadius: 14, padding: 16,
-    borderWidth: 1, borderColor: BLUE_SOFT,
+    borderWidth: 2, borderColor: CREAM,
     marginBottom: 20,
+    shadowColor: CREAM,
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 0,
+    elevation: 3,
   },
   patientRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   patientName: { color: CREAM, fontSize: 16, fontWeight: '700' },
@@ -207,7 +227,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 8,
-    borderWidth: 1, borderColor: BLUE_SOFT,
+    borderWidth: 2, borderColor: CREAM,
+    shadowColor: CREAM,
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 0,
+    elevation: 2,
   },
   findingBar:  { width: 4, backgroundColor: RED },
   findingBody: { flex: 1, padding: 12 },
@@ -225,7 +250,12 @@ const styles = StyleSheet.create({
     backgroundColor: CARD,
     borderRadius: 14, padding: 16,
     marginBottom: 20,
-    borderWidth: 1, borderColor: BLUE_SOFT,
+    borderWidth: 2, borderColor: CREAM,
+    shadowColor: CREAM,
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 0,
+    elevation: 3,
   },
   shapAiLabel: { color: MUTED, fontSize: 10, fontWeight: '600', letterSpacing: 0.4, marginBottom: 12 },
   shapRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
@@ -242,7 +272,12 @@ const styles = StyleSheet.create({
     backgroundColor: CARD,
     borderRadius: 14, padding: 16,
     marginBottom: 20,
-    borderWidth: 1, borderColor: BLUE_SOFT,
+    borderWidth: 2, borderColor: CREAM,
+    shadowColor: CREAM,
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 0,
+    elevation: 3,
     gap: 12,
   },
   questionRow:  { flexDirection: 'row', gap: 8 },

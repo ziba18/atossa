@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../stores/authStore';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
@@ -12,26 +12,15 @@ import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
 
 export default function Step5Connected() {
   const router = useRouter();
-  const user = useAuthStore((s) => s.user);
   const { fetchProfile } = useAuthStore();
   const [email, setEmail] = useState('');
   const [relationship, setRelationship] = useState<'partner' | 'parent'>('partner');
   const [loading, setLoading] = useState(false);
 
   const handleFinish = async () => {
-    if (!user) return;
     setLoading(true);
 
-    if (email.trim()) {
-      await supabase.from('connected_accounts').insert({
-        owner_user_id: user.id,
-        invite_email: email.trim().toLowerCase(),
-        relationship,
-        status: 'pending',
-      });
-    }
-
-    await supabase.from('profiles').update({ onboarding_complete: true }).eq('id', user.id);
+    await api.patch('/me', { onboarding_complete: true });
     await fetchProfile();
     setLoading(false);
     router.replace('/(tabs)/chat' as any);

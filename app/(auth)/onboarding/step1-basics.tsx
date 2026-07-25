@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../../../stores/authStore';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { Button } from '../../../components/ui/Button';
 import { SafeScreen } from '../../../components/layout/SafeScreen';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
@@ -43,10 +43,7 @@ export default function Step1Basics() {
     // can still run; the user can update either later from their profile.
     const cycleLen = cycleLength === UNKNOWN ? 28 : (cycleLength as number);
     const periodLen = periodLength === UNKNOWN ? 5 : (periodLength as number);
-    await supabase.from('profiles').update({
-      average_cycle_length: cycleLen,
-      average_period_length: periodLen,
-    }).eq('id', user.id);
+    await api.patch('/me', { average_cycle_length: cycleLen, average_period_length: periodLen });
     setLoading(false);
     router.push('/(auth)/onboarding/step2-last-period');
   };

@@ -6,6 +6,7 @@ import { useColors, type AppColors } from '../../contexts/ThemeContext';
 import { FontSize, FontWeight, Radius, Shadow, Spacing } from '../../constants/theme';
 import { sendEmergencyAlert } from '../../lib/emergency';
 import { useAuthStore } from '../../stores/authStore';
+import { isHumanName } from '../../lib/humanName';
 
 interface Props {
   emergencyContacts: import('../../types/database').EmergencyContact[];
@@ -26,7 +27,7 @@ export function EmergencyButton({ emergencyContacts }: Props) {
       await sendEmergencyAlert({
         userId: user.id,
         contacts: emergencyContacts,
-        userName: profile.display_name ?? 'Atossa user',
+        userName: isHumanName(profile.display_name) ? profile.display_name! : 'Atossa user',
         triggerReason: 'manual',
       });
       setShowConfirm(false);

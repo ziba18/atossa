@@ -5,7 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCycleStore } from '../../../stores/cycleStore';
-import { supabase } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { Badge } from '../../../components/ui/Badge';
 import { Card } from '../../../components/ui/Card';
 import { Icon, type IconName } from '../../../components/ui/Icon';
@@ -13,6 +13,7 @@ import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Radius, Spacing } from '../../../constants/theme';
 import { Type } from '../../../constants/typography';
+import { isHumanName } from '../../../lib/humanName';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -28,12 +29,10 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (!user) return;
-    fetchCycleLogs(user.id);
-    supabase
-      .from('symptom_logs')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .then(({ count }) => setTotalSymptoms(count ?? 0));
+    fetchCycleLogs();
+    api.get<{ count: number }>('/cycles/symptoms/count')
+      .then((r) => setTotalSymptoms(r.count))
+      .catch(() => {});
   }, [user]);
 
   const totalCycles = cycleLogs.length;
@@ -69,17 +68,24 @@ export default function ProfileScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
 
-        <LinearGradient colors={[Colors.cherry, Colors.cherryDark]} style={styles.hero}>
+        <LinearGradient colors={[Colors.moss, Colors.cherryDark]} style={styles.hero}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={[styles.backBtn, { top: insets.top + Spacing.sm }]}
+            hitSlop={12}
+          >
+            <Icon name="arrow-left" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
-              {(profile?.display_name ?? user?.email ?? 'A').charAt(0).toUpperCase()}
+              {(isHumanName(profile?.display_name) ? profile!.display_name! : user?.email ?? 'A').charAt(0).toUpperCase()}
             </Text>
           </View>
-          <Text style={styles.name}>{profile?.display_name ?? 'Attosa User'}</Text>
+          <Text style={styles.name}>{isHumanName(profile?.display_name) ? profile!.display_name : 'Atossa User'}</Text>
           {user?.email && <Text style={styles.email}>{user.email}</Text>}
-          {user?.created_at && (
+          {profile?.created_at && (
             <Text style={styles.memberSince}>
-              Member since {new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              Member since {new Date(profile.created_at as unknown as string).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </Text>
           )}
         </LinearGradient>
@@ -184,6 +190,7 @@ function createStyles(c: AppColors) {
   const Colors = c;
   return StyleSheet.create({
     hero: { padding: Spacing.xl, alignItems: 'center', paddingBottom: Spacing.xl },
+    backBtn: { position: 'absolute', left: Spacing.md, zIndex: 1, padding: Spacing.xs },
     avatar: {
       width: 80, height: 80, borderRadius: 40,
       backgroundColor: 'rgba(255,255,255,0.25)',

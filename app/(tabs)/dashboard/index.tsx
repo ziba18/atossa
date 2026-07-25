@@ -5,17 +5,18 @@ import {
 import Svg, { Path, Line, Text as SvgText, Circle, G } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Icon } from '../../../components/ui/Icon';
 
-const BG     = '#EBF3E6';
-const CARD   = '#FFFFFF';
-const PINK   = '#C2607A';
-const MATCHA = '#7FA86A';
-const BLUE   = '#3A6A9A';
-const CREAM  = '#26321F';
-const MUTED  = '#789972';
-const LPINK  = '#D04B6F';
-const GREEN_DEEP = '#4A7A3A';
-const GREEN_SOFT = '#DCE8D2';
+const BG     = '#f7f3eb';
+const CARD   = '#fdf8f1';
+const PINK   = '#3a4d39';
+const MATCHA = '#4d6b4c';
+const BLUE   = '#5B4B73';
+const CREAM  = '#1c1e1c';
+const MUTED  = '#7a6e60';
+const LPINK  = '#8B3A3A';
+const GREEN_DEEP = '#3a4d39';
+const GREEN_SOFT = '#e6ede4';
 
 // ── Chart helpers ──────────────────────────────────────────────────────────────
 function ptc(cx: number, cy: number, r: number, deg: number) {
@@ -222,8 +223,13 @@ export default function DashboardScreen() {
           <Text style={styles.title}>Health Dashboard</Text>
           <Text style={styles.sub}>8 weeks tracked · Atossa</Text>
         </View>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>REPORT READY</Text>
+        <View style={styles.headerRight}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>REPORT READY</Text>
+          </View>
+          <Pressable onPress={() => router.push('/(tabs)/profile' as any)} style={styles.avatarBtn} hitSlop={8}>
+            <Icon name="user" size={16} color={GREEN_DEEP} />
+          </Pressable>
         </View>
       </View>
 
@@ -287,12 +293,19 @@ const styles = StyleSheet.create({
   },
   title: { color: GREEN_DEEP, fontSize: 20, fontWeight: '700' },
   sub:   { color: MUTED, fontSize: 12, marginTop: 2 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   badge: {
-    backgroundColor: '#FBE3EC',
+    backgroundColor: '#E3DCC6',
     borderWidth: 1, borderColor: PINK,
     borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4,
   },
   badgeText: { color: PINK, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  avatarBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: CARD,
+    borderWidth: 1.5, borderColor: GREEN_DEEP,
+    alignItems: 'center', justifyContent: 'center',
+  },
 
   sectionTitle: { color: GREEN_DEEP, fontSize: 13, fontWeight: '700', marginBottom: 8 },
 
@@ -301,8 +314,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: GREEN_SOFT,
+    borderWidth: 2,
+    borderColor: GREEN_DEEP,
+    shadowColor: GREEN_DEEP,
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 0,
+    elevation: 3,
   },
 
   row: { flexDirection: 'row', gap: 10, marginBottom: 12 },
@@ -325,7 +343,12 @@ const styles = StyleSheet.create({
     flex: 1, backgroundColor: CARD,
     borderRadius: 12, padding: 10,
     alignItems: 'center',
-    borderWidth: 1, borderColor: GREEN_SOFT,
+    borderWidth: 2, borderColor: GREEN_DEEP,
+    shadowColor: GREEN_DEEP,
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 0,
+    elevation: 2,
   },
   wearLabel: { color: MUTED, fontSize: 9, fontWeight: '600' },
   wearValue: { color: CREAM, fontSize: 14, fontWeight: '700', marginVertical: 2 },
@@ -333,8 +356,13 @@ const styles = StyleSheet.create({
 
   insightCard: {
     backgroundColor: CARD,
-    borderWidth: 1, borderColor: GREEN_SOFT,
+    borderWidth: 2, borderColor: GREEN_DEEP,
     borderRadius: 14, padding: 16, marginBottom: 14,
+    shadowColor: GREEN_DEEP,
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 0,
+    elevation: 3,
   },
   insightText: { color: GREEN_DEEP, fontSize: 14, lineHeight: 22, fontWeight: '500' },
 

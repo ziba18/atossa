@@ -47,9 +47,19 @@ def add_cycle_log(
 
 # ── Symptom logs ─────────────────────────────────────────────────────────────
 
+@router.get("/symptoms/count")
+def count_symptom_logs(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    count = db.query(SymptomLog).filter(SymptomLog.user_id == current_user.id).count()
+    return {"count": count}
+
+
 @router.get("/symptoms", response_model=list[SymptomLogResponse])
 def list_symptom_logs(
-    date: str | None = Query(None, description="Filter by YYYY-MM-DD"),
+    date: str | None = Query(None, description="Filter by exact YYYY-MM-DD"),
+    since: str | None = Query(None, description="Return logs with logged_date >= YYYY-MM-DD"),
     limit: int = Query(100, le=500),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -61,6 +71,8 @@ def list_symptom_logs(
     )
     if date:
         q = q.filter(SymptomLog.logged_date == date)
+    if since:
+        q = q.filter(SymptomLog.logged_date >= since)
     return q.limit(limit).all()
 
 

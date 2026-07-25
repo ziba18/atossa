@@ -11,9 +11,10 @@ interface CardProps {
   noPadding?: boolean;
   darkMode?: boolean;
   glass?: boolean;
+  sticker?: boolean;
 }
 
-export function Card({ children, style, elevated = false, noPadding = false, darkMode, glass }: CardProps) {
+export function Card({ children, style, elevated = false, noPadding = false, darkMode, glass, sticker }: CardProps) {
   const theme = useColors();
   const styles = createStyles(theme);
   return (
@@ -24,6 +25,7 @@ export function Card({ children, style, elevated = false, noPadding = false, dar
         glass && styles.glass,
         noPadding && styles.noPadding,
         darkMode && styles.cardDark,
+        sticker && styles.sticker,
         style,
       ]}
     >
@@ -51,5 +53,10 @@ function createStyles(c: AppColors) {
       borderColor: Colors.borderDark,
     },
     noPadding: { padding: 0 },
+    sticker: {
+      borderWidth: 2,
+      borderColor: '#1c1e1c',
+      ...Shadow.sticker,
+    },
   });
 }
