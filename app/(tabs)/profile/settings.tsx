@@ -1,14 +1,21 @@
 import React, { memo, useCallback } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Switch, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../stores/authStore';
 import { useUIStore } from '../../../stores/uiStore';
 import { api } from '../../../lib/api';
+import { syncDailyLogReminder } from '../../../lib/notifications';
 import { Header } from '../../../components/layout/Header';
 import { Card } from '../../../components/ui/Card';
 import { useColors, type AppColors } from '../../../contexts/ThemeContext';
 import { Colors } from '../../../constants/colors';
 import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+
+const REMINDER_TIMES: { label: string; value: string }[] = [
+  { label: 'Morning · 9:00 AM', value: '09:00' },
+  { label: 'Afternoon · 2:00 PM', value: '14:00' },
+  { label: 'Evening · 8:00 PM', value: '20:00' },
+];
 
 type SettingRowProps = {
   label: string;
@@ -63,6 +70,25 @@ export default function SettingsScreen() {
     [persistProfile],
   );
 
+  const reminderEnabled = profile?.daily_log_reminder_enabled ?? true;
+  const reminderTime = profile?.daily_log_reminder_time ?? '20:00';
+
+  const handleDailyReminderChange = useCallback(
+    (v: boolean) => {
+      persistProfile({ daily_log_reminder_enabled: v });
+      syncDailyLogReminder(v, reminderTime).catch(() => {});
+    },
+    [persistProfile, reminderTime],
+  );
+
+  const handleDailyReminderTimeChange = useCallback(
+    (time: string) => {
+      persistProfile({ daily_log_reminder_time: time });
+      if (reminderEnabled) syncDailyLogReminder(true, time).catch(() => {});
+    },
+    [persistProfile, reminderEnabled],
+  );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <Header title="Settings" showBack />
@@ -87,6 +113,28 @@ export default function SettingsScreen() {
             onChange={handleNotificationsChange}
             styles={styles}
           />
+          <SettingRow
+            label="Daily Log Reminder"
+            desc="A daily nudge to log how you're feeling"
+            value={reminderEnabled}
+            onChange={handleDailyReminderChange}
+            styles={styles}
+          />
+          {reminderEnabled && (
+            <View style={styles.timeRow}>
+              {REMINDER_TIMES.map((t) => (
+                <Pressable
+                  key={t.value}
+                  onPress={() => handleDailyReminderTimeChange(t.value)}
+                  style={[styles.timeChip, reminderTime === t.value && styles.timeChipActive]}
+                >
+                  <Text style={[styles.timeChipText, reminderTime === t.value && styles.timeChipTextActive]}>
+                    {t.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
         </Card>
       </ScrollView>
     </SafeAreaView>
@@ -102,5 +150,16 @@ function createStyles(c: AppColors) {
     rowText: { flex: 1, marginRight: Spacing.md },
     rowLabel: { fontSize: FontSize.md, fontWeight: FontWeight.medium, color: Colors.textPrimary },
     rowDesc: { fontSize: FontSize.sm, color: Colors.textMuted, marginTop: 2 },
+    timeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, padding: Spacing.md },
+    timeChip: {
+      paddingVertical: Spacing.xs,
+      paddingHorizontal: Spacing.sm,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    timeChipActive: { backgroundColor: Colors.cherry, borderColor: Colors.cherry },
+    timeChipText: { fontSize: FontSize.sm, color: Colors.textMuted },
+    timeChipTextActive: { color: '#fff', fontWeight: FontWeight.medium },
   });
 }

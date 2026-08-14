@@ -37,6 +37,8 @@ class Profile(Base):
     timezone: Mapped[str] = mapped_column(String, default="UTC")
     dark_mode: Mapped[bool] = mapped_column(Boolean, default=False)
     notifications_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    daily_log_reminder_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    daily_log_reminder_time: Mapped[str] = mapped_column(String, default="20:00")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 

@@ -20,6 +20,8 @@ export interface Profile {
   timezone: string;
   dark_mode: boolean;
   notifications_enabled: boolean;
+  daily_log_reminder_enabled: boolean;
+  daily_log_reminder_time: string;
   created_at: string;
   updated_at: string;
 }

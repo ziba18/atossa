@@ -5,7 +5,7 @@ import {
   predictMissedPeriods,
   type MissedPeriodSuggestion,
 } from '../algorithms/predict';
-import { schedulePeriodReminder, scheduleOvulationReminder, cancelAllScheduledNotifications } from '../lib/notifications';
+import { schedulePeriodReminder, scheduleOvulationReminder, cancelPeriodAndOvulationReminders } from '../lib/notifications';
 
 interface CycleState {
   cycleLogs: CycleLog[];
@@ -62,7 +62,7 @@ export const useCycleStore = create<CycleState>((set, get) => ({
       const prediction = await api.post<CyclePrediction>('/cycles/prediction/recompute');
       set({ prediction });
 
-      await cancelAllScheduledNotifications();
+      await cancelPeriodAndOvulationReminders();
       if (prediction.next_period_start) await schedulePeriodReminder(prediction.next_period_start);
       if (prediction.next_ovulation) await scheduleOvulationReminder(prediction.next_ovulation);
 

@@ -50,6 +50,10 @@ export async function registerForPushNotifications(): Promise<string | null> {
   }
 }
 
+const PERIOD_REMINDER_ID = 'period-reminder';
+const OVULATION_REMINDER_ID = 'ovulation-reminder';
+const DAILY_LOG_REMINDER_ID = 'daily-log-reminder';
+
 export async function schedulePeriodReminder(
   periodStartDate: string,
   daysBeforeReminder = 2
@@ -61,6 +65,7 @@ export async function schedulePeriodReminder(
     if (triggerDate <= new Date()) return;
 
     await Notifications.scheduleNotificationAsync({
+      identifier: PERIOD_REMINDER_ID,
       content: {
         title: 'Period Coming Soon',
         body: `Your period is expected in ${daysBeforeReminder} days. Stock up on supplies!`,
@@ -81,6 +86,7 @@ export async function scheduleOvulationReminder(ovulationDate: string): Promise<
     if (triggerDate <= new Date()) return;
 
     await Notifications.scheduleNotificationAsync({
+      identifier: OVULATION_REMINDER_ID,
       content: {
         title: '💛 Ovulation Window',
         body: 'Your fertile window is approaching. Ovulation is expected tomorrow.',
@@ -91,6 +97,73 @@ export async function scheduleOvulationReminder(ovulationDate: string): Promise<
   } catch {
     // Scheduling not supported in this environment
   }
+}
+
+// Cancels only the date-specific cycle reminders, leaving recurring ones
+// (e.g. the daily log reminder) scheduled. Called before re-scheduling
+// period/ovulation reminders off a fresh prediction.
+export async function cancelPeriodAndOvulationReminders(): Promise<void> {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(PERIOD_REMINDER_ID);
+  } catch {
+    // Nothing scheduled under this id — ignore
+  }
+  try {
+    await Notifications.cancelScheduledNotificationAsync(OVULATION_REMINDER_ID);
+  } catch {
+    // Nothing scheduled under this id — ignore
+  }
+}
+
+// Schedules (or replaces, since it reuses a fixed identifier) a repeating
+// local notification at the given local time to nudge the user to log
+// today's symptoms/mood in the chat.
+export async function scheduleDailyLogReminder(time: string): Promise<void> {
+  const [hour, minute] = time.split(':').map(Number);
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return;
+
+  try {
+    await Notifications.scheduleNotificationAsync({
+      identifier: DAILY_LOG_REMINDER_ID,
+      content: {
+        title: 'How are you feeling today?',
+        body: "Take a moment to log today's symptoms, mood, and notes.",
+        data: { type: 'daily_log_reminder' },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+        hour,
+        minute,
+        repeats: true,
+      },
+    });
+  } catch {
+    // Scheduling not supported in this environment
+  }
+}
+
+export async function cancelDailyLogReminder(): Promise<void> {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(DAILY_LOG_REMINDER_ID);
+  } catch {
+    // Nothing scheduled under this id — ignore
+  }
+}
+
+// Brings the OS-scheduled daily reminder in line with the user's profile
+// preference. Safe to call on every app start / settings change — scheduling
+// reuses a fixed identifier so it replaces rather than duplicates.
+export async function syncDailyLogReminder(enabled: boolean, time: string): Promise<void> {
+  if (!enabled) {
+    await cancelDailyLogReminder();
+    return;
+  }
+  const granted = await registerForPushNotifications();
+  if (granted === null) {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') return;
+  }
+  await scheduleDailyLogReminder(time);
 }
 
 export async function cancelAllScheduledNotifications(): Promise<void> {

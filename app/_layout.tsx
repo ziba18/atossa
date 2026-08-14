@@ -1,4 +1,5 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -47,6 +48,24 @@ function AppShell() {
   const isDark = useUIStore((s) => s.isDarkMode);
   const hydrated = useUIStore((s) => s.hydrated);
   const { width } = useWindowDimensions();
+  const router = useRouter();
+
+  // Route taps on the daily log reminder straight to the chat/log screen,
+  // whether the app was already open (listener) or launched cold from the
+  // notification (getLastNotificationResponseAsync).
+  useEffect(() => {
+    const handleResponse = (response: Notifications.NotificationResponse) => {
+      if (response.notification.request.content.data?.type === 'daily_log_reminder') {
+        router.push('/(tabs)/chat' as any);
+      }
+    };
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (response) handleResponse(response);
+    });
+    const sub = Notifications.addNotificationResponseReceivedListener(handleResponse);
+    return () => sub.remove();
+  }, [router]);
 
   const [fontsLoaded] = useFonts({
     // Fraunces — modern variable serif used throughout the app. Light + Regular

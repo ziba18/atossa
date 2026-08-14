@@ -14,6 +14,8 @@ class ProfileResponse(BaseModel):
     timezone: str
     dark_mode: bool
     notifications_enabled: bool
+    daily_log_reminder_enabled: bool
+    daily_log_reminder_time: str
     created_at: datetime
     updated_at: datetime
 
@@ -32,3 +34,5 @@ class ProfileUpdate(BaseModel):
     timezone: str | None = None
     dark_mode: bool | None = None
     notifications_enabled: bool | None = None
+    daily_log_reminder_enabled: bool | None = None
+    daily_log_reminder_time: str | None = None
