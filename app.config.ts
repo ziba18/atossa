@@ -87,7 +87,17 @@ const config: ExpoConfig = {
     [
       'expo-av',
       {
-        microphonePermission: 'Atossa needs access to your microphone to record voice notes about how you feel.',
+        microphonePermission: 'Atossa needs access to your microphone to record voice notes and let you describe symptoms by voice.',
+      },
+    ],
+    [
+      'expo-speech-recognition',
+      {
+        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
+        // We only ever call requestMicrophonePermissionsAsync() with
+        // requiresOnDeviceRecognition: true, so this permission should
+        // never actually be requested — kept accurate in case that changes.
+        speechRecognitionPermission: 'Speech recognition is processed on your device — Atossa does not send your voice to a server.',
       },
     ],
     'expo-apple-authentication',

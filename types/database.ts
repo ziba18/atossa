@@ -125,6 +125,15 @@ export interface EducationContent {
   updated_at: string;
 }
 
+export type CaptureInputMethod = 'voice' | 'text';
+
+export interface SymptomCapture {
+  id: string;
+  transcript: string;
+  input_method: CaptureInputMethod;
+  created_at: string;
+}
+
 export interface CyclePrediction {
   id: string;
   user_id: string;

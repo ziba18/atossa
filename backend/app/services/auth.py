@@ -39,6 +39,14 @@ def get_user_by_email(db: Session, email: str) -> User | None:
     return db.query(User).filter(User.email == email).first()
 
 
+def get_or_create_social_user(db: Session, email: str, display_name: str | None = None) -> User:
+    """Find a user by email, creating one (with no password — OAuth-only) if none exists."""
+    user = get_user_by_email(db, email)
+    if user:
+        return user
+    return create_user(db, email, password=None, display_name=display_name)
+
+
 def create_user(db: Session, email: str, password: str | None, display_name: str | None = None) -> User:
     user = User(
         email=email,

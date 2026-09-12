@@ -4,7 +4,7 @@ import React, {
 import { View, Text, StyleSheet, Pressable, TextInput, Alert } from 'react-native';
 import BottomSheet, { BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Icon, type IconName } from '../ui/Icon';
-import { supabase, fetchMany } from '../../lib/supabase';
+import { api } from '../../lib/api';
 import { formatDisplayDate, daysBetween, addDaysToStr, isDateInRange } from '../../algorithms/dateHelpers';
 import type { CycleLog, FlowIntensity, SymptomLog } from '../../types/database';
 
@@ -52,11 +52,10 @@ export interface LogEntrySheetHandle {
 }
 
 interface Props {
-  userId: string;
   onSaved: () => void;
 }
 
-export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, onSaved }, ref) => {
+export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ onSaved }, ref) => {
   const sheetRef = useRef<BottomSheet>(null);
   const [date, setDate] = useState<string | null>(null);
   const [flow, setFlow] = useState<FlowIntensity | null>(null);
@@ -81,8 +80,8 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
     if (!date) return;
     (async () => {
       const [cycles, sym] = await Promise.all([
-        fetchMany<CycleLog>('cycle_logs', { user_id: userId }, { orderBy: 'period_start', ascending: false, limit: 12 }),
-        fetchMany<SymptomLog>('symptom_logs', { user_id: userId, logged_date: date }, { limit: 60 }),
+        api.get<CycleLog[]>('/cycles?limit=12'),
+        api.get<SymptomLog[]>(`/cycles/symptoms?date=${date}&limit=60`),
       ]);
       const period = cycles.find((c) => isDateInRange(date, c.period_start, c.period_end ?? c.period_start));
       setFlow(period?.flow_intensity ?? null);
@@ -101,7 +100,7 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
       setNotesOpen(!!n);
       loadedRef.current = true;
     })();
-  }, [date, userId]);
+  }, [date]);
 
   const flash = useCallback((msg: string) => {
     setConfirmText(msg);
@@ -110,7 +109,7 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
 
   // ── Merge a day into a contiguous cycle_logs period range ──────────────────
   const applyFlow = useCallback(async (d: string, value: FlowIntensity | null) => {
-    const logs = await fetchMany<CycleLog>('cycle_logs', { user_id: userId }, { orderBy: 'period_start', ascending: false, limit: 24 });
+    const logs = await api.get<CycleLog[]>('/cycles?limit=24');
     const containing = logs.find((c) => isDateInRange(d, c.period_start, c.period_end ?? c.period_start));
     const adjacent = logs.find((c) =>
       isDateInRange(d, addDaysToStr(c.period_start, -1), addDaysToStr(c.period_end ?? c.period_start, 1)),
@@ -122,18 +121,18 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
         const start = d < target.period_start ? d : target.period_start;
         const endCur = target.period_end ?? target.period_start;
         const end = d > endCur ? d : endCur;
-        await supabase.from('cycle_logs').update({
+        await api.patch(`/cycles/${target.id}`, {
           period_start: start,
           period_end: start === end ? null : end,
           period_length: daysBetween(start, end) + 1,
           flow_intensity: d === start ? value : (target.flow_intensity ?? value),
           is_confirmed: true,
-        }).eq('id', target.id);
+        });
         return;
       }
       // No nearby period — this is a new cycle starting. Caller already confirmed.
-      await supabase.from('cycle_logs').insert({
-        user_id: userId, period_start: d, period_end: null, period_length: 1,
+      await api.post('/cycles', {
+        period_start: d, period_end: null, period_length: 1,
         flow_intensity: value, is_confirmed: true,
       });
       return;
@@ -143,21 +142,21 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
     const start = containing.period_start;
     const end = containing.period_end ?? containing.period_start;
     if (start === end) {
-      await supabase.from('cycle_logs').delete().eq('id', containing.id);
+      await api.delete(`/cycles/${containing.id}`);
     } else if (d === start) {
       const newStart = addDaysToStr(start, 1);
-      await supabase.from('cycle_logs').update({
+      await api.patch(`/cycles/${containing.id}`, {
         period_start: newStart, period_end: newStart === end ? null : end,
         period_length: daysBetween(newStart, end) + 1,
-      }).eq('id', containing.id);
+      });
     } else if (d === end) {
       const newEnd = addDaysToStr(end, -1);
-      await supabase.from('cycle_logs').update({
+      await api.patch(`/cycles/${containing.id}`, {
         period_end: start === newEnd ? null : newEnd,
         period_length: daysBetween(start, newEnd) + 1,
-      }).eq('id', containing.id);
+      });
     }
-  }, [userId]);
+  }, []);
 
   const selectFlow = useCallback(async (value: FlowIntensity | null) => {
     if (!date) return;
@@ -170,7 +169,7 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
 
     // Data-integrity check: more than ~2 days since any nearby logged period
     // day means this looks like the start of a new cycle, not a continuation.
-    const logs = await fetchMany<CycleLog>('cycle_logs', { user_id: userId }, { orderBy: 'period_start', ascending: false, limit: 6 });
+    const logs = await api.get<CycleLog[]>('/cycles?limit=6');
     const nearby = logs.find((c) => {
       const end = c.period_end ?? c.period_start;
       return Math.abs(daysBetween(end, date)) <= 2 || Math.abs(daysBetween(c.period_start, date)) <= 2;
@@ -191,7 +190,7 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
     await applyFlow(date, value);
     flash('Saved');
     onSaved();
-  }, [date, userId, applyFlow, onSaved, flash]);
+  }, [date, applyFlow, onSaved, flash]);
 
   // Debounced auto-save for symptoms / mood / notes — feels instant without
   // hammering the database on every single chip tap.
@@ -200,22 +199,21 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ userId, o
     if (!date || !loadedRef.current) return;
     if (detailsTimer.current) clearTimeout(detailsTimer.current);
     detailsTimer.current = setTimeout(async () => {
-      await supabase.from('symptom_logs')
-        .delete().eq('user_id', userId).eq('logged_date', date).in('symptom_type', DAILY_TYPES);
+      await api.delete(`/cycles/symptoms?date=${date}&types=${DAILY_TYPES.join(',')}`);
 
       const time = new Date().toTimeString().slice(0, 8);
-      const base = { user_id: userId, logged_date: date, logged_time: time, severity: null as number | null };
+      const base = { logged_date: date, logged_time: time, severity: null as number | null };
       const rows: any[] = [];
       symptoms.forEach((k) => rows.push({ ...base, symptom_type: 'symptom', custom_label: k }));
       if (mood) rows.push({ ...base, symptom_type: 'mood', custom_label: mood });
       if (notes.trim()) rows.push({ ...base, symptom_type: 'note', custom_label: null, notes: notes.trim() });
 
-      if (rows.length) await supabase.from('symptom_logs').insert(rows);
+      if (rows.length) await api.post('/cycles/symptoms/bulk', rows);
       flash('Saved');
       onSaved();
     }, 500);
     return () => { if (detailsTimer.current) clearTimeout(detailsTimer.current); };
-  }, [symptoms, mood, notes, date, userId, onSaved, flash]);
+  }, [symptoms, mood, notes, date, onSaved, flash]);
 
   const toggleSymptom = (key: string) => {
     setSymptoms((prev) => {

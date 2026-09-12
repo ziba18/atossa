@@ -7,7 +7,7 @@ import { Icon, type IconName } from '../../../components/ui/Icon';
 import { CyclePhaseRing } from '../../../components/cycle/CyclePhaseRing';
 import { LogEntrySheet, type LogEntrySheetHandle } from '../../../components/cycle/LogEntrySheet';
 import { useAuthStore } from '../../../stores/authStore';
-import { fetchMany } from '../../../lib/supabase';
+import { api } from '../../../lib/api';
 import { computeCycleMath, type RingPhase } from '../../../algorithms/cyclePhase';
 import { today, formatShortDate, daysBetween, addDaysToStr, toDate } from '../../../algorithms/dateHelpers';
 import type { CycleLog, FlowIntensity, SymptomLog } from '../../../types/database';
@@ -56,8 +56,8 @@ export default function CycleDataScreen() {
   const load = async () => {
     if (!user) return;
     const [cycles, symLogs] = await Promise.all([
-      fetchMany<CycleLog>('cycle_logs', { user_id: user.id }, { orderBy: 'period_start', ascending: false, limit: 12 }),
-      fetchMany<SymptomLog>('symptom_logs', { user_id: user.id }, { orderBy: 'logged_date', ascending: false, limit: 120 }),
+      api.get<CycleLog[]>('/cycles?limit=12'),
+      api.get<SymptomLog[]>('/cycles/symptoms?limit=120'),
     ]);
     setCycleLogs(cycles);
 
@@ -189,7 +189,7 @@ export default function CycleDataScreen() {
         <Icon name="plus" size={22} color="#fff" />
       </Pressable>
 
-      {user && <LogEntrySheet ref={sheetRef} userId={user.id} onSaved={load} />}
+      {user && <LogEntrySheet ref={sheetRef} onSaved={load} />}
     </View>
   );
 }

@@ -11,6 +11,16 @@ class CycleLogCreate(BaseModel):
     notes: str | None = None
 
 
+class CycleLogUpdate(BaseModel):
+    period_start: str | None = None
+    period_end: str | None = None
+    cycle_length: int | None = None
+    period_length: int | None = None
+    flow_intensity: str | None = None
+    is_confirmed: bool | None = None
+    notes: str | None = None
+
+
 class CycleLogResponse(BaseModel):
     id: str
     user_id: str

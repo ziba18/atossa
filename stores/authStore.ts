@@ -23,6 +23,8 @@ interface AuthState {
   fetchProfile: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, display_name?: string) => Promise<void>;
+  loginWithApple: (idToken: string, displayName?: string | null) => Promise<void>;
+  loginWithGoogle: (idToken: string, displayName?: string | null) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -67,6 +69,32 @@ export const useAuthStore = create<AuthState>((set) => ({
     const tokens = await api.post<{ access_token: string; refresh_token: string }>(
       '/auth/register',
       { email, password, display_name },
+    );
+    await saveTokens(tokens.access_token, tokens.refresh_token);
+    const [user, profile] = await Promise.all([
+      api.get<AuthUser>('/auth/me'),
+      api.get<Profile>('/me'),
+    ]);
+    set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
+  },
+
+  loginWithApple: async (idToken, displayName) => {
+    const tokens = await api.post<{ access_token: string; refresh_token: string }>(
+      '/auth/apple',
+      { id_token: idToken, display_name: displayName ?? undefined },
+    );
+    await saveTokens(tokens.access_token, tokens.refresh_token);
+    const [user, profile] = await Promise.all([
+      api.get<AuthUser>('/auth/me'),
+      api.get<Profile>('/me'),
+    ]);
+    set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
+  },
+
+  loginWithGoogle: async (idToken, displayName) => {
+    const tokens = await api.post<{ access_token: string; refresh_token: string }>(
+      '/auth/google',
+      { id_token: idToken, display_name: displayName ?? undefined },
     );
     await saveTokens(tokens.access_token, tokens.refresh_token);
     const [user, profile] = await Promise.all([

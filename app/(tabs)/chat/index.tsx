@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TextInput,
   Pressable, Alert, KeyboardAvoidingView, Platform,
-  Animated, SafeAreaView, Image, AppState, Keyboard,
+  SafeAreaView, Image, AppState, Keyboard,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -36,20 +36,12 @@ const greeting = (name?: string | null): Message => ({
   text: `Hello ${isHumanName(name) ? name!.trim() : 'there'}! How are you feeling today?`,
 });
 
-const AI_RESPONSE =
-  "I've analysed your input. Your pain pattern combined with HRV and cycle data shows elevated inflammation markers. I recommend adding this to your GP report — your doctor needs to see this trend. 💙";
-
 const MODAL_CARDS: { icon: IconName; label: string; sub: string }[] = [
   { icon: 'mic',       label: 'Voice',      sub: 'Describe pain in your words' },
   { icon: 'camera',    label: 'Image',      sub: 'Scan results, lab reports' },
   { icon: 'data-import', label: 'External Data', sub: 'HRV, sleep, temperature' },
   { icon: 'cycle',       label: 'Cycle data',    sub: 'Hormones, flow, phases' },
-];
-
-const STEPS = [
-  '✅ Voice note processed · pain mapped to body',
-  '✅ Lab image read · hormones extracted',
-  '⏳ Wearable sync · HRV pattern detected',
+  { icon: 'calendar',    label: 'Period Log',    sub: 'Log any day, past or present' },
 ];
 
 export default function ChatScreen() {
@@ -59,8 +51,6 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([greeting(displayName)]);
   const [input, setInput]       = useState('');
   const [pain, setPain]         = useState<number | null>(null);
-  const [processing, setProcessing] = useState(false);
-  const [step, setStep]         = useState(0);
   const [recording, setRecording] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
@@ -79,12 +69,6 @@ export default function ChatScreen() {
     };
   }, []);
 
-  const fadeAnims = useRef([
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-  ]).current;
-
   useEffect(() => {
     setMessages(prev =>
       prev[0]?.id === '0' ? [greeting(displayName), ...prev.slice(1)] : prev
@@ -93,40 +77,16 @@ export default function ChatScreen() {
 
   const send = () => {
     const text = input.trim();
-    if (!text || processing) return;
+    if (!text) return;
     setMessages(prev => [...prev, { id: Date.now().toString(), type: 'user', text }]);
     setInput('');
     inputRef.current?.blur();
     Keyboard.dismiss();
-    beginProcessing();
-  };
-
-  const beginProcessing = () => {
-    setProcessing(true);
-    setStep(0);
-    fadeAnims.forEach(a => a.setValue(0));
-
-    [0, 1, 2].forEach(i => {
-      setTimeout(() => {
-        setStep(i + 1);
-        Animated.timing(fadeAnims[i], {
-          toValue: 1, duration: 350, useNativeDriver: true,
-        }).start();
-      }, (i + 1) * 850);
-    });
-
-    setTimeout(() => {
-      setProcessing(false);
-      setMessages(prev => [
-        ...prev,
-        { id: (Date.now() + 1).toString(), type: 'ai', text: AI_RESPONSE },
-      ]);
-    }, 3400);
   };
 
   useEffect(() => {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 80);
-  }, [messages, processing]);
+  }, [messages]);
 
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -209,6 +169,15 @@ export default function ChatScreen() {
             <Text style={styles.headerTitle}>Atossa</Text>
             <Text style={styles.headerSub}>Sage · your cycle companion</Text>
           </View>
+          {/* Temporary entry point for the MVP capture screen — Step E wires
+              this in properly and removes it in favour of the real flow. */}
+          <Pressable
+            onPress={() => router.push('/(tabs)/chat/capture' as any)}
+            style={styles.avatarBtn}
+            hitSlop={8}
+          >
+            <Icon name="clipboard-list" size={18} color={PINK_DEEP} />
+          </Pressable>
           <Pressable
             onPress={() => router.push('/(tabs)/profile' as any)}
             style={styles.avatarBtn}
@@ -246,17 +215,6 @@ export default function ChatScreen() {
               </View>
             )
           )}
-
-          {processing && (
-            <View style={styles.processingCard}>
-              <Text style={styles.processingTitle}>Sage is analysing…</Text>
-              {STEPS.slice(0, step).map((s, i) => (
-                <Animated.Text key={i} style={[styles.processingStep, { opacity: fadeAnims[i] }]}>
-                  {s}
-                </Animated.Text>
-              ))}
-            </View>
-          )}
         </ScrollView>
 
         {/* ── Pain scale ── */}
@@ -288,6 +246,7 @@ export default function ChatScreen() {
                 if (c.label === 'Voice') return toggleRecording();
                 if (c.label === 'Image') return takePhoto();
                 if (c.label === 'Cycle data') return router.push('/(tabs)/chat/cycle-data' as any);
+                if (c.label === 'Period Log') return router.push('/(tabs)/chat/period-log' as any);
                 Alert.alert('Feature coming soon');
               }}
             >
@@ -321,9 +280,9 @@ export default function ChatScreen() {
             onSubmitEditing={send}
           />
           <Pressable
-            style={[styles.sendBtn, (!input.trim() || processing) && styles.sendBtnDisabled]}
+            style={[styles.sendBtn, !input.trim() && styles.sendBtnDisabled]}
             onPress={send}
-            disabled={!input.trim() || processing}
+            disabled={!input.trim()}
           >
             <Icon name="send" size={18} color="#fff" />
           </Pressable>
@@ -400,22 +359,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   bubbleImage: { width: 200, height: 200 },
-
-  processingCard: {
-    backgroundColor: CARD,
-    borderWidth: 2,
-    borderColor: PINK_DEEP,
-    borderRadius: 14,
-    padding: 14,
-    gap: 8,
-    shadowColor: PINK_DEEP,
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.10,
-    shadowRadius: 0,
-    elevation: 2,
-  },
-  processingTitle: { color: PINK_DEEP, fontSize: 13, fontWeight: '600' },
-  processingStep:  { color: INK, fontSize: 13, lineHeight: 20 },
 
   painRow: {
     flexDirection: 'row',

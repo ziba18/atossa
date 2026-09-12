@@ -1,8 +1,7 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
-import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
-import { supabase } from './supabase';
 import { Config } from '../constants/config';
+import { useAuthStore } from '../stores/authStore';
 
 // Lazy-require Google Sign-In so the bundle still loads in Expo Go (and on
 // dev clients that don't have the native module linked). We replace the
@@ -34,17 +33,6 @@ try {
   };
 }
 
-async function generateNonce(): Promise<{ raw: string; hashed: string }> {
-  const bytes = await Crypto.getRandomBytesAsync(32);
-  const raw = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-  const hashed = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    raw,
-    { encoding: Crypto.CryptoEncoding.HEX },
-  );
-  return { raw, hashed };
-}
-
 function buildFullName(fullName: AppleAuthentication.AppleAuthenticationFullName | null): string | null {
   if (!fullName) return null;
   const given = (fullName.givenName ?? '').trim();
@@ -59,38 +47,23 @@ export async function signInWithApple(): Promise<{ user: any | null; error: Erro
   }
 
   try {
-    const { raw: rawNonce, hashed: hashedNonce } = await generateNonce();
-
     const credential = await AppleAuthentication.signInAsync({
       requestedScopes: [
         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
         AppleAuthentication.AppleAuthenticationScope.EMAIL,
       ],
-      nonce: hashedNonce,
     });
 
     if (!credential.identityToken) {
       return { user: null, error: new Error('No identity token received from Apple') };
     }
 
-    const { data, error } = await supabase.auth.signInWithIdToken({
-      provider: 'apple',
-      token: credential.identityToken,
-      nonce: rawNonce,
-    });
-
-    // Apple only returns the user's full name on the FIRST sign-in. If we
-    // got it, persist it to the profile right away so onboarding can show
-    // the real name instead of Supabase's auto-generated identifier.
+    // Apple only returns the user's full name on the FIRST sign-in — pass it
+    // along so the backend can seed the profile on account creation.
     const appleFullName = buildFullName(credential.fullName ?? null);
-    if (data?.user && appleFullName) {
-      await supabase.from('profiles').upsert(
-        { id: data.user.id, display_name: appleFullName },
-        { onConflict: 'id' },
-      );
-    }
+    await useAuthStore.getState().loginWithApple(credential.identityToken, appleFullName);
 
-    return { user: data?.user ?? null, error };
+    return { user: useAuthStore.getState().user, error: null };
   } catch (err: any) {
     if (err.code === 'ERR_REQUEST_CANCELED') {
       return { user: null, error: null }; // user cancelled — not an error
@@ -118,29 +91,12 @@ export async function signInWithGoogle(): Promise<{ user: any | null; error: Err
       return { user: null, error: new Error('No identity token received from Google') };
     }
 
-    const { data, error } = await supabase.auth.signInWithIdToken({
-      provider: 'google',
-      token: idToken,
-    });
+    // Google returns the display name on every sign-in; the backend only
+    // uses it to seed a profile that doesn't have a name yet, so it's safe
+    // to pass along on every call without risking clobbering an edited name.
+    await useAuthStore.getState().loginWithGoogle(idToken, googleName);
 
-    // Google returns the display name on every sign-in, but we only want to
-    // overwrite the profile name on the first one — otherwise we'd clobber a
-    // user-edited display_name. Upsert only if there isn't a row yet.
-    if (data?.user && googleName) {
-      const { data: existing } = await supabase
-        .from('profiles')
-        .select('display_name')
-        .eq('id', data.user.id)
-        .maybeSingle();
-      if (!existing?.display_name) {
-        await supabase.from('profiles').upsert(
-          { id: data.user.id, display_name: googleName },
-          { onConflict: 'id' },
-        );
-      }
-    }
-
-    return { user: data?.user ?? null, error };
+    return { user: useAuthStore.getState().user, error: null };
   } catch (err: any) {
     // Cancellation isn't an error, just a no-op return.
     if (

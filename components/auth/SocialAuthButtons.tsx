@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, Platform, ActivityIndicator, TouchableOpacity } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useRouter } from 'expo-router';
-import { supabase } from '../../lib/supabase';
+import { useAuthStore } from '../../stores/authStore';
 import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
 import { GoogleGLogo } from './GoogleGLogo';
 import { useColors, type AppColors } from '../../contexts/ThemeContext';
@@ -28,13 +28,8 @@ export function SocialAuthButtons({ mode = 'signin', dividerLabel }: Props) {
       ? AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
       : AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN;
 
-  const handlePostAuth = async (userId: string) => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_complete')
-      .eq('id', userId)
-      .maybeSingle();
-
+  const handlePostAuth = () => {
+    const { profile } = useAuthStore.getState();
     if (profile?.onboarding_complete) {
       router.replace('/(tabs)/chat' as any);
     } else {
@@ -50,7 +45,7 @@ export function SocialAuthButtons({ mode = 'signin', dividerLabel }: Props) {
       Alert.alert('Apple Sign In Failed', error.message);
       return;
     }
-    if (user) await handlePostAuth(user.id);
+    if (user) handlePostAuth();
   };
 
   const handleGoogle = async () => {
@@ -61,7 +56,7 @@ export function SocialAuthButtons({ mode = 'signin', dividerLabel }: Props) {
       Alert.alert('Google Sign In Failed', error.message);
       return;
     }
-    if (user) await handlePostAuth(user.id);
+    if (user) handlePostAuth();
   };
 
   const label = dividerLabel ?? (mode === 'signup' ? 'or sign up with' : 'or continue with');

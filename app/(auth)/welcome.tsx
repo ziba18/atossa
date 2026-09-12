@@ -11,7 +11,7 @@ import { Colors } from '../../constants/colors';
 import { FontSize, FontWeight, Spacing, Radius } from '../../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
-import { supabase } from '../../lib/supabase';
+import { useAuthStore } from '../../stores/authStore';
 import { isHumanName } from '../../lib/humanName';
 
 export default function WelcomeScreen() {
@@ -20,14 +20,11 @@ export default function WelcomeScreen() {
   const [appleLoading, setAppleLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  // Shared post-sign-in routing for any social provider. Read the profile,
-  // then send the user to home / name prompt / onboarding as appropriate.
-  const routeAfterSocial = async (userId: string) => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_complete, display_name')
-      .eq('id', userId)
-      .maybeSingle();
+  // Shared post-sign-in routing for any social provider. The store already
+  // has the freshly-fetched profile by the time signIn* resolves, so just
+  // read it and send the user to home / name prompt / onboarding.
+  const routeAfterSocial = () => {
+    const { profile } = useAuthStore.getState();
     if (profile?.onboarding_complete) {
       router.replace('/(tabs)/chat' as any);
       return;
@@ -48,7 +45,7 @@ export default function WelcomeScreen() {
       return;
     }
     if (!user) return;
-    await routeAfterSocial(user.id);
+    routeAfterSocial();
   };
 
   const handleGoogle = async () => {
@@ -60,7 +57,7 @@ export default function WelcomeScreen() {
       return;
     }
     if (!user) return;
-    await routeAfterSocial(user.id);
+    routeAfterSocial();
   };
 
   return (
