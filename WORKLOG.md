@@ -5,6 +5,144 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-09-12 — Friends: invite-only cycle phase matching
+
+User asked to let people invite friends to see each other's cycles and
+"match" them, plus "enable users to come together locally," with the
+explicit principle "engineer the size of the community, rather than
+inflating empty metrics." Flagged before building: this is a genuinely
+different feature category from the symptom-capture MVP pivot, and
+"come together locally" implies some form of location-based discovery,
+which for a health app sharing PCOS/endo-relevant data carries real
+safety risk (exposing location + health status to people who aren't
+already trusted contacts). Asked the user to scope it explicitly rather
+than defaulting into the riskiest interpretation; they chose the
+conservative options across the board:
+- Mutual, invite-only friends only — no public/stranger discovery.
+- Phase-alignment sharing only — no raw flow/symptom/notes data ever
+  crosses accounts.
+- No real geolocation for this pass — "locally" is dropped entirely
+  rather than becoming a stub city field nobody asked to keep.
+
+Backend: found `backend/app/models/social.py` already had a
+`ConnectedAccount` model — `owner_user_id`/`viewer_user_id`,
+`invite_email`, `relationship`, `status`, granular `can_view_cycle`/
+`can_view_symptoms`/etc. flags, `invite_token` — scaffolded for a
+different (partner/parent monitoring) concept but never wired to any
+router, and already present in the initial Alembic migration (so no
+new migration needed, table already exists). Reused it rather than
+building a parallel Friendship table: new rows use
+`relationship="friend"`, `can_view_cycle=True`, `can_view_symptoms=
+False` always. Added `backend/app/routers/connections.py`:
+- `POST /connections/invite` {invite_email} — idempotent (returns the
+  existing row if one already exists for that owner+email+relationship
+  rather than creating a duplicate); rejects inviting yourself.
+- `GET /connections/pending` — invites sent TO the current user
+  (matched on their own account email), each with the inviter's
+  display name.
+- `POST /connections/{id}/accept` / `.../decline` — decline just
+  deletes the row (no need for a lingering "declined" status here).
+- `GET /connections/friends` — for every accepted `relationship=
+  "friend"` row involving the current user (either side), returns the
+  *other* person's display name, cycle-length/period-length defaults,
+  and up to 12 cycle logs shaped by a new `FriendCycleLog` schema that
+  only has `period_start`/`period_end`/`period_length` fields — so
+  `flow_intensity` and `notes` are structurally impossible to leak
+  through this response, not just filtered out by convention.
+- `DELETE /connections/{id}` — either side can unfriend.
+
+Verified the whole flow end-to-end with two disposable test accounts
+via curl: registered both, logged a period on each (with a marker
+string in `notes` to make leakage obvious), A invited B by email, B
+saw the pending invite with A's display name, B accepted, and both
+sides' `/connections/friends` response showed the other's period
+dates but — confirmed by inspecting the raw JSON — never the marker
+notes or flow_intensity. Cleaned up both test accounts and all their
+rows (connections, cycle_logs, profiles, users) afterward.
+
+Frontend: added `app/(tabs)/profile/friends.tsx` (a real screen, not
+another "coming soon" stub like its siblings `connected-accounts.tsx`/
+`emergency-contacts.tsx`/`add-connection.tsx`, which stay stubs — this
+is a different feature/permission model, out of scope to build out
+today). Shows pending invites with accept/decline, a friends list with
+each friend's current phase computed client-side via the same
+`computeCycleMath` used for the self view, and an explicit "You're
+both in your X phase" note when phases match — the literal "cycle
+matching" ask. Deliberately no counts, badges, or "invite more"
+prompts anywhere, per the stated community-size principle. Entry point
+added to `profile/index.tsx`'s Account section and registered in
+`profile/_layout.tsx`.
+
+Along the way, extracted `CyclePhaseLog` (`algorithms/cyclePhaseLog.ts`
+— see the entry below) specifically so a friend's shared cycle data
+never needs to be shaped like a full `CycleLog`; `computeCycleMath`
+already only reads the three fields that type has.
+
+Not yet visually verified live — same simulator/Expo-Go blockers as
+Feature 1 Step D. `npx tsc --noEmit` clean across the whole project.
+
+## 2026-09-12 — Reveal animation + completion-drive progress (Period Log)
+
+Follow-up to the gamified confirmation below: user asked for period
+logging to feel "fun, dopamine-hitting, rewarding," with anticipation
+and a "completion drive."
+
+Deliberately did NOT implement this as an artificial delay before
+showing the confirmation (a fake "processing" wait to manufacture
+suspense) — that's the same deceptive-delay pattern just removed from
+the fake `AI_RESPONSE`/"Sage is analysing…" flow above, just repurposed
+for engagement instead of fake diagnostics. Also skipped streak
+counters, loss-aversion messaging ("don't break your streak"), and any
+push-notification nagging — those are the addictive/dark-pattern half
+of "gamification" and don't belong in a health tracker for a chronic
+pain condition.
+
+What shipped instead, both using genuinely earned moments rather than
+manufactured ones:
+- `LogEntrySheet.tsx`: the confirmation pill now pops in with an
+  overshoot spring animation (`Animated.spring`, native driver) instead
+  of a flat fade — the "reward" is in how the real, instant confirmation
+  is revealed, not in a delay.
+- `period-log.tsx`: added a "days logged this period" dot-progress row
+  when the most recently started period is shorter than the user's
+  typical period length and still recent (≤20 days old) — genuine
+  completion pull, since a complete period range is literally what
+  makes the cycle-length prediction more accurate, not an arbitrary
+  metric.
+
+Refactored `algorithms/cyclePhase.ts` / `cyclePrediction.ts` along the
+way: extracted a `CyclePhaseLog` type (`Pick<CycleLog, 'period_start' |
+'period_end' | 'period_length'>`) into its own file
+(`cyclePhaseLog.ts`) since `computeCycleMath`/`computeCyclePrediction`
+never actually touch `flow_intensity`/`notes`/etc. — only the AI
+forecaster path (`aiCyclePrediction.ts` → `aiFeatures.ts`, currently
+unused by any screen) genuinely needs full `CycleLog` for
+`flow_intensity`, so `predictCycle`'s own signature was narrowed back
+to require that. This was set up for the friend cycle-matching feature
+(below/next), which needs to share phase timing without ever exposing
+flow/notes. `npx tsc --noEmit` clean throughout.
+
+## 2026-09-12 — Gamified confirmation on period logging
+
+User asked for a gamification touch every time a period gets logged
+(examples given: "wow you did!", "your health matters!"). Added a pool
+of 8 encouraging messages (`PERIOD_LOGGED_MESSAGES` in
+`LogEntrySheet.tsx`) and pick one at random via `flash()` whenever a
+period day is actually logged (`selectFlow` with a non-null flow
+value) — deliberately scoped to period logging only, not the
+symptoms/mood/notes autosave, which keeps its plain "Saved" pill.
+Applies everywhere `LogEntrySheet` is used (`cycle-data.tsx` and the
+new `period-log.tsx`) since both share the same component — no
+duplicated logic.
+
+Had to restructure the sheet's header layout to fit this: the old
+confirm pill sat inline next to the date in a `space-between` row,
+sized for "Saved" (5 chars). Longer messages like "You're building a
+helpful record. 💚" would have overflowed or clipped in that space.
+Changed the header to stack the date row and the confirm pill
+vertically instead, with the pill wrapping up to 2 lines. `npx tsc
+--noEmit` clean.
+
 ## 2026-09-12 — Strip fake AI_RESPONSE ahead of TestFlight build
 
 User asked to ship the branch to TestFlight to review it there going

@@ -149,6 +149,7 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
           <Card noPadding>
+            <MenuItem iconName="users" label="Friends" onPress={() => router.push('/(tabs)/profile/friends' as any)} />
             <MenuItem iconName="link" label="Connected accounts" onPress={() => router.push('/(tabs)/profile/connected-accounts' as any)} />
             <MenuItem iconName="shield" label="Emergency contacts" onPress={() => router.push('/(tabs)/profile/emergency-contacts' as any)} isLast />
           </Card>

@@ -1,6 +1,8 @@
-import type { CycleLog } from '../types/database';
 import { daysBetween, today as todayStr } from './dateHelpers';
 import { computeCyclePrediction } from './cyclePrediction';
+import type { CyclePhaseLog } from './cyclePhaseLog';
+
+export type { CyclePhaseLog };
 
 /**
  * Derives cycle day, phase, and ring geometry from raw logged events.
@@ -62,7 +64,7 @@ function classify(day: number, b: PhaseBoundaries): RingPhase {
 }
 
 export function computeCycleMath(input: {
-  cycleLogs: CycleLog[]; // any order — sorted internally
+  cycleLogs: CyclePhaseLog[]; // any order — sorted internally
   defaultCycleLength?: number;
   defaultPeriodLength?: number;
   userId: string;

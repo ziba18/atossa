@@ -19,7 +19,9 @@ import {
 
 export type { PredictionResult, MissedPeriodSuggestion };
 
-export async function predictCycle(input: PredictionInput): Promise<PredictionResult> {
+export async function predictCycle(
+  input: Omit<PredictionInput, 'cycleLogs'> & { cycleLogs: CycleLog[] },
+): Promise<PredictionResult> {
   const ai = await computeAIPrediction(input.cycleLogs, input.defaultPeriodLength);
   if (ai) return ai;
   return computeCyclePrediction(input);

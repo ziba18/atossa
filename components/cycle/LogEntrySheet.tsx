@@ -1,7 +1,7 @@
 import React, {
   forwardRef, useImperativeHandle, useRef, useState, useEffect, useCallback,
 } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, Alert, Animated } from 'react-native';
 import BottomSheet, { BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Icon, type IconName } from '../ui/Icon';
 import { api } from '../../lib/api';
@@ -45,6 +45,22 @@ const MOODS: { key: string; label: string; emoji: string }[] = [
 ];
 
 const DAILY_TYPES = ['symptom', 'mood', 'note'];
+
+// Shown whenever a period day gets logged — never for clearing a day, and
+// never for symptoms/mood/notes, which keep the plain "Saved" confirmation.
+const PERIOD_LOGGED_MESSAGES = [
+  'Wow, you did it! 🎉',
+  'Your health matters. Logged.',
+  'Nice — that\'s one more day tracked.',
+  'Great job checking in today.',
+  'Logged! Taking care of you.',
+  'You\'re building a helpful record. 💚',
+  'Small step, big picture. Logged!',
+  'Noted — thank you for tracking this.',
+];
+
+const randomPeriodLoggedMessage = () =>
+  PERIOD_LOGGED_MESSAGES[Math.floor(Math.random() * PERIOD_LOGGED_MESSAGES.length)];
 
 export interface LogEntrySheetHandle {
   open: (date: string) => void;
@@ -102,10 +118,19 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ onSaved }
     })();
   }, [date]);
 
+  const pillScale = useRef(new Animated.Value(0)).current;
+
   const flash = useCallback((msg: string) => {
     setConfirmText(msg);
-    setTimeout(() => setConfirmText(null), 1400);
-  }, []);
+    pillScale.setValue(0);
+    // A quick overshoot-and-settle pop, rather than a plain fade — the whole
+    // point is that logging a period day should feel like a small reward,
+    // not just a silent save.
+    Animated.spring(pillScale, {
+      toValue: 1, friction: 5, tension: 160, useNativeDriver: true,
+    }).start();
+    setTimeout(() => setConfirmText(null), 1700);
+  }, [pillScale]);
 
   // ── Merge a day into a contiguous cycle_logs period range ──────────────────
   const applyFlow = useCallback(async (d: string, value: FlowIntensity | null) => {
@@ -181,14 +206,14 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ onSaved }
         "It's been a few days since your last logged period day.",
         [
           { text: 'No, just spotting', style: 'cancel', onPress: () => { setFlow(null); } },
-          { text: 'Yes, new period', onPress: async () => { await applyFlow(date, value); flash('Saved'); onSaved(); } },
+          { text: 'Yes, new period', onPress: async () => { await applyFlow(date, value); flash(randomPeriodLoggedMessage()); onSaved(); } },
         ],
       );
       return;
     }
 
     await applyFlow(date, value);
-    flash('Saved');
+    flash(randomPeriodLoggedMessage());
     onSaved();
   }, [date, applyFlow, onSaved, flash]);
 
@@ -240,9 +265,11 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ onSaved }
           <Text style={styles.dateText}>{date ? formatDisplayDate(date) : ''}</Text>
         </View>
         {confirmText && (
-          <View style={styles.confirmPill}>
-            <Icon name="check" size={12} color="#fff" />
-            <Text style={styles.confirmText}>{confirmText}</Text>
+          <View style={styles.confirmPillRow}>
+            <Animated.View style={[styles.confirmPill, { transform: [{ scale: pillScale }] }]}>
+              <Icon name="check" size={12} color="#fff" />
+              <Text style={styles.confirmText} numberOfLines={2}>{confirmText}</Text>
+            </Animated.View>
           </View>
         )}
       </BottomSheetView>
@@ -323,14 +350,15 @@ export const LogEntrySheet = forwardRef<LogEntrySheetHandle, Props>(({ onSaved }
 const styles = StyleSheet.create({
   sheetBg: { backgroundColor: '#FFFDF6', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
   handle: { backgroundColor: PINK_SOFT, width: 40 },
-  header: { paddingHorizontal: 20, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  header: { paddingHorizontal: 20, paddingBottom: 8, gap: 8 },
   dateRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   dateText: { color: INK, fontSize: 16, fontWeight: '800' },
+  confirmPillRow: { alignItems: 'flex-start' },
   confirmPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#3F7D58',
-    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999,
+    flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#3F7D58',
+    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 14, maxWidth: '100%',
   },
-  confirmText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  confirmText: { color: '#fff', fontSize: 12.5, fontWeight: '700', flexShrink: 1 },
 
   content: { paddingHorizontal: 20, paddingBottom: 36, gap: 6 },
 

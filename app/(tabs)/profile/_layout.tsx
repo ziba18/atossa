@@ -9,6 +9,7 @@ export default function ProfileLayout() {
       <Stack.Screen name="emergency-contacts" />
       <Stack.Screen name="connected-accounts" />
       <Stack.Screen name="add-connection" />
+      <Stack.Screen name="friends" />
     </Stack>
   );
 }
