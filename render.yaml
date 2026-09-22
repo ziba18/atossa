@@ -14,3 +14,5 @@ services:
         sync: false
       - key: PYTHON_VERSION
         value: 3.11.5
+      - key: GOOGLE_WEB_CLIENT_ID
+        value: 803449042490-s817ucvtsahd80stfng3isvv0efta0ku.apps.googleusercontent.com
