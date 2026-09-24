@@ -17,6 +17,12 @@ source of truth for specifics, this file is just the orientation summary.
 packages. `/chat` is deliberately kept deployed but unused. See the top
 WORKLOG entry.
 
+**One design system (2026-09-24, latest):** every screen now uses
+`components/atossa/kit.tsx` + `constants/atossaUI.ts`; the old theme
+(`constants/colors|theme|typography`, ThemeContext, dark mode, Fraunces)
+is gone. Onboarding is name → basics → last-period → reminders, with the
+MVP-breaking promises removed. See WORKLOG.
+
 **Redesign (2026-09-24):** the app now has three tabs — Chat, Dashboard,
 For my doctor — ported from a Lovable prototype; new generic `/records`
 backend store. See the top WORKLOG entry. Not yet run on a device or

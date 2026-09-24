@@ -15,19 +15,10 @@ if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
     '`expo-notifications` functionality is not fully supported in Expo Go',
   ]);
 }
-import { useAuth } from '../hooks/useAuth';
-import { useUIStore } from '../stores/uiStore';
-import { ThemeProvider } from '../contexts/ThemeContext';
+import '../hooks/useAuth';
 import { cancelPredictedCycleReminders } from '../lib/notifications';
+import { UI } from '../constants/atossaUI';
 import { useFonts } from 'expo-font';
-import {
-  Fraunces_300Light,
-  Fraunces_300Light_Italic,
-  Fraunces_400Regular,
-  Fraunces_400Regular_Italic,
-  Fraunces_500Medium,
-  Fraunces_500Medium_Italic,
-} from '@expo-google-fonts/fraunces';
 // Per-weight imports so only the fonts we use are bundled.
 import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif/400Regular';
 import { WorkSans_400Regular } from '@expo-google-fonts/work-sans/400Regular';
@@ -35,7 +26,6 @@ import { WorkSans_600SemiBold } from '@expo-google-fonts/work-sans/600SemiBold';
 import { WorkSans_700Bold } from '@expo-google-fonts/work-sans/700Bold';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { MAX_CONTENT_WIDTH } from '../constants/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -44,13 +34,10 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 // are still queued on the device.
 cancelPredictedCycleReminders().catch(() => {});
 
+// Importing useAuth (above) runs the module-level startAuthInit() side effect that
+// begins the session restore. `app/index.tsx` reads auth state and routes accordingly,
+// so the root layout doesn't subscribe to auth changes.
 function AppShell() {
-  // Importing useAuth runs the module-level startAuthInit() side effect that
-  // begins the session restore. We don't subscribe here — `app/index.tsx`
-  // reads auth state and routes accordingly, so the root layout doesn't need
-  // to re-render on every auth change.
-  const isDark = useUIStore((s) => s.isDarkMode);
-  const hydrated = useUIStore((s) => s.hydrated);
   const { width } = useWindowDimensions();
   const router = useRouter();
 
@@ -72,43 +59,29 @@ function AppShell() {
   }, [router]);
 
   const [fontsLoaded] = useFonts({
-    // Fraunces — modern variable serif used throughout the app. Light + Regular
-    // for body and labels (soft warm vibe), Medium for emphasis, italics for
-    // hero/display text. Heavier weights (SemiBold+) intentionally not loaded
-    // to keep the whole typography palette soft.
-    Fraunces_300Light,
-    Fraunces_300Light_Italic,
-    Fraunces_400Regular,
-    Fraunces_400Regular_Italic,
-    Fraunces_500Medium,
-    Fraunces_500Medium_Italic,
-    // Redesigned Chat / Dashboard / For my doctor screens.
     InstrumentSerif_400Regular,
     WorkSans_400Regular,
     WorkSans_600SemiBold,
     WorkSans_700Bold,
   });
 
-  // Hide the splash as soon as the visual prerequisites (fonts + theme) are
-  // ready. The auth session continues resolving in the background — `app/index.tsx`
-  // shows a loading spinner until `isInitialized` flips, so the user sees the
-  // app respond rather than a frozen splash.
+  // Hide the splash as soon as the fonts are ready. The auth session continues
+  // resolving in the background — `app/index.tsx` shows a loading screen until
+  // `isInitialized` flips, so the user sees the app respond rather than a frozen splash.
   useEffect(() => {
-    if (fontsLoaded && hydrated) {
-      SplashScreen.hideAsync().catch(() => {});
-    }
-  }, [fontsLoaded, hydrated]);
+    if (fontsLoaded) SplashScreen.hideAsync().catch(() => {});
+  }, [fontsLoaded]);
 
-  if (!fontsLoaded || !hydrated) return null;
+  if (!fontsLoaded) return null;
 
-  const isTablet = width >= MAX_CONTENT_WIDTH;
+  const isTablet = width >= UI.maxContentWidth;
 
   return (
     <>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar style="dark" />
       {isTablet ? (
-        <View style={{ flex: 1, alignItems: 'center', backgroundColor: isDark ? '#1E1C2E' : '#FAF8F2' }}>
-          <View style={{ flex: 1, width: MAX_CONTENT_WIDTH }}>
+        <View style={{ flex: 1, alignItems: 'center', backgroundColor: UI.colors.background }}>
+          <View style={{ flex: 1, width: UI.maxContentWidth }}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="(auth)" />
@@ -133,9 +106,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <ThemeProvider>
-          <AppShell />
-        </ThemeProvider>
+        <AppShell />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

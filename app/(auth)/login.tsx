@@ -1,132 +1,84 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { UI } from '../../constants/atossaUI';
+import { BackButton, BigButton, InlineError, PageTitle, Screen, TextField, Txt } from '../../components/atossa/kit';
+import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
-import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { SafeScreen } from '../../components/layout/SafeScreen';
-import { Header } from '../../components/layout/Header';
-import { Icon } from '../../components/ui/Icon';
-import { useColors, type AppColors } from '../../contexts/ThemeContext';
-import { Colors } from '../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../constants/theme';
+import { routeAfterSignIn } from '../../lib/authRouting';
 
+const C = UI.colors;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function LoginScreen() {
   const router = useRouter();
-  const theme = useColors();
-  const { login } = useAuthStore();
+  const login = useAuthStore((s) => s.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    const trimmedEmail = email.trim();
-    let hasError = false;
-    if (!trimmedEmail) {
-      setEmailError('Email is required');
-      hasError = true;
-    } else if (!EMAIL_RE.test(trimmedEmail)) {
-      setEmailError('Enter a valid email address');
-      hasError = true;
-    } else {
-      setEmailError('');
-    }
-    if (!password) {
-      setPasswordError('Password is required');
-      hasError = true;
-    } else {
-      setPasswordError('');
-    }
-    if (hasError) return;
+    const trimmed = email.trim();
+    const eErr = !trimmed ? 'Enter your email.' : !EMAIL_RE.test(trimmed) ? 'That email doesn’t look right.' : '';
+    const pErr = password ? '' : 'Enter your password.';
+    setEmailError(eErr);
+    setPasswordError(pErr);
+    setError('');
+    if (eErr || pErr) return;
 
     setLoading(true);
     try {
-      await login(trimmedEmail.toLowerCase(), password);
-      const { profile } = useAuthStore.getState();
-      if (profile?.onboarding_complete) {
-        router.replace('/(tabs)/chat' as any);
-      } else {
-        router.replace('/(auth)/onboarding/step1-basics');
-      }
+      await login(trimmed.toLowerCase(), password);
+      router.replace(routeAfterSignIn(useAuthStore.getState().profile) as any);
     } catch (err) {
       setLoading(false);
-      if (err instanceof ApiError && err.status === 401) {
-        setPasswordError('Incorrect email or password');
-      } else {
-        Alert.alert('Login Failed', err instanceof Error ? err.message : 'Something went wrong');
-      }
+      if (err instanceof ApiError && err.status === 401) setPasswordError('The email or password is not right.');
+      else setError('We couldn’t sign you in. Check your connection and try again.');
     }
   };
 
-  const styles = createStyles(theme);
-
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <SafeScreen>
-        <Header title="Welcome Back" showBack />
-        <View style={styles.container}>
-          <Text style={styles.subtitle}>Sign in to your Atossa account</Text>
+    <Screen header={false} edges={['top', 'bottom']}>
+      <BackButton label="Back" />
+      <View style={{ marginTop: 20 }}>
+        <PageTitle title="Sign in" subtitle="Welcome back to Atossa." />
+      </View>
 
-          <Input
-            label="Email"
-            value={email}
-            onChangeText={(v) => { setEmail(v); if (emailError) setEmailError(''); }}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            placeholder="you@example.com"
-            error={emailError}
-          />
-          <Input
-            label="Password"
-            value={password}
-            onChangeText={(v) => { setPassword(v); if (passwordError) setPasswordError(''); }}
-            secureTextEntry={!showPassword}
-            placeholder="Your password"
-            error={passwordError}
-            rightIcon={
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} color={theme.textMuted} />
-              </TouchableOpacity>
-            }
-          />
-
-          <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')} style={styles.forgotBtn}>
-            <Text style={styles.forgotText}>Forgot password?</Text>
-          </TouchableOpacity>
-
-          <Button label="Sign In" onPress={handleLogin} loading={loading} size="lg" fullWidth style={styles.loginBtn} />
-
-          <View style={styles.registerRow}>
-            <Text style={styles.registerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => router.replace('/(auth)/register')}>
-              <Text style={styles.registerLink}>Sign up</Text>
-            </TouchableOpacity>
-          </View>
-
-          <SocialAuthButtons mode="signin" />
-        </View>
-      </SafeScreen>
-    </KeyboardAvoidingView>
+      <View style={{ marginTop: 16, gap: 20 }}>
+        <TextField
+          label="Email"
+          value={email}
+          onChangeText={(v) => { setEmail(v); setEmailError(''); }}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+          textContentType="emailAddress"
+          placeholder="you@example.com"
+          error={emailError}
+        />
+        <TextField
+          label="Password"
+          secret
+          value={password}
+          onChangeText={(v) => { setPassword(v); setPasswordError(''); }}
+          autoComplete="password"
+          textContentType="password"
+          returnKeyType="go"
+          onSubmitEditing={handleLogin}
+          error={passwordError}
+        />
+        <Pressable onPress={() => router.push('/(auth)/forgot-password')} accessibilityRole="link" style={{ minHeight: 44, justifyContent: 'center' }}>
+          <Txt variant="bodyBold" color={C.accentForeground} style={{ textDecorationLine: 'underline' }}>Forgot your password?</Txt>
+        </Pressable>
+        <InlineError message={error} />
+        <BigButton label={loading ? 'Signing in…' : 'Sign in'} icon="check" disabled={loading} onPress={handleLogin} />
+        <BigButton label="Create a new account" variant="outline" onPress={() => router.replace('/(auth)/register')} />
+        <SocialAuthButtons mode="signin" />
+      </View>
+    </Screen>
   );
-}
-
-function createStyles(c: AppColors) {
-  return StyleSheet.create({
-    container: { flex: 1, paddingTop: Spacing.xl },
-    subtitle: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, marginBottom: Spacing.xl },
-    forgotBtn: { alignSelf: 'flex-end', marginBottom: Spacing.lg, marginTop: -Spacing.sm },
-    forgotText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_400Regular', color: Colors.cherry },
-    loginBtn: { marginBottom: Spacing.xl },
-    registerRow: { flexDirection: 'row', justifyContent: 'center' },
-    registerText: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted },
-    registerLink: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
-  });
 }

@@ -1,229 +1,103 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import { UI } from '../../../constants/atossaUI';
+import {
+  BackButton, BigButton, Card, PageTitle, RecordRow, Screen, Section, SectionHeading, Txt,
+} from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
-import { Badge } from '../../../components/ui/Badge';
-import { Card } from '../../../components/ui/Card';
-import { Icon, type IconName } from '../../../components/ui/Icon';
-import { useColors, type AppColors } from '../../../contexts/ThemeContext';
-import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Radius, Spacing } from '../../../constants/theme';
-import { Type } from '../../../constants/typography';
 import { isHumanName } from '../../../lib/humanName';
+import { formatDate } from '../../../lib/records/dates';
+
+const C = UI.colors;
+
+function Figure({ value, label }: { value: string; label: string }) {
+  return (
+    <Card style={{ flex: 1, alignItems: 'center', paddingVertical: 14 }}>
+      <Txt variant="h2">{value}</Txt>
+      <Txt variant="small" style={{ textAlign: 'center' }}>{label}</Txt>
+    </Card>
+  );
+}
+
+function InfoLine({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingVertical: 10 }}>
+      <Txt variant="body" style={{ flex: 1 }}>{label}</Txt>
+      <Txt variant="bodyBold">{value}</Txt>
+    </View>
+  );
+}
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { profile, user, signOut } = useAuthStore();
   const symptomCount = useRecordsStore((s) => s.records.symptom.length);
   const appointmentCount = useRecordsStore((s) => s.records.appointment.length);
-  const theme = useColors();
-  const styles = createStyles(theme);
-  const insets = useSafeAreaInsets();
-  // Tab bar floats absolutely (height 68 + 12 from bottom). Pad the scroll
-  // content so the footer line clears it on every device.
-  const bottomPad = insets.bottom + 96;
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
 
-  const formatDate = (iso: string | null) => {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
-
-  const MenuItem = ({ iconName, label, onPress, badge, isLast }: { iconName: IconName; label: string; onPress: () => void; badge?: string; isLast?: boolean }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.menuItem, !isLast && styles.menuItemBorder]} activeOpacity={0.8}>
-      <Icon name={iconName} size={20} color={theme.textSecondary} />
-      <Text style={styles.menuLabel}>{label}</Text>
-      {badge && <Badge label={badge} variant="cherry" />}
-      <Icon name="chevron-right" size={18} color={theme.textMuted} />
-    </TouchableOpacity>
-  );
-
-  const CycleRegularityBadge = ({ regularity }: { regularity: string }) => {
-    const cfg: Record<string, { bg: string; color: string }> = {
-      regular: { bg: Colors.emeraldLighter, color: Colors.emeraldDark },
-      irregular: { bg: Colors.whiskeyLighter, color: Colors.whiskeyDark },
-    };
-    const c = cfg[regularity] ?? { bg: theme.surface, color: theme.textMuted };
-    return (
-      <View style={[styles.regularityBadge, { backgroundColor: c.bg }]}>
-        <Text style={[styles.regularityText, { color: c.color }]}>{regularity}</Text>
-      </View>
-    );
-  };
+  const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : null;
+  const initial = ((name ?? user?.email)?.[0] ?? 'A').toUpperCase();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
+    <Screen header={false}>
+      <BackButton label="Back" />
 
-        <LinearGradient colors={[Colors.moss, Colors.cherryDark]} style={styles.hero}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={[styles.backBtn, { top: insets.top + Spacing.sm }]}
-            hitSlop={12}
-          >
-            <Icon name="arrow-left" size={20} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {(isHumanName(profile?.display_name) ? profile!.display_name! : user?.email ?? 'A').charAt(0).toUpperCase()}
-            </Text>
-          </View>
-          <Text style={styles.name}>{isHumanName(profile?.display_name) ? profile!.display_name : 'Atossa User'}</Text>
-          {user?.email && <Text style={styles.email}>{user.email}</Text>}
-          {profile?.created_at && (
-            <Text style={styles.memberSince}>
-              Member since {new Date(profile.created_at as unknown as string).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            </Text>
-          )}
-        </LinearGradient>
-
-        <View style={styles.statsSection}>
-          <View style={styles.statsGrid}>
-            <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{symptomCount}</Text>
-              <Text style={styles.statLabel}>Symptoms</Text>
-            </Card>
-            <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{profile?.average_cycle_length ?? 28}d</Text>
-              <Text style={styles.statLabel}>Avg cycle</Text>
-            </Card>
-            <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{appointmentCount}</Text>
-              <Text style={styles.statLabel}>Appointments</Text>
-            </Card>
-          </View>
+      <View style={{ alignItems: 'center', marginTop: 20 }}>
+        <View style={{ width: 88, height: 88, borderRadius: 44, backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center' }}>
+          <Txt variant="display" color={C.accentForeground}>{initial}</Txt>
         </View>
+        <View style={{ marginTop: 12, alignItems: 'center' }}>
+          <PageTitle title={name ?? 'Your profile'} />
+        </View>
+        {user?.email ? <Txt variant="body" color={C.mutedForeground}>{user.email}</Txt> : null}
+      </View>
 
-        {profile && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Cycle Profile</Text>
-            <Card>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Regularity</Text>
-                <CycleRegularityBadge regularity={profile.cycle_regularity ?? 'unknown'} />
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Average cycle length</Text>
-                <Text style={styles.infoValue}>{profile.average_cycle_length} days</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Average period length</Text>
-                <Text style={styles.infoValue}>{profile.average_period_length} days</Text>
-              </View>
-              {profile.date_of_birth && (
-                <>
-                  <View style={styles.divider} />
-                  <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>Date of birth</Text>
-                    <Text style={styles.infoValue}>{formatDate(profile.date_of_birth)}</Text>
-                  </View>
-                </>
-              )}
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/profile/edit-profile' as any)}
-                style={styles.editBtn}
-                activeOpacity={0.8}
-              >
-                <Icon name="pencil" size={14} color={Colors.cherry} />
-                <Text style={styles.editBtnText}>Edit profile & change password</Text>
-              </TouchableOpacity>
-            </Card>
-          </View>
+      <View style={{ flexDirection: 'row', gap: 12, marginTop: 24 }}>
+        <Figure value={String(symptomCount)} label="Symptoms saved" />
+        <Figure value={String(appointmentCount)} label="Appointments" />
+      </View>
+
+      {profile ? (
+        <Section>
+          <SectionHeading title="About me" />
+          <Card>
+            <InfoLine label="Usual time between periods" value={`${profile.average_cycle_length} days`} />
+            <InfoLine label="Usual period length" value={`${profile.average_period_length} days`} />
+            {profile.date_of_birth ? <InfoLine label="Date of birth" value={formatDate(profile.date_of_birth)} /> : null}
+          </Card>
+          <BigButton label="Edit my details" icon="pencil" variant="outline" style={{ marginTop: 12 }} onPress={() => router.push('/(tabs)/profile/edit-profile' as any)} />
+        </Section>
+      ) : null}
+
+      <Section>
+        <View style={{ gap: 12 }}>
+          <RecordRow icon="users" title="Friends" subtitle="Share only your cycle phase with people you invite" onPress={() => router.push('/(tabs)/profile/friends' as any)} />
+          <RecordRow icon="settings" title="Settings" subtitle="Reminders and notifications" onPress={() => router.push('/(tabs)/profile/settings' as any)} />
+        </View>
+      </Section>
+
+      <Section>
+        {confirmingSignOut ? (
+          <Card tone="coral" style={{ gap: 12 }}>
+            <Txt variant="bodyBold">Sign out of Atossa?</Txt>
+            <Txt variant="small" color={C.foreground}>Your information stays saved. You can sign in again any time.</Txt>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <BigButton label="Cancel" variant="outline" onPress={() => setConfirmingSignOut(false)} style={{ flex: 1 }} />
+              <BigButton
+                label="Sign out"
+                variant="destructive"
+                onPress={async () => { await signOut(); router.replace('/(auth)/welcome'); }}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </Card>
+        ) : (
+          <BigButton label="Sign out" icon="log-out" variant="outline" textColor={C.destructive} onPress={() => setConfirmingSignOut(true)} />
         )}
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
-          <Card noPadding>
-            <MenuItem iconName="users" label="Friends" onPress={() => router.push('/(tabs)/profile/friends' as any)} />
-            <MenuItem iconName="link" label="Connected accounts" onPress={() => router.push('/(tabs)/profile/connected-accounts' as any)} />
-            <MenuItem iconName="shield" label="Emergency contacts" onPress={() => router.push('/(tabs)/profile/emergency-contacts' as any)} isLast />
-          </Card>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Settings</Text>
-          <Card noPadding>
-            <MenuItem iconName="settings" label="App settings" onPress={() => router.push('/(tabs)/profile/settings' as any)} isLast />
-          </Card>
-        </View>
-
-        <TouchableOpacity
-          onPress={() =>
-            Alert.alert('Sign Out', 'Are you sure?', [
-              { text: 'Cancel', style: 'cancel' },
-              {
-                text: 'Sign Out',
-                style: 'destructive',
-                onPress: async () => {
-                  await signOut();
-                  router.replace('/(auth)/welcome');
-                },
-              },
-            ])
-          }
-          style={styles.signOutBtn}
-        >
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.footer}>Attosa v1.0 · Your health data is encrypted and private</Text>
-      </ScrollView>
-    </SafeAreaView>
+        <Txt variant="small" style={{ textAlign: 'center', marginTop: 20 }}>Your information is private to your account.</Txt>
+      </Section>
+    </Screen>
   );
-}
-
-function createStyles(c: AppColors) {
-  const Colors = c;
-  return StyleSheet.create({
-    hero: { padding: Spacing.xl, alignItems: 'center', paddingBottom: Spacing.xl },
-    backBtn: { position: 'absolute', left: Spacing.md, zIndex: 1, padding: Spacing.xs },
-    avatar: {
-      width: 80, height: 80, borderRadius: 40,
-      backgroundColor: 'rgba(255,255,255,0.25)',
-      alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
-    },
-    avatarText: { fontSize: 32, fontFamily: 'Fraunces_400Regular_Italic', color: '#FFFFFF' },
-    name: { ...Type.profile.name, marginBottom: 4 },
-    email: { ...Type.profile.email, marginBottom: 4 },
-    memberSince: { ...Type.profile.memberSince },
-
-    statsSection: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
-    statsGrid: { flexDirection: 'row', gap: Spacing.sm },
-    statCell: { flex: 1, alignItems: 'center', paddingVertical: Spacing.md },
-    statValue: { ...Type.profile.statValue },
-    statLabel: { ...Type.profile.statLabel, marginTop: 4, textAlign: 'center' as const },
-
-    section: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
-    sectionTitle: { ...Type.profile.sectionTitle, textTransform: 'uppercase' as const, marginBottom: Spacing.sm },
-    infoRow: {
-      flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-      paddingVertical: Spacing.sm,
-    },
-    infoLabel: { ...Type.profile.rowLabel, flex: 1 },
-    infoValue: { ...Type.profile.rowValue },
-    divider: { height: 1, backgroundColor: Colors.border },
-    regularityBadge: { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 3 },
-    regularityText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_500Medium', textTransform: 'capitalize' },
-    editBtn: {
-      flexDirection: 'row', gap: Spacing.xs,
-      paddingVertical: Spacing.sm, alignItems: 'center', justifyContent: 'center',
-      borderRadius: Radius.md, backgroundColor: Colors.cherryLighter, marginTop: Spacing.md,
-    },
-    editBtnText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
-
-    menuItem: {
-      flexDirection: 'row', alignItems: 'center',
-      padding: Spacing.md, gap: Spacing.sm,
-    },
-    menuItemBorder: { borderBottomWidth: 1, borderBottomColor: Colors.border },
-    menuLabel: { flex: 1, fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: Colors.textPrimary },
-
-    signOutBtn: { margin: Spacing.xl, padding: Spacing.md, alignItems: 'center' },
-    signOutText: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
-    footer: { textAlign: 'center', fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted },
-  });
 }

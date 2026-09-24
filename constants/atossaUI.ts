@@ -1,5 +1,5 @@
-// Design tokens for the redesigned (Chat / Dashboard / For my doctor) screens, converted
-// from the Lovable prototype's oklch palette. Older screens still use constants/colors.ts.
+// Design tokens for every screen, converted from the Lovable prototype's oklch palette.
+// Light only: the design has no dark variant.
 export const UI = {
   colors: {
     background: '#fef9f4',
@@ -42,4 +42,6 @@ export const UI = {
   radius: 8,
   minTap: 56,
   gutter: 20,
+  /** On tablets the app is centred in a column this wide instead of stretching. */
+  maxContentWidth: 600,
 } as const;

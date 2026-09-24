@@ -1,135 +1,89 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, Platform, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Pressable, Platform, ActivityIndicator, StyleSheet } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../stores/authStore';
-import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
+import { UI } from '../../constants/atossaUI';
+import { InlineError, Txt } from '../atossa/kit';
 import { GoogleGLogo } from './GoogleGLogo';
-import { useColors, type AppColors } from '../../contexts/ThemeContext';
-import { FontSize, FontWeight, Spacing, Radius } from '../../constants/theme';
+import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
+import { routeAfterSignIn } from '../../lib/authRouting';
+import { useAuthStore } from '../../stores/authStore';
 
-type Mode = 'signin' | 'signup';
+const C = UI.colors;
 
-interface Props {
-  mode?: Mode;
-  /** Override the divider label shown above the social buttons. */
-  dividerLabel?: string;
-}
-
-export function SocialAuthButtons({ mode = 'signin', dividerLabel }: Props) {
+/** Apple (iOS only) and Google sign-in, with an optional "or" divider above them. */
+export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 'signin' | 'signup'; divider?: boolean }) {
   const router = useRouter();
-  const theme = useColors();
-  const styles = createStyles(theme);
-  const [appleLoading, setAppleLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [busy, setBusy] = useState<'apple' | 'google' | null>(null);
+  const [error, setError] = useState('');
 
-  const buttonType =
-    mode === 'signup'
-      ? AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
-      : AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN;
-
-  const handlePostAuth = () => {
-    const { profile } = useAuthStore.getState();
-    if (profile?.onboarding_complete) {
-      router.replace('/(tabs)/chat' as any);
-    } else {
-      router.replace('/(auth)/onboarding/step1-basics');
-    }
-  };
-
-  const handleApple = async () => {
-    setAppleLoading(true);
-    const { user, error } = await signInWithApple();
-    setAppleLoading(false);
-    if (error) {
-      Alert.alert('Apple Sign In Failed', error.message);
+  const run = async (provider: 'apple' | 'google') => {
+    setBusy(provider);
+    setError('');
+    const { user, error: err } = provider === 'apple' ? await signInWithApple() : await signInWithGoogle();
+    setBusy(null);
+    if (err) {
+      setError(`${provider === 'apple' ? 'Apple' : 'Google'} sign-in didn't work: ${err.message}`);
       return;
     }
-    if (user) handlePostAuth();
+    if (user) router.replace(routeAfterSignIn(useAuthStore.getState().profile) as any);
   };
-
-  const handleGoogle = async () => {
-    setGoogleLoading(true);
-    const { user, error } = await signInWithGoogle();
-    setGoogleLoading(false);
-    if (error) {
-      Alert.alert('Google Sign In Failed', error.message);
-      return;
-    }
-    if (user) handlePostAuth();
-  };
-
-  const label = dividerLabel ?? (mode === 'signup' ? 'or sign up with' : 'or continue with');
 
   return (
-    <View style={styles.container}>
-      <View style={styles.dividerRow}>
-        <View style={styles.line} />
-        <Text style={styles.dividerText}>{label}</Text>
-        <View style={styles.line} />
-      </View>
+    <View style={{ gap: 12 }}>
+      {divider ? (
+        <View style={styles.dividerRow} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <View style={styles.line} />
+          <Txt variant="small">or</Txt>
+          <View style={styles.line} />
+        </View>
+      ) : null}
 
-      {Platform.OS === 'ios' && (
-        appleLoading ? (
-          <View style={styles.loadingBox}>
-            <ActivityIndicator size="small" color={theme.textPrimary} />
-          </View>
+      {Platform.OS === 'ios' ? (
+        busy === 'apple' ? (
+          <View style={styles.loading}><ActivityIndicator color={C.foreground} /></View>
         ) : (
           <AppleAuthentication.AppleAuthenticationButton
-            buttonType={buttonType}
+            buttonType={
+              mode === 'signup'
+                ? AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
+                : AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+            }
             buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-            cornerRadius={Radius.md}
-            style={styles.appleBtn}
-            onPress={handleApple}
+            cornerRadius={UI.radius}
+            style={styles.apple}
+            onPress={() => run('apple')}
           />
         )
+      ) : null}
+
+      {busy === 'google' ? (
+        <View style={styles.loading}><ActivityIndicator color={C.foreground} /></View>
+      ) : (
+        <Pressable
+          onPress={() => run('google')}
+          disabled={busy !== null}
+          accessibilityRole="button"
+          accessibilityLabel="Continue with Google"
+          style={({ pressed }) => [styles.google, pressed && { opacity: 0.85 }]}
+        >
+          <GoogleGLogo size={22} />
+          <Txt variant="bodyBold">Continue with Google</Txt>
+        </Pressable>
       )}
 
-      {googleLoading ? (
-        <View style={styles.loadingBox}>
-          <ActivityIndicator size="small" color={theme.textPrimary} />
-        </View>
-      ) : (
-        <TouchableOpacity onPress={handleGoogle} activeOpacity={0.85} style={styles.googleBtn}>
-          <GoogleGLogo size={20} />
-          <Text style={styles.googleBtnText}>
-            {mode === 'signup' ? 'Sign up with Google' : 'Continue with Google'}
-          </Text>
-        </TouchableOpacity>
-      )}
+      <InlineError message={error} />
     </View>
   );
 }
 
-function createStyles(c: AppColors) {
-  return StyleSheet.create({
-    container: { marginTop: Spacing.sm, gap: Spacing.sm },
-    dividerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm },
-    line: { flex: 1, height: 1, backgroundColor: c.border },
-    dividerText: {
-      marginHorizontal: Spacing.md,
-      fontSize: FontSize.sm,
-      fontFamily: 'Fraunces_400Regular',
-      color: c.textMuted,
-    },
-    appleBtn: { height: 50, width: '100%' },
-    googleBtn: {
-      height: 50,
-      width: '100%',
-      borderRadius: Radius.md,
-      backgroundColor: c.surface,
-      borderWidth: 1,
-      borderColor: c.border,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: Spacing.sm,
-    },
-    googleBtnText: {
-      fontSize: FontSize.md,
-      fontFamily: 'Fraunces_500Medium',
-      color: c.textPrimary,
-    },
-    loadingBox: { height: 50, alignItems: 'center', justifyContent: 'center' },
-  });
-}
+const styles = StyleSheet.create({
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 4 },
+  line: { flex: 1, height: 1, backgroundColor: C.border },
+  apple: { height: UI.minTap, width: '100%' },
+  loading: { height: UI.minTap, alignItems: 'center', justifyContent: 'center' },
+  google: {
+    minHeight: UI.minTap, borderRadius: UI.radius, borderWidth: 1, borderColor: C.border, backgroundColor: C.card,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
+  },
+});

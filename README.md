@@ -16,7 +16,7 @@
 - **Dashboard** — pain chart, weekly "stopped me doing things" bars, recent symptoms, a cycle calendar, appointments, medicines and health history, each with add / edit / delete.
 - **For my doctor** — an at-a-glance summary with collapsible sections and editable notes, shareable as text or PDF.
 - **Friends** — invite-only, mutual connections who can see each other's current cycle phase (never raw flow/symptom/notes data).
-- **Onboarding** — name, basics, last period date, tracked symptoms, notification preferences.
+- **Onboarding** — name, usual cycle and period length, last period date, an optional daily reminder.
 - **Apple, Google, and email sign-in** — verified server-side by the FastAPI backend; sessions stored with Expo SecureStore.
 
 No diagnostic language anywhere in the product: the app never names a condition, gives a probability, suggests a cause, or recommends treatment. Clinician statements the user types are always labelled "I was told:". See [`MVP.md`](MVP.md) and [`WORKLOG.md`](WORKLOG.md).
@@ -27,7 +27,7 @@ No diagnostic language anywhere in the product: the app never names a condition,
 - **Framework** — [Expo SDK 54](https://expo.dev) · React Native 0.81 · React 19 · TypeScript
 - **Routing** — [expo-router](https://docs.expo.dev/router/introduction/) (typed file-based routes)
 - **State** — Zustand stores (`stores/`); health records in `stores/recordsStore.ts`
-- **UI** — design tokens in `constants/atossaUI.ts` (main tabs) and `constants/theme.ts` (auth, onboarding, profile); Instrument Serif + Work Sans; `react-native-svg` charts
+- **UI** — one design system for every screen: tokens in `constants/atossaUI.ts`, shared components in `components/atossa/kit.tsx`; Instrument Serif + Work Sans; large text and 56pt tap targets; `react-native-svg` charts
 - **Voice** — `expo-speech-recognition`, on-device only (no audio ever leaves the device)
 - **Sharing** — `expo-print` + `expo-sharing` for the doctor summary PDF
 - **Build** — [EAS Build](https://docs.expo.dev/build/introduction/)
@@ -45,15 +45,16 @@ No diagnostic language anywhere in the product: the app never names a condition,
 ```
 atossa/
 ├── app/
-│   ├── (auth)/                   # welcome, login, register, 5-step onboarding
+│   ├── (auth)/                   # welcome, sign in, sign up, onboarding (name, basics, last period, reminders)
 │   └── (tabs)/
 │       ├── chat/                 # symptom flow (four fixed questions)
 │       ├── dashboard/            # overview + calendar, symptoms, appointments, medicines, health
 │       ├── report/               # "For my doctor" summary
 │       └── profile/              # profile, settings, friends (opened from the header avatar)
 ├── components/
-│   ├── atossa/                   # the redesign's shared UI (kit, charts, calendar, tab bar)
-│   └── auth/, layout/, tracking/, ui/  # auth/onboarding/profile building blocks
+│   ├── atossa/                   # shared UI (kit, charts, calendar, date picker, tab bar)
+│   ├── auth/                     # Apple / Google sign-in buttons
+│   └── ui/Icon.tsx               # icon set
 ├── lib/records/                  # pure logic: dates, cycles, doctor summary
 ├── algorithms/                   # cycle-phase math used by Friends
 ├── backend/app/                  # FastAPI: routers, models, schemas, services

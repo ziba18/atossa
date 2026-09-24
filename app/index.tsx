@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/useAuth';
-import { LoadingSpinner } from '../components/ui/LoadingSpinner';
-import { isHumanName } from '../lib/humanName';
+import { LoadingScreen } from '../components/atossa/kit';
+import { routeAfterSignIn } from '../lib/authRouting';
 
 export default function Index() {
   const router = useRouter();
@@ -10,18 +10,8 @@ export default function Index() {
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (!session) {
-      router.replace('/(auth)/welcome');
-    } else if (profile && !profile.onboarding_complete) {
-      if (!isHumanName(profile.display_name)) {
-        router.replace('/(auth)/onboarding/name' as any);
-      } else {
-        router.replace('/(auth)/onboarding/step1-basics');
-      }
-    } else {
-      router.replace('/(tabs)/chat' as any);
-    }
-  }, [isInitialized, session, profile]);
+    router.replace((session ? routeAfterSignIn(profile) : '/(auth)/welcome') as any);
+  }, [isInitialized, session, profile]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <LoadingSpinner fullScreen message="Loading Atossa..." />;
+  return <LoadingScreen message="Opening Atossa…" />;
 }

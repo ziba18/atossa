@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { api, clearTokens, getStoredAccessToken, setSessionExpiredHandler } from '../lib/api';
 import { useAuthStore, type AuthUser } from '../stores/authStore';
-import { useUIStore } from '../stores/uiStore';
 import { syncDailyLogReminder } from '../lib/notifications';
 import type { Profile } from '../types/database';
 
@@ -49,17 +48,7 @@ export function useAuth() {
   const isLoading = useAuthStore((s) => s.isLoading);
   const isInitialized = useAuthStore((s) => s.isInitialized);
   const signOut = useAuthStore((s) => s.signOut);
-  const syncedDarkMode = useRef(false);
   const syncedDailyReminder = useRef(false);
-
-  useEffect(() => {
-    if (!profile || syncedDarkMode.current) return;
-    syncedDarkMode.current = true;
-    if (typeof profile.dark_mode === 'boolean') {
-      const { isDarkMode, setDarkMode } = useUIStore.getState();
-      if (profile.dark_mode !== isDarkMode) setDarkMode(profile.dark_mode);
-    }
-  }, [profile]);
 
   useEffect(() => {
     if (!profile || !profile.onboarding_complete || syncedDailyReminder.current) return;

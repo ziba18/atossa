@@ -21,11 +21,9 @@ export default function AuthLayout() {
       <Stack.Screen name="register" />
       <Stack.Screen name="forgot-password" />
       <Stack.Screen name="onboarding/name" />
-      <Stack.Screen name="onboarding/step1-basics" />
-      <Stack.Screen name="onboarding/step2-last-period" />
-      <Stack.Screen name="onboarding/step3-symptoms" />
-      <Stack.Screen name="onboarding/step4-notifications" />
-      <Stack.Screen name="onboarding/step5-connected" />
+      <Stack.Screen name="onboarding/basics" />
+      <Stack.Screen name="onboarding/last-period" />
+      <Stack.Screen name="onboarding/reminders" />
     </Stack>
   );
 }

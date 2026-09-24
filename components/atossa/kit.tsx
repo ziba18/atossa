@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  View, Text, Pressable, TextInput, StyleSheet, ScrollView,
-  type TextProps, type TextStyle, type ViewStyle, type StyleProp,
+  View, Text, Pressable, TextInput, StyleSheet, ScrollView, Switch, ActivityIndicator,
+  type TextProps, type TextStyle, type ViewStyle, type StyleProp, type TextInputProps,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -63,10 +63,17 @@ export function MainHeader() {
 }
 
 export function Screen({
-  children, header = true, scroll = true, contentStyle,
-}: { children: React.ReactNode; header?: boolean; scroll?: boolean; contentStyle?: StyleProp<ViewStyle> }) {
+  children, header = true, scroll = true, contentStyle, edges = ['top'],
+}: {
+  children: React.ReactNode;
+  header?: boolean;
+  scroll?: boolean;
+  contentStyle?: StyleProp<ViewStyle>;
+  /** Screens outside the tab bar (sign-in, onboarding) also need the bottom inset. */
+  edges?: ('top' | 'bottom')[];
+}) {
   return (
-    <SafeAreaView edges={['top']} style={styles.screen}>
+    <SafeAreaView edges={edges} style={styles.screen}>
       {header && <MainHeader />}
       {scroll ? (
         <ScrollView
@@ -175,7 +182,7 @@ export function BackButton({ label = 'Back to Dashboard', onPress }: { label?: s
 // ---- inputs -------------------------------------------------------------------------------
 
 export function TextField({
-  label, value, onChangeText, placeholder, multiline, maxLength, hint,
+  label, value, onChangeText, placeholder, multiline, maxLength, hint, error, secret, style, ...inputProps
 }: {
   label: string;
   value: string;
@@ -184,24 +191,93 @@ export function TextField({
   multiline?: boolean;
   maxLength?: number;
   hint?: string;
-}) {
+  error?: string;
+  /** Password field with a large Show / Hide button. */
+  secret?: boolean;
+  style?: StyleProp<ViewStyle>;
+} & Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'autoCorrect' | 'autoFocus' | 'returnKeyType' | 'onSubmitEditing' | 'textContentType'>) {
+  const [shown, setShown] = React.useState(false);
   return (
-    <View>
+    <View style={style}>
       <Txt variant="bodyBold">{label}</Txt>
       {hint ? <Txt variant="small">{hint}</Txt> : null}
-      <TextInput
+      <View style={secret ? styles.secretRow : null}>
+        <TextInput
+          {...inputProps}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor="#8b8079"
+          multiline={multiline}
+          maxLength={maxLength}
+          secureTextEntry={secret && !shown}
+          accessibilityLabel={label}
+          accessibilityHint={error || undefined}
+          textAlignVertical={multiline ? 'top' : 'center'}
+          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1 }, error ? { borderColor: C.destructive, borderWidth: 2 } : null]}
+        />
+        {secret ? (
+          <Pressable
+            onPress={() => setShown(!shown)}
+            accessibilityRole="button"
+            accessibilityLabel={shown ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
+            style={styles.showBtn}
+          >
+            <Icon name={shown ? 'eye-off' : 'eye'} size={22} color={C.foreground} />
+            <Txt variant="smallBold">{shown ? 'Hide' : 'Show'}</Txt>
+          </Pressable>
+        ) : null}
+      </View>
+      {error ? <Txt variant="smallBold" color={C.destructive} style={{ marginTop: 6 }} accessibilityRole="alert">{error}</Txt> : null}
+    </View>
+  );
+}
+
+/** A labelled on/off row with a large switch. */
+export function SwitchRow({ label, description, value, onChange }: { label: string; description?: string; value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <View style={styles.switchRow}>
+      <View style={{ flex: 1 }}>
+        <Txt variant="bodyBold">{label}</Txt>
+        {description ? <Txt variant="small" style={{ marginTop: 2 }}>{description}</Txt> : null}
+      </View>
+      <Switch
         value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor="#8b8079"
-        multiline={multiline}
-        maxLength={maxLength}
+        onValueChange={onChange}
         accessibilityLabel={label}
-        textAlignVertical={multiline ? 'top' : 'center'}
-        style={[styles.input, multiline && styles.inputMulti]}
+        trackColor={{ true: C.secondaryForeground, false: C.border }}
+        thumbColor={C.white}
       />
     </View>
   );
+}
+
+/** "Step 2 of 3" with a bar, for onboarding. */
+export function StepProgress({ step, total }: { step: number; total: number }) {
+  return (
+    <View accessible accessibilityLabel={`Step ${step} of ${total}`} style={{ marginBottom: 20 }}>
+      <Txt variant="smallBold" color={C.mutedForeground}>Step {step} of {total}</Txt>
+      <View style={styles.progressTrack}>
+        <View style={[styles.progressFill, { width: `${(step / total) * 100}%` }]} />
+      </View>
+    </View>
+  );
+}
+
+/** Full-screen "please wait" state in the app's colours. */
+export function LoadingScreen({ message }: { message?: string }) {
+  return (
+    <View style={[styles.screen, { alignItems: 'center', justifyContent: 'center', gap: 16 }]} accessibilityLiveRegion="polite">
+      <ActivityIndicator size="large" color={C.primaryStrong} />
+      {message ? <Txt variant="body" color={C.mutedForeground}>{message}</Txt> : null}
+    </View>
+  );
+}
+
+/** Green confirmation line, e.g. "Saved." */
+export function SuccessNote({ message }: { message: string }) {
+  if (!message) return null;
+  return <Txt variant="smallBold" color={C.success} accessibilityRole="alert">{message}</Txt>;
 }
 
 // ---- cards & rows -------------------------------------------------------------------------
@@ -307,6 +383,14 @@ const styles = StyleSheet.create({
     fontFamily: UI.font.body, fontSize: UI.size.body, color: C.foreground,
   },
   inputMulti: { minHeight: 112, paddingTop: 14 },
+  secretRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
+  showBtn: {
+    minHeight: UI.minTap, minWidth: 76, borderRadius: UI.radius, borderWidth: 1, borderColor: C.border,
+    backgroundColor: C.card, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10, gap: 2,
+  },
+  switchRow: { flexDirection: 'row', alignItems: 'center', gap: 16, minHeight: UI.minTap, paddingVertical: 8 },
+  progressTrack: { marginTop: 8, height: 10, borderRadius: 5, backgroundColor: C.muted, overflow: 'hidden' },
+  progressFill: { height: '100%', backgroundColor: C.secondaryForeground },
   card: { borderRadius: UI.radius, borderWidth: 1, borderColor: C.border, backgroundColor: C.card, padding: 16 },
   upcoming: { backgroundColor: C.blueSoft, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2 },
   recordRow: {

@@ -31,7 +31,7 @@ const config: ExpoConfig = {
   splash: {
     image: './assets/splash-icon.png',
     resizeMode: 'contain',
-    backgroundColor: '#FFF8F9',
+    backgroundColor: '#fef9f4',
   },
   ios: {
     supportsTablet: true,
@@ -72,7 +72,7 @@ const config: ExpoConfig = {
       'expo-notifications',
       {
         icon: './assets/icon.png',
-        color: '#DC143C',
+        color: '#8f3830',
       },
     ],
     [
