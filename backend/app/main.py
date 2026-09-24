@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.routers import auth, profiles, cycles, captures, connections, chat
+from app.routers import auth, profiles, cycles, captures, connections, chat, records
 
 app = FastAPI(title="Atossa API", version="1.0.0")
 
@@ -20,6 +20,7 @@ app.include_router(cycles.router)
 app.include_router(captures.router)
 app.include_router(connections.router)
 app.include_router(chat.router)
+app.include_router(records.router)
 
 
 @app.get("/health")

@@ -1,314 +1,183 @@
-import React from 'react';
-import {
-  View, Text, StyleSheet, ScrollView, Pressable, Alert,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Pressable, Share, TextInput } from 'react-native';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import { UI } from '../../../constants/atossaUI';
+import { BigButton, Card, InlineError, PageTitle, Screen, Txt } from '../../../components/atossa/kit';
 import { Icon } from '../../../components/ui/Icon';
+import { useAuthStore } from '../../../stores/authStore';
+import { useRecordsStore } from '../../../stores/recordsStore';
+import {
+  buildDoctorSummary, summaryToHtml, summaryToText, type SummaryRow,
+} from '../../../lib/records/summary';
 
-const BG    = '#f7f3eb';
-const CARD  = '#fdf8f1';
-const BLUE  = '#5B4B73';
-const LBLUE = '#A89AC0';
-const BLUE_SOFT = '#E5DEEC';
-const PINK  = '#3a4d39';
-const MATCHA= '#4d6b4c';
-const CREAM = '#1c1e1c';
-const MUTED = '#7a6e60';
-const RED   = '#8B3A3A';
+const C = UI.colors;
 
-// ── Key findings ───────────────────────────────────────────────────────────────
-const FINDINGS = [
-  {
-    bar:   RED,
-    emoji: '🔴',
-    title: 'Pain score 7.4/10',
-    desc:  'Sustained · 8 consecutive weeks · clinically significant',
-    badge: 'FLAG',
-    badgeColor: RED,
-    badgeBg:    RED + '22',
-  },
-  {
-    bar:   RED,
-    emoji: '🔴',
-    title: 'Heavy flow · 3 of 3 cycles',
-    desc:  'Abnormal volume · logged by wearable + self-report',
-    badge: 'FLAG',
-    badgeColor: RED,
-    badgeBg:    RED + '22',
-  },
-  {
-    bar:   LBLUE,
-    emoji: '🔵',
-    title: 'Cycle · 34–47 days',
-    desc:  'Irregular pattern · consistent across tracked period',
-    badge: null,
-    badgeColor: '',
-    badgeBg:    '',
-  },
-];
-
-// ── SHAP bars ──────────────────────────────────────────────────────────────────
-const SHAP = [
-  { label: 'Cycle phase',    pct: 86 },
-  { label: 'HRV drop',       pct: 69 },
-  { label: 'Sleep quality',  pct: 48 },
-  { label: 'Hormonal data',  pct: 36 },
-];
-
-// ── GP questions ───────────────────────────────────────────────────────────────
-const GP_QUESTIONS = [
-  'Could this be PCOS or endometriosis based on my symptom history?',
-  'Is my menstrual flow clinically abnormal?',
-  'What further tests would you recommend — blood panel, ultrasound?',
-  'Are there treatment options to reduce my pain and regulate my cycle?',
-];
-
-export default function GPReportScreen() {
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
-
+function Rows({ rows }: { rows: SummaryRow[] }) {
   return (
-    <ScrollView
-      style={[styles.screen, { paddingTop: insets.top }]}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 90 }]}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* ── Header ── */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>GP Report</Text>
-          <Text style={styles.sub}>Your data. Your story. — Atossa</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>READY TO SHARE</Text>
-          </View>
-          <Pressable onPress={() => router.push('/(tabs)/profile' as any)} style={styles.avatarBtn} hitSlop={8}>
-            <Icon name="user" size={16} color={PINK} />
-          </Pressable>
-        </View>
-      </View>
-
-      {/* ── Patient card ── */}
-      <View style={styles.patientCard}>
-        <View style={styles.patientRow}>
-          <Text style={styles.patientName}>Ziba Fotouhi</Text>
-          <Text style={styles.patientAge}>Age: 28</Text>
-        </View>
-        <Text style={styles.patientSub}>Suspected PCOS · 8 weeks · multimodal data</Text>
-      </View>
-
-      {/* ── Key findings ── */}
-      <Text style={styles.sectionTitle}>Key Findings</Text>
-      {FINDINGS.map((f, i) => (
-        <View key={i} style={styles.findingCard}>
-          <View style={[styles.findingBar, { backgroundColor: f.bar }]} />
-          <View style={styles.findingBody}>
-            <View style={styles.findingTitleRow}>
-              <Text style={styles.findingEmoji}>{f.emoji}</Text>
-              <Text style={styles.findingTitle}>{f.title}</Text>
-              {f.badge && (
-                <View style={[styles.findingBadge, { backgroundColor: f.badgeBg, borderColor: f.badgeColor }]}>
-                  <Text style={[styles.findingBadgeText, { color: f.badgeColor }]}>{f.badge}</Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.findingDesc}>{f.desc}</Text>
-          </View>
+    <View>
+      {rows.map((row, i) => (
+        <View key={`${row.title}-${i}`} style={{ paddingVertical: 14, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: C.border }}>
+          <Txt variant="h3">{row.title}</Txt>
+          {row.lines.map((line, j) => <Txt key={j} variant="body" style={{ marginTop: 2 }}>{line}</Txt>)}
         </View>
       ))}
-
-      {/* ── SHAP bars ── */}
-      <Text style={styles.sectionTitle}>What Is Driving Symptoms?</Text>
-      <View style={styles.shapCard}>
-        <Text style={styles.shapAiLabel}>AI explanation — SHAP-powered</Text>
-        {SHAP.map((s, i) => (
-          <View key={i} style={styles.shapRow}>
-            <Text style={styles.shapLabel}>{s.label}</Text>
-            <View style={styles.shapTrack}>
-              <View style={[styles.shapFill, { width: `${s.pct}%` }]} />
-            </View>
-            <Text style={styles.shapPct}>{s.pct}%</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* ── GP questions ── */}
-      <Text style={styles.sectionTitle}>Questions for Your GP</Text>
-      <View style={styles.questionsCard}>
-        {GP_QUESTIONS.map((q, i) => (
-          <View key={i} style={styles.questionRow}>
-            <Text style={styles.questionNum}>{i + 1}.</Text>
-            <Text style={styles.questionText}>{q}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* ── Export buttons ── */}
-      <View style={styles.exportRow}>
-        <Pressable
-          style={styles.exportFilled}
-          onPress={() => Alert.alert('Sharing coming soon')}
-        >
-          <Text style={styles.exportFilledText}>📤 Share with GP</Text>
-          <Text style={styles.exportFilledSub}>Send via NHS app</Text>
-        </Pressable>
-        <Pressable
-          style={styles.exportOutlined}
-          onPress={() => Alert.alert('PDF export coming soon')}
-        >
-          <Text style={styles.exportOutlinedText}>⬇ Export PDF</Text>
-          <Text style={styles.exportOutlinedSub}>Download full report</Text>
-        </Pressable>
-      </View>
-
-      {/* ── Footer ── */}
-      <Text style={styles.footer}>Your data. Your story. Your health.</Text>
-    </ScrollView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  screen:  { flex: 1, backgroundColor: BG },
-  content: { paddingHorizontal: 16, paddingTop: 4 },
+function CollapsibleSection({ title, count, open, onToggle, children }: { title: string; count?: number; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return (
+    <View style={{ marginTop: 24, paddingTop: 12, borderTopWidth: 1, borderTopColor: C.border }}>
+      <Pressable
+        onPress={onToggle}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        accessibilityLabel={`${title}${count !== undefined ? `, ${count}` : ''}`}
+        style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
+      >
+        <Txt variant="h2" style={{ flex: 1 }}>
+          {title}{count !== undefined ? <Txt variant="body" color={C.mutedForeground}> ({count})</Txt> : null}
+        </Txt>
+        <View style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }}>
+          <Icon name="chevron-right" size={26} color={C.foreground} />
+        </View>
+      </Pressable>
+      {open ? <View style={{ marginTop: 8 }}>{children}</View> : null}
+    </View>
+  );
+}
 
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    paddingTop: 8,
-  },
-  title: { color: CREAM, fontSize: 22, fontWeight: '700' },
-  sub:   { color: MUTED, fontSize: 12, marginTop: 2 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  badge: {
-    backgroundColor: '#E3DCC6',
-    borderWidth: 1, borderColor: PINK,
-    borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4,
-  },
-  badgeText: { color: PINK, fontSize: 9, fontWeight: '700', letterSpacing: 0.6 },
-  avatarBtn: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: CARD,
-    borderWidth: 1.5, borderColor: PINK,
-    alignItems: 'center', justifyContent: 'center',
-  },
+export default function DoctorScreen() {
+  const userId = useAuthStore((s) => s.user?.id);
+  const { records, loadedFor, loading, error, load, saveDoctorNote } = useRecordsStore();
+  const savedNote = records.doctor_note[0]?.data.text ?? '';
+  const [notes, setNotes] = useState('');
+  const touched = useRef(false);
+  const [noteSaved, setNoteSaved] = useState(false);
+  const [noteError, setNoteError] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [shareError, setShareError] = useState('');
+  const [open, setOpen] = useState<Record<string, boolean>>({ glance: true, notes: true });
 
-  patientCard: {
-    backgroundColor: CARD,
-    borderRadius: 14, padding: 16,
-    borderWidth: 2, borderColor: CREAM,
-    marginBottom: 20,
-    shadowColor: CREAM,
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  patientRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  patientName: { color: CREAM, fontSize: 16, fontWeight: '700' },
-  patientAge:  { color: BLUE, fontSize: 13, fontWeight: '600' },
-  patientSub:  { color: MUTED, fontSize: 12, marginTop: 6 },
+  // Show the saved note once it has loaded, unless the user has already started typing.
+  useEffect(() => {
+    if (!touched.current) setNotes(savedNote);
+  }, [savedNote]);
 
-  sectionTitle: {
-    color: BLUE,
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-    marginBottom: 10,
-    marginTop: 4,
-  },
+  const summary = useMemo(
+    () =>
+      buildDoctorSummary({
+        symptoms: records.symptom,
+        periodDays: records.period_day,
+        medicines: records.medicine,
+        history: records.history,
+        appointments: records.appointment,
+        notes,
+      }),
+    [records, notes],
+  );
 
-  findingCard: {
-    flexDirection: 'row',
-    backgroundColor: CARD,
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 8,
-    borderWidth: 2, borderColor: CREAM,
-    shadowColor: CREAM,
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.10,
-    shadowRadius: 0,
-    elevation: 2,
-  },
-  findingBar:  { width: 4, backgroundColor: RED },
-  findingBody: { flex: 1, padding: 12 },
-  findingTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4, flexWrap: 'wrap' },
-  findingEmoji: { fontSize: 14 },
-  findingTitle: { color: CREAM, fontSize: 13, fontWeight: '700', flex: 1 },
-  findingBadge: {
-    borderWidth: 1, borderRadius: 4,
-    paddingHorizontal: 5, paddingVertical: 2,
-  },
-  findingBadgeText: { fontSize: 9, fontWeight: '800', letterSpacing: 0.5 },
-  findingDesc: { color: MUTED, fontSize: 11, lineHeight: 17 },
+  const toggle = (key: string) => setOpen((cur) => ({ ...cur, [key]: !cur[key] }));
 
-  shapCard: {
-    backgroundColor: CARD,
-    borderRadius: 14, padding: 16,
-    marginBottom: 20,
-    borderWidth: 2, borderColor: CREAM,
-    shadowColor: CREAM,
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  shapAiLabel: { color: MUTED, fontSize: 10, fontWeight: '600', letterSpacing: 0.4, marginBottom: 12 },
-  shapRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
-  shapLabel: { color: CREAM, fontSize: 11, fontWeight: '500', width: 100 },
-  shapTrack: {
-    flex: 1, height: 8,
-    backgroundColor: BLUE + '22',
-    borderRadius: 4, overflow: 'hidden',
-  },
-  shapFill: { height: '100%', backgroundColor: BLUE, borderRadius: 4 },
-  shapPct:  { color: BLUE, fontSize: 11, fontWeight: '700', width: 34, textAlign: 'right' },
+  const saveNotes = async () => {
+    setSavingNote(true);
+    setNoteError('');
+    try {
+      await saveDoctorNote(notes);
+      setNoteSaved(true);
+    } catch {
+      setNoteError("Your notes couldn't be saved. Check your connection and try again.");
+    } finally {
+      setSavingNote(false);
+    }
+  };
 
-  questionsCard: {
-    backgroundColor: CARD,
-    borderRadius: 14, padding: 16,
-    marginBottom: 20,
-    borderWidth: 2, borderColor: CREAM,
-    shadowColor: CREAM,
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 0,
-    elevation: 3,
-    gap: 12,
-  },
-  questionRow:  { flexDirection: 'row', gap: 8 },
-  questionNum:  { color: BLUE, fontSize: 13, fontWeight: '700', width: 18 },
-  questionText: { color: CREAM, fontSize: 13, lineHeight: 20, flex: 1 },
+  const shareSummary = async () => {
+    setSharing(true);
+    setShareError('');
+    try {
+      if (await Sharing.isAvailableAsync()) {
+        const { uri } = await Print.printToFileAsync({ html: summaryToHtml(summary) });
+        await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf', dialogTitle: 'Share your Atossa summary' });
+      } else {
+        await Share.share({ title: 'My Atossa summary', message: summaryToText(summary) });
+      }
+    } catch {
+      // Could not make or share a PDF — fall back to plain text so the summary can still be sent.
+      try {
+        await Share.share({ title: 'My Atossa summary', message: summaryToText(summary) });
+      } catch {
+        setShareError("The summary couldn't be shared. Please try again.");
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
 
-  exportRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
-  exportFilled: {
-    flex: 1,
-    backgroundColor: BLUE,
-    borderRadius: 12, padding: 14,
-    alignItems: 'center',
-  },
-  exportFilledText: { color: '#fff', fontSize: 13, fontWeight: '700' },
-  exportFilledSub:  { color: 'rgba(255,255,255,0.7)', fontSize: 10, marginTop: 3 },
+  if (loading && loadedFor === null) {
+    return <Screen><PageTitle title="For my doctor" /><Txt variant="body" color={C.mutedForeground}>Loading your information…</Txt></Screen>;
+  }
+  if (error && loadedFor === null) {
+    return (
+      <Screen>
+        <PageTitle title="For my doctor" />
+        <InlineError message={error} />
+        <BigButton label="Try again" icon="refresh" onPress={() => userId && load(userId)} style={{ marginTop: 16 }} />
+      </Screen>
+    );
+  }
 
-  exportOutlined: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    borderWidth: 1.5, borderColor: BLUE,
-    borderRadius: 12, padding: 14,
-    alignItems: 'center',
-  },
-  exportOutlinedText: { color: BLUE, fontSize: 13, fontWeight: '700' },
-  exportOutlinedSub:  { color: MUTED, fontSize: 10, marginTop: 3 },
+  return (
+    <Screen>
+      <Txt variant="bodyBold" color={C.primaryStrong}>{summary.rangeText}</Txt>
+      <PageTitle title="For my doctor" subtitle="Information entered in Atossa." />
 
-  footer: {
-    color: MUTED,
-    fontSize: 12,
-    textAlign: 'center',
-    marginBottom: 8,
-    fontStyle: 'italic',
-  },
+      <CollapsibleSection title="At a glance" count={summary.glance.length} open={!!open.glance} onToggle={() => toggle('glance')}>
+        <Card tone="blue"><Rows rows={summary.glance} /></Card>
+      </CollapsibleSection>
+
+      {summary.sections.map((section) => (
+        <CollapsibleSection key={section.key} title={section.title} count={section.count} open={!!open[section.key]} onToggle={() => toggle(section.key)}>
+          {section.rows.length ? <Rows rows={section.rows} /> : <Txt variant="body" color={C.mutedForeground}>None saved.</Txt>}
+        </CollapsibleSection>
+      ))}
+
+      <CollapsibleSection title="Doctor's notes for this visit" count={notes.trim() ? 1 : 0} open={!!open.notes} onToggle={() => toggle('notes')}>
+        <Txt variant="small">These notes are included when sharing.</Txt>
+        <View style={{ marginTop: 12, gap: 12 }}>
+          <NotesBox value={notes} onChange={(v) => { touched.current = true; setNotes(v); setNoteSaved(false); }} />
+          <InlineError message={noteError} />
+          <BigButton label={savingNote ? 'Saving…' : 'Save notes'} icon="check" variant="outline" disabled={savingNote} onPress={saveNotes} />
+          {noteSaved ? <Txt variant="smallBold" color={C.success} accessibilityRole="alert">Notes saved.</Txt> : null}
+        </View>
+      </CollapsibleSection>
+
+      <View style={{ marginTop: 28, gap: 12 }}>
+        <InlineError message={shareError} />
+        <BigButton label={sharing ? 'Preparing…' : 'Share / PDF'} icon="external-link" disabled={sharing} onPress={shareSummary} />
+        <Txt variant="small">This page only repeats information entered in Atossa and notes added during the appointment.</Txt>
+      </View>
+    </Screen>
+  );
+}
+
+// Kept separate so typing in the notes doesn't re-create the whole summary layout each keystroke.
+const NotesBox = React.memo(function NotesBox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <TextInput
+      value={value}
+      onChangeText={onChange}
+      multiline
+      placeholder="Type notes here…"
+      placeholderTextColor="#8b8079"
+      accessibilityLabel="Doctor's notes for this visit"
+      textAlignVertical="top"
+      style={{
+        minHeight: 200, borderRadius: UI.radius, borderWidth: 1, borderColor: C.border, backgroundColor: C.card,
+        padding: 16, fontFamily: UI.font.body, fontSize: UI.size.body, color: C.foreground,
+      }}
+    />
+  );
 });

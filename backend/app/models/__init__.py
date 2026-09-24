@@ -3,6 +3,7 @@ from app.models.cycle import CycleLog, SymptomLog, CyclePrediction
 from app.models.health import HealthMetric, AlertLog
 from app.models.social import ConnectedAccount, EmergencyContact
 from app.models.capture import SymptomCapture
+from app.models.record import HealthRecord
 
 __all__ = [
     "User", "Profile",
@@ -10,4 +11,5 @@ __all__ = [
     "HealthMetric", "AlertLog",
     "ConnectedAccount", "EmergencyContact",
     "SymptomCapture",
+    "HealthRecord",
 ]

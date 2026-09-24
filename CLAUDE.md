@@ -11,7 +11,13 @@ acceptance criteria per feature); `WORKLOG.md` is the dated, detailed log
 of every decision, what was verified, and why — treat WORKLOG.md as the
 source of truth for specifics, this file is just the orientation summary.
 
-**Status as of 2026-09-24:** everything is committed and pushed —
+**Redesign (2026-09-24):** the app now has three tabs — Chat, Dashboard,
+For my doctor — ported from a Lovable prototype; new generic `/records`
+backend store. See the top WORKLOG entry. Not yet run on a device or
+simulator before the TestFlight build. The Chat tab no longer uses the
+`/chat` LLM (it is a fixed four-question flow).
+
+**Status as of 2026-09-24 (before the redesign):** everything was committed and pushed —
 `mvp-symptom-capture` (`d0ff597`) matches GitHub, and Render serves this
 branch. Steps A–C of Feature 1's capture layer are live-verified; Step D
 (voice) is code-complete but not live-verified (blocked on disk space,

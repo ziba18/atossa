@@ -5,6 +5,74 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-09-24 — Redesign: Chat / Dashboard / For my doctor (ported from Lovable)
+
+**What & why:** the UI direction was designed with the user in a Lovable
+project ("Atossa: Your Health Compass", web prototype, in-memory data),
+tested against a real published patient story (Crystal Richardson,
+Weill Cornell), and then ported into this Expo app. The app now has three
+tabs — **Chat**, **Dashboard**, **For my doctor** — with large text/tap
+targets for older, non-technical users, the lighter coral / mist-green /
+blue / ivory palette (`constants/atossaUI.ts`, converted from Lovable's
+oklch tokens), Instrument Serif + Work Sans. The old Analyse and People
+tabs are hidden (`href: null`), not deleted; so are the old capture,
+period-log and cycle-data screens (unreachable, still in the tree).
+
+**Screens (all under `app/(tabs)/`, shared pieces in `components/atossa/`):**
+- `chat/index.tsx` — deterministic symptom flow: user describes → "I've
+  noted this" card (edit/save) → four fixed questions (where, 0–10, how
+  long, did it stop you doing things) → saved as a `symptom` record. No
+  LLM is involved, so no diagnostic text can appear; **the `/chat` LLM
+  endpoint is still deployed but this screen no longer calls it.** Mic
+  button dictates into the box via `hooks/useDictation.ts` (on-device
+  `expo-speech-recognition`, reusing `lib/transcription.ts`).
+- `dashboard/` — index (figures, pain chart, weekly "stopped me doing
+  things" bars, recent symptoms, cycle card, appointments, medicines,
+  health history) + `calendar`, `symptoms`, `appointments`, `medicines`,
+  `health` sub-screens (add/edit/delete with confirmation). Bleeding days
+  are deep red with a sparkle (static under Reduce Motion).
+- `report/index.tsx` — "For my doctor": At-a-glance card, collapsible
+  sections, editable doctor's notes (saved), Share / PDF via
+  `expo-print` + `expo-sharing` (falls back to sharing plain text).
+- Rules carried through: user's own words only; clinician statements are
+  always labelled "I was told:"; dates can be "Around …" (month/year or
+  year); future dates ask for confirmation and show "Upcoming"; no
+  predictions, no interpretation.
+
+**Backend:** new generic per-user store, `health_records` (migration
+`b7c41d9e2a10`, model `HealthRecord`, router `/records` — `GET`, `POST`,
+`PUT /{id}`, `DELETE /{id}`). One JSON document per row, `kind` ∈
+symptom | appointment | medicine | history | period_day | doctor_note;
+20 000-char cap per record, 5 000 records per user. Deliberately generic
+so the record shapes (`types/records.ts`) can change without a migration
+each time — the tradeoff is no relational integrity or server-side
+validation of the fields. Frontend state is `stores/recordsStore.ts`
+(loaded per signed-in user from `(tabs)/_layout.tsx`); pure logic
+(dates, cycles, summaries) is in `lib/records/`.
+**Period data is separate from the old `/cycles` table** — the new
+calendar writes `period_day` records, so what onboarding stored via
+`/cycles` does not appear in it.
+
+**Verified:** the `/records` endpoints via curl against a local backend
+(auth required 403; create/update/list/delete; bad `kind`, oversize and
+non-object bodies → 422; a second user gets 404 on another user's record
+and an empty list); test users deleted afterwards. The pure logic
+(dates, cycles incl. period vs. cycle length, distinct stopped-days,
+weekly buckets, doctor summary text/HTML) with a throwaway assertion
+script. `npx tsc --noEmit` clean and `expo export --platform ios`
+bundles. **Not verified:** the screens have never been run on a device or
+simulator (user asked not to open the simulator this session), so
+layout, keyboard handling in Chat, voice dictation and PDF sharing are
+untested until the TestFlight build.
+
+**Known gaps / ideas not built** (kept out on purpose until more patient
+stories justify them): one merged timeline for appointments/medicines/
+history (a test appointment and a health-history entry can describe the
+same event), optional symptom tags in Chat, a "no periods now" state
+(e.g. after a hysterectomy), no seed/example data in the real app.
+
+---
+
 ## 2026-09-24 — Slow login (Render cold start), keep-warm, and a real chat backend
 
 **Problem:** user reported login "takes too long" coming back to the app

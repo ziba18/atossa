@@ -28,6 +28,11 @@ import {
   Fraunces_500Medium,
   Fraunces_500Medium_Italic,
 } from '@expo-google-fonts/fraunces';
+// Per-weight imports so only the fonts we use are bundled.
+import { InstrumentSerif_400Regular } from '@expo-google-fonts/instrument-serif/400Regular';
+import { WorkSans_400Regular } from '@expo-google-fonts/work-sans/400Regular';
+import { WorkSans_600SemiBold } from '@expo-google-fonts/work-sans/600SemiBold';
+import { WorkSans_700Bold } from '@expo-google-fonts/work-sans/700Bold';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { MAX_CONTENT_WIDTH } from '../constants/theme';
@@ -78,6 +83,11 @@ function AppShell() {
     Fraunces_400Regular_Italic,
     Fraunces_500Medium,
     Fraunces_500Medium_Italic,
+    // Redesigned Chat / Dashboard / For my doctor screens.
+    InstrumentSerif_400Regular,
+    WorkSans_400Regular,
+    WorkSans_600SemiBold,
+    WorkSans_700Bold,
   });
 
   // Hide the splash as soon as the visual prerequisites (fonts + theme) are

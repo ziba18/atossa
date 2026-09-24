@@ -1,375 +1,215 @@
 import React from 'react';
-import {
-  View, Text, StyleSheet, ScrollView, Pressable, Alert,
-} from 'react-native';
-import Svg, { Path, Line, Text as SvgText, Circle, G } from 'react-native-svg';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { UI } from '../../../constants/atossaUI';
+import {
+  BigButton, Card, InlineError, PageTitle, RecordRow, Screen, Section, SectionHeading, Txt,
+} from '../../../components/atossa/kit';
 import { Icon } from '../../../components/ui/Icon';
+import { MonthGrid } from '../../../components/atossa/Calendar';
+import { PainChart, WeeklyBars } from '../../../components/atossa/Charts';
+import { useAuthStore } from '../../../stores/authStore';
+import { useRecordsStore } from '../../../stores/recordsStore';
+import {
+  deriveCycles, periodSummary, symptomStats, weeklyStoppedDays,
+} from '../../../lib/records/summary';
+import {
+  MONTH_NAMES, formatDate, formatRecordDate, isFuture, parseKey, todayKey,
+} from '../../../lib/records/dates';
 
-const BG     = '#f7f3eb';
-const CARD   = '#fdf8f1';
-const PINK   = '#3a4d39';
-const MATCHA = '#4d6b4c';
-const BLUE   = '#5B4B73';
-const CREAM  = '#1c1e1c';
-const MUTED  = '#7a6e60';
-const LPINK  = '#8B3A3A';
-const GREEN_DEEP = '#3a4d39';
-const GREEN_SOFT = '#e6ede4';
+const C = UI.colors;
+const PREVIEW_LIMIT = 5;
 
-// ── Chart helpers ──────────────────────────────────────────────────────────────
-function ptc(cx: number, cy: number, r: number, deg: number) {
-  const rad = ((deg - 90) * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-}
-
-function pieSlice(cx: number, cy: number, r: number, start: number, end: number) {
-  const s = ptc(cx, cy, r, start);
-  const e = ptc(cx, cy, r, end);
-  const large = end - start > 180 ? 1 : 0;
-  return `M ${cx} ${cy} L ${s.x} ${s.y} A ${r} ${r} 0 ${large} 1 ${e.x} ${e.y} Z`;
-}
-
-function donutSlice(cx: number, cy: number, ro: number, ri: number, start: number, end: number) {
-  const os = ptc(cx, cy, ro, start);
-  const oe = ptc(cx, cy, ro, end);
-  const ie = ptc(cx, cy, ri, end);
-  const is_ = ptc(cx, cy, ri, start);
-  const large = end - start > 180 ? 1 : 0;
-  return [
-    `M ${os.x} ${os.y}`,
-    `A ${ro} ${ro} 0 ${large} 1 ${oe.x} ${oe.y}`,
-    `L ${ie.x} ${ie.y}`,
-    `A ${ri} ${ri} 0 ${large} 0 ${is_.x} ${is_.y}`,
-    'Z',
-  ].join(' ');
-}
-
-// ── Line chart ─────────────────────────────────────────────────────────────────
-const PAIN_DATA    = [5.2, 5.8, 6.1, 6.5, 6.8, 7.1, 7.3, 7.4];
-const FATIGUE_DATA = [4.0, 4.2, 4.5, 4.6, 4.8, 5.0, 5.1, 5.2];
-
-const L = 42, R = 305, T = 14, B = 132; // chart bounds in SVG coords
-const CW = R - L, CH = B - T;
-const Y_MIN = 3.5, Y_MAX = 8.0;
-const N = 8;
-
-const toX = (i: number) => L + (i / (N - 1)) * CW;
-const toY = (v: number) => B - ((v - Y_MIN) / (Y_MAX - Y_MIN)) * CH;
-
-function linePath(data: number[]) {
-  return data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)} ${toY(v).toFixed(1)}`).join(' ');
-}
-
-const Y_TICKS = [4, 5, 6, 7, 8];
-const X_LABELS = ['W1','W2','W3','W4','W5','W6','W7','W8'];
-
-function LineChart() {
+function SummaryFigure({ value, label, tone }: { value: string; label: string; tone: 'coral' | 'blue' | 'green' | 'plain' }) {
   return (
-    <Svg width="100%" height={160} viewBox="0 0 320 155" preserveAspectRatio="xMidYMid meet">
-      {/* Grid lines */}
-      {Y_TICKS.map(v => (
-        <Line
-          key={v}
-          x1={L} y1={toY(v)} x2={R} y2={toY(v)}
-          stroke={MUTED + '55'} strokeWidth={0.8}
-        />
-      ))}
-      {/* Y labels */}
-      {Y_TICKS.map(v => (
-        <SvgText key={v} x={L - 6} y={toY(v) + 4} fontSize={9} fill={MUTED} textAnchor="end">
-          {v}
-        </SvgText>
-      ))}
-      {/* X labels */}
-      {X_LABELS.map((lbl, i) => (
-        <SvgText key={i} x={toX(i)} y={B + 14} fontSize={9} fill={MUTED} textAnchor="middle">
-          {lbl}
-        </SvgText>
-      ))}
-      {/* Fatigue line (dashed) */}
-      <Path
-        d={linePath(FATIGUE_DATA)}
-        stroke={MATCHA}
-        strokeWidth={2}
-        fill="none"
-        strokeDasharray="4,3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Pain line (solid) */}
-      <Path
-        d={linePath(PAIN_DATA)}
-        stroke={PINK}
-        strokeWidth={2.5}
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* End-point labels */}
-      <SvgText x={toX(7) + 4} y={toY(PAIN_DATA[7]) + 4} fontSize={9} fill={PINK} fontWeight="bold">
-        {PAIN_DATA[7]}
-      </SvgText>
-      <SvgText x={toX(7) + 4} y={toY(FATIGUE_DATA[7]) + 4} fontSize={9} fill={MATCHA}>
-        {FATIGUE_DATA[7]}
-      </SvgText>
-      {/* Legend */}
-      <G x={L} y={2}>
-        <Circle cx={4} cy={5} r={4} fill={PINK} />
-        <SvgText x={11} y={9} fontSize={9} fill={CREAM}>Pain</SvgText>
-        <Circle cx={48} cy={5} r={4} fill={MATCHA} />
-        <SvgText x={55} y={9} fontSize={9} fill={CREAM}>Fatigue</SvgText>
-      </G>
-    </Svg>
+    <Card tone={tone} style={{ flexBasis: '48%', flexGrow: 1, minHeight: 116 }}>
+      <Txt variant="h2" style={{ fontSize: 28, lineHeight: 34 }}>{value}</Txt>
+      <Txt variant="smallBold" style={{ marginTop: 6 }}>{label}</Txt>
+    </Card>
   );
 }
 
-// ── Pie chart ──────────────────────────────────────────────────────────────────
-const PIE_SLICES = [
-  { label: 'Pain',    pct: 40, color: PINK  },
-  { label: 'Fatigue', pct: 25, color: LPINK },
-  { label: 'Bloating',pct: 20, color: MATCHA},
-  { label: 'Mood',    pct: 15, color: BLUE  },
-];
-
-function PieChart() {
-  let angle = 0;
-  const cx = 65, cy = 65, r = 54;
+function DashboardRecordCard({ title, count, icon, tone, onOpen }: { title: string; count: number; icon: 'pill' | 'stethoscope'; tone: 'coral' | 'green'; onOpen: () => void }) {
   return (
-    <View>
-      <Svg width={130} height={130}>
-        {PIE_SLICES.map((s) => {
-          const start = angle;
-          const end = angle + (s.pct / 100) * 360;
-          angle = end;
-          return <Path key={s.label} d={pieSlice(cx, cy, r, start, end)} fill={s.color} />;
-        })}
-        <Circle cx={cx} cy={cy} r={28} fill={CARD} />
-        <SvgText x={cx} y={cy - 4} textAnchor="middle" fontSize={8} fill={MUTED}>Top:</SvgText>
-        <SvgText x={cx} y={cy + 8} textAnchor="middle" fontSize={10} fill={PINK} fontWeight="bold">Pain</SvgText>
-      </Svg>
-      <View style={styles.legend}>
-        {PIE_SLICES.map(s => (
-          <View key={s.label} style={styles.legendRow}>
-            <View style={[styles.legendDot, { backgroundColor: s.color }]} />
-            <Text style={styles.legendText}>{s.label} {s.pct}%</Text>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-}
-
-// ── Cycle donut ────────────────────────────────────────────────────────────────
-const CYCLE_SLICES = [
-  { label: 'Luteal',      pct: 43, color: PINK  },
-  { label: 'Follicular',  pct: 29, color: BLUE  },
-  { label: 'Ovulation',   pct: 14, color: MATCHA},
-  { label: 'Menstrual',   pct: 14, color: LPINK },
-];
-
-const PHASE_PILLS = ['Luteal · high PMS', 'Low energy', 'HRV dip'];
-
-function CycleDonut() {
-  let angle = 0;
-  const cx = 65, cy = 65;
-  return (
-    <View>
-      <Svg width={130} height={130}>
-        {CYCLE_SLICES.map((s) => {
-          const start = angle;
-          const end = angle + (s.pct / 100) * 360;
-          angle = end;
-          return <Path key={s.label} d={donutSlice(cx, cy, 54, 30, start, end)} fill={s.color} />;
-        })}
-        <Circle cx={cx} cy={cy} r={28} fill={CARD} />
-        <SvgText x={cx} y={cy - 5} textAnchor="middle" fontSize={8} fill={MUTED}>Day 21</SvgText>
-        <SvgText x={cx} y={cy + 7} textAnchor="middle" fontSize={9} fill={PINK} fontWeight="bold">Luteal</SvgText>
-      </Svg>
-      <View style={styles.pills}>
-        {PHASE_PILLS.map(p => (
-          <View key={p} style={styles.pill}>
-            <Text style={styles.pillText}>{p}</Text>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-}
-
-// ── Wearable stats ─────────────────────────────────────────────────────────────
-const WEARABLES = [
-  { label: 'HRV',   value: '38ms',  arrow: '↓', red: true  },
-  { label: 'Sleep', value: '5.2h',  arrow: '↓', red: true  },
-  { label: 'Temp',  value: '+0.4°', arrow: '↑', red: false },
-  { label: 'RHR',   value: '78bpm', arrow: '↑', red: true  },
-];
-
-// ── Main screen ────────────────────────────────────────────────────────────────
-export default function DashboardScreen() {
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
-
-  return (
-    <ScrollView
-      style={[styles.screen, { paddingTop: insets.top }]}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 90 }]}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Health Dashboard</Text>
-          <Text style={styles.sub}>8 weeks tracked · Atossa</Text>
+    <Section>
+      <Pressable
+        onPress={onOpen}
+        accessibilityRole="button"
+        accessibilityLabel={`${title}, ${count} saved entries. Open`}
+        style={({ pressed }) => [{
+          borderRadius: UI.radius, borderWidth: 1, borderColor: C.border, padding: 20, flexDirection: 'row', alignItems: 'center', gap: 16,
+          backgroundColor: tone === 'coral' ? C.coralSoft : C.secondary, opacity: pressed ? 0.85 : 1,
+        }]}
+      >
+        <View style={{ width: 56, height: 56, borderRadius: UI.radius, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name={icon} size={28} color={C.foreground} />
         </View>
-        <View style={styles.headerRight}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>REPORT READY</Text>
-          </View>
-          <Pressable onPress={() => router.push('/(tabs)/profile' as any)} style={styles.avatarBtn} hitSlop={8}>
-            <Icon name="user" size={16} color={GREEN_DEEP} />
-          </Pressable>
+        <View style={{ flex: 1 }}>
+          <Txt variant="h2">{title}</Txt>
+          <Txt variant="h2" style={{ fontSize: 30, lineHeight: 36, marginTop: 4 }}>{count}</Txt>
+          <Txt variant="small" color={C.foreground}>saved entries</Txt>
         </View>
-      </View>
-
-      {/* Section 1 — Line chart */}
-      <View style={styles.chartCard}>
-        <Text style={styles.sectionTitle}>Symptom Trends · 8 Weeks</Text>
-        <LineChart />
-      </View>
-
-      {/* Section 2 — Pie + Donut */}
-      <View style={styles.row}>
-        <View style={[styles.chartCard, { flex: 1 }]}>
-          <Text style={styles.sectionTitle}>Symptom Split</Text>
-          <PieChart />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Txt variant="bodyBold">Open</Txt>
+          <Icon name="chevron-right" size={24} color={C.foreground} />
         </View>
-        <View style={[styles.chartCard, { flex: 1 }]}>
-          <Text style={styles.sectionTitle}>Cycle Ring</Text>
-          <CycleDonut />
-        </View>
-      </View>
-
-      {/* Section 3 — Wearable strip */}
-      <Text style={styles.sectionTitle}>Wearable Signals</Text>
-      <View style={styles.wearRow}>
-        {WEARABLES.map(w => (
-          <View key={w.label} style={styles.wearCard}>
-            <Text style={styles.wearLabel}>{w.label}</Text>
-            <Text style={styles.wearValue}>{w.value}</Text>
-            <Text style={[styles.wearArrow, { color: w.red ? '#E85A6A' : MATCHA }]}>
-              {w.arrow}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Section 4 — Insight card */}
-      <View style={styles.insightCard}>
-        <Text style={styles.insightText}>
-          Pain pattern + irregular cycles consistent with PCOS flare. Sleep and HRV flagged this week. GP report ready →
-        </Text>
-      </View>
-
-      {/* CTA */}
-      <Pressable style={styles.ctaBtn} onPress={() => router.push('/(tabs)/report' as any)}>
-        <Text style={styles.ctaText}>📤 Share with my GP</Text>
       </Pressable>
-    </ScrollView>
+    </Section>
   );
 }
 
-const styles = StyleSheet.create({
-  screen:  { flex: 1, backgroundColor: BG },
-  content: { paddingHorizontal: 16, paddingTop: 4 },
+export default function DashboardScreen() {
+  const router = useRouter();
+  const userId = useAuthStore((s) => s.user?.id);
+  const { records, loadedFor, loading, error, load } = useRecordsStore();
+  const go = (path: string, params?: Record<string, string>) => router.push({ pathname: `/(tabs)/dashboard/${path}`, params } as any);
 
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    paddingTop: 8,
-  },
-  title: { color: GREEN_DEEP, fontSize: 20, fontWeight: '700' },
-  sub:   { color: MUTED, fontSize: 12, marginTop: 2 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  badge: {
-    backgroundColor: '#E3DCC6',
-    borderWidth: 1, borderColor: PINK,
-    borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4,
-  },
-  badgeText: { color: PINK, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
-  avatarBtn: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: CARD,
-    borderWidth: 1.5, borderColor: GREEN_DEEP,
-    alignItems: 'center', justifyContent: 'center',
-  },
+  const symptoms = records.symptom.map((r) => ({ id: r.id, ...r.data }));
+  const periodDays = records.period_day.map((r) => r.data);
+  const cycles = deriveCycles(periodDays);
+  const latest = cycles[0];
+  const stats = symptomStats(symptoms);
+  const byDateAsc = [...symptoms].sort((a, b) => a.date.localeCompare(b.date));
+  const chartSymptoms = byDateAsc.slice(-30);
+  const newestFirst = [...symptoms].sort((a, b) => b.date.localeCompare(a.date));
+  const appointments = [...records.appointment].sort((a, b) => b.data.date.localeCompare(a.data.date));
+  const previewParts = latest ? parseKey(latest.start) : parseKey(todayKey());
+  const dateRange = byDateAsc.length
+    ? `${formatDate(byDateAsc[0].date, true)} – ${formatDate(byDateAsc[byDateAsc.length - 1].date, true)}`
+    : 'No dates saved yet';
+  const dayMap = new Map(periodDays.map((d) => [d.date, d]));
 
-  sectionTitle: { color: GREEN_DEEP, fontSize: 13, fontWeight: '700', marginBottom: 8 },
+  if (loading && loadedFor === null) {
+    return <Screen><PageTitle title="Dashboard" /><Txt variant="body" color={C.mutedForeground}>Loading your information…</Txt></Screen>;
+  }
+  if (error && loadedFor === null) {
+    return (
+      <Screen>
+        <PageTitle title="Dashboard" />
+        <InlineError message={error} />
+        <BigButton label="Try again" icon="refresh" onPress={() => userId && load(userId)} style={{ marginTop: 16 }} />
+      </Screen>
+    );
+  }
 
-  chartCard: {
-    backgroundColor: CARD,
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: GREEN_DEEP,
-    shadowColor: GREEN_DEEP,
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 0,
-    elevation: 3,
-  },
+  return (
+    <Screen>
+      <PageTitle title="Dashboard" subtitle="A history of what you reported to Atossa." />
 
-  row: { flexDirection: 'row', gap: 10, marginBottom: 12 },
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 20 }} accessibilityLabel="Summary figures">
+        <SummaryFigure value={String(symptoms.length)} label="Symptoms saved" tone="coral" />
+        <SummaryFigure value={latest?.length ? `${latest.length} days` : '—'} label="Last period" tone="blue" />
+        <SummaryFigure value={`${stats.stoppedDays} ${stats.stoppedDays === 1 ? 'day' : 'days'}`} label="Days it stopped me doing things" tone="green" />
+        <SummaryFigure value={symptoms.length ? `${stats.max} out of 10` : '—'} label="Highest pain score" tone="plain" />
+      </View>
 
-  legend:    { marginTop: 6, gap: 3 },
-  legendRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendText:{ color: MUTED, fontSize: 9 },
+      <Section>
+        <SectionHeading title="Pain over time" subtitle={`Your saved answers · ${dateRange}`} />
+        <Card>
+          {chartSymptoms.length === 0 ? (
+            <Txt variant="body">Nothing to show yet. Tell Atossa how you feel in Chat and your answers will appear here.</Txt>
+          ) : (
+            <>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <View style={{ width: 32, height: 4, backgroundColor: C.primaryStrong }} />
+                <Txt variant="smallBold">Reported pain, 0–10</Txt>
+              </View>
+              <PainChart
+                scores={chartSymptoms.map((s) => s.score)}
+                accessibilityLabel={`Pain scores: ${chartSymptoms.map((s) => s.score).join(', ')}`}
+              />
+              <Txt variant="small" style={{ marginTop: 12 }}>
+                {symptoms.length} saved {symptoms.length === 1 ? 'score' : 'scores'}, from {stats.min} to {stats.max} out of 10.
+              </Txt>
+            </>
+          )}
+        </Card>
+      </Section>
 
-  pills:    { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 6 },
-  pill:     {
-    backgroundColor: PINK + '22',
-    borderRadius: 6,
-    paddingHorizontal: 5, paddingVertical: 2,
-  },
-  pillText: { color: LPINK, fontSize: 8, fontWeight: '600' },
+      <Section>
+        <SectionHeading title="Days that stopped me doing things, by week" subtitle="From your Yes and No answers" />
+        <Card>
+          <WeeklyBars weeks={weeklyStoppedDays(symptoms)} />
+          <Txt variant="small" style={{ marginTop: 16 }}>{stats.stoppedDays} different saved days were marked Yes.</Txt>
+        </Card>
+      </Section>
 
-  wearRow:  { flexDirection: 'row', gap: 8, marginBottom: 14 },
-  wearCard: {
-    flex: 1, backgroundColor: CARD,
-    borderRadius: 12, padding: 10,
-    alignItems: 'center',
-    borderWidth: 2, borderColor: GREEN_DEEP,
-    shadowColor: GREEN_DEEP,
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.10,
-    shadowRadius: 0,
-    elevation: 2,
-  },
-  wearLabel: { color: MUTED, fontSize: 9, fontWeight: '600' },
-  wearValue: { color: CREAM, fontSize: 14, fontWeight: '700', marginVertical: 2 },
-  wearArrow: { fontSize: 16, fontWeight: '700' },
+      <Section>
+        <SectionHeading title="My symptoms" subtitle={`${symptoms.length} saved ${symptoms.length === 1 ? 'entry' : 'entries'}`} />
+        <View style={{ gap: 12 }}>
+          {newestFirst.length === 0 ? <Txt variant="body" color={C.mutedForeground}>No symptoms saved yet.</Txt> : null}
+          {newestFirst.slice(0, PREVIEW_LIMIT).map((s) => (
+            <RecordRow
+              key={s.id}
+              title={`${formatDate(s.date)} · ${s.score}/10`}
+              subtitle={s.words}
+              upcoming={isFuture(s.date)}
+              onPress={() => go('symptoms', { id: s.id })}
+            />
+          ))}
+          {newestFirst.length > PREVIEW_LIMIT ? (
+            <BigButton label={`See all ${newestFirst.length} entries`} variant="outline" onPress={() => go('symptoms')} />
+          ) : null}
+        </View>
+      </Section>
 
-  insightCard: {
-    backgroundColor: CARD,
-    borderWidth: 2, borderColor: GREEN_DEEP,
-    borderRadius: 14, padding: 16, marginBottom: 14,
-    shadowColor: GREEN_DEEP,
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  insightText: { color: GREEN_DEEP, fontSize: 14, lineHeight: 22, fontWeight: '500' },
+      <Section>
+        <SectionHeading title="Cycle" />
+        <Pressable
+          onPress={() => go('calendar')}
+          accessibilityRole="button"
+          accessibilityLabel={`Open calendar. ${periodSummary(periodDays)}`}
+          style={({ pressed }) => [{
+            borderRadius: UI.radius, borderWidth: 1, borderColor: C.border, backgroundColor: C.card, padding: 16, gap: 12, opacity: pressed ? 0.85 : 1,
+          }]}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Txt variant="h3">{MONTH_NAMES[previewParts.m0]} {previewParts.y}</Txt>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Txt variant="bodyBold" color={C.accentForeground}>Open calendar</Txt>
+              <Icon name="chevron-right" size={22} color={C.accentForeground} />
+            </View>
+          </View>
+          <MonthGrid
+            year={previewParts.y}
+            month0={previewParts.m0}
+            compact
+            cellHeight={34}
+            cellState={(key) => {
+              const d = dayMap.get(key);
+              return { bleeding: !!d && d.flow !== 'None', start: d?.isStart, end: d?.isEnd };
+            }}
+          />
+          <Txt variant="bodyBold">{periodSummary(periodDays)}</Txt>
+        </Pressable>
+      </Section>
 
-  ctaBtn: {
-    backgroundColor: PINK,
-    borderRadius: 14, padding: 16,
-    alignItems: 'center', marginBottom: 8,
-  },
-  ctaText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-});
+      <Section>
+        <SectionHeading
+          title="Appointments"
+          subtitle={`${appointments.length} saved`}
+          right={<BigButton label="Add" icon="plus" variant="outline" onPress={() => go('appointments', { id: 'new' })} style={{ minHeight: 56, paddingHorizontal: 16 }} />}
+        />
+        <View style={{ gap: 12 }}>
+          {appointments.slice(0, PREVIEW_LIMIT).map((a) => (
+            <RecordRow
+              key={a.id}
+              icon="calendar"
+              title={formatRecordDate(a.data.date, a.data.datePrecision)}
+              subtitle={a.data.who}
+              upcoming={isFuture(a.data.date)}
+              onPress={() => go('appointments', { id: a.id })}
+            />
+          ))}
+          {appointments.length > PREVIEW_LIMIT ? (
+            <BigButton label={`See all ${appointments.length} appointments`} variant="outline" onPress={() => go('appointments')} />
+          ) : null}
+          <BigButton label="Add an appointment" icon="plus" onPress={() => go('appointments', { id: 'new' })} />
+        </View>
+      </Section>
+
+      <DashboardRecordCard title="Medicines and treatments" count={records.medicine.length} icon="pill" tone="coral" onOpen={() => go('medicines')} />
+      <DashboardRecordCard title="Health history" count={records.history.length} icon="stethoscope" tone="green" onOpen={() => go('health')} />
+    </Screen>
+  );
+}
