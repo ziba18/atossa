@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '../../../stores/authStore';
-import { useCycleStore } from '../../../stores/cycleStore';
-import { api } from '../../../lib/api';
+import { useRecordsStore } from '../../../stores/recordsStore';
 import { Badge } from '../../../components/ui/Badge';
 import { Card } from '../../../components/ui/Card';
 import { Icon, type IconName } from '../../../components/ui/Icon';
@@ -18,24 +17,14 @@ import { isHumanName } from '../../../lib/humanName';
 export default function ProfileScreen() {
   const router = useRouter();
   const { profile, user, signOut } = useAuthStore();
-  const { cycleLogs, fetchCycleLogs } = useCycleStore();
-  const [totalSymptoms, setTotalSymptoms] = useState<number>(0);
+  const symptomCount = useRecordsStore((s) => s.records.symptom.length);
+  const appointmentCount = useRecordsStore((s) => s.records.appointment.length);
   const theme = useColors();
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
   // Tab bar floats absolutely (height 68 + 12 from bottom). Pad the scroll
   // content so the footer line clears it on every device.
   const bottomPad = insets.bottom + 96;
-
-  useEffect(() => {
-    if (!user) return;
-    fetchCycleLogs();
-    api.get<{ count: number }>('/cycles/symptoms/count')
-      .then((r) => setTotalSymptoms(r.count))
-      .catch(() => {});
-  }, [user]);
-
-  const totalCycles = cycleLogs.length;
 
   const formatDate = (iso: string | null) => {
     if (!iso) return '—';
@@ -93,16 +82,16 @@ export default function ProfileScreen() {
         <View style={styles.statsSection}>
           <View style={styles.statsGrid}>
             <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{totalCycles}</Text>
-              <Text style={styles.statLabel}>Cycles logged</Text>
+              <Text style={styles.statValue}>{symptomCount}</Text>
+              <Text style={styles.statLabel}>Symptoms</Text>
             </Card>
             <Card style={styles.statCell}>
               <Text style={styles.statValue}>{profile?.average_cycle_length ?? 28}d</Text>
               <Text style={styles.statLabel}>Avg cycle</Text>
             </Card>
             <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{totalSymptoms}</Text>
-              <Text style={styles.statLabel}>Symptoms</Text>
+              <Text style={styles.statValue}>{appointmentCount}</Text>
+              <Text style={styles.statLabel}>Appointments</Text>
             </Card>
           </View>
         </View>

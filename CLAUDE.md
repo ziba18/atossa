@@ -11,6 +11,12 @@ acceptance criteria per feature); `WORKLOG.md` is the dated, detailed log
 of every decision, what was verified, and why — treat WORKLOG.md as the
 source of truth for specifics, this file is just the orientation summary.
 
+**Cleanup (2026-09-24, later):** all cycle *prediction* code is gone
+(app, server, `training/`, TFLite stubs), as are `/captures`, the old
+`/cycles/symptoms*` endpoints, the old hidden screens and ~23 unused npm
+packages. `/chat` is deliberately kept deployed but unused. See the top
+WORKLOG entry.
+
 **Redesign (2026-09-24):** the app now has three tabs — Chat, Dashboard,
 For my doctor — ported from a Lovable prototype; new generic `/records`
 backend store. See the top WORKLOG entry. Not yet run on a device or
@@ -28,7 +34,7 @@ see below). The chat tab now has a real `/chat` backend (see below).
 - Backend: `/captures` endpoints (`POST`, `GET ?limit=10`),
   `symptom_captures` table + Alembic migration — verified live via curl
   (create, validation rejects, list ordering, auth enforcement)
-- Frontend: `app/(tabs)/chat/capture.tsx` — text-capture path verified
+- (Historical — `capture.tsx` has since been deleted.) Frontend: `app/(tabs)/chat/capture.tsx` — text-capture path verified
   live in Expo Go in the simulator (register → onboarding → save →
   persisted across remount). Voice-capture path (`lib/transcription.ts`,
   `expo-speech-recognition`) is written with full failure-mode handling

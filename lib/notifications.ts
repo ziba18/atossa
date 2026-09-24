@@ -54,55 +54,9 @@ const PERIOD_REMINDER_ID = 'period-reminder';
 const OVULATION_REMINDER_ID = 'ovulation-reminder';
 const DAILY_LOG_REMINDER_ID = 'daily-log-reminder';
 
-export async function schedulePeriodReminder(
-  periodStartDate: string,
-  daysBeforeReminder = 2
-): Promise<void> {
-  try {
-    const triggerDate = new Date(periodStartDate);
-    triggerDate.setDate(triggerDate.getDate() - daysBeforeReminder);
-    triggerDate.setHours(9, 0, 0, 0);
-    if (triggerDate <= new Date()) return;
-
-    await Notifications.scheduleNotificationAsync({
-      identifier: PERIOD_REMINDER_ID,
-      content: {
-        title: 'Period Coming Soon',
-        body: `Your period is expected in ${daysBeforeReminder} days. Stock up on supplies!`,
-        data: { type: 'period_upcoming' },
-      },
-      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: triggerDate },
-    });
-  } catch {
-    // Scheduling not supported in this environment
-  }
-}
-
-export async function scheduleOvulationReminder(ovulationDate: string): Promise<void> {
-  try {
-    const triggerDate = new Date(ovulationDate);
-    triggerDate.setDate(triggerDate.getDate() - 1);
-    triggerDate.setHours(8, 0, 0, 0);
-    if (triggerDate <= new Date()) return;
-
-    await Notifications.scheduleNotificationAsync({
-      identifier: OVULATION_REMINDER_ID,
-      content: {
-        title: '💛 Ovulation Window',
-        body: 'Your fertile window is approaching. Ovulation is expected tomorrow.',
-        data: { type: 'ovulation_upcoming' },
-      },
-      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: triggerDate },
-    });
-  } catch {
-    // Scheduling not supported in this environment
-  }
-}
-
-// Cancels only the date-specific cycle reminders, leaving recurring ones
-// (e.g. the daily log reminder) scheduled. Called before re-scheduling
-// period/ovulation reminders off a fresh prediction.
-export async function cancelPeriodAndOvulationReminders(): Promise<void> {
+// Cancels the period/ovulation reminders older builds scheduled from a
+// cycle prediction, leaving the daily log reminder alone.
+export async function cancelPredictedCycleReminders(): Promise<void> {
   try {
     await Notifications.cancelScheduledNotificationAsync(PERIOD_REMINDER_ID);
   } catch {

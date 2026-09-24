@@ -3,104 +3,65 @@
 
   # Atossa
 
-  **A women's health companion built with Expo, React Native, and a Python/ML backend.**
+  **A symptom-capture companion for people with PCOS or endometriosis, built with Expo, React Native, and a Python backend.**
 
-  Track your cycle, capture symptoms by voice or text, and get data-driven phase predictions — all in one calm, beautifully designed app.
+  Put symptoms into your own words, keep track of appointments and medicines, and bring a clear, GP-ready summary to your doctor.
 </div>
 
 ---
 
 ## Features
 
-- **Symptom capture** — describe symptoms by voice (on-device transcription, nothing sent to a server) or text; entries are timestamped and kept for review. This is the active build focus — see [`MVP.md`](MVP.md) and [`WORKLOG.md`](WORKLOG.md) for the in-progress pivot toward turning captures into a structured, GP-ready summary. No diagnostic language anywhere in the product: the app never names a condition, gives a probability, suggests a cause, or recommends treatment.
-- **Chat companion (Sage)** — a short, one-question-at-a-time chat that helps you put symptoms into words. Backed by an authenticated `/chat` endpoint that proxies an OpenAI-compatible LLM (Groq's free tier by default). Instructed never to diagnose, name conditions, suggest causes, or recommend treatment — a prompt-level rule, not yet a hard filter.
-- **Cycle tracking** — log periods on a continuous linear calendar (any day, past or present), get phase predictions (menstrual, follicular, ovulatory, luteal), and see your full cycle on an animated ring.
-- **Friends** — invite-only, mutual connections who can see each other's current cycle phase (never raw flow/symptom/notes data) and get a nudge when you're in the same phase.
-- **Insights & metrics** — visualize trends across cycles with charts.
-- **Onboarding flow** — multi-step setup: basics, last period date, tracked symptoms, notification preferences.
-- **Profile & social** — edit profile, manage emergency contacts, connected accounts, friends.
-- **Secure by default** — sessions stored in the device secure enclave (Expo SecureStore); no analytics SDKs.
-- **Apple, Google, and email sign-in** — verified server-side by the FastAPI backend.
+- **Chat** — describe a symptom in your own words (typed, or dictated with on-device speech recognition), confirm the "I've noted this" card, then answer four fixed questions: where, how bad (0–10), how long, and whether it stopped you doing things. No AI writes anything here, so nothing diagnostic can appear.
+- **Dashboard** — pain chart, weekly "stopped me doing things" bars, recent symptoms, a cycle calendar, appointments, medicines and health history, each with add / edit / delete.
+- **For my doctor** — an at-a-glance summary with collapsible sections and editable notes, shareable as text or PDF.
+- **Friends** — invite-only, mutual connections who can see each other's current cycle phase (never raw flow/symptom/notes data).
+- **Onboarding** — name, basics, last period date, tracked symptoms, notification preferences.
+- **Apple, Google, and email sign-in** — verified server-side by the FastAPI backend; sessions stored with Expo SecureStore.
+
+No diagnostic language anywhere in the product: the app never names a condition, gives a probability, suggests a cause, or recommends treatment. Clinician statements the user types are always labelled "I was told:". See [`MVP.md`](MVP.md) and [`WORKLOG.md`](WORKLOG.md).
 
 ## Tech stack
 
 ### Mobile app
 - **Framework** — [Expo SDK 54](https://expo.dev) · React Native 0.81 · React 19 · TypeScript
 - **Routing** — [expo-router](https://docs.expo.dev/router/introduction/) (typed file-based routes)
-- **State** — Zustand stores (`stores/`)
-- **UI** — Custom design tokens (`constants/theme.ts`), Cormorant Garamond + Jost fonts, gradient + SVG accents
-- **Charts** — `react-native-chart-kit`, `react-native-calendars`, `react-native-svg`
-- **Auth** — Apple Sign-In (`expo-apple-authentication`) and Google Sign-In, verified server-side; sessions issued by the FastAPI backend
-- **Voice capture** — `expo-speech-recognition`, on-device only (no audio ever leaves the device)
-- **Native modules** — Expo Notifications, SecureStore, Contacts, AV
+- **State** — Zustand stores (`stores/`); health records in `stores/recordsStore.ts`
+- **UI** — design tokens in `constants/atossaUI.ts` (main tabs) and `constants/theme.ts` (auth, onboarding, profile); Instrument Serif + Work Sans; `react-native-svg` charts
+- **Voice** — `expo-speech-recognition`, on-device only (no audio ever leaves the device)
+- **Sharing** — `expo-print` + `expo-sharing` for the doctor summary PDF
 - **Build** — [EAS Build](https://docs.expo.dev/build/introduction/)
 
 ### Python backend
-- **API** — [FastAPI](https://fastapi.tiangolo.com) with routers for auth, profiles, cycles, symptom captures, and friend connections
+- **API** — [FastAPI](https://fastapi.tiangolo.com) with routers for auth, profiles, cycles (onboarding period date), records, friend connections, and chat
+- **Records** — `/records` is a generic per-user store: one JSON document per row, `kind` ∈ symptom | appointment | medicine | history | period_day | doctor_note
 - **Database** — PostgreSQL via SQLAlchemy 2 ORM; [Alembic](https://alembic.sqlalchemy.org) migrations. Hosted on [Supabase](https://supabase.com) (used purely for Postgres — the app never talks to Supabase directly)
-- **Auth** — Its own email/password JWTs (`passlib`/`python-jose`), plus server-side verification of Apple/Google identity tokens for social sign-in
-- **ML prediction layer** (`backend/app/ml/predict.py`) — hybrid EWMA + Bayesian forecaster (see below)
-- **Chat** — `POST /chat` proxies any OpenAI-compatible LLM API (default: Groq, `openai/gpt-oss-20b`); the API key stays server-side. Swap `LLM_BASE_URL`/`LLM_MODEL` to point at another provider or a self-hosted model.
-- **Hosting** — [Render](https://render.com) (free tier), deployed via the `render.yaml` blueprint at the repo root; kept warm by a scheduled GitHub Action (see [Deploy](#4-deploy-the-backend))
-
-### Machine learning
-- **Client-side algorithms** (`algorithms/`) — TypeScript port of the cycle predictor, runs on-device
-- **Server-side predictor** (`backend/app/ml/predict.py`) — Python mirror of the same hybrid algorithm using NumPy
-- **Deep learning forecaster** (`training/`) — LSTM model trained with Gaussian NLL loss, exported to TFLite (~120 KB)
+- **Auth** — its own email/password JWTs (`passlib`/`python-jose`), plus server-side verification of Apple/Google identity tokens
+- **Chat (unused)** — `POST /chat` proxies an OpenAI-compatible LLM (Groq by default). It stays deployed for a possible future feature, but the app does not call it.
+- **Hosting** — [Render](https://render.com) (free tier), deployed via the `render.yaml` blueprint; kept warm by a scheduled GitHub Action (see [Deploy](#3-deploy-the-backend))
 
 ## Project structure
 
 ```
 atossa/
 ├── app/
-│   ├── (auth)/                   # auth & onboarding screens
-│   │   └── onboarding/           # 5-step onboarding flow
-│   └── (tabs)/                   # tab navigator
-│       ├── dashboard/            # home dashboard + notifications
-│       ├── chat/                 # symptom capture (voice/text), period log, cycle data
-│       ├── analysis/             # insights & metrics
-│       ├── community/            # social feed
-│       ├── report/               # findings/report view
-│       └── profile/              # edit profile, contacts, connections, friends
-├── algorithms/                   # TypeScript cycle prediction + date helpers
-│   ├── cyclePrediction.ts        # EWMA / Bayesian / median predictor
-│   ├── aiCyclePrediction.ts      # AI-enhanced prediction helpers
-│   ├── healthRiskDetection.ts    # anomaly / risk flags
-│   └── predict.ts                # prediction entry point
-├── backend/
-│   ├── app/
-│   │   ├── main.py               # FastAPI app, CORS, router wiring
-│   │   ├── ml/predict.py         # hybrid EWMA + Bayesian forecaster (Python)
-│   │   ├── models/               # SQLAlchemy ORM models (user, cycle, health, capture, social)
-│   │   ├── routers/              # auth, profiles, cycles, captures, connections, chat
-│   │   ├── schemas/              # Pydantic request/response schemas
-│   │   └── services/             # auth (JWT), social_auth (Apple/Google), llm (chat proxy + system prompt)
-│   └── alembic/                  # database migration versions
-├── training/                     # LSTM forecaster training pipeline (see training/README.md)
-│   ├── forecaster.py             # LSTM(64) → Dense(2) [mean, log_var], Gaussian NLL loss
-│   ├── features.py               # feature engineering (12-step windows, 6 features each)
-│   └── data/                     # fetch.py, prepare.py, synthetic.py
-├── components/                   # reusable UI: calendar, layout, primitives
-├── constants/theme.ts            # design tokens (color, spacing, radius, typography)
-├── contexts/                     # ThemeContext (light/dark)
-├── hooks/                        # useAuth, useColorScheme, etc.
-├── lib/                          # API client, Supabase client (social sign-in only), transcription
-├── stores/                       # Zustand stores (auth, cycle, health, profile)
-├── supabase/functions/           # Supabase edge functions
-├── .github/workflows/            # keep-backend-warm.yml (pings /warmup every 10 min; lives on main)
-├── render.yaml                   # Render blueprint for the backend deploy
+│   ├── (auth)/                   # welcome, login, register, 5-step onboarding
+│   └── (tabs)/
+│       ├── chat/                 # symptom flow (four fixed questions)
+│       ├── dashboard/            # overview + calendar, symptoms, appointments, medicines, health
+│       ├── report/               # "For my doctor" summary
+│       └── profile/              # profile, settings, friends (opened from the header avatar)
+├── components/
+│   ├── atossa/                   # the redesign's shared UI (kit, charts, calendar, tab bar)
+│   └── auth/, layout/, tracking/, ui/  # auth/onboarding/profile building blocks
+├── lib/records/                  # pure logic: dates, cycles, doctor summary
+├── algorithms/                   # cycle-phase math used by Friends
+├── backend/app/                  # FastAPI: routers, models, schemas, services
+├── backend/alembic/              # database migrations
+├── .github/workflows/            # keep-backend-warm.yml (lives on main)
+├── render.yaml                   # Render blueprint for the backend
 └── assets/                       # icons, splash, logo
 ```
-
-## Cycle prediction
-
-Atossa uses a three-layer prediction stack:
-
-1. **TypeScript (on-device)** — `algorithms/cyclePrediction.ts` runs locally in the app. It classifies cycle regularity (regular / variable / irregular) and picks the right estimator: EWMA for regular cycles, median for irregular (PCOS-friendly), or Bayesian shrinkage toward the user's profile prior when data is sparse.
-
-2. **Python (server-side)** — `backend/app/ml/predict.py` is a NumPy port of the same algorithm, called by the `/cycles/predict` endpoint. Predictions are persisted to the `cycle_predictions` table with a confidence score and method label.
-
-3. **LSTM forecaster (training artifact)** — `training/forecaster.py` trains a `LSTM(64) → Dropout → Dense(32) → Dense(2)` model with a Gaussian negative log-likelihood loss. The two outputs are `[mean, log_var]`; the variance head lets the model express its own uncertainty, which is used to widen the fertile window for high-variance forecasts. The model exports to TFLite (~120 KB) for potential on-device inference.
 
 ## Getting started
 
@@ -108,7 +69,7 @@ Atossa uses a three-layer prediction stack:
 
 - Node 20+ and npm
 - Python 3.11
-- iOS Simulator (Xcode) or Android Emulator, or the [Expo Go](https://expo.dev/client) app
+- A dev-client build of the app (`eas build --profile development`) — voice dictation is a native module that Expo Go doesn't include
 - A [Supabase](https://supabase.com) project (used only as Postgres hosting — nothing else needs configuring there beyond creating the project)
 
 ### 1. Set up the Python backend
@@ -148,8 +109,6 @@ npm install
 Create `.env` in the project root:
 
 ```env
-EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 EXPO_PUBLIC_API_URL=http://localhost:8000   # points at the backend above; defaults to this if unset
 ```
 
@@ -159,19 +118,9 @@ npm run android   # Android emulator
 npm start         # Expo CLI — pick your target
 ```
 
-Voice capture (`expo-speech-recognition`) is a native module — it needs a dev-client build (`eas build --profile development` or a local `xcodebuild`/`./gradlew` build), not Expo Go.
+Voice dictation (`expo-speech-recognition`) is a native module — it needs a dev-client build, not Expo Go.
 
-### 3. Train the LSTM forecaster (optional)
-
-```bash
-cd training
-pip install -r requirements.txt
-python data/synthetic.py   # generate synthetic training data
-python data/prepare.py     # build windowed feature arrays
-python forecaster.py       # train + export forecaster.tflite
-```
-
-### 4. Deploy the backend
+### 3. Deploy the backend
 
 The backend deploys to [Render](https://render.com) (free tier) from the `render.yaml` blueprint at the repo root — in the Render dashboard, "New Blueprint Instance" against this repo, set `DATABASE_URL` and `SECRET_KEY` when prompted. Note the deployed URL for the next step.
 
@@ -182,9 +131,9 @@ Render's free tier spins the service down after inactivity — the first request
 - The app calls `GET /warmup` (wakes the process and opens a database connection) when the auth screens open and whenever the app returns to the foreground, so the wake-up overlaps the user typing their credentials.
 - `.github/workflows/keep-backend-warm.yml` pings `/warmup` every 10 minutes. GitHub only runs scheduled workflows from the default branch, so this file must be on `main`. GitHub pauses scheduled workflows after 60 days of repo inactivity — re-enable it in the Actions tab if that happens.
 
-### 5. Build and submit to the App Store / Play Store
+### 4. Build and submit to the App Store / Play Store
 
-Set `EXPO_PUBLIC_API_URL` to the deployed backend URL from step 4 as an [EAS environment variable](https://docs.expo.dev/eas/environment-variables/) for the `production` profile (`eas env:create production --name EXPO_PUBLIC_API_URL --value https://your-backend.onrender.com`), alongside the other `EXPO_PUBLIC_*` values from your `.env`. Then:
+Set `EXPO_PUBLIC_API_URL` to the deployed backend URL from step 3 as an [EAS environment variable](https://docs.expo.dev/eas/environment-variables/) for the `production` profile (`eas env:create production --name EXPO_PUBLIC_API_URL --value https://your-backend.onrender.com`), alongside the other `EXPO_PUBLIC_*` values from your `.env`. Then:
 
 ```bash
 eas build --platform ios --profile production --auto-submit   # build, then submit to TestFlight
@@ -196,9 +145,9 @@ EAS/submit configuration lives in `eas.json`.
 ## Privacy
 
 - All session tokens are stored in the device's secure enclave via `expo-secure-store`.
-- Voice capture is transcribed on-device; no audio is ever uploaded.
+- Voice dictation is transcribed on-device; no audio is ever uploaded.
 - Health data is stored in Postgres (hosted on your own Supabase project) behind the FastAPI backend — the app never talks to Supabase directly for this data.
-- **Chat is the exception:** messages typed into the chat are forwarded (text only — no user id, email, or profile data) to the configured LLM provider (Groq by default). Point `LLM_BASE_URL` at a self-hosted model to keep them in-house.
+- Nothing typed in the app is sent to an AI provider. (The backend still has an unused `/chat` LLM proxy; if it is ever used again, its text would go to the configured provider — point `LLM_BASE_URL` at a self-hosted model to keep it in-house.)
 - Apple Sign-In is supported and recommended on iOS.
 - No third-party analytics SDKs are bundled.
 

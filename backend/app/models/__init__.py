@@ -1,3 +1,7 @@
+# Every table in the database keeps its model here so Alembic's schema stays
+# complete. Some have no endpoint any more (predictions, symptom logs,
+# captures, health metrics, alerts, emergency contacts): their rows are kept,
+# nothing reads or writes them.
 from app.models.user import User, Profile
 from app.models.cycle import CycleLog, SymptomLog, CyclePrediction
 from app.models.health import HealthMetric, AlertLog

@@ -1,11 +1,7 @@
 export const Config = {
-  supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!,
-  supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
   apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000',
-  admobAppIdIos: process.env.EXPO_PUBLIC_ADMOB_APP_ID_IOS ?? '',
-  admobAppIdAndroid: process.env.EXPO_PUBLIC_ADMOB_APP_ID_ANDROID ?? '',
   // Google Sign-In OAuth client IDs from Google Cloud Console.
-  // - webClientId is the Web OAuth client; Supabase verifies ID tokens
+  // - webClientId is the Web OAuth client; the backend verifies ID tokens
   //   against this audience, so GoogleSignin must request it as the
   //   audience even on iOS/Android.
   // - iosClientId / androidClientId are the native client IDs; required

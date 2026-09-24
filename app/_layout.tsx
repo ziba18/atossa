@@ -18,7 +18,7 @@ if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../stores/uiStore';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { initAIModels } from '../algorithms/aiModel';
+import { cancelPredictedCycleReminders } from '../lib/notifications';
 import { useFonts } from 'expo-font';
 import {
   Fraunces_300Light,
@@ -39,11 +39,10 @@ import { MAX_CONTENT_WIDTH } from '../constants/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
-// Load the on-device AI models eagerly at module load. initAIModels()
-// catches and swallows all errors, so a missing or stub .tflite simply
-// leaves the predictor in "fall back to EWMA" mode without blocking app
-// startup.
-initAIModels().catch(() => {});
+// Older builds scheduled "period coming" / "ovulation" reminders from a
+// cycle prediction. The app no longer predicts anything, so clear any that
+// are still queued on the device.
+cancelPredictedCycleReminders().catch(() => {});
 
 function AppShell() {
   // Importing useAuth runs the module-level startAuthInit() side effect that
