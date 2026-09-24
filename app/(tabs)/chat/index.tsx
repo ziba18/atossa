@@ -10,6 +10,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Audio } from 'expo-av';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { useAuthStore } from '../../../stores/authStore';
+import { api, ApiError } from '../../../lib/api';
 import { isHumanName } from '../../../lib/humanName';
 
 const BG       = '#f7f3eb';
@@ -50,6 +51,7 @@ export default function ChatScreen() {
   const displayName = useAuthStore((s) => s.profile?.display_name);
   const [messages, setMessages] = useState<Message[]>([greeting(displayName)]);
   const [input, setInput]       = useState('');
+  const [thinking, setThinking] = useState(false);
   const [pain, setPain]         = useState<number | null>(null);
   const [recording, setRecording] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -75,18 +77,37 @@ export default function ChatScreen() {
     );
   }, [displayName]);
 
-  const send = () => {
+  const send = async () => {
     const text = input.trim();
-    if (!text) return;
-    setMessages(prev => [...prev, { id: Date.now().toString(), type: 'user', text }]);
+    if (!text || thinking) return;
+    const userMsg: Message = { id: Date.now().toString(), type: 'user', text };
+    // Text turns only (skip the local greeting, images and voice notes) — the backend
+    // expects alternating user/assistant text and the last entry to be the user's.
+    const history = [...messages, userMsg]
+      .filter(m => m.id !== '0' && m.text)
+      .map(m => ({ role: m.type === 'user' ? 'user' : 'assistant', content: m.text }));
+    setMessages(prev => [...prev, userMsg]);
     setInput('');
     inputRef.current?.blur();
     Keyboard.dismiss();
+    setThinking(true);
+    try {
+      const { reply } = await api.post<{ reply: string }>('/chat', { messages: history.slice(-20) });
+      setMessages(prev => [...prev, { id: `${Date.now()}-ai`, type: 'ai', text: reply }]);
+    } catch (err) {
+      const text =
+        err instanceof ApiError && err.status === 429
+          ? 'I’m a little busy right now — give me a moment and try again.'
+          : 'I couldn’t reply just now. Please try again.';
+      setMessages(prev => [...prev, { id: `${Date.now()}-err`, type: 'ai', text }]);
+    } finally {
+      setThinking(false);
+    }
   };
 
   useEffect(() => {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 80);
-  }, [messages]);
+  }, [messages, thinking]);
 
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -215,6 +236,11 @@ export default function ChatScreen() {
               </View>
             )
           )}
+          {thinking && (
+            <View style={styles.aiBubble}>
+              <Text style={styles.aiText}>…</Text>
+            </View>
+          )}
         </ScrollView>
 
         {/* ── Pain scale ── */}
@@ -280,9 +306,9 @@ export default function ChatScreen() {
             onSubmitEditing={send}
           />
           <Pressable
-            style={[styles.sendBtn, !input.trim() && styles.sendBtnDisabled]}
+            style={[styles.sendBtn, (!input.trim() || thinking) && styles.sendBtnDisabled]}
             onPress={send}
-            disabled={!input.trim()}
+            disabled={!input.trim() || thinking}
           >
             <Icon name="send" size={18} color="#fff" />
           </Pressable>
