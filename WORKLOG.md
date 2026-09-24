@@ -18,6 +18,10 @@ header avatar, incl. Friends), `lib/transcription.ts` (used by
 Verified: `npx tsc --noEmit` clean, `expo export --platform ios` bundles.
 Not in TestFlight build 21 (queued before this change).
 
+**`/chat` decision:** user chose to keep the `/chat` LLM endpoint deployed
+but unused (nothing in the app calls it, so no chat text reaches Groq) —
+kept for a possible AI feature later, rather than deleted.
+
 ---
 
 ## 2026-09-24 — Redesign: Chat / Dashboard / For my doctor (ported from Lovable)
