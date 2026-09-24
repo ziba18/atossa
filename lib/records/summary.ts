@@ -111,7 +111,7 @@ export function buildDoctorSummary(input: SummaryInput): DoctorSummary {
     ? `${formatDate(oldest)} – ${formatDate(symptoms[0].date)}`
     : 'No symptom dates saved';
   const latestCycle = cycles[0];
-  const latestTold = appointments.find((a) => a.told.trim())?.told.trim() ?? 'None saved.';
+  const latestTold = appointments.find((a) => a.told.trim())?.told.trim();
 
   const glance: SummaryRow[] = [
     {
@@ -132,7 +132,7 @@ export function buildDoctorSummary(input: SummaryInput): DoctorSummary {
     },
     { title: 'Medicines and treatments tried', lines: [medicines.map((m) => m.name).join(', ') || 'None saved'] },
     { title: 'Saved records', lines: [`${appointments.length} appointments · ${history.length} health history entries`] },
-    { title: 'Most recent appointment with words', lines: [`I was told: ${latestTold}`] },
+    { title: 'Most recent appointment with words', lines: [latestTold ? `I was told: ${latestTold}` : 'None saved'] },
   ];
 
   const sections: SummarySection[] = [

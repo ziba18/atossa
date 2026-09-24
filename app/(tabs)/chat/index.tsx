@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  View, ScrollView, TextInput, Pressable, KeyboardAvoidingView, Platform, StyleSheet,
+  View, ScrollView, TextInput, Pressable, KeyboardAvoidingView, Platform, StyleSheet, AccessibilityInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UI } from '../../../constants/atossaUI';
@@ -53,8 +53,11 @@ export default function ChatScreen() {
 
   const typedStep = step === null || step === 'where' || step === 'duration' || step === 'stoppedWords';
 
-  const say = (role: 'assistant' | 'user', text: string) =>
+  const say = (role: 'assistant' | 'user', text: string) => {
     setMessages((cur) => [...cur, { id: nextId(), role, text }]);
+    // Screen-reader users otherwise don't hear Atossa's next question.
+    if (role === 'assistant') AccessibilityInfo.announceForAccessibility(text);
+  };
 
   const finish = async (entry: SymptomData) => {
     if (saving) return;
@@ -76,7 +79,7 @@ export default function ChatScreen() {
   const send = () => {
     const text = input.trim();
     if (!text || !typedStep || saving) return;
-    if (dictation.recording) dictation.stop();
+    if (dictation.recording) dictation.cancel();
     setInput('');
     inputPrefix.current = '';
     say('user', text);
@@ -141,6 +144,7 @@ export default function ChatScreen() {
           style={{ flex: 1 }}
           contentContainerStyle={styles.thread}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
         >
           <Txt variant="display">Chat</Txt>
@@ -178,7 +182,13 @@ export default function ChatScreen() {
               )}
               <View style={{ flexDirection: 'row', gap: 12, marginTop: 14 }}>
                 <BigButton label={editingNoted ? 'Done' : 'Edit'} icon="pencil" variant="outline" onPress={() => setEditingNoted(!editingNoted)} style={{ flex: 1 }} />
-                <BigButton label="Save" icon="check" onPress={() => { setEditingNoted(false); setStep('where'); say('assistant', 'Where do you feel it?'); }} style={{ flex: 1 }} />
+                <BigButton
+                  label="Save"
+                  icon="check"
+                  disabled={!draft.words.trim()}
+                  onPress={() => { setDraft({ ...draft, words: draft.words.trim() }); setEditingNoted(false); setStep('where'); say('assistant', 'Where do you feel it?'); }}
+                  style={{ flex: 1 }}
+                />
               </View>
             </Card>
           )}

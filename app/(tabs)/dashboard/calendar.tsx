@@ -10,7 +10,7 @@ import { MonthGrid } from '../../../components/atossa/Calendar';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { deriveCycles } from '../../../lib/records/summary';
 import {
-  MONTH_NAMES, addDays, diffDays, formatDate, isFuture, parseKey, todayKey, toKey,
+  MONTH_NAMES, addDays, diffDays, formatDate, isFuture, parseKey, todayKey,
 } from '../../../lib/records/dates';
 import type { Flow, PeriodDayData } from '../../../types/records';
 
@@ -86,7 +86,6 @@ export default function CalendarScreen() {
   const moveMonth = (delta: number) => {
     const d = new Date(Date.UTC(month.y, month.m0 + delta, 1));
     setMonth({ y: d.getUTCFullYear(), m0: d.getUTCMonth() });
-    selectDate(toKey(d.getUTCFullYear(), d.getUTCMonth(), 1));
   };
 
   const needsFutureOk = isFuture(selected) && !futureKept;

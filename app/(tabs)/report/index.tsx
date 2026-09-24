@@ -13,7 +13,8 @@ import {
 
 const C = UI.colors;
 
-function Rows({ rows }: { rows: SummaryRow[] }) {
+// Memoised: typing in the notes box re-renders this screen, but the record rows don't change.
+const Rows = React.memo(function Rows({ rows }: { rows: SummaryRow[] }) {
   return (
     <View>
       {rows.map((row, i) => (
@@ -24,7 +25,7 @@ function Rows({ rows }: { rows: SummaryRow[] }) {
       ))}
     </View>
   );
-}
+});
 
 function CollapsibleSection({ title, count, open, onToggle, children }: { title: string; count?: number; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
@@ -66,6 +67,7 @@ export default function DoctorScreen() {
     if (!touched.current) setNotes(savedNote);
   }, [savedNote]);
 
+  // Built from the records only; the notes are added when sharing.
   const summary = useMemo(
     () =>
       buildDoctorSummary({
@@ -74,9 +76,9 @@ export default function DoctorScreen() {
         medicines: records.medicine,
         history: records.history,
         appointments: records.appointment,
-        notes,
+        notes: '',
       }),
-    [records, notes],
+    [records],
   );
 
   const toggle = (key: string) => setOpen((cur) => ({ ...cur, [key]: !cur[key] }));
@@ -95,19 +97,20 @@ export default function DoctorScreen() {
   };
 
   const shareSummary = async () => {
+    const withNotes = { ...summary, notes: notes.trim() };
     setSharing(true);
     setShareError('');
     try {
       if (await Sharing.isAvailableAsync()) {
-        const { uri } = await Print.printToFileAsync({ html: summaryToHtml(summary) });
+        const { uri } = await Print.printToFileAsync({ html: summaryToHtml(withNotes) });
         await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf', dialogTitle: 'Share your Atossa summary' });
       } else {
-        await Share.share({ title: 'My Atossa summary', message: summaryToText(summary) });
+        await Share.share({ title: 'My Atossa summary', message: summaryToText(withNotes) });
       }
     } catch {
       // Could not make or share a PDF — fall back to plain text so the summary can still be sent.
       try {
-        await Share.share({ title: 'My Atossa summary', message: summaryToText(summary) });
+        await Share.share({ title: 'My Atossa summary', message: summaryToText(withNotes) });
       } catch {
         setShareError("The summary couldn't be shared. Please try again.");
       }

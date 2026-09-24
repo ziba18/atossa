@@ -49,7 +49,7 @@ export function MainTabBar({ state, navigation }: BottomTabBarProps) {
             style={[styles.tab, focused && { backgroundColor: C.secondary }]}
           >
             <Icon name={tab.icon} size={24} color={focused ? C.secondaryForeground : C.mutedForeground} strokeWidth={focused ? 2.3 : 1.9} />
-            <Txt variant="smallBold" color={focused ? C.secondaryForeground : C.mutedForeground} style={{ fontSize: 14, lineHeight: 18, textAlign: 'center' }}>
+            <Txt variant="smallBold" maxFontSizeMultiplier={1.4} color={focused ? C.secondaryForeground : C.mutedForeground} style={{ fontSize: 14, lineHeight: 18, textAlign: 'center' }}>
               {tab.label}
             </Txt>
           </Pressable>

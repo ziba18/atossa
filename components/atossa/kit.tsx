@@ -9,6 +9,7 @@ import { UI } from '../../constants/atossaUI';
 import { Icon, type IconName } from '../ui/Icon';
 import { useAuthStore } from '../../stores/authStore';
 import { headerDate } from '../../lib/records/dates';
+import { isHumanName } from '../../lib/humanName';
 
 const C = UI.colors;
 
@@ -36,7 +37,8 @@ export function Txt({ variant = 'body', color, style, ...props }: TextProps & { 
 export function MainHeader() {
   const router = useRouter();
   const name = useAuthStore((s) => s.profile?.display_name);
-  const initial = (name?.trim()?.[0] ?? 'A').toUpperCase();
+  const email = useAuthStore((s) => s.user?.email);
+  const initial = ((isHumanName(name) ? name!.trim() : email)?.[0] ?? 'A').toUpperCase();
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
@@ -70,6 +72,9 @@ export function Screen({
         <ScrollView
           contentContainerStyle={[styles.scrollContent, contentStyle]}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          // iOS: scroll the focused field above the keyboard instead of leaving it hidden.
+          automaticallyAdjustKeyboardInsets
           showsVerticalScrollIndicator={false}
         >
           {children}

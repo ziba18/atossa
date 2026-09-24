@@ -16,6 +16,9 @@ export function useDictation(onTranscript: (text: string) => void) {
   const [error, setError] = useState('');
   const heardAnySpeech = useRef(false);
   const hadError = useRef(false);
+  // False once the caller has taken the text (stop/cancel), so a late final result
+  // can't put already-sent words back into the box.
+  const accepting = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cb = useRef(onTranscript);
   cb.current = onTranscript;
@@ -25,6 +28,7 @@ export function useDictation(onTranscript: (text: string) => void) {
   }, []);
 
   useSpeechRecognitionEvent('result', (event) => {
+    if (!accepting.current) return;
     const transcript = event.results[0]?.transcript ?? '';
     if (transcript.trim()) heardAnySpeech.current = true;
     cb.current(transcript);
@@ -76,6 +80,7 @@ export function useDictation(onTranscript: (text: string) => void) {
     }
     heardAnySpeech.current = false;
     hadError.current = false;
+    accepting.current = true;
     setRecording(true);
     ExpoSpeechRecognitionModule.start({
       lang: 'en-US',
@@ -92,5 +97,13 @@ export function useDictation(onTranscript: (text: string) => void) {
     ExpoSpeechRecognitionModule.stop();
   }, [clearTimer]);
 
-  return { supported, recording, error, clearError: () => setError(''), start, stop };
+  /** Stop and discard anything still to come — for when the text has already been used. */
+  const cancel = useCallback(() => {
+    accepting.current = false;
+    heardAnySpeech.current = true; // don't show "couldn't hear anything" for a deliberate cancel
+    clearTimer();
+    ExpoSpeechRecognitionModule.stop();
+  }, [clearTimer]);
+
+  return { supported, recording, error, clearError: () => setError(''), start, stop, cancel };
 }

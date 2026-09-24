@@ -83,7 +83,9 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
 
   savePeriodDays: async (days) => {
     const existing = get().records.period_day;
-    const results = await Promise.all(
+    // allSettled, not all: if one request fails, the ones that did save must still land in
+    // state — otherwise saving that date again would POST a duplicate record for it.
+    const settled = await Promise.allSettled(
       days.map(async (data) => {
         const found = existing.find((r) => r.data.date === data.date);
         if (found) {
@@ -94,11 +96,13 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
         return toRec<'period_day'>(row);
       }),
     );
+    const results = settled.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []));
     set((s) => {
       const byDate = new Map(results.map((r) => [r.data.date, r]));
       const kept = s.records.period_day.filter((r) => !byDate.has(r.data.date));
       return { records: { ...s.records, period_day: [...kept, ...results] } };
     });
+    if (results.length < days.length) throw new Error('Some period days could not be saved');
   },
 
   deletePeriodDay: async (date) => {
