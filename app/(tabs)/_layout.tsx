@@ -24,9 +24,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="chat" options={{ title: 'Chat' }} />
       <Tabs.Screen name="dashboard" options={{ title: 'Dashboard' }} />
       <Tabs.Screen name="report" options={{ title: 'For my doctor' }} />
-      {/* Kept in the codebase from the earlier design but no longer part of the app's navigation. */}
-      <Tabs.Screen name="analysis" options={{ href: null }} />
-      <Tabs.Screen name="community" options={{ href: null }} />
+      {/* Reached from the avatar in the header, not the tab bar. */}
       <Tabs.Screen name="profile" options={{ href: null }} />
     </Tabs>
   );

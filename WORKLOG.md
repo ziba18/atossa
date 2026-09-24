@@ -5,6 +5,21 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-09-24 — Deleted the old hidden screens
+
+User asked to delete the screens the redesign had only hidden: the
+Analyse and People tabs (`app/(tabs)/analysis`, `community`), and the old
+`chat/capture.tsx`, `chat/period-log.tsx` and `chat/cycle-data.tsx`. Also
+removed what only they used: `components/cycle/*` and
+`components/ui/EmptyState.tsx`. Kept: Profile (still reached from the
+header avatar, incl. Friends), `lib/transcription.ts` (used by
+`hooks/useDictation.ts`), and all backend endpoints (`/captures`,
+`/cycles`, `/connections` untouched; onboarding still writes `/cycles`).
+Verified: `npx tsc --noEmit` clean, `expo export --platform ios` bundles.
+Not in TestFlight build 21 (queued before this change).
+
+---
+
 ## 2026-09-24 — Redesign: Chat / Dashboard / For my doctor (ported from Lovable)
 
 **What & why:** the UI direction was designed with the user in a Lovable
