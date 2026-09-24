@@ -116,6 +116,11 @@ see below). The chat tab now has a real `/chat` backend (see below).
   `EXPO_PUBLIC_API_URL` from the EAS `production` env.
 - Build/submit: `eas build --platform ios --profile production
   --auto-submit` (the App Store Connect API key is already on EAS).
+  **EAS builds are limited on the free plan (~15 iOS/month)** — for
+  JS-only changes use `eas update --channel production --message "..."`
+  instead (expo-updates added 2026-09-24, `runtimeVersion` = fingerprint,
+  channels = profile names). Only builds made after that commit receive
+  updates; build 22 and earlier do not.
 - **Disk space is tight on this Mac** — check `df -h /` before any
   native build. Clean up `ios/build` and `android/` derived-data
   directories after testing; don't leave them lying around.

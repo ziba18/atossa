@@ -142,6 +142,14 @@ eas build --platform ios --profile production --auto-submit   # build, then subm
 
 EAS/submit configuration lives in `eas.json`.
 
+**Shipping JS-only changes without a new build (EAS Update):** screens, text, layout and logic changes can go straight to installed builds:
+
+```bash
+eas update --channel production --message "what changed"
+```
+
+The app downloads the update on launch and uses it from the next launch. `runtimeVersion` uses the `fingerprint` policy, so an update only reaches builds with matching native code — after adding/removing a native package, changing permissions or `app.config.ts` plugins, make a new build instead.
+
 ## Privacy
 
 - All session tokens are stored in the device's secure enclave via `expo-secure-store`.

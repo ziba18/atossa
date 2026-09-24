@@ -17,6 +17,13 @@ const config: ExpoConfig = {
   name: 'Atossa',
   slug: 'attosa',
   version: '1.1.0',
+  // EAS Update: JS-only changes ship to installed builds without a new
+  // build. The fingerprint changes whenever native code/config changes, so
+  // an update only ever reaches builds it is compatible with.
+  runtimeVersion: { policy: 'fingerprint' },
+  updates: {
+    url: 'https://u.expo.dev/8d09758f-8216-49a8-933f-d8e23b1fb914',
+  },
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',

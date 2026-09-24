@@ -5,6 +5,20 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-09-24 — EAS Update set up (save build credits)
+
+User asked whether small TestFlight builds count toward the EAS build
+limit (they do; 7 iOS builds used this month). Added `expo-updates`,
+`updates.url`, `runtimeVersion: { policy: 'fingerprint' }` in
+`app.config.ts`, and a `channel` per build profile in `eas.json`.
+JS-only changes now ship with `eas update --channel production`; native
+changes still need a build. Checked: the gitignored local `ios/` folder
+gets a null hash in the fingerprint (so it does not make local updates
+mismatch cloud builds); tsc clean, expo-doctor 18/18. Takes effect from
+the first build that includes this commit — build 22 does not.
+
+---
+
 ## 2026-09-24 — Whole-codebase cleanup: prediction code and old-version leftovers removed
 
 **Asked:** test everything, remove what no longer matches the MVP, save
