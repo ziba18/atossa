@@ -56,6 +56,9 @@ see below). The chat tab now has a real `/chat` backend (see below).
   10 min.
 - TestFlight: build 19 (v1.1.0) queued with `--auto-submit` on
   2026-09-24 — check `eas build:list` / App Store Connect for the outcome.
+  **Build 20 (the redesign, commit `89ad606`) was queued the same day**
+  (build `a9057a19-c91a-40cb-892a-53ceb02ceaeb`, submission scheduled) —
+  check its outcome the same way.
 - A temporary entry point (clipboard icon next to the profile avatar in
   the chat header) routes to the capture screen for testing. Step E
   replaces this with the real integration.
