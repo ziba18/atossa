@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+from app.database import get_db
 from app.routers import auth, profiles, cycles, captures, connections
 
 app = FastAPI(title="Atossa API", version="1.0.0")
@@ -20,4 +23,11 @@ app.include_router(connections.router)
 
 @app.get("/health")
 def health():
+    return {"status": "ok"}
+
+
+@app.get("/warmup")
+def warmup(db: Session = Depends(get_db)):
+    """Wakes a spun-down instance and opens a pooled DB connection before the user logs in."""
+    db.execute(text("select 1"))
     return {"status": "ok"}

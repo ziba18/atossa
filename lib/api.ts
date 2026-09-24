@@ -49,6 +49,12 @@ async function attemptRefresh(): Promise<string | null> {
   }
 }
 
+// Fire-and-forget: the free-tier backend spins down when idle, so wake it (and its DB
+// connection) while the user is still typing credentials instead of on the login tap.
+export function warmBackend(): void {
+  fetch(`${Config.apiUrl}/warmup`).catch(() => {});
+}
+
 export class ApiError extends Error {
   constructor(public readonly status: number, message: string) {
     super(message);
