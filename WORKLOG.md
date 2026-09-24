@@ -5,6 +5,101 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-09-24 — Slow login (Render cold start), keep-warm, and a real chat backend
+
+**Problem:** user reported login "takes too long" coming back to the app
+from TestFlight. Measured before changing anything (local machine → the
+Supabase pooler in eu-west-1): cold DB connection ~770 ms, warm query
+20–46 ms, bcrypt verify ~300 ms (existing hashes are `$2b$12$` — left
+alone, lowering the cost would weaken stored passwords). So a *warm*
+backend logs in in ~0.5–1 s; the multi-second-to-50 s delay is Render's
+free tier spinning the service down after ~15 min idle (already noted in
+README). Confirmed the TestFlight build targets Render (`EXPO_PUBLIC_API_URL`
+is `https://atossa-backend.onrender.com` in the EAS `production` env).
+
+**Fix, three layers:**
+- Backend: `GET /warmup` (in `main.py`) — wakes the instance *and* runs
+  `select 1` so a pooled DB connection is already open. `/health` is
+  deliberately left DB-free (Render's `healthCheckPath`). Also
+  `pool_pre_ping=True, pool_recycle=300` on the engine, because the
+  Supabase pooler drops idle connections and the first request after a
+  lull would otherwise hit a dead one.
+- App: `warmBackend()` in `lib/api.ts` (fire-and-forget `fetch` of
+  `/warmup`), called from `app/(auth)/_layout.tsx` on mount and on every
+  `AppState` → `active`, so the wake-up overlaps the user typing their
+  credentials. This *hides* the cold start; it doesn't remove it.
+- Keep-warm: `.github/workflows/keep-backend-warm.yml` curls `/warmup`
+  every 10 min. **It lives on `main`, not this branch** — GitHub only
+  runs scheduled workflows from the default branch. Repo is public, so
+  Actions minutes are free. Manually triggered once via `gh workflow run`:
+  green, `{"status":"ok"}`. Caveat: GitHub pauses scheduled workflows
+  after 60 days of repo inactivity; scheduled runs are best-effort.
+
+**Deploy facts learned:** Render serves the `mvp-symptom-capture` branch
+(the live `/openapi.json` had `/captures`, which only exists here), so
+pushing this branch redeploys the backend. The service is
+"Blueprint managed" (`render.yaml`).
+
+**Chat (`POST /chat`) — "first page" got a real backend.** User asked for
+"a free AI wrapper to chat simply." Before building, flagged the conflict
+with the project's stated privacy goal (user data never reaching
+third-party AI companies): chat text now leaves our backend for a hosted
+LLM. Free-to-host and fully private don't coexist (a local model can't run
+on Render's free tier), so it was built as a thin proxy over any
+OpenAI-compatible API, so it can be re-pointed at a self-hosted model
+(Ollama etc.) later without touching the app.
+- `routers/chat.py` (auth required), `schemas/chat.py` (≤20 messages, each
+  ≤2000 chars, last one must be from the user), `services/llm.py`.
+- Config (`config.py`): `LLM_API_KEY`, `LLM_BASE_URL`
+  (default Groq `https://api.groq.com/openai/v1`), `LLM_MODEL`,
+  `LLM_REASONING_EFFORT`. Only `role`/`content` are forwarded — no user id,
+  email, or profile data.
+- System prompt (in `services/llm.py`) makes "Sage" a short, one-question-
+  at-a-time symptom-description helper with the hard no-diagnosis /
+  no-cause / no-treatment rule and an emergency-services escape hatch.
+  **This is prompt-level enforcement only, not a filter** — a small model
+  can slip, especially if the user names a condition first. A server-side
+  check on the reply (swap in a safe fallback if it names a condition) is
+  the obvious follow-up and was offered, not built.
+- Model gotchas hit for real: the default I first chose,
+  `llama-3.1-8b-instant`, **no longer exists on Groq** (`model_not_found`;
+  checked via the provider's `/models`). Now `openai/gpt-oss-20b`. That's a
+  reasoning model: without `reasoning_effort=low` it burns the whole
+  300-token cap thinking and returns an *empty* reply (`finish_reason:
+  length`) — hence the setting and an empty-reply guard in `llm.py`.
+- Chat screen (`app/(tabs)/chat/index.tsx`): `send()` now posts to `/chat`
+  with a "…" typing bubble and a friendly in-chat error on failure/429.
+  This continues (does not finish) Step E — the header clipboard icon →
+  capture screen is still the temporary entry point.
+- Verified: mocked-provider unit checks (503 unconfigured, 200, 429, 422s,
+  403 no auth); then live against Render with a throwaway account
+  (deleted afterwards, 0 rows left): normal reply in ~1.7 s, and on the
+  bait "could this be endometriosis? should I take ibuprofen?" it declined
+  to name a condition. It did add "check with your GP or pharmacist first"
+  about the ibuprofen — points to a professional rather than recommending
+  a treatment, but close to the line; tighten the prompt if it bothers.
+  **Not verified:** chat inside the actual TestFlight app.
+
+**Gotcha — env var on Render:** the Groq key was first saved into a Render
+*Environment Group* (`atossa`) that isn't linked to the service, so the
+running service couldn't see it. It has to be a variable on the
+`atossa-backend` service itself (or the group has to be linked — not done,
+since the group's contents are masked and linking could override
+`DATABASE_URL`/`SECRET_KEY`). Fixed; the leftover group is unused and
+safe to delete. `render.yaml` declares `LLM_API_KEY` with `sync: false`.
+The key itself is in `backend/.env` (gitignored) and on Render only.
+
+**TestFlight:** queued iOS `production` build with `--auto-submit`
+(version 1.1.0, build 19, EAS build `595ef7d0-947f-4268-b90e-305b26da2ff7`,
+submission `4b23c108-df64-4983-a69e-e5c24182924d`) using the App Store
+Connect API key already stored on EAS for ASC app `6762570606`. Outcome
+not confirmed at the time of writing.
+
+**Branch state:** `mvp-symptom-capture` (`d0ff597`) and `main` (`d88eed1`)
+both match GitHub. `main` only has the keep-warm workflow; all app work is
+on the MVP branch, so they have diverged — merge the MVP branch into
+`main` when it's ready.
+
 ## 2026-09-12 — Friends: invite-only cycle phase matching
 
 User asked to let people invite friends to see each other's cycles and

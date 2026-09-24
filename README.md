@@ -13,6 +13,7 @@
 ## Features
 
 - **Symptom capture** — describe symptoms by voice (on-device transcription, nothing sent to a server) or text; entries are timestamped and kept for review. This is the active build focus — see [`MVP.md`](MVP.md) and [`WORKLOG.md`](WORKLOG.md) for the in-progress pivot toward turning captures into a structured, GP-ready summary. No diagnostic language anywhere in the product: the app never names a condition, gives a probability, suggests a cause, or recommends treatment.
+- **Chat companion (Sage)** — a short, one-question-at-a-time chat that helps you put symptoms into words. Backed by an authenticated `/chat` endpoint that proxies an OpenAI-compatible LLM (Groq's free tier by default). Instructed never to diagnose, name conditions, suggest causes, or recommend treatment — a prompt-level rule, not yet a hard filter.
 - **Cycle tracking** — log periods on a continuous linear calendar (any day, past or present), get phase predictions (menstrual, follicular, ovulatory, luteal), and see your full cycle on an animated ring.
 - **Friends** — invite-only, mutual connections who can see each other's current cycle phase (never raw flow/symptom/notes data) and get a nudge when you're in the same phase.
 - **Insights & metrics** — visualize trends across cycles with charts.
@@ -39,7 +40,8 @@
 - **Database** — PostgreSQL via SQLAlchemy 2 ORM; [Alembic](https://alembic.sqlalchemy.org) migrations. Hosted on [Supabase](https://supabase.com) (used purely for Postgres — the app never talks to Supabase directly)
 - **Auth** — Its own email/password JWTs (`passlib`/`python-jose`), plus server-side verification of Apple/Google identity tokens for social sign-in
 - **ML prediction layer** (`backend/app/ml/predict.py`) — hybrid EWMA + Bayesian forecaster (see below)
-- **Hosting** — [Render](https://render.com) (free tier), deployed via the `render.yaml` blueprint at the repo root
+- **Chat** — `POST /chat` proxies any OpenAI-compatible LLM API (default: Groq, `openai/gpt-oss-20b`); the API key stays server-side. Swap `LLM_BASE_URL`/`LLM_MODEL` to point at another provider or a self-hosted model.
+- **Hosting** — [Render](https://render.com) (free tier), deployed via the `render.yaml` blueprint at the repo root; kept warm by a scheduled GitHub Action (see [Deploy](#4-deploy-the-backend))
 
 ### Machine learning
 - **Client-side algorithms** (`algorithms/`) — TypeScript port of the cycle predictor, runs on-device
@@ -70,9 +72,9 @@ atossa/
 │   │   ├── main.py               # FastAPI app, CORS, router wiring
 │   │   ├── ml/predict.py         # hybrid EWMA + Bayesian forecaster (Python)
 │   │   ├── models/               # SQLAlchemy ORM models (user, cycle, health, capture, social)
-│   │   ├── routers/              # auth, profiles, cycles, captures, connections
+│   │   ├── routers/              # auth, profiles, cycles, captures, connections, chat
 │   │   ├── schemas/              # Pydantic request/response schemas
-│   │   └── services/             # auth (JWT) + social_auth (Apple/Google verification)
+│   │   └── services/             # auth (JWT), social_auth (Apple/Google), llm (chat proxy + system prompt)
 │   └── alembic/                  # database migration versions
 ├── training/                     # LSTM forecaster training pipeline (see training/README.md)
 │   ├── forecaster.py             # LSTM(64) → Dense(2) [mean, log_var], Gaussian NLL loss
@@ -85,6 +87,7 @@ atossa/
 ├── lib/                          # API client, Supabase client (social sign-in only), transcription
 ├── stores/                       # Zustand stores (auth, cycle, health, profile)
 ├── supabase/functions/           # Supabase edge functions
+├── .github/workflows/            # keep-backend-warm.yml (pings /warmup every 10 min; lives on main)
 ├── render.yaml                   # Render blueprint for the backend deploy
 └── assets/                       # icons, splash, logo
 ```
@@ -122,6 +125,8 @@ Create `backend/.env`:
 ```env
 DATABASE_URL=postgresql://postgres.your-project-ref:password@aws-1-region.pooler.supabase.com:5432/postgres
 SECRET_KEY=a-long-random-string
+LLM_API_KEY=your-groq-api-key   # optional: without it /chat returns 503. Free key at console.groq.com
+# Optional overrides: LLM_BASE_URL, LLM_MODEL, LLM_REASONING_EFFORT (set to "" for providers that reject it)
 ```
 
 Run migrations and start the server:
@@ -170,15 +175,20 @@ python forecaster.py       # train + export forecaster.tflite
 
 The backend deploys to [Render](https://render.com) (free tier) from the `render.yaml` blueprint at the repo root — in the Render dashboard, "New Blueprint Instance" against this repo, set `DATABASE_URL` and `SECRET_KEY` when prompted. Note the deployed URL for the next step.
 
-Render's free tier spins the service down after inactivity — the first request after a lull can take up to ~50 seconds while it wakes back up.
+Also set `LLM_API_KEY` (from [Groq](https://console.groq.com)) as a variable **on the service** — a Render Environment Group only applies if it's linked to the service.
+
+Render's free tier spins the service down after inactivity — the first request after a lull can take up to ~50 seconds while it wakes back up. Two mitigations are in place:
+
+- The app calls `GET /warmup` (wakes the process and opens a database connection) when the auth screens open and whenever the app returns to the foreground, so the wake-up overlaps the user typing their credentials.
+- `.github/workflows/keep-backend-warm.yml` pings `/warmup` every 10 minutes. GitHub only runs scheduled workflows from the default branch, so this file must be on `main`. GitHub pauses scheduled workflows after 60 days of repo inactivity — re-enable it in the Actions tab if that happens.
 
 ### 5. Build and submit to the App Store / Play Store
 
 Set `EXPO_PUBLIC_API_URL` to the deployed backend URL from step 4 as an [EAS environment variable](https://docs.expo.dev/eas/environment-variables/) for the `production` profile (`eas env:create production --name EXPO_PUBLIC_API_URL --value https://your-backend.onrender.com`), alongside the other `EXPO_PUBLIC_*` values from your `.env`. Then:
 
 ```bash
-eas build --platform ios --profile production
-eas submit --platform ios --profile production
+eas build --platform ios --profile production --auto-submit   # build, then submit to TestFlight
+# or separately: eas build ... && eas submit --platform ios --profile production
 ```
 
 EAS/submit configuration lives in `eas.json`.
@@ -188,6 +198,7 @@ EAS/submit configuration lives in `eas.json`.
 - All session tokens are stored in the device's secure enclave via `expo-secure-store`.
 - Voice capture is transcribed on-device; no audio is ever uploaded.
 - Health data is stored in Postgres (hosted on your own Supabase project) behind the FastAPI backend — the app never talks to Supabase directly for this data.
+- **Chat is the exception:** messages typed into the chat are forwarded (text only — no user id, email, or profile data) to the configured LLM provider (Groq by default). Point `LLM_BASE_URL` at a self-hosted model to keep them in-house.
 - Apple Sign-In is supported and recommended on iOS.
 - No third-party analytics SDKs are bundled.
 

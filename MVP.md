@@ -73,6 +73,13 @@ message now just posts it — no fake AI reply. The rest of Step E (real
 voice/text entry points replacing the temporary header icon) is still
 not done.
 
+Step E, continued (2026-09-24): the chat screen's `send()` now talks to
+a real `POST /chat` (Groq via an OpenAI-compatible proxy, `openai/gpt-oss-20b`)
+with a prompt-level no-diagnosis rule — see WORKLOG.md. Still to do for
+Step E: replace the temporary header clipboard icon with real voice/text
+entry points into the capture screen, and consider a server-side check on
+chat replies for condition names.
+
 **Acceptance criteria:**
 
 -
