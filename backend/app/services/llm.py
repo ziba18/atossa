@@ -26,16 +26,19 @@ class LLMUnavailable(Exception):
 def chat_completion(messages: list[dict]) -> str:
     if not settings.llm_api_key:
         raise LLMUnavailable("Chat is not configured on the server", status_code=503)
+    payload = {
+        "model": settings.llm_model,
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}, *messages],
+        "temperature": 0.5,
+        "max_tokens": 300,
+    }
+    if settings.llm_reasoning_effort:
+        payload["reasoning_effort"] = settings.llm_reasoning_effort
     try:
         res = httpx.post(
             f"{settings.llm_base_url.rstrip('/')}/chat/completions",
             headers={"Authorization": f"Bearer {settings.llm_api_key}"},
-            json={
-                "model": settings.llm_model,
-                "messages": [{"role": "system", "content": SYSTEM_PROMPT}, *messages],
-                "temperature": 0.5,
-                "max_tokens": 300,
-            },
+            json=payload,
             timeout=30,
         )
     except httpx.HTTPError:
@@ -45,6 +48,9 @@ def chat_completion(messages: list[dict]) -> str:
     if res.status_code != 200:
         raise LLMUnavailable("The chat provider returned an error")
     try:
-        return res.json()["choices"][0]["message"]["content"].strip()
-    except (KeyError, IndexError, ValueError):
+        reply = res.json()["choices"][0]["message"]["content"].strip()
+    except (KeyError, IndexError, ValueError, AttributeError):
         raise LLMUnavailable("The chat provider returned an unexpected response")
+    if not reply:
+        raise LLMUnavailable("The chat provider returned an empty reply")
+    return reply
