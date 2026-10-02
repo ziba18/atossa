@@ -26,6 +26,8 @@ interface AuthState {
   loginWithApple: (idToken: string, displayName?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null) => Promise<void>;
   signOut: () => Promise<void>;
+  /** Deletes the account and all its data on the server, then signs out. */
+  deleteAccount: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -105,6 +107,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   signOut: async () => {
+    await clearTokens();
+    set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
+  },
+
+  deleteAccount: async () => {
+    await api.delete('/me');
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },

@@ -10,3 +10,10 @@ export const Config = {
   googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
   googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? '',
 };
+
+// Public legal pages, served by the backend (backend/app/routers/legal.py). The privacy URL
+// is also the one to give App Store Connect.
+export const LegalUrls = {
+  privacy: `${Config.apiUrl}/privacy`,
+  terms: `${Config.apiUrl}/terms`,
+};

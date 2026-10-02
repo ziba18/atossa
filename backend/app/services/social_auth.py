@@ -29,6 +29,21 @@ def _get_jwks(url: str) -> dict:
     return jwks
 
 
+def _verified_email(claims: dict, provider: str) -> str:
+    """The token's email, lowercased, only if the provider says it is verified.
+
+    Social sign-in finds the account by email, so an unverified address (possible on a
+    Google account made with a non-Gmail address) could otherwise sign in to someone
+    else's email-and-password account. Apple sends the flag as the string "true".
+    """
+    email = claims.get("email")
+    if not email:
+        raise SocialAuthError(f"{provider} identity token did not include an email")
+    if claims.get("email_verified") not in (True, "true"):
+        raise SocialAuthError(f"{provider} has not verified this email address")
+    return email.strip().lower()
+
+
 def verify_apple_identity_token(id_token: str, bundle_id: str) -> dict:
     """Verify an Apple `identityToken` from expo-apple-authentication. Returns {sub, email}."""
     jwks = _get_jwks(APPLE_JWKS_URL)
@@ -36,10 +51,7 @@ def verify_apple_identity_token(id_token: str, bundle_id: str) -> dict:
         claims = jwt.decode(id_token, jwks, algorithms=["RS256"], audience=bundle_id, issuer=APPLE_ISSUER)
     except JWTError as e:
         raise SocialAuthError(f"Invalid Apple identity token: {e}")
-    email = claims.get("email")
-    if not email:
-        raise SocialAuthError("Apple identity token did not include an email")
-    return {"sub": claims["sub"], "email": email}
+    return {"sub": claims["sub"], "email": _verified_email(claims, "Apple")}
 
 
 def verify_google_id_token(id_token: str, client_id: str) -> dict:
@@ -49,7 +61,4 @@ def verify_google_id_token(id_token: str, client_id: str) -> dict:
         claims = jwt.decode(id_token, jwks, algorithms=["RS256"], audience=client_id, issuer=GOOGLE_ISSUERS)
     except JWTError as e:
         raise SocialAuthError(f"Invalid Google identity token: {e}")
-    email = claims.get("email")
-    if not email:
-        raise SocialAuthError("Google identity token did not include an email")
-    return {"sub": claims["sub"], "email": email, "name": claims.get("name")}
+    return {"sub": claims["sub"], "email": _verified_email(claims, "Google"), "name": claims.get("name")}

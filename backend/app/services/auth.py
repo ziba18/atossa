@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.config import settings
 from app.models.user import User, Profile
@@ -36,7 +37,8 @@ def decode_token(token: str) -> str:
 
 
 def get_user_by_email(db: Session, email: str) -> User | None:
-    return db.query(User).filter(User.email == email).first()
+    # Case-insensitive, so Foo@x.com and foo@x.com are one account however it was first saved.
+    return db.query(User).filter(func.lower(User.email) == email.strip().lower()).first()
 
 
 def get_or_create_social_user(db: Session, email: str, display_name: str | None = None) -> User:

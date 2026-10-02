@@ -5,6 +5,48 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-02 — Sign-in check, account deletion, privacy policy
+
+Audited sign-in/sign-up. Apple and Google sign-in were already fully wired
+natively (expo-apple-authentication, @react-native-google-signin → backend
+`/auth/apple`, `/auth/google`); Google client IDs are set in EAS `production`
+and the live backend has `GOOGLE_WEB_CLIENT_ID` (garbage token → 401, not the
+500 "not configured"). Supabase Auth was **not** added: it would only make
+Google work inside Expo Go, at the cost of a second auth system (removed on
+purpose 2026-09-08), and Apple via Supabase needs a Services ID + key from an
+Apple Developer account the user doesn't have yet.
+Fixes:
+- **Security:** social sign-in finds the account by email but never checked
+  `email_verified`, so an unverified Google email could sign in to someone
+  else's password account. `_verified_email` in `social_auth.py` now requires
+  it (Apple sends `"true"` as a string) and lowercases the email.
+- `get_user_by_email` is case-insensitive (no duplicate accounts by case).
+  Couldn't count existing mixed-case rows: the DB pooler timed out from here.
+- Expo Go: the social buttons are replaced by a one-line note (Google's
+  native module isn't in Expo Go; it could only error).
+- Google client IDs checked equal (without printing) across EAS
+  `production`, `backend/.env` and `render.yaml`; iOS URL scheme matches the
+  iOS client.
+- **Account deletion** (App Store guideline 5.1.1(v); there was none):
+  `DELETE /me` clears every user-owned table (none cascade from `users` —
+  add new tables to its list) and friend links both ways; Profile → "Delete
+  account" with a destructive ConfirmCard, also cancels local reminders.
+  Hidden in preview mode.
+- **Privacy policy + terms**: `backend/app/routers/legal.py` serves `/privacy`
+  and `/terms` (HTML, app palette). Linked from sign-up (`LegalLinks`) and a
+  Profile "About" group. App Store Connect privacy URL =
+  `https://atossa-backend.onrender.com/privacy`. Written to match the code —
+  notably friends' apps receive name, cycle/period length and the last 12
+  period dates (the UI only shows a phase). Not reviewed by a lawyer.
+Verified: 6 locally signed token cases (verified/unverified/missing flag/
+wrong audience, both providers); account deletion against in-memory SQLite
+(only the deleted user's rows go; friend's data intact; old token → 401;
+case-variant duplicate register → 400); legal pages render 200; tsc clean;
+iOS export builds. Not verified: a real Apple/Google sign-in — needs a build
+(no TestFlight push yet).
+
+---
+
 ## 2026-10-01/02 — "Warm Paper, Deep Ink" redesign built locally (uncommitted)
 
 The Lovable prototype ran out of credits partway through Stage 2a, and the user asked to port what

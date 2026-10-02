@@ -13,6 +13,8 @@ import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
 import { IS_PREVIEW } from '../../../lib/preview/flag';
+import { cancelAllScheduledNotifications } from '../../../lib/notifications';
+import { openLegal } from '../../../components/auth/LegalLinks';
 
 /** Visible tab title (the `from` param HeaderAvatar passes) → tab route name. */
 const TAB_ROUTES: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
@@ -32,11 +34,14 @@ export default function ProfileScreen() {
   const profile = useAuthStore((s) => s.profile);
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
+  const deleteAccount = useAuthStore((s) => s.deleteAccount);
   const records = useRecordsStore((s) => s.records);
   const clearSampleData = useRecordsStore((s) => s.clearSampleData);
   const restoreSampleData = useRecordsStore((s) => s.restoreSampleData);
 
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const scrollRef = useRef<ScrollView | null>(null);
 
   const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : '';
@@ -72,6 +77,23 @@ export default function ProfileScreen() {
       showToast('Sample data cleared.');
     }
   };
+
+  const onDeleteAccount = async () => {
+    if (deleting) return;
+    setDeleting(true);
+    try {
+      await deleteAccount();
+      await cancelAllScheduledNotifications();
+      router.replace('/(auth)/welcome' as any);
+    } catch {
+      setDeleting(false);
+      showToast('We couldn’t delete your account. Check your connection and try again.');
+    }
+  };
+
+  // Scrolls an in-page confirm card into view once it has laid out.
+  const scrollToCard = (y: number) =>
+    setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, y - space.xxl), animated: true }), 50);
 
   return (
     <ScreenLarge title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
@@ -116,8 +138,16 @@ export default function ProfileScreen() {
           icon="log-out"
           label="Sign out"
           chevron={false}
-          onPress={() => setConfirmingSignOut(true)}
+          onPress={() => { setConfirmingDelete(false); setConfirmingSignOut(true); }}
         />
+        {IS_PREVIEW ? null : (
+          <GroupRow
+            icon="trash-2"
+            label="Delete account"
+            chevron={false}
+            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(true); }}
+          />
+        )}
       </Group>
 
       {confirmingSignOut ? (
@@ -125,16 +155,33 @@ export default function ProfileScreen() {
           title="Sign out of Atossa?"
           message="Your information stays saved. You can sign in again any time."
           style={{ marginTop: space.xl }}
-          onLayout={(e) => {
-            const y = e.nativeEvent.layout.y;
-            setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, y - space.xxl), animated: true }), 50);
-          }}
+          onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
           actions={[
             { label: 'Sign out', variant: 'primary', onPress: async () => { await signOut(); router.replace('/(auth)/welcome' as any); } },
             { label: 'Cancel', variant: 'text', onPress: () => setConfirmingSignOut(false) },
           ]}
         />
       ) : null}
+
+      {confirmingDelete ? (
+        <ConfirmCard
+          tone="destructive"
+          title="Delete your account?"
+          message="This permanently deletes your account and everything you’ve saved in Atossa: symptoms, periods, appointments, medicines, history and friend connections. It can’t be undone."
+          style={{ marginTop: space.xl }}
+          onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
+          actions={[
+            { label: deleting ? 'Deleting…' : 'Delete account', variant: 'destructive', onPress: onDeleteAccount },
+            { label: 'Cancel', variant: 'text', onPress: () => setConfirmingDelete(false) },
+          ]}
+        />
+      ) : null}
+
+      <GroupHeading title="About" style={{ marginTop: space.xxl }} />
+      <Group>
+        <GroupRow icon="file-text" label="Privacy policy" onPress={() => openLegal('privacy')} />
+        <GroupRow icon="file-text" label="Terms of use" onPress={() => openLegal('terms')} />
+      </Group>
 
       <SafetyLine style={{ marginTop: space.xxl }} />
       <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.sm }}>

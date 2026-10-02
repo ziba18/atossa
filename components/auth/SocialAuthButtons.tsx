@@ -12,7 +12,9 @@ import { useAuthStore } from '../../stores/authStore';
 
 // Expo Go has no native view for Apple's button, and Apple sign-in can't work
 // there anyway (the token is issued for Expo Go's bundle id, not Atossa's).
-const SHOW_APPLE = Platform.OS === 'ios' && !isRunningInExpoGo();
+// Google's native module isn't in Expo Go either, so there both are swapped for a note.
+const IN_EXPO_GO = isRunningInExpoGo();
+const SHOW_APPLE = Platform.OS === 'ios' && !IN_EXPO_GO;
 
 /**
  * Apple (iOS only) and Google sign-in, with an optional "or" divider above them.
@@ -35,6 +37,14 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
     }
     if (user) router.replace(routeAfterSignIn(useAuthStore.getState().profile) as any);
   };
+
+  if (IN_EXPO_GO) {
+    return (
+      <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
+        Apple and Google sign-in only work in the installed app. Use email while testing in Expo Go.
+      </Txt>
+    );
+  }
 
   return (
     <View style={{ gap: space.sm }}>

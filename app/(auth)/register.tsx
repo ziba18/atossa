@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/atossaUI';
-import { Button, InlineError, ScreenLarge, TextField, Txt } from '../../components/atossa/kit';
+import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
 
@@ -58,7 +59,7 @@ export default function RegisterScreen() {
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
         <Button label={loading ? 'Creating your account…' : 'Create account'} loading={loading} onPress={handleRegister} />
-        <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xxs }}>By signing up, you agree to our Terms of Service and Privacy Policy.</Txt>
+        <LegalLinks />
         <Button label="I already have an account" variant="text" onPress={() => router.replace('/(auth)/login')} />
       </View>
 
