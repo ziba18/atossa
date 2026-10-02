@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { BigButton, InlineError, PageTitle, Screen, TextField } from '../../../components/atossa/kit';
+import { space } from '../../../constants/atossaUI';
+import { Button, InlineError, TextField } from '../../../components/atossa/kit';
+import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 
@@ -29,23 +31,22 @@ export default function OnboardingNameScreen() {
   };
 
   return (
-    <Screen header={false} edges={['top', 'bottom']}>
-      <PageTitle title="Welcome to Atossa" subtitle="What should we call you? You can change this any time." />
-      <View style={{ marginTop: 16, gap: 20 }}>
-        <TextField
-          label="Your name"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-          autoCorrect={false}
-          autoFocus
-          maxLength={40}
-          returnKeyType="done"
-          onSubmitEditing={handleSave}
-        />
+    <OnboardingScreen step={1} title="What should we call you?" helper="You can change this any time.">
+      <TextField
+        label="Your name"
+        value={name}
+        onChangeText={setName}
+        autoCapitalize="words"
+        autoCorrect={false}
+        autoFocus
+        maxLength={40}
+        returnKeyType="done"
+        onSubmitEditing={handleSave}
+      />
+      <View style={{ marginTop: space.xxl, gap: space.sm }}>
         <InlineError message={error} />
-        <BigButton label={loading ? 'Saving…' : 'Continue'} icon="arrow-right" disabled={!name.trim() || loading} onPress={handleSave} />
+        <Button label={loading ? 'Saving…' : 'Continue'} loading={loading} disabled={!name.trim()} onPress={handleSave} />
       </View>
-    </Screen>
+    </OnboardingScreen>
   );
 }

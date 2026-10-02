@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { MainTabBar } from '../../components/atossa/MainTabBar';
+import { CaptureSheet } from '../../components/atossa/capture/CaptureSheet';
+import { colors } from '../../constants/atossaUI';
 import { useAuthStore } from '../../stores/authStore';
 import { useRecordsStore } from '../../stores/recordsStore';
 
@@ -20,12 +22,15 @@ export default function TabsLayout() {
   }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Tabs tabBar={(props) => <MainTabBar {...props} />} screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="chat" options={{ title: 'Chat' }} />
-      <Tabs.Screen name="dashboard" options={{ title: 'Dashboard' }} />
-      <Tabs.Screen name="report" options={{ title: 'For my doctor' }} />
-      {/* Reached from the avatar in the header, not the tab bar. */}
+    <>
+    <Tabs tabBar={(props) => <MainTabBar {...props} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.canvas } }}>
+      <Tabs.Screen name="today" options={{ title: 'Today' }} />
+      <Tabs.Screen name="timeline" options={{ title: 'Timeline' }} />
+      <Tabs.Screen name="doctor" options={{ title: 'For my doctor' }} />
+      {/* Reached from the avatar (HeaderAvatar) top-right on every tab, not the tab bar. */}
       <Tabs.Screen name="profile" options={{ href: null }} />
     </Tabs>
+    <CaptureSheet />
+    </>
   );
 }

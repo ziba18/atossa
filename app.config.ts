@@ -28,11 +28,6 @@ const config: ExpoConfig = {
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
   scheme: 'attosa',
-  splash: {
-    image: './assets/splash-icon.png',
-    resizeMode: 'contain',
-    backgroundColor: '#fef9f4',
-  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.attosa.app',
@@ -47,7 +42,6 @@ const config: ExpoConfig = {
       backgroundColor: '#FFFFFF',
     },
     package: 'com.attosa.app',
-    edgeToEdgeEnabled: true,
     permissions: [
       'android.permission.VIBRATE',
       'android.permission.RECEIVE_BOOT_COMPLETED',
@@ -60,6 +54,17 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     'expo-secure-store',
+    'expo-font',
+    'expo-sharing',
+    'expo-status-bar',
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/splash-icon.png',
+        resizeMode: 'contain',
+        backgroundColor: '#fef9f4',
+      },
+    ],
     [
       'expo-build-properties',
       {

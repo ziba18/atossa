@@ -2,6 +2,20 @@
 
 ## Current work: MVP pivot (branch `mvp-symptom-capture`)
 
+**Redesign built locally (2026-10-01/02, uncommitted):** "Warm Paper, Deep Ink" —
+tabs Today · Timeline · For my doctor (+ Profile/Records via avatar), new kit
+(`design/KIT.md` is the reference — read it before touching UI), design-preview web
+mode `npm run preview:web` (Sam seed, no login; never set its env var in EAS).
+Plan/status: `design/PORT_PLAN.md`; WORKLOG 2026-10-01/02. Final agent review 9/10.
+Open: Friends still shows a computed cycle phase (user to decide), app icon, and an
+Expo Go device check before any TestFlight build.
+
+**SDK 57 (2026-09-25, uncommitted):** upgraded from Expo SDK 54 / RN 0.81
+to SDK 57 / RN 0.86 so the app runs in the App Store Expo Go (SDK 57 only).
+Test with plain `npx expo start` + QR scan. `expo-dev-client` removed.
+Build 22 (SDK 54) crashes on launch on iOS 26 — see WORKLOG 2026-09-25.
+User said: **no TestFlight pushes** until every page is checked in Expo Go.
+
 Atossa is pivoting from a cycle-tracking app to a symptom-capture tool for
 PCOS/endometriosis patients: turning how someone describes symptoms into a
 structured, GP-ready summary. No diagnostic language anywhere in the UI —
@@ -123,7 +137,8 @@ see below). The chat tab now has a real `/chat` backend (see below).
 - Build/submit: `eas build --platform ios --profile production
   --auto-submit` (the App Store Connect API key is already on EAS).
   **EAS builds are limited on the free plan (~15 iOS/month)** — for
-  JS-only changes use `eas update --channel production --message "..."`
+  JS-only changes use `eas update --channel production --environment production --message "..."`
+  (`--environment` is required since SDK 55)
   instead (expo-updates added 2026-09-24, `runtimeVersion` = fingerprint,
   channels = profile names). Only builds made after that commit receive
   updates; build 22 and earlier do not.

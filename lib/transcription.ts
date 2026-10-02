@@ -1,8 +1,6 @@
 import { Platform } from 'react-native';
-import {
-  ExpoSpeechRecognitionModule,
-  type ExpoSpeechRecognitionErrorCode,
-} from 'expo-speech-recognition';
+import type { ExpoSpeechRecognitionErrorCode } from 'expo-speech-recognition';
+import { SpeechModule } from './speechModule';
 
 // Recordings run entirely on-device (requiresOnDeviceRecognition: true
 // everywhere this module is used) — no audio is ever sent to a server, and
@@ -12,11 +10,11 @@ import {
 export const MAX_RECORDING_DURATION_MS = 60_000;
 
 export function isVoiceCaptureSupported(): boolean {
-  if (Platform.OS === 'web') return false;
+  if (Platform.OS === 'web' || !SpeechModule) return false;
   try {
     return (
-      ExpoSpeechRecognitionModule.isRecognitionAvailable() &&
-      ExpoSpeechRecognitionModule.supportsOnDeviceRecognition()
+      SpeechModule.isRecognitionAvailable() &&
+      SpeechModule.supportsOnDeviceRecognition()
     );
   } catch {
     // Defensive — a native module lookup failure should read as
@@ -26,10 +24,11 @@ export function isVoiceCaptureSupported(): boolean {
 }
 
 export async function ensureMicPermission(): Promise<{ granted: boolean; canAskAgain: boolean }> {
-  const current = await ExpoSpeechRecognitionModule.getMicrophonePermissionsAsync();
+  if (!SpeechModule) return { granted: false, canAskAgain: false };
+  const current = await SpeechModule.getMicrophonePermissionsAsync();
   if (current.granted) return { granted: true, canAskAgain: current.canAskAgain };
   if (!current.canAskAgain) return { granted: false, canAskAgain: false };
-  const result = await ExpoSpeechRecognitionModule.requestMicrophonePermissionsAsync();
+  const result = await SpeechModule.requestMicrophonePermissionsAsync();
   return { granted: result.granted, canAskAgain: result.canAskAgain };
 }
 

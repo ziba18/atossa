@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { api } from '../lib/api';
+import { IS_PREVIEW } from '../lib/preview/flag';
+import { sampleBuckets } from '../lib/preview/seed';
 import type { DataMap, Rec, RecordKind } from '../types/records';
 
 interface ServerRecord {
@@ -29,6 +31,10 @@ interface RecordsState {
   savePeriodDays: (days: DataMap['period_day'][]) => Promise<void>;
   deletePeriodDay: (date: string) => Promise<void>;
   saveDoctorNote: (text: string) => Promise<void>;
+  /** Design-preview only (no-op otherwise): empty every bucket so empty states can be reviewed. */
+  clearSampleData: () => void;
+  /** Design-preview only (no-op otherwise): put Sam's seed records back. */
+  restoreSampleData: () => void;
 }
 
 const toRec = <K extends RecordKind>(row: ServerRecord): Rec<DataMap[K]> => ({
@@ -36,6 +42,39 @@ const toRec = <K extends RecordKind>(row: ServerRecord): Rec<DataMap[K]> => ({
   data: row.data as DataMap[K],
   createdAt: row.created_at,
 });
+
+/**
+ * Where records are persisted. Normal builds talk to the FastAPI `/records` endpoints;
+ * design-preview mode (EXPO_PUBLIC_DESIGN_PREVIEW=1) keeps everything in memory, no network.
+ */
+interface Backend {
+  list: () => Promise<ServerRecord[] | Buckets>;
+  create: (kind: RecordKind, data: unknown) => Promise<ServerRecord>;
+  update: (id: string, data: unknown) => Promise<void>;
+  remove: (id: string) => Promise<void>;
+}
+
+const serverBackend: Backend = {
+  list: async () => (await api.get<{ records: ServerRecord[] }>('/records')).records,
+  create: (kind, data) => api.post<ServerRecord>('/records', { kind, data }),
+  update: async (id, data) => { await api.put<ServerRecord>(`/records/${id}`, { data }); },
+  remove: async (id) => { await api.delete<void>(`/records/${id}`); },
+};
+
+let localSeq = 0;
+const previewBackend: Backend = {
+  list: async () => sampleBuckets(),
+  create: async (kind, data) => ({
+    id: `local-${Date.now()}-${++localSeq}`,
+    kind,
+    data: data as DataMap[RecordKind],
+    created_at: new Date().toISOString(),
+  }),
+  update: async () => {},
+  remove: async () => {},
+};
+
+const backend = IS_PREVIEW ? previewBackend : serverBackend;
 
 export const useRecordsStore = create<RecordsState>((set, get) => ({
   records: emptyBuckets(),
@@ -46,9 +85,14 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   load: async (userId) => {
     set({ loading: true, error: '' });
     try {
-      const { records } = await api.get<{ records: ServerRecord[] }>('/records');
-      const buckets = emptyBuckets();
-      for (const row of records) (buckets[row.kind] as Rec<any>[]).push(toRec(row));
+      const listed = await backend.list();
+      let buckets: Buckets;
+      if (Array.isArray(listed)) {
+        buckets = emptyBuckets();
+        for (const row of listed) (buckets[row.kind] as Rec<any>[]).push(toRec(row));
+      } else {
+        buckets = listed;
+      }
       set({ records: buckets, loadedFor: userId, loading: false });
     } catch {
       set({ loading: false, error: "We couldn't load your information. Check your connection and try again." });
@@ -58,14 +102,14 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   reset: () => set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '' }),
 
   create: async (kind, data) => {
-    const row = await api.post<ServerRecord>('/records', { kind, data });
+    const row = await backend.create(kind, data);
     const rec = toRec<typeof kind>(row);
     set((s) => ({ records: { ...s.records, [kind]: [...(s.records[kind] as Rec<any>[]), rec] } as Buckets }));
     return rec;
   },
 
   update: async (kind, id, data) => {
-    await api.put<ServerRecord>(`/records/${id}`, { data });
+    await backend.update(id, data);
     set((s) => ({
       records: {
         ...s.records,
@@ -75,7 +119,7 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   },
 
   remove: async (kind, id) => {
-    await api.delete<void>(`/records/${id}`);
+    await backend.remove(id);
     set((s) => ({
       records: { ...s.records, [kind]: (s.records[kind] as Rec<any>[]).filter((r) => r.id !== id) } as Buckets,
     }));
@@ -89,10 +133,10 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
       days.map(async (data) => {
         const found = existing.find((r) => r.data.date === data.date);
         if (found) {
-          await api.put<ServerRecord>(`/records/${found.id}`, { data });
+          await backend.update(found.id, data);
           return { ...found, data } as Rec<DataMap['period_day']>;
         }
-        const row = await api.post<ServerRecord>('/records', { kind: 'period_day', data });
+        const row = await backend.create('period_day', data);
         return toRec<'period_day'>(row);
       }),
     );
@@ -114,5 +158,15 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
     const current = get().records.doctor_note[0];
     if (current) await get().update('doctor_note', current.id, { text });
     else await get().create('doctor_note', { text });
+  },
+
+  clearSampleData: () => {
+    if (!IS_PREVIEW) return;
+    set({ records: emptyBuckets() });
+  },
+
+  restoreSampleData: () => {
+    if (!IS_PREVIEW) return;
+    set({ records: sampleBuckets() });
   },
 }));

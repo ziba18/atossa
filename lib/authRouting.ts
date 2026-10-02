@@ -7,7 +7,7 @@ import { isHumanName } from './humanName';
  * e.g. Apple sign-in that hid it).
  */
 export function routeAfterSignIn(profile: Profile | null | undefined): string {
-  if (profile?.onboarding_complete) return '/(tabs)/chat';
+  if (profile?.onboarding_complete) return '/(tabs)/today';
   if (!isHumanName(profile?.display_name)) return '/(auth)/onboarding/name';
   return '/(auth)/onboarding/basics';
 }

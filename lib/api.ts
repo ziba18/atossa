@@ -1,24 +1,35 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { Config } from '../constants/config';
+
+// expo-secure-store has no web implementation (it throws there). The web build only exists
+// for the design preview, so fall back to localStorage on web instead of crashing.
+const tokenStore = Platform.OS === 'web'
+  ? {
+      getItemAsync: async (k: string) => { try { return globalThis.localStorage?.getItem(k) ?? null; } catch { return null; } },
+      setItemAsync: async (k: string, v: string) => { try { globalThis.localStorage?.setItem(k, v); } catch {} },
+      deleteItemAsync: async (k: string) => { try { globalThis.localStorage?.removeItem(k); } catch {} },
+    }
+  : SecureStore;
 
 const ACCESS_KEY = 'atossa_access_token';
 const REFRESH_KEY = 'atossa_refresh_token';
 
 export async function getStoredAccessToken(): Promise<string | null> {
-  return SecureStore.getItemAsync(ACCESS_KEY);
+  return tokenStore.getItemAsync(ACCESS_KEY);
 }
 
 export async function saveTokens(access: string, refresh: string): Promise<void> {
   await Promise.all([
-    SecureStore.setItemAsync(ACCESS_KEY, access),
-    SecureStore.setItemAsync(REFRESH_KEY, refresh),
+    tokenStore.setItemAsync(ACCESS_KEY, access),
+    tokenStore.setItemAsync(REFRESH_KEY, refresh),
   ]);
 }
 
 export async function clearTokens(): Promise<void> {
   await Promise.all([
-    SecureStore.deleteItemAsync(ACCESS_KEY),
-    SecureStore.deleteItemAsync(REFRESH_KEY),
+    tokenStore.deleteItemAsync(ACCESS_KEY),
+    tokenStore.deleteItemAsync(REFRESH_KEY),
   ]);
 }
 
@@ -29,7 +40,7 @@ export function setSessionExpiredHandler(cb: () => void) {
 }
 
 async function attemptRefresh(): Promise<string | null> {
-  const refresh = await SecureStore.getItemAsync(REFRESH_KEY);
+  const refresh = await tokenStore.getItemAsync(REFRESH_KEY);
   if (!refresh) return null;
   try {
     const res = await fetch(`${Config.apiUrl}/auth/refresh`, {
@@ -68,7 +79,7 @@ async function request<T>(
   body?: unknown,
   _retry = true,
 ): Promise<T> {
-  const token = await SecureStore.getItemAsync(ACCESS_KEY);
+  const token = await tokenStore.getItemAsync(ACCESS_KEY);
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 

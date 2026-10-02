@@ -1,46 +1,49 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { UI } from '../../constants/atossaUI';
-import { BigButton, Card, Screen, Txt } from '../../components/atossa/kit';
-import { Icon, type IconName } from '../../components/ui/Icon';
+import { colors, layout, space } from '../../constants/atossaUI';
+import { Button, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 
-const C = UI.colors;
-
-const POINTS: { icon: IconName; text: string }[] = [
-  { icon: 'message-circle', text: 'Tell Atossa how you feel, in your own words' },
-  { icon: 'calendar', text: 'Keep appointments, medicines and your history in one place' },
-  { icon: 'file-text', text: 'Share a clear summary with your doctor' },
-];
-
+/**
+ * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
+ * from Today), one plain sentence, then the actions anchored low. No imagery.
+ */
 export default function WelcomeScreen() {
   const router = useRouter();
 
   return (
-    <Screen header={false} edges={['top', 'bottom']}>
-      <View style={{ alignItems: 'center', marginTop: 12 }}>
-        <Image source={require('../../assets/icon.png')} style={{ width: 112, height: 112, borderRadius: 56 }} accessibilityIgnoresInvertColors />
-        <Txt variant="display" style={{ fontSize: 52, lineHeight: 60, marginTop: 12 }}>Atossa</Txt>
-        <Txt variant="body" color={C.mutedForeground} style={{ textAlign: 'center', marginTop: 4 }}>
-          Put your symptoms into words, and bring a clear summary to your doctor.
-        </Txt>
-      </View>
+    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
+        <View style={styles.top}>
+          <Txt variant="headline" color={colors.ink2} accessibilityRole="header">Atossa</Txt>
+        </View>
 
-      <Card tone="green" style={{ marginTop: 28, gap: 16 }}>
-        {POINTS.map((p) => (
-          <View key={p.text} style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-            <Icon name={p.icon} size={26} color={C.secondaryForeground} />
-            <Txt variant="body" style={{ flex: 1 }}>{p.text}</Txt>
-          </View>
-        ))}
-      </Card>
+        <View style={styles.hero}>
+          <Txt variant="hero">Your body, in your words.</Txt>
+          <Txt variant="body" color={colors.ink2}>
+            Put your symptoms into words, and bring a clear summary to your doctor.
+          </Txt>
+        </View>
 
-      <View style={{ marginTop: 28, gap: 12 }}>
-        <BigButton label="Sign up with email" icon="user" onPress={() => router.push('/(auth)/register')} />
-        <BigButton label="I already have an account" variant="outline" onPress={() => router.push('/(auth)/login')} />
-        <SocialAuthButtons mode="signup" />
-      </View>
-    </Screen>
+        <View style={styles.actions}>
+          <Button label="Create an account" onPress={() => router.push('/(auth)/register')} />
+          <Button label="I already have an account" variant="text" onPress={() => router.push('/(auth)/login')} />
+          <SocialAuthButtons mode="signup" />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.canvas },
+  column: {
+    flexGrow: 1, width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center',
+    paddingHorizontal: layout.gutter, paddingBottom: space.xl,
+  },
+  top: { minHeight: 44, justifyContent: 'center', paddingTop: space.sm },
+  hero: { flexGrow: 1, justifyContent: 'center', gap: space.sm, paddingVertical: space.huge },
+  actions: { gap: space.xs },
+});

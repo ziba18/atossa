@@ -5,6 +5,136 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-01/02 — "Warm Paper, Deep Ink" redesign built locally (uncommitted)
+
+The Lovable prototype ran out of credits partway through Stage 2a, and the user asked to port what
+was built and finish the redesign in this repo with design/review agents. Plan and status:
+`design/PORT_PLAN.md`; component and token reference: `design/KIT.md`; Lovable snapshot:
+`design/lovable-reference/` (excluded from tsc).
+- Foundation: exact palette/type/spacing tokens (`constants/atossaUI.ts`, legacy `UI.*` aliases kept),
+  Inter 400/500/600 + Instrument Serif Italic (Work Sans removed), rebuilt kit
+  (`components/atossa/kit-parts/*`), extended record types (all new fields optional, old data still
+  renders; backend `/records` is free-form JSON so no migration), `lib/records/format.ts` (en-GB dates,
+  strength, `noteCount`).
+- Tabs are now Today · Timeline · For my doctor (+ Profile via the avatar). Old chat/dashboard/report
+  screens, Charts, Calendar, DateChoice and RecordPage were deleted (still in git).
+- Today + capture sheet (gap-only follow-ups, "Here's what I noted", Rough day, Log bleeding, toast);
+  Timeline (List/Month, week groups, day sheet, period runs, entry/bleeding detail); Profile + Records;
+  For my doctor (builder, A4 document model shared by preview/reader/Show on screen/PDF via
+  expo-print); sign-in/onboarding re-skinned.
+- Design-preview mode for reviewers: `npm run preview:web` (EXPO_PUBLIC_DESIGN_PREVIEW=1, signed in as
+  Sam, seeded in-memory store, today = 2026-09-24). Never set it in EAS. Added react-dom,
+  react-native-web, @expo/metro-runtime, expo-haptics, expo-keep-awake, @expo-google-fonts/inter.
+- Reviews: round 1 UX 7 / visual 7 → round 2 8 / 8 → final pass (see
+  `research_notes/Atossa app design research/local_review*`). Notable bugs found and fixed: closed
+  Sheet layer swallowing the next tap; RN-web drops inline `pointerEvents: 'box-none'` (toast layer
+  blocked taps for 3 s) — now only via StyleSheet.create; POP_TO_TOP double dispatch.
+- Small decisions: selected SeverityRow = solid plum disc; When (period timing) and How long (free
+  text) are separate fields; onboarding last-period no longer invents flow "Medium"; reminder copy
+  now "If today's worth noting, I'm here. Two minutes is plenty."; welcome no longer shows the app
+  icon (portrait with flowers is on the do-not-do list).
+- OPEN for the user: Friends still computes and shares cycle phase (reviewers flag it as a
+  prediction); the app icon; device check in Expo Go before any TestFlight build.
+Verified: `tsc` clean, `expo export --platform ios` OK, web preview walked by reviewer agents.
+NOT run in Expo Go on a device.
+
+---
+
+## 2026-09-25 — Expo Go warnings
+
+First run in Expo Go (SDK 57) bundled and started; three warnings.
+- Two from `expo-notifications`, printed at import time in Expo Go (the
+  package registers a push-token listener as a side effect). The old
+  `LogBox.ignoreLogs` block in `app/_layout.tsx` never worked: imports are
+  hoisted above it, and LogBox doesn't filter the terminal. Replaced with
+  `lib/expoGoWarnings.ts` (drops exactly those two messages, Expo Go only)
+  loaded from a new entry `index.ts` (`package.json` main), which also
+  loads `lib/crashGuard.ts` first.
+- "Unable to get the view config … ExpoAppleAuthentication": Expo Go has
+  no native view for Apple's button. `SocialAuthButtons` now hides the
+  Apple button in Expo Go (Apple sign-in can't work there anyway).
+tsc clean, iOS export builds from the new entry.
+
+---
+
+## 2026-09-25 — Upgrade to Expo SDK 57
+
+The App Store Expo Go is SDK 57 only (my earlier "still supports SDK 54"
+came from a May 2026 Expo post and was out of date), and older Expo Go
+can't be installed on iOS. User chose to upgrade. Changes (uncommitted):
+expo 54.0.37 → 57.0.25, React Native 0.81.5 → 0.86.3, React 19.1 → 19.2.3,
+all expo-* to 57.x, gesture-handler 2.32, screens 4.26, safe-area 5.7,
+svg 15.15, google-signin 16.1.5, TypeScript 6.0, @types/react 19.2.
+Breaking changes handled: `android.edgeToEdgeEnabled` removed; splash
+config moved into the `expo-splash-screen` plugin (with no props the
+plugin now does nothing); `expo-font`/`expo-sharing`/`expo-status-bar`
+plugins added as `expo install` asked; `MainTabBar` imports
+`BottomTabBarProps` from `expo-router/tabs` (SDK 56 drops direct
+`@react-navigation/*` imports); `eas update` needs `--environment`.
+`fetch` is now `expo/fetch`, and `lib/api.ts` only uses standard calls.
+Verified: tsc clean, expo-doctor 21/21, iOS export 3.4 MB Hermes bundle.
+**Not run on a device yet.** Unknown whether RN 0.86 fixes the iOS 26
+crash from build 22. The local gitignored `ios/` (1 GB) is a stale SDK 54
+prebuild.
+
+---
+
+## 2026-09-25 — Test in Expo Go with plain `npx expo start`
+
+User wants to test in Expo Go on their phone (App Store Expo Go still
+supports SDK 54). Changes (uncommitted):
+- **Removed `expo-dev-client`**: with it installed, `npx expo start`
+  serves a development build and the QR code doesn't open in Expo Go. Only
+  the `development` EAS profile used it (for Step D voice testing).
+  Re-add it (`npx expo install expo-dev-client`) when voice needs a device
+  test.
+- **`lib/speechModule.ts`**: lazy-requires `expo-speech-recognition` (its
+  import throws when the native module is missing, as in Expo Go, which
+  broke the Chat tab). `useDictation`/`transcription` go through it; in
+  Expo Go the mic reports "not available".
+- **`.env` (gitignored)** gained `EXPO_PUBLIC_API_URL` = Render backend;
+  without it the app called `localhost`, which the phone can't reach.
+- In Expo Go only email sign-in works (Apple/Google need the real bundle).
+tsc clean, expo-doctor 18/18, iOS export builds.
+
+---
+
+## 2026-09-25 — TestFlight build 22 crashes on launch (iOS 26.6.1)
+
+User's crash log (`Atossa-2026-09-25-100618.ips`, build 22 = `b572995`):
+SIGSEGV inside Hermes (`stringPrototypeSplit` → `resizeWithinCapacity`) on
+the JS thread, while the TurboModule queue was in
+`ObjCTurboModule::performVoidMethodInvocation` →
+`convertNSExceptionToJSError`: a void native method raised an ObjC
+exception and RN converted it on the wrong thread, corrupting the Hermes
+heap. Known RN 0.81 / iOS 26 release-only bug (react-native#54859,
+expo#44606), no upstream fix. Process lived 38 s — about a Render cold
+start — so the trigger is probably right after the first backend reply.
+Most likely thrower: `RCTExceptionsManager` reporting a *fatal JS error*
+(release builds turn those into an NSException). **Not confirmed** — the
+log doesn't name the module or the JS error.
+
+Added (uncommitted): `lib/crashGuard.ts` (release-only global JS error
+handler that keeps fatal errors in JS instead of passing them to native),
+a root `ErrorBoundary` in `app/_layout.tsx`, and `ErrorScreen` in the kit,
+which shows the error message with "Try again". If the theory is right, the
+app stays open and shows the real error. tsc clean, iOS export builds.
+User said **do not push to TestFlight** — nothing built or shipped.
+
+**Narrowed (same day):** build 21 (`7402b3b`) opens on the same phone and
+build 22 crashes before any screen, so the cause is in `7402b3b..b572995`.
+Ruled out by diffing the two IPAs downloaded from EAS: Info.plist differs
+only in the removed permission strings; no native module the JS asks for
+is missing from build 22's binary (JS strings vs binary strings).
+Remaining differences: Expo/Babel patch updates (expo 54.0.34→.37,
+expo-router 6.0.23→.24, expo-font, expo-file-system, Babel 7.29.x), the
+deleted hidden screens (release expo-router evaluates every route at
+startup) and `cancelPredictedCycleReminders()` at module load. Next
+step without a build: read the phone's live log (Console.app over USB),
+where RN prints "Unhandled JS Exception: …" before it crashes.
+
+---
+
 ## 2026-09-24 — Review of the new screens + one design system for every screen
 
 **1. Review of Chat / Dashboard / For my doctor (static — no device).**

@@ -12,23 +12,24 @@
 
 ## Features
 
-- **Chat** — describe a symptom in your own words (typed, or dictated with on-device speech recognition), confirm the "I've noted this" card, then answer four fixed questions: where, how bad (0–10), how long, and whether it stopped you doing things. No AI writes anything here, so nothing diagnostic can appear.
-- **Dashboard** — pain chart, weekly "stopped me doing things" bars, recent symptoms, a cycle calendar, appointments, medicines and health history, each with add / edit / delete.
-- **For my doctor** — an at-a-glance summary with collapsible sections and editable notes, shareable as text or PDF.
+- **Today** — one prompt: speak or type how you're feeling in your own words. Atossa asks only the follow-ups that are missing (where, how bad 0–10, how long, did it stop you doing things), shows a "Here's what I noted" card, and saves it. Also a quick "Rough day" log, a Log bleeding sheet, your next appointment and your latest note. No AI writes anything here, so nothing diagnostic can appear.
+- **Timeline** — every note in your own words, as a filterable list grouped by week or as a month calendar (bleeding days marked), with a detail view for each entry.
+- **For my doctor** — pick a date range and what to include, see an A4 document preview, then share it as a PDF, print it, or show it on screen in the appointment.
+- **Profile & Records** — opened from the header avatar: medicines, appointments and health history (add / edit / delete), settings, and edit profile.
 - **Friends** — invite-only, mutual connections who can see each other's current cycle phase (never raw flow/symptom/notes data).
 - **Onboarding** — name, usual cycle and period length, last period date, an optional daily reminder.
 - **Apple, Google, and email sign-in** — verified server-side by the FastAPI backend; sessions stored with Expo SecureStore.
 
-No diagnostic language anywhere in the product: the app never names a condition, gives a probability, suggests a cause, or recommends treatment. Clinician statements the user types are always labelled "I was told:". See [`MVP.md`](MVP.md) and [`WORKLOG.md`](WORKLOG.md).
+No diagnostic language anywhere in the product: the app never names a condition, gives a probability, suggests a cause, or recommends treatment. Clinician statements the user types are always labelled "I was told:". The app also makes no predictions, streaks or threshold labels ("heavy", "irregular"). See [`MVP.md`](MVP.md) and [`WORKLOG.md`](WORKLOG.md).
 
 ## Tech stack
 
 ### Mobile app
-- **Framework** — [Expo SDK 54](https://expo.dev) · React Native 0.81 · React 19 · TypeScript
+- **Framework** — [Expo SDK 57](https://expo.dev) · React Native 0.86 · React 19 · TypeScript
 - **Routing** — [expo-router](https://docs.expo.dev/router/introduction/) (typed file-based routes)
 - **State** — Zustand stores (`stores/`); health records in `stores/recordsStore.ts`
-- **UI** — one design system for every screen: tokens in `constants/atossaUI.ts`, shared components in `components/atossa/kit.tsx`; Instrument Serif + Work Sans; large text and 56pt tap targets; `react-native-svg` charts
-- **Voice** — `expo-speech-recognition`, on-device only (no audio ever leaves the device)
+- **UI** — "Warm Paper, Deep Ink" design system: tokens in `constants/atossaUI.ts`, shared components in `components/atossa/kit.tsx` (rules in [`design/KIT.md`](design/KIT.md)); Inter for UI, Instrument Serif only for the user's own words; 44pt+ tap targets, Dynamic Type, haptics
+- **Voice** — `expo-speech-recognition`, on-device only (no audio ever leaves the device); loaded lazily so the app still runs in Expo Go, where dictation reports "not available"
 - **Sharing** — `expo-print` + `expo-sharing` for the doctor summary PDF
 - **Build** — [EAS Build](https://docs.expo.dev/build/introduction/)
 
@@ -47,15 +48,17 @@ atossa/
 ├── app/
 │   ├── (auth)/                   # welcome, sign in, sign up, onboarding (name, basics, last period, reminders)
 │   └── (tabs)/
-│       ├── chat/                 # symptom flow (four fixed questions)
-│       ├── dashboard/            # overview + calendar, symptoms, appointments, medicines, health
-│       ├── report/               # "For my doctor" summary
-│       └── profile/              # profile, settings, friends (opened from the header avatar)
+│       ├── today/                # capture prompt, rough day, latest note, next appointment
+│       ├── timeline/             # list + month views, entry / bleeding / period / record detail
+│       ├── doctor/               # "For my doctor" builder + show-on-screen view
+│       └── profile/              # profile, settings, friends, records (opened from the header avatar)
 ├── components/
-│   ├── atossa/                   # shared UI (kit, charts, calendar, date picker, tab bar)
+│   ├── atossa/                   # kit + kit-parts, tab bar, capture/, timeline/, doctor/, records/ screens' parts
 │   ├── auth/                     # Apple / Google sign-in buttons
 │   └── ui/Icon.tsx               # icon set
-├── lib/records/                  # pure logic: dates, cycles, doctor summary
+├── lib/records/                  # pure logic: dates, formatting, fields, doctor summary
+├── lib/preview/                  # design-preview mode (seeded sample data, no login)
+├── design/                       # KIT.md (UI rules), PORT_PLAN.md, Lovable reference snapshot
 ├── algorithms/                   # cycle-phase math used by Friends
 ├── backend/app/                  # FastAPI: routers, models, schemas, services
 ├── backend/alembic/              # database migrations
@@ -70,7 +73,7 @@ atossa/
 
 - Node 20+ and npm
 - Python 3.11
-- A dev-client build of the app (`eas build --profile development`) — voice dictation is a native module that Expo Go doesn't include
+- [Expo Go](https://expo.dev/go) (SDK 57) on your phone — everything except voice dictation works there; dictation needs a dev-client or store build
 - A [Supabase](https://supabase.com) project (used only as Postgres hosting — nothing else needs configuring there beyond creating the project)
 
 ### 1. Set up the Python backend
@@ -114,12 +117,11 @@ EXPO_PUBLIC_API_URL=http://localhost:8000   # points at the backend above; defau
 ```
 
 ```bash
-npm run ios       # iOS simulator
-npm run android   # Android emulator
-npm start         # Expo CLI — pick your target
+npm start              # then scan the QR code with Expo Go
+npm run preview:web    # design preview in the browser: sample data, no login, no backend needed
 ```
 
-Voice dictation (`expo-speech-recognition`) is a native module — it needs a dev-client build, not Expo Go.
+Voice dictation (`expo-speech-recognition`) is a native module — in Expo Go the mic reports "not available"; use a store or dev-client build to try it. `EXPO_PUBLIC_DESIGN_PREVIEW` (set by `preview:web`) is for local review only — never set it in an EAS environment.
 
 ### 3. Deploy the backend
 
@@ -146,7 +148,7 @@ EAS/submit configuration lives in `eas.json`.
 **Shipping JS-only changes without a new build (EAS Update):** screens, text, layout and logic changes can go straight to installed builds:
 
 ```bash
-eas update --channel production --message "what changed"
+eas update --channel production --environment production --message "what changed"
 ```
 
 The app downloads the update on launch and uses it from the next launch. `runtimeVersion` uses the `fingerprint` policy, so an update only reaches builds with matching native code — after adding/removing a native package, changing permissions or `app.config.ts` plugins, make a new build instead.

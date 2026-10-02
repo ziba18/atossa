@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { BackButton, BigButton, InlineError, PageTitle, Screen, SuccessNote, TextField, Txt } from '../../../components/atossa/kit';
+import { space } from '../../../constants/atossaUI';
+import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/atossa/kit';
+import { haptics } from '../../../lib/haptics';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { daysInMonth, parseKey, toKey, todayKey } from '../../../lib/records/dates';
@@ -33,10 +35,9 @@ export default function EditProfileScreen() {
   const [cycle, setCycle] = useState(String(profile?.average_cycle_length ?? 28));
   const [period, setPeriod] = useState(String(profile?.average_period_length ?? 5));
   const [error, setError] = useState('');
-  const [saved, setSaved] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const touch = <T,>(setter: (v: T) => void) => (v: T) => { setter(v); setSaved(''); setError(''); };
+  const touch = <T,>(setter: (v: T) => void) => (v: T) => { setter(v); setError(''); };
   const digits = (setter: (v: string) => void) => touch((v: string) => setter(v.replace(/\D/g, '')));
 
   const save = async () => {
@@ -58,7 +59,8 @@ export default function EditProfileScreen() {
         average_period_length: periodDays,
       });
       await fetchProfile();
-      setSaved('Saved.');
+      haptics.success();
+      showToast('Your details are saved.');
     } catch {
       setError('Your details couldn’t be saved. Check your connection and try again.');
     } finally {
@@ -67,16 +69,13 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <Screen header={false}>
-      <BackButton label="Back" />
-      <View style={{ marginTop: 20 }}><PageTitle title="My details" /></View>
-
-      <View style={{ marginTop: 16, gap: 20 }}>
+    <ScreenLarge title="My details" back={{ label: 'Profile' }}>
+      <View style={{ gap: space.xl }}>
         <TextField label="Your name" value={name} onChangeText={touch(setName)} autoCapitalize="words" />
 
         <View>
-          <Txt variant="bodyBold">Date of birth (optional)</Txt>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <FieldLabel label="Date of birth" optional />
+          <View style={{ flexDirection: 'row', gap: space.xs }}>
             <TextField label="Day" value={day} onChangeText={digits(setDay)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
             <TextField label="Month" value={month} onChangeText={digits(setMonth)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
             <TextField label="Year" value={year} onChangeText={digits(setYear)} keyboardType="number-pad" maxLength={4} style={{ flex: 1.4 }} />
@@ -87,9 +86,8 @@ export default function EditProfileScreen() {
         <TextField label="Usual period length in days" value={period} onChangeText={digits(setPeriod)} keyboardType="number-pad" maxLength={2} />
 
         <InlineError message={error} />
-        <BigButton label={saving ? 'Saving…' : 'Save my details'} icon="check" disabled={saving} onPress={save} />
-        <SuccessNote message={saved} />
+        <Button label="Save my details" icon="check" loading={saving} onPress={save} />
       </View>
-    </Screen>
+    </ScreenLarge>
   );
 }

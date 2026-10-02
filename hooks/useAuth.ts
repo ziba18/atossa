@@ -3,6 +3,8 @@ import { api, clearTokens, getStoredAccessToken, setSessionExpiredHandler } from
 import { useAuthStore, type AuthUser } from '../stores/authStore';
 import { syncDailyLogReminder } from '../lib/notifications';
 import type { Profile } from '../types/database';
+import { IS_PREVIEW, PREVIEW_USER_ID } from '../lib/preview/flag';
+import { PREVIEW_EMAIL, PREVIEW_PROFILE } from '../lib/preview/seed';
 
 let authInitStarted = false;
 
@@ -13,6 +15,15 @@ function startAuthInit() {
   setSessionExpiredHandler(() => {
     useAuthStore.getState().signOut();
   });
+
+  // Design preview: signed in as "Sam" immediately, no tokens, no network.
+  if (IS_PREVIEW) {
+    const { setSession, setUser, setProfile } = useAuthStore.getState();
+    setUser({ id: PREVIEW_USER_ID, email: PREVIEW_EMAIL });
+    setProfile(PREVIEW_PROFILE);
+    setSession({ access_token: 'design-preview' });
+    return;
+  }
 
   (async () => {
     const { setSession, setUser, setProfile } = useAuthStore.getState();
@@ -51,7 +62,7 @@ export function useAuth() {
   const syncedDailyReminder = useRef(false);
 
   useEffect(() => {
-    if (!profile || !profile.onboarding_complete || syncedDailyReminder.current) return;
+    if (IS_PREVIEW || !profile || !profile.onboarding_complete || syncedDailyReminder.current) return;
     syncedDailyReminder.current = true;
     syncDailyLogReminder(profile.daily_log_reminder_enabled, profile.daily_log_reminder_time).catch(() => {});
   }, [profile]);

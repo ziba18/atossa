@@ -73,19 +73,40 @@ export type IconName =
   | 'user'
   | 'users'
   | 'x'
-  | 'zap';
+  | 'zap'
+  | 'pen-line'
+  | 'calendar-days'
+  | 'chevron-down'
+  | 'chevron-up'
+  | 'share-2'
+  | 'printer'
+  | 'monitor'
+  | 'lock'
+  | 'trash-2'
+  | 'sun'
+  | 'list';
 
 interface IconProps {
   name: IconName;
+  /** 20 (inline / rows), 24 (default, tab bar, buttons) or 32 (large). */
   size?: number;
   color?: string;
+  /**
+   * Visual stroke width in points, independent of size (Lucide's "absoluteStrokeWidth").
+   * The design system uses 1.75 everywhere — don't override it in new code.
+   */
   strokeWidth?: number;
 }
 
-export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = 2 }: IconProps) {
+/** The one icon stroke weight in the design system (points, at any size). */
+export const ICON_STROKE = 1.75;
+
+export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = ICON_STROKE }: IconProps) {
   const shared = {
     stroke: color,
-    strokeWidth,
+    // The SVG is drawn in a 24-unit viewBox and scaled to `size`; compensate so the
+    // stroke on screen is exactly `strokeWidth` points whatever the size.
+    strokeWidth: (strokeWidth * 24) / size,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
     fill: 'none',
@@ -622,6 +643,111 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = 2 
 
       case 'zap':
         return <Path {...shared} d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />;
+
+      case 'pen-line':
+        return (
+          <>
+            <Path {...shared} d="M13 21h8" />
+            <Path {...shared} d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+          </>
+        );
+
+      case 'calendar-days':
+        return (
+          <>
+            <Path {...shared} d="M8 2v4" />
+            <Path {...shared} d="M16 2v4" />
+            <Rect {...shared} x="3" y="4" width="18" height="18" rx="2" />
+            <Path {...shared} d="M3 10h18" />
+            <Path {...shared} d="M8 14h.01" />
+            <Path {...shared} d="M12 14h.01" />
+            <Path {...shared} d="M16 14h.01" />
+            <Path {...shared} d="M8 18h.01" />
+            <Path {...shared} d="M12 18h.01" />
+            <Path {...shared} d="M16 18h.01" />
+          </>
+        );
+
+      case 'chevron-down':
+        return <Path {...shared} d="m6 9 6 6 6-6" />;
+
+      case 'chevron-up':
+        return <Path {...shared} d="m18 15-6-6-6 6" />;
+
+      case 'share-2':
+        return (
+          <>
+            <Circle {...shared} cx="18" cy="5" r="3" />
+            <Circle {...shared} cx="6" cy="12" r="3" />
+            <Circle {...shared} cx="18" cy="19" r="3" />
+            <Line {...shared} x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <Line {...shared} x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </>
+        );
+
+      case 'printer':
+        return (
+          <>
+            <Path {...shared} d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <Path {...shared} d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" />
+            <Rect {...shared} x="6" y="14" width="12" height="8" rx="1" />
+          </>
+        );
+
+      case 'monitor':
+        return (
+          <>
+            <Rect {...shared} x="2" y="3" width="20" height="14" rx="2" />
+            <Line {...shared} x1="8" y1="21" x2="16" y2="21" />
+            <Line {...shared} x1="12" y1="17" x2="12" y2="21" />
+          </>
+        );
+
+      case 'lock':
+        return (
+          <>
+            <Rect {...shared} x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <Path {...shared} d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </>
+        );
+
+      case 'trash-2':
+        return (
+          <>
+            <Path {...shared} d="M3 6h18" />
+            <Path {...shared} d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+            <Path {...shared} d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            <Line {...shared} x1="10" y1="11" x2="10" y2="17" />
+            <Line {...shared} x1="14" y1="11" x2="14" y2="17" />
+          </>
+        );
+
+      case 'sun':
+        return (
+          <>
+            <Circle {...shared} cx="12" cy="12" r="4" />
+            <Path {...shared} d="M12 2v2" />
+            <Path {...shared} d="M12 20v2" />
+            <Path {...shared} d="m4.93 4.93 1.41 1.41" />
+            <Path {...shared} d="m17.66 17.66 1.41 1.41" />
+            <Path {...shared} d="M2 12h2" />
+            <Path {...shared} d="M20 12h2" />
+            <Path {...shared} d="m6.34 17.66-1.41 1.41" />
+            <Path {...shared} d="m19.07 4.93-1.41 1.41" />
+          </>
+        );
+
+      case 'list':
+        return (
+          <>
+            <Path {...shared} d="M3 12h.01" />
+            <Path {...shared} d="M3 18h.01" />
+            <Path {...shared} d="M3 6h.01" />
+            <Path {...shared} d="M8 12h13" />
+            <Path {...shared} d="M8 18h13" />
+            <Path {...shared} d="M8 6h13" />
+          </>
+        );
 
       default:
         return null;

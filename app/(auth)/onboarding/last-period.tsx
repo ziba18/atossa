@@ -1,26 +1,20 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { BigButton, InlineError, PageTitle, Screen, StepProgress, Txt } from '../../../components/atossa/kit';
-import { MonthGrid } from '../../../components/atossa/Calendar';
+import { colors, space } from '../../../constants/atossaUI';
+import { Button, Card, DayChooser, InlineError, Txt } from '../../../components/atossa/kit';
+import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { api } from '../../../lib/api';
 import { useRecordsStore } from '../../../stores/recordsStore';
-import { MONTH_NAMES, formatDate, isFuture, parseKey, todayKey } from '../../../lib/records/dates';
+import { isFuture } from '../../../lib/records/dates';
+import { formatDay } from '../../../lib/records/format';
 
 export default function OnboardingLastPeriod() {
   const router = useRouter();
   const savePeriodDays = useRecordsStore((s) => s.savePeriodDays);
-  const today = parseKey(todayKey());
-  const [month, setMonth] = useState({ y: today.y, m0: today.m0 });
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const atCurrentMonth = month.y === today.y && month.m0 === today.m0;
-  const moveMonth = (delta: number) => {
-    const d = new Date(Date.UTC(month.y, month.m0 + delta, 1));
-    setMonth({ y: d.getUTCFullYear(), m0: d.getUTCMonth() });
-  };
 
   const choose = (key: string) => {
     setError(isFuture(key) ? 'Choose today or a day before today.' : '');
@@ -32,9 +26,9 @@ export default function OnboardingLastPeriod() {
     setLoading(true);
     setError('');
     try {
-      // The calendar in Dashboard reads period days; Friends reads /cycles. Save to both.
+      // Timeline reads period days; Friends reads /cycles. Save to both.
       await Promise.all([
-        savePeriodDays([{ date: selected, isStart: true, isEnd: false, flow: 'Medium', note: '' }]),
+        savePeriodDays([{ date: selected, status: 'started', isStart: true, isEnd: false, note: '' }]),
         api.post('/cycles', { period_start: selected }),
       ]);
       router.push('/(auth)/onboarding/reminders');
@@ -46,32 +40,24 @@ export default function OnboardingLastPeriod() {
   };
 
   return (
-    <Screen header={false} edges={['top', 'bottom']}>
-      <StepProgress step={2} total={3} />
-      <PageTitle title="When did your last period start?" subtitle="Choose the first day. If you’re not sure, you can skip this." />
+    <OnboardingScreen
+      step={3}
+      back={{ label: 'Back' }}
+      title="When did your last period start?"
+      helper="Choose the first day. If you’re not sure, that’s fine."
+    >
+      <Card>
+        <DayChooser value={selected ?? ''} onChange={choose} />
+      </Card>
+      <Txt variant="body" color={selected ? colors.ink : colors.ink2} style={{ marginTop: space.md }} accessibilityLiveRegion="polite">
+        {selected ? `First day: ${formatDay(selected, 'always')}` : 'No day chosen yet'}
+      </Txt>
 
-      <View style={{ marginTop: 20, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <BigButton label="‹" accessibilityLabel="Previous month" variant="outline" onPress={() => moveMonth(-1)} style={{ width: 64 }} />
-        <Txt variant="h2" style={{ flex: 1, textAlign: 'center' }}>{MONTH_NAMES[month.m0]} {month.y}</Txt>
-        <BigButton label="›" accessibilityLabel="Next month" variant="outline" disabled={atCurrentMonth} onPress={() => moveMonth(1)} style={{ width: 64 }} />
+      <View style={{ marginTop: space.xxl, gap: space.xs }}>
+        <InlineError message={error} style={{ marginBottom: space.xs }} />
+        <Button label={loading ? 'Saving…' : 'Next'} loading={loading} disabled={!selected} onPress={handleNext} />
+        <Button label="I’m not sure" variant="text" disabled={loading} onPress={() => router.push('/(auth)/onboarding/reminders')} />
       </View>
-      <View style={{ marginTop: 12 }}>
-        <MonthGrid
-          year={month.y}
-          month0={month.m0}
-          selected={selected ?? undefined}
-          onSelect={choose}
-          cellState={() => ({ bleeding: false })}
-        />
-      </View>
-
-      <Txt variant="h3" style={{ marginTop: 16 }}>{selected ? `Chosen: ${formatDate(selected)}` : 'No day chosen yet'}</Txt>
-
-      <View style={{ marginTop: 20, gap: 12 }}>
-        <InlineError message={error} />
-        <BigButton label={loading ? 'Saving…' : 'Next'} icon="arrow-right" disabled={!selected || loading} onPress={handleNext} />
-        <BigButton label="I’m not sure — skip" variant="outline" disabled={loading} onPress={() => router.push('/(auth)/onboarding/reminders')} />
-      </View>
-    </Screen>
+    </OnboardingScreen>
   );
 }

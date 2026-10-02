@@ -1,61 +1,77 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { BigButton, Card, InlineError, PageTitle, Screen, StepProgress, SwitchRow, Txt } from '../../../components/atossa/kit';
+import { space } from '../../../constants/atossaUI';
+import { Button, ChipGroup, FieldLabel, InlineError } from '../../../components/atossa/kit';
+import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
 
+// Stored when the reminder is off (as before), so Settings has a time ready if it's turned on.
+const DEFAULT_TIME = '20:00';
+
 export default function OnboardingReminders() {
   const router = useRouter();
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
-  const [enabled, setEnabled] = useState(true);
-  const [time, setTime] = useState('20:00');
+  // Nothing pre-selected: choosing a time is the "yes"; "Not now" is the "no".
+  const [time, setTime] = useState<string | null>(null);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<'on' | 'off' | null>(null);
 
-  const finish = async () => {
-    setLoading(true);
+  const finish = async (enabled: boolean) => {
+    const at = enabled && time ? time : DEFAULT_TIME;
+    setLoading(enabled ? 'on' : 'off');
     setError('');
     try {
       await api.patch('/me', {
         notifications_enabled: enabled,
         daily_log_reminder_enabled: enabled,
-        daily_log_reminder_time: time,
+        daily_log_reminder_time: at,
         onboarding_complete: true,
       });
       // Asks for notification permission when turning the reminder on; not critical if refused.
-      await syncDailyLogReminder(enabled, time).catch(() => {});
+      await syncDailyLogReminder(enabled, at).catch(() => {});
       await fetchProfile();
-      router.replace('/(tabs)/chat' as any);
+      router.replace('/(tabs)/today' as any);
     } catch {
       setError('We couldn’t finish setting up. Check your connection and try again.');
-      setLoading(false);
+      setLoading(null);
     }
   };
 
   return (
-    <Screen header={false} edges={['top', 'bottom']}>
-      <StepProgress step={3} total={3} />
-      <PageTitle title="A daily reminder" subtitle="Atossa can remind you once a day to note how you feel. You can change this later in Settings." />
+    <OnboardingScreen
+      step={4}
+      back={{ label: 'Back' }}
+      title="Would a daily reminder help?"
+      helper="If today’s worth noting, I’m here. Two minutes is plenty. You can change this later in Settings."
+    >
+      <FieldLabel label="What time suits you?" />
+      <ChipGroup
+        options={REMINDER_TIMES.map((t) => ({ value: t.value, label: t.label }))}
+        value={time}
+        onChange={setTime}
+        allowDeselect
+        accessibilityLabel="Reminder time"
+      />
 
-      <Card style={{ marginTop: 20, gap: 12 }}>
-        <SwitchRow label="Remind me every day" value={enabled} onChange={setEnabled} />
-        {enabled ? (
-          <View style={{ gap: 10 }}>
-            <Txt variant="bodyBold">What time?</Txt>
-            {REMINDER_TIMES.map((t) => (
-              <BigButton key={t.value} label={t.label} variant="outline" selected={time === t.value} onPress={() => setTime(t.value)} />
-            ))}
-          </View>
-        ) : null}
-      </Card>
-
-      <View style={{ marginTop: 24, gap: 12 }}>
-        <InlineError message={error} />
-        <BigButton label={loading ? 'Finishing…' : 'Start using Atossa'} icon="check" disabled={loading} onPress={finish} />
+      <View style={{ marginTop: space.xxl, gap: space.xs }}>
+        <InlineError message={error} style={{ marginBottom: space.xs }} />
+        <Button
+          label={loading === 'on' ? 'Finishing…' : 'Turn on reminder'}
+          loading={loading === 'on'}
+          disabled={!time || loading !== null}
+          onPress={() => finish(true)}
+        />
+        <Button
+          label={loading === 'off' ? 'Finishing…' : 'Not now'}
+          variant="text"
+          disabled={loading !== null}
+          onPress={() => finish(false)}
+        />
       </View>
-    </Screen>
+    </OnboardingScreen>
   );
 }

@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import { View, Pressable, Platform, ActivityIndicator, StyleSheet } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { isRunningInExpoGo } from 'expo';
 import { useRouter } from 'expo-router';
-import { UI } from '../../constants/atossaUI';
+import { colors, heights, radii, space } from '../../constants/atossaUI';
 import { InlineError, Txt } from '../atossa/kit';
 import { GoogleGLogo } from './GoogleGLogo';
 import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
 import { routeAfterSignIn } from '../../lib/authRouting';
 import { useAuthStore } from '../../stores/authStore';
 
-const C = UI.colors;
+// Expo Go has no native view for Apple's button, and Apple sign-in can't work
+// there anyway (the token is issued for Expo Go's bundle id, not Atossa's).
+const SHOW_APPLE = Platform.OS === 'ios' && !isRunningInExpoGo();
 
-/** Apple (iOS only) and Google sign-in, with an optional "or" divider above them. */
+/**
+ * Apple (iOS only) and Google sign-in, with an optional "or" divider above them.
+ * Apple uses its own native button (black, per Apple's HIG); Google is a white outline pill with
+ * the full-colour "G" (per Google's branding rules). Both 48 tall, pill-shaped like the kit buttons.
+ */
 export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 'signin' | 'signup'; divider?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState<'apple' | 'google' | null>(null);
@@ -30,18 +37,18 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
   };
 
   return (
-    <View style={{ gap: 12 }}>
+    <View style={{ gap: space.sm }}>
       {divider ? (
         <View style={styles.dividerRow} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           <View style={styles.line} />
-          <Txt variant="small">or</Txt>
+          <Txt variant="caption">or</Txt>
           <View style={styles.line} />
         </View>
       ) : null}
 
-      {Platform.OS === 'ios' ? (
+      {SHOW_APPLE ? (
         busy === 'apple' ? (
-          <View style={styles.loading}><ActivityIndicator color={C.foreground} /></View>
+          <View style={styles.loading}><ActivityIndicator color={colors.ink} /></View>
         ) : (
           <AppleAuthentication.AppleAuthenticationButton
             buttonType={
@@ -50,7 +57,7 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
                 : AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
             }
             buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-            cornerRadius={UI.radius}
+            cornerRadius={heights.secondary / 2}
             style={styles.apple}
             onPress={() => run('apple')}
           />
@@ -58,17 +65,17 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
       ) : null}
 
       {busy === 'google' ? (
-        <View style={styles.loading}><ActivityIndicator color={C.foreground} /></View>
+        <View style={styles.loading}><ActivityIndicator color={colors.ink} /></View>
       ) : (
         <Pressable
           onPress={() => run('google')}
           disabled={busy !== null}
           accessibilityRole="button"
           accessibilityLabel="Continue with Google"
-          style={({ pressed }) => [styles.google, pressed && { opacity: 0.85 }]}
+          style={({ pressed }) => [styles.google, pressed && { backgroundColor: colors.sunken }]}
         >
-          <GoogleGLogo size={22} />
-          <Txt variant="bodyBold">Continue with Google</Txt>
+          <GoogleGLogo size={20} />
+          <Txt variant="headline">Continue with Google</Txt>
         </Pressable>
       )}
 
@@ -78,12 +85,13 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
 }
 
 const styles = StyleSheet.create({
-  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 4 },
-  line: { flex: 1, height: 1, backgroundColor: C.border },
-  apple: { height: UI.minTap, width: '100%' },
-  loading: { height: UI.minTap, alignItems: 'center', justifyContent: 'center' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginVertical: space.xxs },
+  line: { flex: 1, height: 1, backgroundColor: colors.hairline },
+  apple: { height: heights.secondary, width: '100%' },
+  loading: { height: heights.secondary, alignItems: 'center', justifyContent: 'center' },
   google: {
-    minHeight: UI.minTap, borderRadius: UI.radius, borderWidth: 1, borderColor: C.border, backgroundColor: C.card,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
+    minHeight: heights.secondary, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.borderStrong,
+    backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: space.sm, paddingHorizontal: space.lg,
   },
 });

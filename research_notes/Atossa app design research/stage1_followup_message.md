@@ -1,0 +1,22 @@
+
+Stage 1 fix pass: thanks, most items now pass. Please fix these remaining issues. Keep the project rules (no condition names, predictions, threshold labels, causation, streaks, emoji).
+
+1. **Strength editing (blocker).** On "Here's what I noted", tapping How strong must open the two SeverityRows (Usually / At worst) with Done, not a text field. Right now typing "6 usually, 9 at worst" saves as "10/10 at worst" everywhere. Tapping Where must open the multi-select zone chips, not a text field.
+2. **Unanswered stays empty (blocker).** If strength wasn't answered, store null, not 0. Show nothing on the noted card, the Timeline and the doctor page. Leave nulls out of the chart, the "from X to Y" ranges and the counts, and pre-select nothing in the editor. In the Log bleeding sheet, pre-select nothing: Save stays disabled until a status is chosen, and Flow is optional with no default.
+3. **Starter chip row must scroll.** It is currently clipped by the `overflow-x: clip` parent, and "Just a quick note" can't be reached. Put `overflow-x: auto` on the chip track itself (with the right-edge fade and hidden scrollbar), and keep the page itself free of horizontal scrolling at 320–430.
+4. **Toast.** It must never overlap an open sheet. While a sheet is open, either show the toast after the sheet closes or place it above the sheet's bottom action area. Make it full width minus 20 px on each side (it is 318 px wide now), show only one at a time (replace, don't stack), and make swipe-down dismiss work. Keep the 3 s auto-dismiss.
+5. **"It varies" and "Not sure" on the strength question.** Save them as values and show "It varies" in the How strong row (it is dropped now). On the doctor page, "Not sure" for "Got in the way of" must not appear or be counted under "What stopped me doing things".
+6. **Remove "Mentioned in my words".** If When wasn't captured, show the "+ Add when" chip, and on the doctor page omit the "How long" line.
+7. **One note count everywhere.** The toast "N notes ready", the appointment card "N notes ready" and the doctor "N entries" must use the same count (currently 13 / 15 / 13).
+8. **Keep this note? card.** Add a third text button, "Keep editing", that returns to the note. X or Escape on the card should also return to the note.
+9. **Hero card.** Base background #FFFFFF under the plum gradient (it is transparent now, so it reads as beige). Set title→greeting to 8 px (it is ~21).
+10. **SeverityRow layout.** Lay the cells out with CSS grid, `repeat(6, 1fr)` on both rows (the second row leaves the last column empty), gap 8, cells min 44×44 and square, so the columns align and nothing overlaps at 320 px (row 1 overlaps by 3 px today).
+11. **Button heights.** The follow-up "Continue" is a primary button and should be 56 (it is 48). The doctor page "Save notes" is secondary and should be 48 (it is 56).
+12. **Icons.** Use `absoluteStrokeWidth` so every icon draws a 1.75 px stroke at 20/24/32. Make the sheet close X 20.
+13. **+Add chip.** 36 px visual height inside a 44 px hit area (it is 44 visual now).
+14. **Back navigation.** The back label must name the screen you came from, and back must return there. An entry opened from Timeline currently returns to "My symptoms", and the label says "Timeline" even when you came from "My symptoms". On Profile, put the back chevron above the large title, like other screens.
+15. **Dates.** On the doctor page, collapse "Around April 2019 – Around April 2019" to "Around April 2019" (the Medicines page already does this). For appointment dates, allow future years. Replace the three native selects with the custom picker when you rebuild these forms.
+16. **Type tokens on Timeline / doctor.** Section headings 24/30 (they are 24/32). "Your saved answers" and similar should be secondary 15/20 (they are 16/24). Week labels 17/24. Chart labels caption 13/18. No other sizes.
+17. **Timeline chart.** Place bars on a true date axis (one slot per day across the range, with multiple entries on a day grouped), not equal spacing per entry.
+18. **Small fixes.** Doctor "Most recent appointment" should be the latest by date (Thu 24 Sep), not the last one with "I was told". On the Rough day Latest note, drop the duplicate "7/10" tag. Progress copy: hide the "1 of up to 1" counter when there is only one question. Autofocus the textarea when switching to Type. Move "When opening bowels" out of the Where options. Add aria-pressed to the Log bleeding / Flow options. A period logged today should update "Latest period" on the doctor page.
+

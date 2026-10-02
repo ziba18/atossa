@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
-import { BackButton, BigButton, Card, PageTitle, Screen, SwitchRow, Txt } from '../../../components/atossa/kit';
+import { space } from '../../../constants/atossaUI';
+import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow } from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
@@ -24,11 +25,8 @@ export default function SettingsScreen() {
   const reminderTime = profile?.daily_log_reminder_time ?? '20:00';
 
   return (
-    <Screen header={false}>
-      <BackButton label="Back" />
-      <View style={{ marginTop: 20 }}><PageTitle title="Settings" /></View>
-
-      <Card style={{ marginTop: 16, gap: 8 }}>
+    <ScreenLarge title="Reminders" back={{ label: 'Profile' }}>
+      <Card style={{ gap: space.xs }}>
         <SwitchRow
           label="Notifications"
           description="Allow Atossa to send you notifications"
@@ -45,23 +43,22 @@ export default function SettingsScreen() {
           }}
         />
         {reminderOn ? (
-          <View style={{ gap: 10, marginTop: 8 }}>
-            <Txt variant="bodyBold">Reminder time</Txt>
-            {REMINDER_TIMES.map((t) => (
-              <BigButton
-                key={t.value}
-                label={t.label}
-                variant="outline"
-                selected={reminderTime === t.value}
-                onPress={() => {
-                  persist({ daily_log_reminder_time: t.value });
-                  syncDailyLogReminder(true, t.value).catch(() => {});
-                }}
-              />
-            ))}
+          <View style={{ marginTop: space.xs }}>
+            <FieldLabel label="Reminder time" />
+            <ChipGroup
+              options={REMINDER_TIMES.map((t) => ({ value: t.value, label: t.label }))}
+              ghosts={[]}
+              value={reminderTime}
+              accessibilityLabel="Reminder time"
+              onChange={(v) => {
+                if (!v) return;
+                persist({ daily_log_reminder_time: v });
+                syncDailyLogReminder(true, v).catch(() => {});
+              }}
+            />
           </View>
         ) : null}
       </Card>
-    </Screen>
+    </ScreenLarge>
   );
 }

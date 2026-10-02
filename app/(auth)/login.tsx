@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { View, Pressable } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { UI } from '../../constants/atossaUI';
-import { BackButton, BigButton, InlineError, PageTitle, Screen, TextField, Txt } from '../../components/atossa/kit';
+import { space } from '../../constants/atossaUI';
+import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
 import { routeAfterSignIn } from '../../lib/authRouting';
 
-const C = UI.colors;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function LoginScreen() {
@@ -42,13 +41,8 @@ export default function LoginScreen() {
   };
 
   return (
-    <Screen header={false} edges={['top', 'bottom']}>
-      <BackButton label="Back" />
-      <View style={{ marginTop: 20 }}>
-        <PageTitle title="Sign in" subtitle="Welcome back to Atossa." />
-      </View>
-
-      <View style={{ marginTop: 16, gap: 20 }}>
+    <ScreenLarge title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
+      <View style={{ gap: space.xl }}>
         <TextField
           label="Email"
           value={email}
@@ -60,25 +54,31 @@ export default function LoginScreen() {
           placeholder="you@example.com"
           error={emailError}
         />
-        <TextField
-          label="Password"
-          secret
-          value={password}
-          onChangeText={(v) => { setPassword(v); setPasswordError(''); }}
-          autoComplete="password"
-          textContentType="password"
-          returnKeyType="go"
-          onSubmitEditing={handleLogin}
-          error={passwordError}
-        />
-        <Pressable onPress={() => router.push('/(auth)/forgot-password')} accessibilityRole="link" style={{ minHeight: 44, justifyContent: 'center' }}>
-          <Txt variant="bodyBold" color={C.accentForeground} style={{ textDecorationLine: 'underline' }}>Forgot your password?</Txt>
-        </Pressable>
-        <InlineError message={error} />
-        <BigButton label={loading ? 'Signing in…' : 'Sign in'} icon="check" disabled={loading} onPress={handleLogin} />
-        <BigButton label="Create a new account" variant="outline" onPress={() => router.replace('/(auth)/register')} />
+        <View>
+          <TextField
+            label="Password"
+            secret
+            value={password}
+            onChangeText={(v) => { setPassword(v); setPasswordError(''); }}
+            autoComplete="password"
+            textContentType="password"
+            returnKeyType="go"
+            onSubmitEditing={handleLogin}
+            error={passwordError}
+          />
+          <Button label="Forgot your password?" variant="text" small align="start" onPress={() => router.push('/(auth)/forgot-password')} style={{ marginTop: space.xxs }} />
+        </View>
+      </View>
+
+      <View style={{ marginTop: space.xxl, gap: space.xs }}>
+        <InlineError message={error} style={{ marginBottom: space.xs }} />
+        <Button label={loading ? 'Signing in…' : 'Sign in'} loading={loading} onPress={handleLogin} />
+        <Button label="Create a new account" variant="text" onPress={() => router.replace('/(auth)/register')} />
+      </View>
+
+      <View style={{ marginTop: space.md }}>
         <SocialAuthButtons mode="signin" />
       </View>
-    </Screen>
+    </ScreenLarge>
   );
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
+import { SpeechModule, useSpeechEvent } from '../lib/speechModule';
 import {
   MAX_RECORDING_DURATION_MS, ensureMicPermission, isVoiceCaptureSupported, messageForErrorCode,
 } from '../lib/transcription';
@@ -27,21 +27,21 @@ export function useDictation(onTranscript: (text: string) => void) {
     if (timer.current) { clearTimeout(timer.current); timer.current = null; }
   }, []);
 
-  useSpeechRecognitionEvent('result', (event) => {
+  useSpeechEvent('result', (event) => {
     if (!accepting.current) return;
     const transcript = event.results[0]?.transcript ?? '';
     if (transcript.trim()) heardAnySpeech.current = true;
     cb.current(transcript);
   });
 
-  useSpeechRecognitionEvent('end', () => {
+  useSpeechEvent('end', () => {
     clearTimer();
     setRecording(false);
     if (hadError.current) return;
     if (!heardAnySpeech.current) setError("We couldn't hear anything — try again, or type instead.");
   });
 
-  useSpeechRecognitionEvent('error', (event) => {
+  useSpeechEvent('error', (event) => {
     clearTimer();
     setRecording(false);
     hadError.current = true;
@@ -53,7 +53,7 @@ export function useDictation(onTranscript: (text: string) => void) {
     const sub = AppState.addEventListener('change', (state) => {
       if (state !== 'active' && recording) {
         clearTimer();
-        ExpoSpeechRecognitionModule.abort();
+        SpeechModule?.abort();
         setRecording(false);
         setError('Recording stopped because Atossa went to the background — try again.');
       }
@@ -82,19 +82,19 @@ export function useDictation(onTranscript: (text: string) => void) {
     hadError.current = false;
     accepting.current = true;
     setRecording(true);
-    ExpoSpeechRecognitionModule.start({
+    SpeechModule?.start({
       lang: 'en-US',
       interimResults: true,
       continuous: true,
       requiresOnDeviceRecognition: true,
       addsPunctuation: true,
     });
-    timer.current = setTimeout(() => ExpoSpeechRecognitionModule.stop(), MAX_RECORDING_DURATION_MS);
+    timer.current = setTimeout(() => SpeechModule?.stop(), MAX_RECORDING_DURATION_MS);
   }, [supported]);
 
   const stop = useCallback(() => {
     clearTimer();
-    ExpoSpeechRecognitionModule.stop();
+    SpeechModule?.stop();
   }, [clearTimer]);
 
   /** Stop and discard anything still to come — for when the text has already been used. */
@@ -102,7 +102,7 @@ export function useDictation(onTranscript: (text: string) => void) {
     accepting.current = false;
     heardAnySpeech.current = true; // don't show "couldn't hear anything" for a deliberate cancel
     clearTimer();
-    ExpoSpeechRecognitionModule.stop();
+    SpeechModule?.stop();
   }, [clearTimer]);
 
   return { supported, recording, error, clearError: () => setError(''), start, stop, cancel };

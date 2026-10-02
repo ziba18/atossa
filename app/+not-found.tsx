@@ -1,17 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { BigButton, PageTitle, Screen } from '../components/atossa/kit';
+import { space } from '../constants/atossaUI';
+import { Button, ScreenLarge } from '../components/atossa/kit';
 
 export default function NotFoundScreen() {
   const router = useRouter();
   return (
-    <Screen header={false} edges={['top', 'bottom']}>
-      <PageTitle title="This page doesn’t exist" subtitle="Something went wrong with that link." />
-      <View style={{ marginTop: 24, gap: 12 }}>
-        <BigButton label="Go to Chat" icon="message-circle" onPress={() => router.replace('/(tabs)/chat' as any)} />
-        <BigButton label="Go back" icon="arrow-left" variant="outline" onPress={() => router.back()} />
+    <ScreenLarge title="This page doesn’t exist" subtitle="Something went wrong with that link.">
+      <View style={{ gap: space.xs }}>
+        <Button label="Go to Today" onPress={() => router.replace('/(tabs)/today' as any)} />
+        <Button label="Go back" variant="text" onPress={() => router.back()} />
       </View>
-    </Screen>
+    </ScreenLarge>
   );
 }

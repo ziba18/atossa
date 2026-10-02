@@ -80,8 +80,8 @@ export async function scheduleDailyLogReminder(time: string): Promise<void> {
     await Notifications.scheduleNotificationAsync({
       identifier: DAILY_LOG_REMINDER_ID,
       content: {
-        title: 'How are you feeling today?',
-        body: "Take a moment to log today's symptoms, mood, and notes.",
+        title: 'Atossa',
+        body: "If today's worth noting, I'm here. Two minutes is plenty.",
         data: { type: 'daily_log_reminder' },
       },
       trigger: {

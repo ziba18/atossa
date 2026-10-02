@@ -10,6 +10,8 @@ import { useAuthStore } from '../stores/authStore';
 let GoogleSignin: any;
 let statusCodes: any = { SIGN_IN_CANCELLED: 'SIGN_IN_CANCELLED', IN_PROGRESS: 'IN_PROGRESS' };
 try {
+  // No web implementation (the web build is only the design preview) — use the stub there.
+  if (Platform.OS === 'web') throw new Error('web');
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const mod = require('@react-native-google-signin/google-signin');
   GoogleSignin = mod.GoogleSignin;

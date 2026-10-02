@@ -1,4 +1,5 @@
 import type { DatePrecision } from '../../types/records';
+import { IS_PREVIEW, PREVIEW_TODAY } from '../preview/flag';
 
 export const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -17,7 +18,12 @@ export function parseKey(key: string): { y: number; m0: number; d: number } {
   return { y, m0: (m || 1) - 1, d: d || 1 };
 }
 
+/**
+ * Today's date key. The ONLY source of "today" in the app — never call `new Date()` for it,
+ * because design-preview mode pins today to 2026-09-24 to match the seeded persona.
+ */
 export function todayKey(): string {
+  if (IS_PREVIEW) return PREVIEW_TODAY;
   const n = new Date();
   return toKey(n.getFullYear(), n.getMonth(), n.getDate());
 }
@@ -55,12 +61,20 @@ export function formatDate(key: string, short = false): string {
   return `${d} ${month} ${y}`;
 }
 
+/** Legacy long form ("24 September 2026" for exact). New UI uses `formatRecordDate` in ./format. */
 export function formatRecordDate(key: string, precision: DatePrecision): string {
   if (!key) return 'Not entered';
   const { y, m0 } = parseKey(key);
   if (precision === 'year') return `Around ${y}`;
   if (precision === 'month') return `Around ${MONTH_NAMES[m0]} ${y}`;
   return formatDate(key);
+}
+
+/** Monday (date key) of the week containing `key`. */
+export function mondayOf(key: string): string {
+  const { y, m0, d } = parseKey(key);
+  const dow = (new Date(Date.UTC(y, m0, d)).getUTCDay() + 6) % 7;
+  return addDays(key, -dow);
 }
 
 export function isFuture(key: string): boolean {
