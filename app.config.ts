@@ -26,7 +26,8 @@ const config: ExpoConfig = {
   },
   orientation: 'portrait',
   icon: './assets/icon.png',
-  userInterfaceStyle: 'automatic',
+  // The design is light-only (dark mode was removed), so keep keyboards and system sheets light too.
+  userInterfaceStyle: 'light',
   scheme: 'attosa',
   ios: {
     supportsTablet: true,
