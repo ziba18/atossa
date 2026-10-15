@@ -22,6 +22,13 @@ churned users + email backend; GoDaddy breaks "free to host".
   Device ID used for Analytics, not linked to identity, not tracking.
 - Token: set `EXPO_PUBLIC_MIXPANEL_TOKEN` in `.env` and in the EAS `production` env.
 Verified: tsc clean, iOS export bundles. Not verified: events arriving in Mixpanel (no token yet).
+- Later the same day: token set in `.env` + EAS production env (project "Atossa", US residency, kept);
+  test event accepted. IP geolocation turned off (`abe7409`). App Privacy label **published** with
+  Device ID + Product Interaction (Analytics, not linked, not tracking). Full web click-through
+  (local backend) passed: welcome/sign-in/register/forgot links, sign-up → onboarding → Today, all
+  tabs + profile pages, sign out/in, wrong password, chat reply, save-as-note, session restore,
+  delete account (test account gone). **To do with 1.1.0:** change the App Store Privacy Policy URL
+  from `support-site-gold.vercel.app` to `https://atossa-backend.onrender.com/privacy`.
 
 ---
 
