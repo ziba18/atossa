@@ -13,6 +13,8 @@ export interface CaptureOptions {
   mode?: 'speak' | 'type';
   /** Start recording immediately (Today mic). Ignored where voice is unavailable. */
   startRecording?: boolean;
+  /** Sam's words to start from (Today chat → "Save as a note"). She can still edit them. */
+  words?: string;
 }
 
 interface CaptureState {

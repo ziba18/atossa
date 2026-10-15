@@ -84,7 +84,14 @@ export type IconName =
   | 'lock'
   | 'trash-2'
   | 'sun'
-  | 'list';
+  | 'list'
+  | 'menu'
+  | 'image'
+  | 'paperclip'
+  | 'arrow-up'
+  | 'search'
+  | 'square-pen'
+  | 'more-horizontal';
 
 interface IconProps {
   name: IconName;
@@ -746,6 +753,60 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = IC
             <Path {...shared} d="M8 12h13" />
             <Path {...shared} d="M8 18h13" />
             <Path {...shared} d="M8 6h13" />
+          </>
+        );
+
+      case 'menu':
+        return (
+          <>
+            <Line {...shared} x1="4" x2="20" y1="6" y2="6" />
+            <Line {...shared} x1="4" x2="20" y1="12" y2="12" />
+            <Line {...shared} x1="4" x2="20" y1="18" y2="18" />
+          </>
+        );
+
+      case 'image':
+        return (
+          <>
+            <Rect {...shared} x="3" y="3" width="18" height="18" rx="2" />
+            <Circle {...shared} cx="9" cy="9" r="2" />
+            <Path {...shared} d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+          </>
+        );
+
+      case 'paperclip':
+        return <Path {...shared} d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" />;
+
+      case 'arrow-up':
+        return (
+          <>
+            <Path {...shared} d="m5 12 7-7 7 7" />
+            <Path {...shared} d="M12 19V5" />
+          </>
+        );
+
+      case 'search':
+        return (
+          <>
+            <Circle {...shared} cx="11" cy="11" r="8" />
+            <Path {...shared} d="m21 21-4.3-4.3" />
+          </>
+        );
+
+      case 'square-pen':
+        return (
+          <>
+            <Path {...shared} d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <Path {...shared} d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
+          </>
+        );
+
+      case 'more-horizontal':
+        return (
+          <>
+            <Circle {...shared} cx="12" cy="12" r="1" />
+            <Circle {...shared} cx="19" cy="12" r="1" />
+            <Circle {...shared} cx="5" cy="12" r="1" />
           </>
         );
 

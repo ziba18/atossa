@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Profile } from '../types/database';
 import { api, clearTokens, saveTokens } from '../lib/api';
+import { clearLocalChats } from './chatStore';
 
 export interface AuthSession {
   access_token: string;
@@ -113,6 +114,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   deleteAccount: async () => {
     await api.delete('/me');
+    const id = useAuthStore.getState().user?.id;
+    if (id) await clearLocalChats(id);
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },

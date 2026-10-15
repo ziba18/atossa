@@ -54,7 +54,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   const createRecord = useRecordsStore((s) => s.create);
   const tag = options.tag;
 
-  const [draft, setDraft] = useState<Draft>(() => emptyDraft(options.date ?? todayKey()));
+  const [draft, setDraft] = useState<Draft>(() => ({ ...emptyDraft(options.date ?? todayKey()), words: options.words ?? '' }));
   const patch = useCallback((p: Partial<Draft>) => setDraft((d) => ({ ...d, ...p })), []);
   const [stage, setStage] = useState<Stage>('capture');
   const [questions, setQuestions] = useState<Question[]>([]);

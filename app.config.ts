@@ -59,6 +59,14 @@ const config: ExpoConfig = {
     'expo-sharing',
     'expo-status-bar',
     [
+      'expo-image-picker',
+      {
+        photosPermission: 'Atossa lets you attach a photo to a chat. It stays on your phone.',
+        cameraPermission: 'Atossa lets you take a photo to attach to a chat. It stays on your phone.',
+        microphonePermission: false,
+      },
+    ],
+    [
       'expo-splash-screen',
       {
         image: './assets/splash-icon.png',
