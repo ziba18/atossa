@@ -6,19 +6,23 @@
   **A symptom-capture companion for people with PCOS or endometriosis, built with Expo, React Native, and a Python backend.**
 
   Put symptoms into your own words, keep track of appointments and medicines, and bring a clear, GP-ready summary to your doctor.
+
+  **Status:** version 1.1.0 (build 23) is being prepared for App Store review. Development happens on the `mvp-symptom-capture` branch.
 </div>
 
 ---
 
 ## Features
 
-- **Today** — one prompt: speak or type how you're feeling in your own words. Atossa asks only the follow-ups that are missing (where, how bad 0–10, how long, did it stop you doing things), shows a "Here's what I noted" card, and saves it. Also a quick "Rough day" log, a Log bleeding sheet, your next appointment and your latest note. No AI writes anything here, so nothing diagnostic can appear.
+- **Today** — a calm chat: type or dictate how you're feeling in your own words and Atossa replies with a short follow-up question (via the `/chat` LLM, instructed never to diagnose). "Save as a note for my GP" opens the capture sheet pre-filled, which asks only the missing details (where, how bad 0–10, how long, did it stop you doing things) before saving. The **+** button attaches a photo or file (kept on the phone), logs bleeding, or starts a full note. Chat history lives on the device; a drawer lists past chats.
 - **Timeline** — every note in your own words, as a filterable list grouped by week or as a month calendar (bleeding days marked), with a detail view for each entry.
 - **For my doctor** — pick a date range and what to include, see an A4 document preview, then share it as a PDF, print it, or show it on screen in the appointment.
 - **Profile & Records** — opened from the header avatar: medicines, appointments and health history (add / edit / delete), settings, and edit profile.
 - **Friends** — invite-only, mutual connections who can see each other's current cycle phase (never raw flow/symptom/notes data).
 - **Onboarding** — name, usual cycle and period length, last period date, an optional daily reminder.
 - **Apple, Google, and email sign-in** — verified server-side by the FastAPI backend; sessions stored with Expo SecureStore.
+- **Account deletion** — Profile → Delete account permanently removes the account and every record.
+- **Onboarding analytics** — anonymous Mixpanel funnel events (welcome viewed, sign-up, each setup step, setup finished). No health data, names or emails; no IP-based location.
 
 No diagnostic language anywhere in the product: the app never names a condition, gives a probability, suggests a cause, or recommends treatment. Clinician statements the user types are always labelled "I was told:". The app also makes no predictions, streaks or threshold labels ("heavy", "irregular"). See [`MVP.md`](MVP.md) and [`WORKLOG.md`](WORKLOG.md).
 
@@ -29,8 +33,10 @@ No diagnostic language anywhere in the product: the app never names a condition,
 - **Routing** — [expo-router](https://docs.expo.dev/router/introduction/) (typed file-based routes)
 - **State** — Zustand stores (`stores/`); health records in `stores/recordsStore.ts`
 - **UI** — "Warm Paper, Deep Ink" design system: tokens in `constants/atossaUI.ts`, shared components in `components/atossa/kit.tsx` (rules in [`design/KIT.md`](design/KIT.md)); Inter for UI, Instrument Serif only for the user's own words; 44pt+ tap targets, Dynamic Type, haptics
-- **Voice** — `expo-speech-recognition`, on-device only (no audio ever leaves the device); loaded lazily so the app still runs in Expo Go, where dictation reports "not available"
+- **Voice** — `expo-speech-recognition`, on-device only (no audio ever leaves the device); loaded lazily so the app still runs in Expo Go, where the mic explains that voice needs the App Store build
 - **Sharing** — `expo-print` + `expo-sharing` for the doctor summary PDF
+- **Attachments** — `expo-image-picker`, `expo-document-picker`, `expo-file-system` (files are copied into the app's own folder and never uploaded)
+- **Analytics** — `mixpanel-react-native` in JS mode (works in Expo Go), only when `EXPO_PUBLIC_MIXPANEL_TOKEN` is set (`lib/analytics.ts`)
 - **Build** — [EAS Build](https://docs.expo.dev/build/introduction/)
 
 ### Python backend
@@ -38,7 +44,8 @@ No diagnostic language anywhere in the product: the app never names a condition,
 - **Records** — `/records` is a generic per-user store: one JSON document per row, `kind` ∈ symptom | appointment | medicine | history | period_day | doctor_note
 - **Database** — PostgreSQL via SQLAlchemy 2 ORM; [Alembic](https://alembic.sqlalchemy.org) migrations. Hosted on [Supabase](https://supabase.com) (used purely for Postgres — the app never talks to Supabase directly)
 - **Auth** — its own email/password JWTs (`passlib`/`python-jose`), plus server-side verification of Apple/Google identity tokens
-- **Chat (unused)** — `POST /chat` proxies an OpenAI-compatible LLM (Groq by default). It stays deployed for a possible future feature, but the app does not call it.
+- **Chat** — `POST /chat` proxies an OpenAI-compatible LLM (Groq `openai/gpt-oss-20b` by default) for the Today chat. The no-diagnosis rule is enforced in the system prompt (`backend/app/services/llm.py`).
+- **Legal pages** — `GET /privacy` and `GET /terms` serve the privacy policy and terms linked from the app and App Store Connect
 - **Hosting** — [Render](https://render.com) (free tier), deployed via the `render.yaml` blueprint; kept warm by a scheduled GitHub Action (see [Deploy](#3-deploy-the-backend))
 
 ## Project structure
@@ -48,12 +55,12 @@ atossa/
 ├── app/
 │   ├── (auth)/                   # welcome, sign in, sign up, onboarding (name, basics, last period, reminders)
 │   └── (tabs)/
-│       ├── today/                # capture prompt, rough day, latest note, next appointment
+│       ├── today/                # chat (composer, drawer, attachments) + save-as-note
 │       ├── timeline/             # list + month views, entry / bleeding / period / record detail
 │       ├── doctor/               # "For my doctor" builder + show-on-screen view
 │       └── profile/              # profile, settings, friends, records (opened from the header avatar)
 ├── components/
-│   ├── atossa/                   # kit + kit-parts, tab bar, capture/, timeline/, doctor/, records/ screens' parts
+│   ├── atossa/                   # kit + kit-parts, tab bar, chat/, capture/, timeline/, doctor/, records/
 │   ├── auth/                     # Apple / Google sign-in buttons
 │   └── ui/Icon.tsx               # icon set
 ├── lib/records/                  # pure logic: dates, formatting, fields, doctor summary
@@ -63,6 +70,7 @@ atossa/
 ├── backend/app/                  # FastAPI: routers, models, schemas, services
 ├── backend/alembic/              # database migrations
 ├── .github/workflows/            # keep-backend-warm.yml (lives on main)
+├── support-site/                 # static App Store support page (Vercel project "support-site")
 ├── render.yaml                   # Render blueprint for the backend
 └── assets/                       # icons, splash, logo
 ```
@@ -114,6 +122,7 @@ Create `.env` in the project root:
 
 ```env
 EXPO_PUBLIC_API_URL=http://localhost:8000   # points at the backend above; defaults to this if unset
+EXPO_PUBLIC_MIXPANEL_TOKEN=                 # optional: Mixpanel project token; empty = analytics off
 ```
 
 ```bash
@@ -121,7 +130,7 @@ npm start              # then scan the QR code with Expo Go
 npm run preview:web    # design preview in the browser: sample data, no login, no backend needed
 ```
 
-Voice dictation (`expo-speech-recognition`) is a native module — in Expo Go the mic reports "not available"; use a store or dev-client build to try it. `EXPO_PUBLIC_DESIGN_PREVIEW` (set by `preview:web`) is for local review only — never set it in an EAS environment.
+Voice dictation (`expo-speech-recognition`) is a native module that Expo Go doesn't include — use a TestFlight/store or dev-client build to try it. `EXPO_PUBLIC_DESIGN_PREVIEW` (set by `preview:web`) is for local review only — never set it in an EAS environment.
 
 ### 3. Deploy the backend
 
@@ -158,9 +167,10 @@ The app downloads the update on launch and uses it from the next launch. `runtim
 - All session tokens are stored in the device's secure enclave via `expo-secure-store`.
 - Voice dictation is transcribed on-device; no audio is ever uploaded.
 - Health data is stored in Postgres (hosted on your own Supabase project) behind the FastAPI backend — the app never talks to Supabase directly for this data.
-- Nothing typed in the app is sent to an AI provider. (The backend still has an unused `/chat` LLM proxy; if it is ever used again, its text would go to the configured provider — point `LLM_BASE_URL` at a self-hosted model to keep it in-house.)
+- Messages typed in the Today chat are sent through the backend to the configured LLM provider (Groq by default) to write a reply. Attached photos and files stay on the phone; the model only sees "[Attached a photo: name]". Point `LLM_BASE_URL` at a self-hosted model to keep chat text in-house.
+- Mixpanel receives anonymous onboarding events only (random app ID, device type, app version) — never names, emails, symptoms or notes, and IP geolocation is turned off.
 - Apple Sign-In is supported and recommended on iOS.
-- No third-party analytics SDKs are bundled.
+- The full policy is served by the backend at `/privacy`; the App Store support page is in `support-site/`.
 
 ## License
 
