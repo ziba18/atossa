@@ -54,11 +54,18 @@ def verify_apple_identity_token(id_token: str, bundle_id: str) -> dict:
     return {"sub": claims["sub"], "email": _verified_email(claims, "Apple")}
 
 
-def verify_google_id_token(id_token: str, client_id: str) -> dict:
-    """Verify a Google `idToken` from @react-native-google-signin. Returns {sub, email, name}."""
+def verify_google_id_token(id_token: str, client_id: str, access_token: str | None = None) -> dict:
+    """Verify a Google `idToken` from @react-native-google-signin. Returns {sub, email, name}.
+
+    Google's iOS ID tokens carry an `at_hash` claim, which python-jose rejects unless it
+    gets the matching access token to check it against — so the app sends that too.
+    """
     jwks = _get_jwks(GOOGLE_JWKS_URL)
     try:
-        claims = jwt.decode(id_token, jwks, algorithms=["RS256"], audience=client_id, issuer=GOOGLE_ISSUERS)
+        claims = jwt.decode(
+            id_token, jwks, algorithms=["RS256"], audience=client_id, issuer=GOOGLE_ISSUERS,
+            access_token=access_token,
+        )
     except JWTError as e:
         raise SocialAuthError(f"Invalid Google identity token: {e}")
     return {"sub": claims["sub"], "email": _verified_email(claims, "Google"), "name": claims.get("name")}

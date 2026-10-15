@@ -73,6 +73,8 @@ export class ApiError extends Error {
   }
 }
 
+const SIGN_IN_PATHS = new Set(['/auth/login', '/auth/apple', '/auth/google']);
+
 async function request<T>(
   method: string,
   path: string,
@@ -89,7 +91,9 @@ async function request<T>(
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  if (res.status === 401 && _retry) {
+  // A 401 from a sign-in call means the credentials were rejected, not that a
+  // session expired — fall through so the server's reason reaches the user.
+  if (res.status === 401 && _retry && !SIGN_IN_PATHS.has(path)) {
     const newToken = await attemptRefresh();
     if (newToken) return request<T>(method, path, body, false);
     _onSessionExpired?.();

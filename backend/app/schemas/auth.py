@@ -25,6 +25,8 @@ class RefreshRequest(BaseModel):
 class SocialAuthRequest(BaseModel):
     id_token: str
     display_name: str | None = None
+    # Google only: checked against the ID token's `at_hash` claim.
+    access_token: str | None = None
 
 
 class UserResponse(BaseModel):

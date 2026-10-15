@@ -68,7 +68,7 @@ def login_with_google(body: SocialAuthRequest, db: Session = Depends(get_db)):
     if not settings.google_web_client_id:
         raise HTTPException(status_code=500, detail="Google sign-in is not configured on the server")
     try:
-        claims = verify_google_id_token(body.id_token, settings.google_web_client_id)
+        claims = verify_google_id_token(body.id_token, settings.google_web_client_id, body.access_token)
     except SocialAuthError as e:
         raise HTTPException(status_code=401, detail=str(e))
     return _issue_tokens_for_social_user(db, claims["email"], body.display_name or claims.get("name"))

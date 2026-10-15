@@ -5,6 +5,25 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-15 (evening) — build 23 rejected; build 24; Google sign-in fix
+
+- **Build 23 failed Apple processing** (ITMS-90683, missing `NSMicrophoneUsageDescription`):
+  `expo-image-picker`'s `microphonePermission: false` deleted the string that
+  `expo-speech-recognition` adds. Fixed (`67a02a8`), checked with a clean prebuild in a scratch copy
+  (the local `ios/` folder is a stale, gitignored prebuild — `expo config --type introspect` reads
+  it, so don't trust introspect for Info.plist). **Build 24** processed fine → TestFlight.
+- **Google sign-in failed on build 24** ("Session expired. Please log in again."). Real sign-in had
+  never been tried before. Cause: Google's iOS ID tokens carry `at_hash`, and python-jose's
+  `jwt.decode` rejects such a token unless given the access token. Fix: the app sends
+  `GoogleSignin.getTokens().accessToken` with the ID token; `/auth/google` passes it as
+  `access_token=` so `at_hash` is actually checked (not skipped). Field is optional.
+  Also `lib/api.ts`: a 401 from `/auth/login|apple|google` no longer goes through refresh →
+  "Session expired"; the server's reason is shown (this is what hid the real error).
+  Verified: locally signed tokens (right/wrong/missing access token, no at_hash, wrong audience,
+  unverified email) all behave; tsc clean. JS-only → ships to build 24 as an EAS update.
+
+---
+
 ## 2026-10-15 (later) — 1.1.0 prepared for App Store review
 
 - **Build 23** (v1.1.0, commit `f84e3d2`) finished on EAS; auto-submit `eaa33a29` was waiting in the

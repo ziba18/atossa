@@ -93,10 +93,14 @@ export async function signInWithGoogle(): Promise<{ user: any | null; error: Err
       return { user: null, error: new Error('No identity token received from Google') };
     }
 
+    // Google's iOS ID tokens carry an `at_hash` claim; the backend checks it
+    // against the access token, so send that too.
+    const { accessToken } = await GoogleSignin.getTokens();
+
     // Google returns the display name on every sign-in; the backend only
     // uses it to seed a profile that doesn't have a name yet, so it's safe
     // to pass along on every call without risking clobbering an edited name.
-    await useAuthStore.getState().loginWithGoogle(idToken, googleName);
+    await useAuthStore.getState().loginWithGoogle(idToken, googleName, accessToken);
 
     return { user: useAuthStore.getState().user, error: null };
   } catch (err: any) {
