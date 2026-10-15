@@ -16,6 +16,8 @@ function getClient(): Mixpanel | null {
   if (!client) {
     client = new Mixpanel(token!, false, false, AsyncStorage);
     client.init().catch(() => {});
+    // No city/country from the IP address, so no location data is collected.
+    client.setUseIpAddressForGeolocation(false);
   }
   return client;
 }
