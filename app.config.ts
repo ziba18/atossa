@@ -63,7 +63,9 @@ const config: ExpoConfig = {
       {
         photosPermission: 'Atossa lets you attach a photo to a chat. It stays on your phone.',
         cameraPermission: 'Atossa lets you take a photo to attach to a chat. It stays on your phone.',
-        microphonePermission: false,
+        // Not `false`: that deletes NSMicrophoneUsageDescription, which voice
+        // dictation (expo-speech-recognition) needs — Apple rejected build 23 for it.
+        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
       },
     ],
     [
