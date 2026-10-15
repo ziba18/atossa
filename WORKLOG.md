@@ -21,6 +21,11 @@ what was decided and why. Newest entries at the top.
   "Session expired"; the server's reason is shown (this is what hid the real error).
   Verified: locally signed tokens (right/wrong/missing access token, no at_hash, wrong audience,
   unverified email) all behave; tsc clean. JS-only → ships to build 24 as an EAS update.
+- Device-tested on build 24 + update: launch, Google + Apple sign-in, voice dictation,
+  photos/camera, Share PDF — all pass. (An update applies on the launch *after* it downloads.)
+- **Build 25** made so the binary itself has the Google fix (a reviewer's first launch runs the
+  embedded JS). Attached to 1.1.0 and **submitted to App Review** — status "Waiting for Review".
+  The "License Agreement Updated" banner did not block it.
 
 ---
 
