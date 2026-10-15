@@ -5,6 +5,26 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-15 (later) — 1.1.0 prepared for App Store review
+
+- **Build 23** (v1.1.0, commit `f84e3d2`) finished on EAS; auto-submit `eaa33a29` was waiting in the
+  Expo free-tier queue at end of session. Not yet in TestFlight.
+- **App Store Connect, version 1.1.0 created and filled:** new promo text, description, keywords,
+  What's New, review notes, subtitle "Symptom notes for your doctor"; privacy URL →
+  `https://atossa-backend.onrender.com/privacy`; age rating social-media questions = No (13+);
+  release = automatic after approval (user's choice). New screenshots from `preview:web` via headless
+  Chrome (iPhone 1206×2622, iPad 2064×2752: Today, chat, Timeline list/month, For my doctor); old
+  cycle-app shots removed from 1.1.0 (still in the Asset Library).
+- **Reviewer account** `reviewer@atossa.app` did not exist in the current DB (lost in the auth move);
+  user created it via the web app against the live backend (password = the one in ASC App Review),
+  onboarding finished, one sample note saved.
+- **Support site** (`support-site/index.html`, Vercel project `support-site`) rewritten for the new
+  app and deployed by the user (`b44d736`).
+- **Left:** build 23 → TestFlight; user tests launch (build 22 crashed on iOS 26), voice, Apple/Google
+  sign-in, photos/camera, Share PDF; attach build 23 to 1.1.0; user clicks Add for Review → Submit.
+
+---
+
 ## 2026-10-15 — Mixpanel onboarding analytics; privacy policy
 
 User asked to apply the stack from a Starter Story video (P4QodeA_lQ0: Cursor + Claude Code,
