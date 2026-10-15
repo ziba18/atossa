@@ -70,8 +70,8 @@ store, why, who else handles it, and how to delete it.</p>
   <li>If you use voice input, your speech is turned into text on your phone by Apple's speech
   recognition. We don't receive audio recordings.</li>
 </ul>
-<p>We don't sell your information, show you ads, or use it for advertising. We don't use
-analytics or tracking tools in the app.</p>
+<p>We don't sell your information, show you ads, or use it for advertising. We don't track
+you across other apps or websites.</p>
 
 <h2>Who can see it</h2>
 <ul>
@@ -84,7 +84,10 @@ analytics or tracking tools in the app.</p>
   <li><strong>Our service providers</strong>, which store and run things for us and may not use
   your information for anything else: Render (runs our server, in the United States), Supabase
   (hosts our database, in the European Union, Ireland), Apple and Google (only if you sign in
-  with them), and Expo (delivers app updates, and receives standard technical details such as
+  with them), Groq (if you use the chat on Today, your messages are sent to Groq's AI model to
+  write a reply; attached photos and files stay on your phone), Mixpanel (product analytics:
+  which setup steps you finish, with a random app ID, your device type and app version, never
+  your name, email, symptoms or notes), and Expo (delivers app updates, and receives standard technical details such as
   your device type and IP address when the app checks for an update).</li>
 </ul>
 <p>We will disclose information if the law requires us to.</p>

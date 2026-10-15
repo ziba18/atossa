@@ -9,6 +9,7 @@ import { GoogleGLogo } from './GoogleGLogo';
 import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
 import { routeAfterSignIn } from '../../lib/authRouting';
 import { useAuthStore } from '../../stores/authStore';
+import { track } from '../../lib/analytics';
 
 // Expo Go has no native view for Apple's button, and Apple sign-in can't work
 // there anyway (the token is issued for Expo Go's bundle id, not Atossa's).
@@ -35,7 +36,12 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
       setError(`${provider === 'apple' ? 'Apple' : 'Google'} sign-in didn't work: ${err.message}`);
       return;
     }
-    if (user) router.replace(routeAfterSignIn(useAuthStore.getState().profile) as any);
+    if (user) {
+      const profile = useAuthStore.getState().profile;
+      // Social sign-in doubles as sign-up; an unfinished onboarding is the closest signal.
+      if (!profile?.onboarding_complete) track('Signup Completed', { method: provider });
+      router.replace(routeAfterSignIn(profile) as any);
+    }
   };
 
   if (IN_EXPO_GO) {

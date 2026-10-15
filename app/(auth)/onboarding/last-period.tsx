@@ -8,6 +8,7 @@ import { api } from '../../../lib/api';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isFuture } from '../../../lib/records/dates';
 import { formatDay } from '../../../lib/records/format';
+import { track } from '../../../lib/analytics';
 
 export default function OnboardingLastPeriod() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function OnboardingLastPeriod() {
         savePeriodDays([{ date: selected, status: 'started', isStart: true, isEnd: false, note: '' }]),
         api.post('/cycles', { period_start: selected }),
       ]);
+      track('Onboarding Step Completed', { step: 'last_period', skipped: false });
       router.push('/(auth)/onboarding/reminders');
     } catch {
       setError('We couldn’t save that date. Check your connection and try again.');
@@ -56,7 +58,10 @@ export default function OnboardingLastPeriod() {
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
         <Button label={loading ? 'Saving…' : 'Next'} loading={loading} disabled={!selected} onPress={handleNext} />
-        <Button label="I’m not sure" variant="text" disabled={loading} onPress={() => router.push('/(auth)/onboarding/reminders')} />
+        <Button label="I’m not sure" variant="text" disabled={loading} onPress={() => {
+          track('Onboarding Step Completed', { step: 'last_period', skipped: true });
+          router.push('/(auth)/onboarding/reminders');
+        }} />
       </View>
     </OnboardingScreen>
   );

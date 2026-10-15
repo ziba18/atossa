@@ -7,6 +7,7 @@ import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
+import { track } from '../../lib/analytics';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -39,6 +40,7 @@ export default function RegisterScreen() {
     setLoading(true);
     try {
       await register(trimmedEmail.toLowerCase(), password, trimmedName);
+      track('Signup Completed', { method: 'email' });
       router.replace('/(auth)/onboarding/basics');
     } catch (err) {
       setLoading(false);

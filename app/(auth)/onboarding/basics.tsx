@@ -5,6 +5,7 @@ import { space } from '../../../constants/atossaUI';
 import { Button, ChipGroup, InlineError, TextField, type ChipOption } from '../../../components/atossa/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { api } from '../../../lib/api';
+import { track } from '../../../lib/analytics';
 
 const CYCLE_OPTIONS = [21, 25, 28, 30, 35];
 const PERIOD_OPTIONS = [3, 4, 5, 6, 7];
@@ -65,6 +66,7 @@ export default function OnboardingBasics() {
         average_cycle_length: cycle === 'other' ? otherNumber : typeof cycle === 'number' ? cycle : DEFAULT_CYCLE,
         average_period_length: typeof period === 'number' ? period : DEFAULT_PERIOD,
       });
+      track('Onboarding Step Completed', { step: 'basics' });
       router.push('/(auth)/onboarding/last-period');
     } catch {
       setError('We couldn’t save that. Check your connection and try again.');

@@ -8,6 +8,7 @@ import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
+import { track } from '../../../lib/analytics';
 
 // Stored when the reminder is off (as before), so Settings has a time ready if it's turned on.
 const DEFAULT_TIME = '20:00';
@@ -34,6 +35,7 @@ export default function OnboardingReminders() {
       // Asks for notification permission when turning the reminder on; not critical if refused.
       await syncDailyLogReminder(enabled, at).catch(() => {});
       await fetchProfile();
+      track('Onboarding Completed', { reminder: enabled });
       router.replace('/(tabs)/today' as any);
     } catch {
       setError('We couldn’t finish setting up. Check your connection and try again.');

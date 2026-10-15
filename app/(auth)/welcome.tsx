@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { Button, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import { track } from '../../lib/analytics';
 
 /**
  * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
@@ -12,6 +13,7 @@ import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
  */
 export default function WelcomeScreen() {
   const router = useRouter();
+  useEffect(() => track('Welcome Viewed'), []);
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>

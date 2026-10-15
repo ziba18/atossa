@@ -6,6 +6,7 @@ import { Button, InlineError, TextField } from '../../../components/atossa/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
+import { track } from '../../../lib/analytics';
 
 export default function OnboardingNameScreen() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function OnboardingNameScreen() {
     try {
       await api.patch('/me', { display_name: trimmed });
       await fetchProfile();
+      track('Onboarding Step Completed', { step: 'name' });
       router.replace('/(auth)/onboarding/basics');
     } catch {
       setError('We couldn’t save your name. Check your connection and try again.');

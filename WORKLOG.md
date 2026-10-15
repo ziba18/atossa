@@ -5,6 +5,63 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-15 — Mixpanel onboarding analytics; privacy policy
+
+User asked to apply the stack from a Starter Story video (P4QodeA_lQ0: Cursor + Claude Code,
+Figma, Supabase, Superwall, Mixpanel, Loops, GoDaddy — saved in CLAUDE.md). Agreed scope for this
+release: **Mixpanel only**. Superwall needs paid subscriptions/IAP (Atossa has none; App Store
+listing still on the coworker's account) and is a native module, not in Expo Go; Loops needs
+churned users + email backend; GoDaddy breaks "free to host".
+- `lib/analytics.ts` — `track()`; Mixpanel JS mode (`useNative=false`, AsyncStorage) so it runs in
+  Expo Go; no-op without `EXPO_PUBLIC_MIXPANEL_TOKEN` and on web (design preview); never throws;
+  no `identify()` — anonymous ID only. Events: Welcome Viewed, Signup Completed {method},
+  Onboarding Step Completed {step, skipped?}, Onboarding Completed {reminder}. No health data.
+- Privacy policy (`backend/app/routers/legal.py`): removed "we don't use analytics"; added Mixpanel
+  and **Groq** (chat text was already going to Groq but wasn't listed) as service providers.
+- **App Store Connect privacy label must be updated** before submitting: Product Interaction /
+  Device ID used for Analytics, not linked to identity, not tracking.
+- Token: set `EXPO_PUBLIC_MIXPANEL_TOKEN` in `.env` and in the EAS `production` env.
+Verified: tsc clean, iOS export bundles. Not verified: events arriving in Mixpanel (no token yet).
+
+---
+
+## 2026-10-06 — Today becomes a chat (uncommitted)
+
+User asked for a ChatGPT-style first page instead of the mic hero + Rough day card, keeping the
+"Warm Paper, Deep Ink" design. Decisions (user, asked up front): replies come from the **`/chat`
+LLM** (Groq — chat text now leaves our backend again; still prompt-level no-diagnosis only, no
+server-side filter); **attachments stay on the phone** (copied to the app's document folder; the AI
+only sees "[Attached a photo: name]"); **chat history on the phone** (AsyncStorage, key per user,
+removed on account deletion).
+- `app/(tabs)/today/index.tsx` — header ☰ · Today · new chat · avatar; empty state = greeting +
+  serif prompt + starter chips (chips only change the hint, "My period" opens LogBleedingSheet);
+  thread (her words serif in a white bubble, replies plain ink); "Save as a note for my GP" →
+  `openCapture({mode:'type', words})` (new `words` option); static "can't diagnose" caption.
+- `components/atossa/chat/` — `Composer` (+ · input · dictation via useDictation · send),
+  `ChatDrawer` (new chat, search, grouped history, long-press → destructive ConfirmCard),
+  `AttachSheet` (Photo, Take a photo (native only), File, Log bleeding, Make a full note).
+- `stores/chatStore.ts`; preview mode answers with fixed questions, in memory.
+- New packages (all in Expo Go): async-storage, expo-image-picker (+ config plugin with photo/camera
+  strings — changes the fingerprint, so needs a new build, not an OTA update), expo-document-picker,
+  expo-file-system. Icons added: menu, image, paperclip, arrow-up, search, square-pen.
+- `TodayCards.tsx` / `AppointmentCard.tsx` are now unused (kept; Rough day and the appointment card
+  are no longer on Today).
+Verified: tsc clean, iOS export bundles, web preview at phone width (send → reply, drawer, + sheet,
+save-as-note prefill), no console errors.
+- **Lovable pass (same day):** sent the chat spec to the Lovable prototype (commit `210d167`,
+  `src/components/atossa/TodayChat.tsx`). Ported its visual choices: hairline under the header, plum
+  ☰, balanced two-line prompt, starters as a 2×2 grid of white tiles, taller composer ("Your words…"),
+  roomier thread, "+ Save as a note for my GP" link, drawer "Your chats" with a ⋯ delete button per
+  chat (long-press kept) and a plum "Profile and settings" row, flat rows in "Add to your chat".
+  NOT ported: Lovable's starters type the chip label into the box (kit rule: chips never put words in
+  her mouth) and its per-reply direct save (we keep the capture sheet so she checks the note).
+  ChatDrawer now unmounts at once on web (like the kit Sheet). While testing, Chrome-automation mouse
+  clicks sometimes didn't reach the page at all (no pointerdown logged); a DOM click opened the drawer
+  fine, so that was tooling, not the app. Not verified: Expo Go on a device (pickers, camera,
+dictation, keyboard), live `/chat` from the app.
+
+---
+
 ## 2026-10-02 — Sign-in check, account deletion, privacy policy
 
 Audited sign-in/sign-up. Apple and Google sign-in were already fully wired

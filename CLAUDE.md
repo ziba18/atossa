@@ -148,6 +148,16 @@ see below). The chat tab now has a real `/chat` backend (see below).
 - Test accounts created during dev/testing are cleaned up after each
   session (see WORKLOG.md for the SQL/Python cleanup pattern used).
 
+
+## Reference stack: "$30K/month app" video (saved 2026-10-15)
+From https://www.youtube.com/watch?v=P4QodeA_lQ0 (Starter Story, Benji Chen). Cursor IDE +
+Claude Code (Max) for code; Figma designs first, then fed to Claude Code; Supabase backend;
+**Superwall** (paywall A/B tests), **Mixpanel** (onboarding funnel analytics), **Loops**
+(win-back emails to churned users); GoDaddy domain; Apple Developer account. Growth: UGC
+creators -> TikTok -> Meta paid ads. Atossa already uses Claude Code and Supabase (Postgres
+behind FastAPI, kept deliberately). Superwall/Mixpanel/Loops are not yet adopted — each needs
+a user-created account/key, and analytics on health data needs App Store privacy-label changes.
+
 ### Separate, paused thread (unrelated to the MVP work)
 Transferring the app's App Store Connect listing from the coworker's
 Apple Developer account to the user's own — paused, user needs to enroll
