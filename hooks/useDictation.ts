@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+import { isRunningInExpoGo } from 'expo';
 import { SpeechModule, useSpeechEvent } from '../lib/speechModule';
 import {
   MAX_RECORDING_DURATION_MS, ensureMicPermission, isVoiceCaptureSupported, messageForErrorCode,
@@ -66,7 +67,11 @@ export function useDictation(onTranscript: (text: string) => void) {
   const start = useCallback(async () => {
     setError('');
     if (!supported) {
-      setError("Voice input isn't available on this device — you can type instead.");
+      setError(
+        isRunningInExpoGo()
+          ? 'Voice input works in the App Store version of Atossa, not in Expo Go — you can type instead.'
+          : "Voice input isn't available on this device — you can type instead.",
+      );
       return;
     }
     const { granted, canAskAgain } = await ensureMicPermission();
