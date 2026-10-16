@@ -10,6 +10,13 @@ class Settings(BaseSettings):
     # Expected audiences for verifying social sign-in identity tokens.
     apple_bundle_id: str = "com.attosa.app"
     google_web_client_id: str = ""
+    # Basket Buddy ("Groceries Mate", a separate app) signs in with Apple/Google through this
+    # server too; see routers/basket_buddy.py. Its data stays in its own Supabase project, so
+    # the server needs that project's secret (service_role) key to create sessions there.
+    basket_supabase_url: str = "https://uwqmhhbxthnpgcbgvgqh.supabase.co"
+    basket_supabase_secret_key: str = ""
+    basket_apple_bundle_id: str = "com.zibazamani.basketbuddy"
+    basket_google_web_client_id: str = ""
     # Chat provider: any OpenAI-compatible /chat/completions API. Defaults to Groq's free
     # tier; point LLM_BASE_URL at a self-hosted server (e.g. Ollama) to keep data in-house.
     llm_api_key: str = ""
