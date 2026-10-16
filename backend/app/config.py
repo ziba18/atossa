@@ -18,11 +18,12 @@ class Settings(BaseSettings):
     basket_apple_bundle_id: str = "com.zibazamani.basketbuddy"
     basket_google_web_client_id: str = ""
     # Basket Buddy's own Google OAuth clients (public IDs, Google Cloud project basket-buddy-505719).
-    # Always accepted as audiences, next to BASKET_GOOGLE_WEB_CLIENT_ID: iOS tokens can be issued
-    # for either the web (server) client or the iOS client.
+    # Always accepted as audiences, next to BASKET_GOOGLE_WEB_CLIENT_ID: tokens can be issued for
+    # the web (server) client or a platform client (iOS, Android/Play signing key).
     basket_google_known_client_ids: str = (
         "26319592248-opmaj600n8u25t50n1uggm95d2c2agup.apps.googleusercontent.com,"
-        "26319592248-u75rpg95amvomqf00e8g2dot96al2q9t.apps.googleusercontent.com"
+        "26319592248-u75rpg95amvomqf00e8g2dot96al2q9t.apps.googleusercontent.com,"
+        "26319592248-ii3skt18ducek3c9hkohuvjnsbg9v8hh.apps.googleusercontent.com"
     )
     # Chat provider: any OpenAI-compatible /chat/completions API. Defaults to Groq's free
     # tier; point LLM_BASE_URL at a self-hosted server (e.g. Ollama) to keep data in-house.
