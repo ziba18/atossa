@@ -5,6 +5,37 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-16 — main merged; Basket Buddy sign-in endpoints; daily 5am cloud health check
+
+- **`mvp-symptom-capture` merged into `main`** and pushed (`4d21bc0`), at the user's request while
+  1.1.0 (build 25) is still Waiting for Review. Keep-warm workflow survived. Render still deploys
+  `mvp-symptom-capture`.
+- **Age-rating "social media" questions** (new ASC banner): already answered "No" for every capability
+  (web access, UGC, social media, messaging, ads); rating stays 13+. Nothing needed saving.
+- **Basket Buddy sign-in endpoints (uncommitted):** `POST /basket-buddy/auth/{apple,google}`
+  (`routers/basket_buddy.py`, `services/basket_buddy_auth.py`, `basket_*` settings in `config.py`).
+  They verify the token with `social_auth.py` and return a session for Basket Buddy's own Supabase
+  project. Nothing is written to Atossa's DB. Hosted here rather than in a second Render service
+  because the free plan's 750 h/month is already used by Atossa's keep-warm. Needs
+  `BASKET_SUPABASE_SECRET_KEY` + `BASKET_GOOGLE_WEB_CLIENT_ID` on Render. Checked with a mock-Supabase
+  script; not live yet. Details: basket_buddy repo `WORKLOG.md`.
+- **Daily cloud health check** — routine "Atossa daily health check (5am)",
+  `trig_01SdCbNC4eBveA7ZgyXLBPxD`, https://claude.ai/code/routines/trig_01SdCbNC4eBveA7ZgyXLBPxD.
+  Runs in Anthropic's cloud (works with the laptop off), cron `0 5 * * *` **UTC** (5am London in
+  winter, 6am during BST), model claude-sonnet-5-5, Supabase connector attached. Read-only: checks out
+  `mvp-symptom-capture`, `npm ci` → `npx tsc --noEmit` → `npx expo export --platform ios`; backend
+  `pip install` + `compileall` + `import app.main`; `curl` `/warmup` (retries; wakes Render + opens a DB
+  connection), `/docs`, and the `/basket-buddy/auth/apple` route; `select 1` on Supabase
+  `xdczqwbetzpmneazszcu` via MCP. Ends with a pass/fail table. Results: the routine's run history at
+  claude.ai/code/routines. Needed GitHub connected to Claude (`/web-setup`, done 2026-10-16).
+  Edit/pause: https://claude.ai/code/routines (deleting is only possible there).
+- **First test run (2026-10-16 09:43 UTC, run `cse_011tiVgskWT2H4mauG5cxEtM`):** repo, `tsc`, iOS bundle,
+  backend import (32 routes) and Supabase `select 1` (ACTIVE_HEALTHY) all PASS. **Render BLOCKED:** the
+  cloud sandbox's egress proxy refuses `atossa-backend.onrender.com` (`CONNECT tunnel failed, response 403`).
+  Fix = add `atossa-backend.onrender.com` (+ `uwqmhhbxthnpgcbgvgqh.supabase.co` for Basket Buddy) to the
+  "Default" cloud environment's network allowlist at claude.ai/code (user action). Until then, the
+  GitHub keep-warm Action on `main` is still what keeps Render awake.
+
 ## 2026-10-15 (evening) — build 23 rejected; build 24; Google sign-in fix
 
 - **Build 23 failed Apple processing** (ITMS-90683, missing `NSMicrophoneUsageDescription`):

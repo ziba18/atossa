@@ -149,6 +149,17 @@ see below). The chat tab now has a real `/chat` backend (see below).
   session (see WORKLOG.md for the SQL/Python cleanup pattern used).
 
 
+
+### Daily cloud health check (2026-10-16)
+Routine "Atossa daily health check (5am)" (`trig_01SdCbNC4eBveA7ZgyXLBPxD`,
+https://claude.ai/code/routines/trig_01SdCbNC4eBveA7ZgyXLBPxD) runs every day at 05:00 **UTC** in
+Anthropic's cloud (independent of the laptop): read-only typecheck + iOS bundle + backend import
+check on `mvp-symptom-capture`, wakes Render (`/warmup`, `/docs`, `/basket-buddy/auth/apple`) and
+runs `select 1` on Supabase via the MCP connector. Read its reports in the run history at
+claude.ai/code/routines. Commands are listed in WORKLOG 2026-10-16. Basket Buddy has its own routine. Both
+share the Render backend, which also serves `/basket-buddy/auth/{apple,google}` (see
+`backend/app/routers/basket_buddy.py`).
+
 ## Reference stack: "$30K/month app" video (saved 2026-10-15)
 From https://www.youtube.com/watch?v=P4QodeA_lQ0 (Starter Story, Benji Chen). Cursor IDE +
 Claude Code (Max) for code; Figma designs first, then fed to Claude Code; Supabase backend;
