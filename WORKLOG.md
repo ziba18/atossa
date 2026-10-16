@@ -19,6 +19,11 @@ what was decided and why. Newest entries at the top.
   because the free plan's 750 h/month is already used by Atossa's keep-warm. Needs
   `BASKET_SUPABASE_SECRET_KEY` + `BASKET_GOOGLE_WEB_CLIENT_ID` on Render. Checked with a mock-Supabase
   script; not live yet. Details: basket_buddy repo `WORKLOG.md`.
+- **Basket Buddy Google sign-in "Invalid audience" (fixed same day):** `/basket-buddy/auth/google` now accepts
+  a list of audiences (Basket Buddy's Web + iOS client IDs, `basket_google_known_client_ids` in `config.py`, plus
+  `BASKET_GOOGLE_WEB_CLIENT_ID`). `verify_google_id_token` takes a str or list; with a str (Atossa's `/auth/google`)
+  the behaviour is unchanged. Tested with locally signed tokens; the user confirmed Apple and Google sign-in on
+  Basket Buddy TestFlight build 12.
 - **Daily cloud health check** — routine "Atossa daily health check (5am)",
   `trig_01SdCbNC4eBveA7ZgyXLBPxD`, https://claude.ai/code/routines/trig_01SdCbNC4eBveA7ZgyXLBPxD.
   Runs in Anthropic's cloud (works with the laptop off), cron `0 5 * * *` **UTC** (5am London in
