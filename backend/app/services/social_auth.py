@@ -54,18 +54,29 @@ def verify_apple_identity_token(id_token: str, bundle_id: str) -> dict:
     return {"sub": claims["sub"], "email": _verified_email(claims, "Apple")}
 
 
-def verify_google_id_token(id_token: str, client_id: str, access_token: str | None = None) -> dict:
+def verify_google_id_token(
+    id_token: str, client_id: str | list[str], access_token: str | None = None,
+) -> dict:
     """Verify a Google `idToken` from @react-native-google-signin. Returns {sub, email, name}.
 
     Google's iOS ID tokens carry an `at_hash` claim, which python-jose rejects unless it
     gets the matching access token to check it against — so the app sends that too.
+    `client_id` may be a list of accepted audiences (python-jose only takes one, so the
+    audience is then checked here instead).
     """
     jwks = _get_jwks(GOOGLE_JWKS_URL)
+    audiences = [client_id] if isinstance(client_id, str) else [c for c in client_id if c]
     try:
         claims = jwt.decode(
-            id_token, jwks, algorithms=["RS256"], audience=client_id, issuer=GOOGLE_ISSUERS,
-            access_token=access_token,
+            id_token, jwks, algorithms=["RS256"], issuer=GOOGLE_ISSUERS, access_token=access_token,
+            audience=audiences[0] if len(audiences) == 1 else None,
+            options={"verify_aud": len(audiences) == 1},
         )
     except JWTError as e:
         raise SocialAuthError(f"Invalid Google identity token: {e}")
+    if len(audiences) > 1:
+        token_aud = claims.get("aud")
+        token_auds = token_aud if isinstance(token_aud, list) else [token_aud]
+        if not any(a in audiences for a in token_auds):
+            raise SocialAuthError("Invalid Google identity token: Invalid audience")
     return {"sub": claims["sub"], "email": _verified_email(claims, "Google"), "name": claims.get("name")}
