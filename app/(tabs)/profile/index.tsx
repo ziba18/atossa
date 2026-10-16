@@ -1,239 +1,201 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useRef, useState } from 'react';
+import { ScrollView } from 'react-native';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { space } from '../../../constants/atossaUI';
+import {
+  Button, ConfirmCard, SafetyLine, ScreenLarge, Txt, showToast,
+} from '../../../components/atossa/kit';
+import type { IconName } from '../../../components/ui/Icon';
+import { Group, GroupHeading, GroupRow } from '../../../components/atossa/records/GroupedRows';
+import { savedLabel } from '../../../components/atossa/records/RecordsList';
+import { KIND_INFO, firstParam, type RecordDataKind } from '../../../components/atossa/records/recordKinds';
 import { useAuthStore } from '../../../stores/authStore';
-import { useCycleStore } from '../../../stores/cycleStore';
-import { api } from '../../../lib/api';
-import { Badge } from '../../../components/ui/Badge';
-import { Card } from '../../../components/ui/Card';
-import { Icon, type IconName } from '../../../components/ui/Icon';
-import { useColors, type AppColors } from '../../../contexts/ThemeContext';
-import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Radius, Spacing } from '../../../constants/theme';
-import { Type } from '../../../constants/typography';
+import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
+import { IS_PREVIEW } from '../../../lib/preview/flag';
+import { cancelAllScheduledNotifications } from '../../../lib/notifications';
+import { openLegal } from '../../../components/auth/LegalLinks';
+
+/** Visible tab title (the `from` param HeaderAvatar passes) → tab route name. */
+const TAB_ROUTES: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
+
+const RECORD_KINDS: RecordDataKind[] = ['medicine', 'appointment', 'history'];
+const RECORD_ICONS: Record<RecordDataKind, IconName> = { medicine: 'pill', appointment: 'calendar', history: 'file-text' };
+
+/** Preview mode only: whether Sam's sample data has been cleared this session. */
+let previewCleared = false;
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { profile, user, signOut } = useAuthStore();
-  const { cycleLogs, fetchCycleLogs } = useCycleStore();
-  const [totalSymptoms, setTotalSymptoms] = useState<number>(0);
-  const theme = useColors();
-  const styles = createStyles(theme);
-  const insets = useSafeAreaInsets();
-  // Tab bar floats absolutely (height 68 + 12 from bottom). Pad the scroll
-  // content so the footer line clears it on every device.
-  const bottomPad = insets.bottom + 96;
+  const navigation = useNavigation();
+  const { from: rawFrom } = useLocalSearchParams<{ from?: string }>();
+  const from = TAB_ROUTES[firstParam(rawFrom)] ? firstParam(rawFrom) : 'Today';
 
-  useEffect(() => {
-    if (!user) return;
-    fetchCycleLogs();
-    api.get<{ count: number }>('/cycles/symptoms/count')
-      .then((r) => setTotalSymptoms(r.count))
-      .catch(() => {});
-  }, [user]);
+  const profile = useAuthStore((s) => s.profile);
+  const user = useAuthStore((s) => s.user);
+  const signOut = useAuthStore((s) => s.signOut);
+  const deleteAccount = useAuthStore((s) => s.deleteAccount);
+  const records = useRecordsStore((s) => s.records);
+  const clearSampleData = useRecordsStore((s) => s.clearSampleData);
+  const restoreSampleData = useRecordsStore((s) => s.restoreSampleData);
 
-  const totalCycles = cycleLogs.length;
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const scrollRef = useRef<ScrollView | null>(null);
 
-  const formatDate = (iso: string | null) => {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : '';
+  const counts: Record<RecordDataKind, number> = {
+    medicine: records.medicine.length,
+    appointment: records.appointment.length,
+    history: records.history.length,
+  };
+  // Preview only: Restore follows an explicit "cleared" flag (module-level so it survives the
+  // screen remounting), not "are there any records" — adding one after clearing must not hide it.
+  const [sampleCleared, setSampleClearedState] = useState(previewCleared);
+  const setSampleCleared = (v: boolean) => { previewCleared = v; setSampleClearedState(v); };
+
+  // Profile is a hidden tab: jump straight back to the tab it was opened from (keeping that
+  // tab's own stack), rather than the Tabs default of always returning to the first tab.
+  const goBack = () => {
+    const tabs = navigation.getParent();
+    if (tabs) (tabs as any).navigate(TAB_ROUTES[from]);
+    else router.navigate(`/(tabs)/${TAB_ROUTES[from]}` as any);
   };
 
-  const MenuItem = ({ iconName, label, onPress, badge, isLast }: { iconName: IconName; label: string; onPress: () => void; badge?: string; isLast?: boolean }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.menuItem, !isLast && styles.menuItemBorder]} activeOpacity={0.8}>
-      <Icon name={iconName} size={20} color={theme.textSecondary} />
-      <Text style={styles.menuLabel}>{label}</Text>
-      {badge && <Badge label={badge} variant="cherry" />}
-      <Icon name="chevron-right" size={18} color={theme.textMuted} />
-    </TouchableOpacity>
-  );
+  const openList = (kind: RecordDataKind) =>
+    router.push({ pathname: '/(tabs)/profile/records/[kind]', params: { kind: KIND_INFO[kind].slug } } as any);
 
-  const CycleRegularityBadge = ({ regularity }: { regularity: string }) => {
-    const cfg: Record<string, { bg: string; color: string }> = {
-      regular: { bg: Colors.emeraldLighter, color: Colors.emeraldDark },
-      irregular: { bg: Colors.whiskeyLighter, color: Colors.whiskeyDark },
-    };
-    const c = cfg[regularity] ?? { bg: theme.surface, color: theme.textMuted };
-    return (
-      <View style={[styles.regularityBadge, { backgroundColor: c.bg }]}>
-        <Text style={[styles.regularityText, { color: c.color }]}>{regularity}</Text>
-      </View>
-    );
+  const onSampleData = () => {
+    if (sampleCleared) {
+      restoreSampleData();
+      setSampleCleared(false);
+      showToast('Sample data restored.');
+    } else {
+      clearSampleData();
+      setSampleCleared(true);
+      showToast('Sample data cleared.');
+    }
   };
+
+  const onDeleteAccount = async () => {
+    if (deleting) return;
+    setDeleting(true);
+    try {
+      await deleteAccount();
+      await cancelAllScheduledNotifications();
+      router.replace('/(auth)/welcome' as any);
+    } catch {
+      setDeleting(false);
+      showToast('We couldn’t delete your account. Check your connection and try again.');
+    }
+  };
+
+  // Scrolls an in-page confirm card into view once it has laid out.
+  const scrollToCard = (y: number) =>
+    setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, y - space.xxl), animated: true }), 50);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad }}>
+    <ScreenLarge title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
+      <Group>
+        <GroupRow
+          icon="user"
+          label={name || 'Your details'}
+          detail={user?.email || undefined}
+          onPress={() => router.push('/(tabs)/profile/edit-profile' as any)}
+          accessibilityLabel={`${name || 'Your details'}. Edit your details`}
+        />
+      </Group>
 
-        <LinearGradient colors={[Colors.moss, Colors.cherryDark]} style={styles.hero}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={[styles.backBtn, { top: insets.top + Spacing.sm }]}
-            hitSlop={12}
-          >
-            <Icon name="arrow-left" size={20} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {(isHumanName(profile?.display_name) ? profile!.display_name! : user?.email ?? 'A').charAt(0).toUpperCase()}
-            </Text>
-          </View>
-          <Text style={styles.name}>{isHumanName(profile?.display_name) ? profile!.display_name : 'Atossa User'}</Text>
-          {user?.email && <Text style={styles.email}>{user.email}</Text>}
-          {profile?.created_at && (
-            <Text style={styles.memberSince}>
-              Member since {new Date(profile.created_at as unknown as string).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            </Text>
-          )}
-        </LinearGradient>
+      <GroupHeading title="Records" style={{ marginTop: space.xxl }} />
+      <Group>
+        {RECORD_KINDS.map((kind) => (
+          <GroupRow
+            key={kind}
+            icon={RECORD_ICONS[kind]}
+            label={KIND_INFO[kind].listTitle}
+            value={counts[kind] ? String(counts[kind]) : 'None'}
+            onPress={() => openList(kind)}
+            accessibilityLabel={`${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}`}
+          />
+        ))}
+      </Group>
 
-        <View style={styles.statsSection}>
-          <View style={styles.statsGrid}>
-            <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{totalCycles}</Text>
-              <Text style={styles.statLabel}>Cycles logged</Text>
-            </Card>
-            <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{profile?.average_cycle_length ?? 28}d</Text>
-              <Text style={styles.statLabel}>Avg cycle</Text>
-            </Card>
-            <Card style={styles.statCell}>
-              <Text style={styles.statValue}>{totalSymptoms}</Text>
-              <Text style={styles.statLabel}>Symptoms</Text>
-            </Card>
-          </View>
-        </View>
-
-        {profile && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Cycle Profile</Text>
-            <Card>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Regularity</Text>
-                <CycleRegularityBadge regularity={profile.cycle_regularity ?? 'unknown'} />
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Average cycle length</Text>
-                <Text style={styles.infoValue}>{profile.average_cycle_length} days</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Average period length</Text>
-                <Text style={styles.infoValue}>{profile.average_period_length} days</Text>
-              </View>
-              {profile.date_of_birth && (
-                <>
-                  <View style={styles.divider} />
-                  <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>Date of birth</Text>
-                    <Text style={styles.infoValue}>{formatDate(profile.date_of_birth)}</Text>
-                  </View>
-                </>
-              )}
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/profile/edit-profile' as any)}
-                style={styles.editBtn}
-                activeOpacity={0.8}
-              >
-                <Icon name="pencil" size={14} color={Colors.cherry} />
-                <Text style={styles.editBtnText}>Edit profile & change password</Text>
-              </TouchableOpacity>
-            </Card>
-          </View>
+      <GroupHeading title="Settings" style={{ marginTop: space.xxl }} />
+      <Group>
+        <GroupRow
+          icon="bell"
+          label="Reminders and notifications"
+          onPress={() => router.push('/(tabs)/profile/settings' as any)}
+        />
+        <GroupRow
+          icon="users"
+          label="Friends"
+          detail="Share only your cycle phase with people you invite"
+          onPress={() => router.push('/(tabs)/profile/friends' as any)}
+        />
+        <GroupRow
+          icon="log-out"
+          label="Sign out"
+          chevron={false}
+          onPress={() => { setConfirmingDelete(false); setConfirmingSignOut(true); }}
+        />
+        {IS_PREVIEW ? null : (
+          <GroupRow
+            icon="trash-2"
+            label="Delete account"
+            chevron={false}
+            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(true); }}
+          />
         )}
+      </Group>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
-          <Card noPadding>
-            <MenuItem iconName="link" label="Connected accounts" onPress={() => router.push('/(tabs)/profile/connected-accounts' as any)} />
-            <MenuItem iconName="shield" label="Emergency contacts" onPress={() => router.push('/(tabs)/profile/emergency-contacts' as any)} isLast />
-          </Card>
-        </View>
+      {confirmingSignOut ? (
+        <ConfirmCard
+          title="Sign out of Atossa?"
+          message="Your information stays saved. You can sign in again any time."
+          style={{ marginTop: space.xl }}
+          onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
+          actions={[
+            { label: 'Sign out', variant: 'primary', onPress: async () => { await signOut(); router.replace('/(auth)/welcome' as any); } },
+            { label: 'Cancel', variant: 'text', onPress: () => setConfirmingSignOut(false) },
+          ]}
+        />
+      ) : null}
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Settings</Text>
-          <Card noPadding>
-            <MenuItem iconName="settings" label="App settings" onPress={() => router.push('/(tabs)/profile/settings' as any)} isLast />
-          </Card>
-        </View>
+      {confirmingDelete ? (
+        <ConfirmCard
+          tone="destructive"
+          title="Delete your account?"
+          message="This permanently deletes your account and everything you’ve saved in Atossa: symptoms, periods, appointments, medicines, history and friend connections. It can’t be undone."
+          style={{ marginTop: space.xl }}
+          onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
+          actions={[
+            { label: deleting ? 'Deleting…' : 'Delete account', variant: 'destructive', onPress: onDeleteAccount },
+            { label: 'Cancel', variant: 'text', onPress: () => setConfirmingDelete(false) },
+          ]}
+        />
+      ) : null}
 
-        <TouchableOpacity
-          onPress={() =>
-            Alert.alert('Sign Out', 'Are you sure?', [
-              { text: 'Cancel', style: 'cancel' },
-              {
-                text: 'Sign Out',
-                style: 'destructive',
-                onPress: async () => {
-                  await signOut();
-                  router.replace('/(auth)/welcome');
-                },
-              },
-            ])
-          }
-          style={styles.signOutBtn}
-        >
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
+      <GroupHeading title="About" style={{ marginTop: space.xxl }} />
+      <Group>
+        <GroupRow icon="file-text" label="Privacy policy" onPress={() => openLegal('privacy')} />
+        <GroupRow icon="file-text" label="Terms of use" onPress={() => openLegal('terms')} />
+      </Group>
 
-        <Text style={styles.footer}>Attosa v1.0 · Your health data is encrypted and private</Text>
-      </ScrollView>
-    </SafeAreaView>
+      <SafetyLine style={{ marginTop: space.xxl }} />
+      <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.sm }}>
+        Your information is private to your account.
+      </Txt>
+
+      {IS_PREVIEW ? (
+        <Button
+          label={sampleCleared ? 'Restore sample data' : 'Clear sample data'}
+          variant="text"
+          style={{ marginTop: space.xl }}
+          onPress={onSampleData}
+        />
+      ) : null}
+    </ScreenLarge>
   );
-}
-
-function createStyles(c: AppColors) {
-  const Colors = c;
-  return StyleSheet.create({
-    hero: { padding: Spacing.xl, alignItems: 'center', paddingBottom: Spacing.xl },
-    backBtn: { position: 'absolute', left: Spacing.md, zIndex: 1, padding: Spacing.xs },
-    avatar: {
-      width: 80, height: 80, borderRadius: 40,
-      backgroundColor: 'rgba(255,255,255,0.25)',
-      alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
-    },
-    avatarText: { fontSize: 32, fontFamily: 'Fraunces_400Regular_Italic', color: '#FFFFFF' },
-    name: { ...Type.profile.name, marginBottom: 4 },
-    email: { ...Type.profile.email, marginBottom: 4 },
-    memberSince: { ...Type.profile.memberSince },
-
-    statsSection: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
-    statsGrid: { flexDirection: 'row', gap: Spacing.sm },
-    statCell: { flex: 1, alignItems: 'center', paddingVertical: Spacing.md },
-    statValue: { ...Type.profile.statValue },
-    statLabel: { ...Type.profile.statLabel, marginTop: 4, textAlign: 'center' as const },
-
-    section: { paddingHorizontal: Spacing.md, marginTop: Spacing.lg },
-    sectionTitle: { ...Type.profile.sectionTitle, textTransform: 'uppercase' as const, marginBottom: Spacing.sm },
-    infoRow: {
-      flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-      paddingVertical: Spacing.sm,
-    },
-    infoLabel: { ...Type.profile.rowLabel, flex: 1 },
-    infoValue: { ...Type.profile.rowValue },
-    divider: { height: 1, backgroundColor: Colors.border },
-    regularityBadge: { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 3 },
-    regularityText: { fontSize: FontSize.xs, fontFamily: 'Fraunces_500Medium', textTransform: 'capitalize' },
-    editBtn: {
-      flexDirection: 'row', gap: Spacing.xs,
-      paddingVertical: Spacing.sm, alignItems: 'center', justifyContent: 'center',
-      borderRadius: Radius.md, backgroundColor: Colors.cherryLighter, marginTop: Spacing.md,
-    },
-    editBtnText: { fontSize: FontSize.sm, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
-
-    menuItem: {
-      flexDirection: 'row', alignItems: 'center',
-      padding: Spacing.md, gap: Spacing.sm,
-    },
-    menuItemBorder: { borderBottomWidth: 1, borderBottomColor: Colors.border },
-    menuLabel: { flex: 1, fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: Colors.textPrimary },
-
-    signOutBtn: { margin: Spacing.xl, padding: Spacing.md, alignItems: 'center' },
-    signOutText: { fontSize: FontSize.md, fontFamily: 'Fraunces_500Medium', color: Colors.cherry },
-    footer: { textAlign: 'center', fontSize: FontSize.xs, fontFamily: 'Fraunces_400Regular', color: Colors.textMuted },
-  });
 }

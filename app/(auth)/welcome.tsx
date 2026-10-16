@@ -1,202 +1,51 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Alert, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import { Button } from '../../components/ui/Button';
-import { Icon, type IconName } from '../../components/ui/Icon';
-import { GoogleGLogo } from '../../components/auth/GoogleGLogo';
-import { useColors } from '../../contexts/ThemeContext';
-import { Colors } from '../../constants/colors';
-import { FontSize, FontWeight, Spacing, Radius } from '../../constants/theme';
+import React, { useEffect } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
-import { supabase } from '../../lib/supabase';
-import { isHumanName } from '../../lib/humanName';
+import { useRouter } from 'expo-router';
+import { colors, layout, space } from '../../constants/atossaUI';
+import { Button, Txt } from '../../components/atossa/kit';
+import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import { track } from '../../lib/analytics';
 
+/**
+ * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
+ * from Today), one plain sentence, then the actions anchored low. No imagery.
+ */
 export default function WelcomeScreen() {
   const router = useRouter();
-  const theme = useColors();
-  const [appleLoading, setAppleLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-
-  // Shared post-sign-in routing for any social provider. Read the profile,
-  // then send the user to home / name prompt / onboarding as appropriate.
-  const routeAfterSocial = async (userId: string) => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_complete, display_name')
-      .eq('id', userId)
-      .maybeSingle();
-    if (profile?.onboarding_complete) {
-      router.replace('/(tabs)/chat' as any);
-      return;
-    }
-    if (!isHumanName(profile?.display_name)) {
-      router.replace('/(auth)/onboarding/name' as any);
-    } else {
-      router.replace('/(auth)/onboarding/step1-basics');
-    }
-  };
-
-  const handleApple = async () => {
-    setAppleLoading(true);
-    const { user, error } = await signInWithApple();
-    setAppleLoading(false);
-    if (error) {
-      Alert.alert('Apple Sign In Failed', error.message);
-      return;
-    }
-    if (!user) return;
-    await routeAfterSocial(user.id);
-  };
-
-  const handleGoogle = async () => {
-    setGoogleLoading(true);
-    const { user, error } = await signInWithGoogle();
-    setGoogleLoading(false);
-    if (error) {
-      Alert.alert('Google Sign In Failed', error.message);
-      return;
-    }
-    if (!user) return;
-    await routeAfterSocial(user.id);
-  };
+  useEffect(() => track('Welcome Viewed'), []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[Colors.cherry, Colors.cherryDark, '#0A1A12']}
-        style={styles.gradient}
-      >
-        <View style={styles.content}>
-          <View style={styles.hero}>
-            <Image
-              source={require('../../assets/icon.png')}
-              style={styles.logoImage}
-            />
-            <Text style={styles.appName}>Atossa</Text>
-            <Text style={styles.tagline}>
-              Your personal health companion.{'\n'}Track, predict, and understand your body.
-            </Text>
-          </View>
-
-          <View style={styles.features}>
-            {([
-              { icon: 'calendar', text: 'Track your cycle & symptoms' },
-              { icon: 'potion', text: 'Predict your next period & fertile window' },
-              { icon: 'heart', text: 'Log pain, mood, and medications daily' },
-              { icon: 'bell', text: 'Emergency alerts for loved ones' },
-            ] as { icon: IconName; text: string }[]).map((f) => (
-              <View key={f.text} style={styles.featureRow}>
-                <Icon name={f.icon} size={24} color={Colors.white} />
-                <Text style={styles.featureText}>{f.text}</Text>
-              </View>
-            ))}
-          </View>
-
-          <View style={styles.buttons}>
-            {Platform.OS === 'ios' && (
-              appleLoading ? (
-                <View style={styles.socialLoading}>
-                  <ActivityIndicator color={Colors.white} />
-                </View>
-              ) : (
-                <AppleAuthentication.AppleAuthenticationButton
-                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
-                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
-                  cornerRadius={Radius.md}
-                  style={styles.appleBtn}
-                  onPress={handleApple}
-                />
-              )
-            )}
-            {googleLoading ? (
-              <View style={styles.socialLoading}>
-                <ActivityIndicator color={Colors.white} />
-              </View>
-            ) : (
-              <TouchableOpacity
-                onPress={handleGoogle}
-                activeOpacity={0.85}
-                style={styles.googleBtn}
-              >
-                <GoogleGLogo size={20} />
-                <Text style={styles.googleBtnText}>Continue with Google</Text>
-              </TouchableOpacity>
-            )}
-            <Button
-              label="Sign up with email"
-              onPress={() => router.push('/(auth)/register')}
-              size="lg"
-              fullWidth
-              variant="ghost"
-              style={styles.secondaryBtn}
-            />
-            <Button
-              label="I already have an account"
-              onPress={() => router.push('/(auth)/login')}
-              variant="ghost"
-              size="lg"
-              fullWidth
-              style={styles.tertiaryBtn}
-              textStyle={{ color: 'rgba(255,255,255,0.85)' }}
-            />
-          </View>
+    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
+        <View style={styles.top}>
+          <Txt variant="headline" color={colors.ink2} accessibilityRole="header">Atossa</Txt>
         </View>
-      </LinearGradient>
+
+        <View style={styles.hero}>
+          <Txt variant="hero">Your body, in your words.</Txt>
+          <Txt variant="body" color={colors.ink2}>
+            Put your symptoms into words, and bring a clear summary to your doctor.
+          </Txt>
+        </View>
+
+        <View style={styles.actions}>
+          <Button label="Create an account" onPress={() => router.push('/(auth)/register')} />
+          <Button label="I already have an account" variant="text" onPress={() => router.push('/(auth)/login')} />
+          <SocialAuthButtons mode="signup" />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.cherry },
-  gradient: { flex: 1 },
-  content: { flex: 1, padding: Spacing.xl, justifyContent: 'space-between' },
-  hero: { alignItems: 'center', paddingTop: Spacing.xl },
-  logoImage: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    marginBottom: Spacing.md,
-    borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.4)',
+  screen: { flex: 1, backgroundColor: colors.canvas },
+  column: {
+    flexGrow: 1, width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center',
+    paddingHorizontal: layout.gutter, paddingBottom: space.xl,
   },
-  appName: {
-    fontSize: 52,
-    fontFamily: 'Fraunces_400Regular_Italic',
-    color: Colors.white,
-    letterSpacing: 3,
-  },
-  tagline: {
-    fontSize: FontSize.lg,
-    fontFamily: 'Fraunces_400Regular',
-    color: 'rgba(255,255,255,0.85)',
-    textAlign: 'center',
-    marginTop: Spacing.sm,
-    lineHeight: 26,
-  },
-  features: { gap: Spacing.md },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
-  featureText: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: Colors.white, flex: 1 },
-  buttons: { gap: Spacing.sm },
-  appleBtn: { height: 52, width: '100%' },
-  socialLoading: { height: 52, alignItems: 'center', justifyContent: 'center' },
-  googleBtn: {
-    height: 52,
-    width: '100%',
-    borderRadius: Radius.md,
-    backgroundColor: Colors.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-  },
-  googleBtnText: {
-    fontSize: FontSize.md,
-    fontFamily: 'Fraunces_500Medium',
-    color: '#1F1F1F',
-  },
-  secondaryBtn: { backgroundColor: 'rgba(255,255,255,0.15)' },
-  tertiaryBtn: { backgroundColor: 'transparent' },
+  top: { minHeight: 44, justifyContent: 'center', paddingTop: space.sm },
+  hero: { flexGrow: 1, justifyContent: 'center', gap: space.sm, paddingVertical: space.huge },
+  actions: { gap: space.xs },
 });

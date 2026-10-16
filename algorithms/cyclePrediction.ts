@@ -1,5 +1,5 @@
-import type { CycleLog } from '../types/database';
 import { daysBetween, addDaysToStr } from './dateHelpers';
+import type { CyclePhaseLog } from './cyclePhaseLog';
 
 /**
  * Cycle prediction
@@ -23,7 +23,7 @@ import { daysBetween, addDaysToStr } from './dateHelpers';
  */
 
 export interface PredictionInput {
-  cycleLogs: CycleLog[];        // sorted ASC by period_start (oldest → newest)
+  cycleLogs: CyclePhaseLog[];   // sorted ASC by period_start (oldest → newest)
   defaultCycleLength: number;   // from profile (prior)
   defaultPeriodLength: number;  // from profile (prior)
   userId: string;

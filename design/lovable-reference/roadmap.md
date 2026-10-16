@@ -1,0 +1,56 @@
+# Roadmap
+
+- [x] Replace the pitch slide with a simple patient-facing Atossa experience.
+- [x] Make one daily path obvious: check in, see the pattern, prepare the doctor summary.
+- [x] Reduce navigation choices and explain labels in plain language.
+- [x] Apply the approved Portland-inspired palette, Editorial Humanist type, soft-clinical components, and quiet motion.
+- [x] Verify desktop and mobile usability, accessibility, and metadata.
+- [x] Redesign for an older, non-technical phone user with large text and controls.
+- [x] Replace navigation with Log, History, and For my doctor tabs only.
+- [x] Remove the week strip, connected devices, pattern insights, and charts.
+- [x] Verify the guided check-in and doctor-sharing flow on a phone-sized screen.
+- [x] Replace tabs with Chat, Dashboard, and For my doctor.
+- [x] Build the simple chat and neutral example conversation.
+- [x] Add reported-data charts, summary figures, and appointment history.
+- [x] Add editable doctor notes and include them in Share / PDF.
+- [x] Verify the complete updated flow on a phone-sized screen.
+- [x] Replace the Dashboard bleeding card with a tappable Cycle month preview.
+- [x] Add the full-screen Calendar with month navigation and day editing.
+- [x] Add two-tap period start/end actions, deletion confirmation, and past-cycle editing.
+- [x] Reflect entered cycle dates and lengths in the Dashboard and doctor summary.
+- [x] Verify the complete cycle flow on a phone-sized screen.
+- [x] Restyle logged bleeding days with accessible red sparkle markers.
+- [x] Show period duration and arithmetic cycle length in Past cycles.
+- [x] Add editable appointment records with add and confirmed delete flows.
+- [x] Add editable medicines and treatments records.
+- [x] Add editable health history records with four clear types.
+- [x] Reorder Dashboard sections and connect record counts and detail pages.
+- [x] Verify all new record and calendar flows on a phone-sized screen.
+- [x] Save Chat descriptions through exactly four fixed symptom questions.
+- [x] Drive Dashboard figures and charts from saved symptom entries.
+- [x] Add editable My symptoms records with confirmed deletion.
+- [x] Show activity-effect counts and words from symptom entries.
+- [x] Fill the doctor page and Share / PDF from all saved app data.
+- [x] Verify the complete Part 2 flow on a phone-sized screen.
+- [x] Replace all example records with Sam’s 12-year history and current specialist visit.
+- [x] Add the testing-information line to Dashboard and For my doctor.
+- [x] Verify seeded counts, dates, wording, empty notes, and unchanged app behavior.
+- [x] Add exact and around-date controls, display formatting, sorting, and future-date confirmation.
+- [x] Add the collapsible doctor summary with an at-a-glance card and complete sharing output.
+- [x] Split health-history statements from actions and update seeded records and displays.
+- [x] Correct distinct-day, latest-period, and highest-pain Dashboard figures.
+- [x] Verify all Part 4 flows on a phone-sized screen.
+- [x] Apply the “Warm Paper, Deep Ink” visual system across the app.
+- [x] Replace navigation with Today, Timeline, and For my doctor plus Profile access.
+- [x] Build Today with capture starters, quick pain, appointment preparation, and latest note.
+- [x] Replace Chat with the speak/type, gap-only follow-up, review, and save capture sheet.
+- [x] Verify all Stage 1 flows and preserved records at 390×844.
+- [x] Apply Stage 1 global system fixes across every existing screen.
+- [x] Correct severity controls and protect Sam’s exact words.
+- [x] Fix Today, appointment, bleeding, and capture sheet flows.
+- [x] Apply the scoped Timeline, doctor summary, and Profile fixes.
+- [x] Verify all 33 Stage 1 fixes at 320–430px phone widths.
+- [x] Rebuild Timeline with session List/Month views, filters, weekly feed, entry cards, and day sheet.
+- [x] Add Timeline entry access and Profile Records for medicines, appointments, and health history.
+- [x] Preserve separate usual/worst strength values and fix sheets, toast dismissal, back origins, spacing, severity sizing, and icon strokes.
+- [ ] Verify Stage 2a across all phone widths and complete any build/runtime fixes.

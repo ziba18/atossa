@@ -17,22 +17,22 @@ const config: ExpoConfig = {
   name: 'Atossa',
   slug: 'attosa',
   version: '1.1.0',
+  // EAS Update: JS-only changes ship to installed builds without a new
+  // build. The fingerprint changes whenever native code/config changes, so
+  // an update only ever reaches builds it is compatible with.
+  runtimeVersion: { policy: 'fingerprint' },
+  updates: {
+    url: 'https://u.expo.dev/8d09758f-8216-49a8-933f-d8e23b1fb914',
+  },
   orientation: 'portrait',
   icon: './assets/icon.png',
-  userInterfaceStyle: 'automatic',
+  // The design is light-only (dark mode was removed), so keep keyboards and system sheets light too.
+  userInterfaceStyle: 'light',
   scheme: 'attosa',
-  splash: {
-    image: './assets/splash-icon.png',
-    resizeMode: 'contain',
-    backgroundColor: '#FFF8F9',
-  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.attosa.app',
     infoPlist: {
-      NSContactsUsageDescription: 'Atossa needs access to contacts to set up emergency alerts.',
-      NSPhotoLibraryUsageDescription: 'Atossa needs access to your photo library to update your profile picture.',
-      NSMotionUsageDescription: 'Atossa uses motion to gently animate the cycle orb as you hold your phone.',
       ITSAppUsesNonExemptEncryption: false,
     },
   },
@@ -43,7 +43,6 @@ const config: ExpoConfig = {
       backgroundColor: '#FFFFFF',
     },
     package: 'com.attosa.app',
-    edgeToEdgeEnabled: true,
     permissions: [
       'android.permission.VIBRATE',
       'android.permission.RECEIVE_BOOT_COMPLETED',
@@ -56,6 +55,27 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     'expo-secure-store',
+    'expo-font',
+    'expo-sharing',
+    'expo-status-bar',
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Atossa lets you attach a photo to a chat. It stays on your phone.',
+        cameraPermission: 'Atossa lets you take a photo to attach to a chat. It stays on your phone.',
+        // Not `false`: that deletes NSMicrophoneUsageDescription, which voice
+        // dictation (expo-speech-recognition) needs — Apple rejected build 23 for it.
+        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
+      },
+    ],
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/splash-icon.png',
+        resizeMode: 'contain',
+        backgroundColor: '#fef9f4',
+      },
+    ],
     [
       'expo-build-properties',
       {
@@ -68,30 +88,20 @@ const config: ExpoConfig = {
       'expo-notifications',
       {
         icon: './assets/icon.png',
-        color: '#DC143C',
+        color: '#8f3830',
       },
     ],
     [
-      'expo-image-picker',
+      'expo-speech-recognition',
       {
-        photosPermission: 'Atossa needs access to your photo library.',
-        cameraPermission: 'Atossa needs access to your camera to scan lab results and photos.',
-      },
-    ],
-    [
-      'expo-contacts',
-      {
-        contactsPermission: 'Atossa needs access to your contacts for emergency alerts.',
-      },
-    ],
-    [
-      'expo-av',
-      {
-        microphonePermission: 'Atossa needs access to your microphone to record voice notes about how you feel.',
+        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
+        // We only ever call requestMicrophonePermissionsAsync() with
+        // requiresOnDeviceRecognition: true, so this permission should
+        // never actually be requested — kept accurate in case that changes.
+        speechRecognitionPermission: 'Speech recognition is processed on your device — Atossa does not send your voice to a server.',
       },
     ],
     'expo-apple-authentication',
-    'expo-web-browser',
     ...googlePlugin,
   ],
   experiments: {

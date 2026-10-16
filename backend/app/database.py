@@ -2,7 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from app.config import settings
 
-engine = create_engine(settings.database_url)
+# pre_ping/recycle: the Supabase pooler drops idle connections, so a request after a lull
+# would otherwise hit a dead one.
+engine = create_engine(settings.database_url, pool_pre_ping=True, pool_recycle=300)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

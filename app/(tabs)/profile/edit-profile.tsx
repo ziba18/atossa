@@ -1,104 +1,93 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
+import { space } from '../../../constants/atossaUI';
+import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/atossa/kit';
+import { haptics } from '../../../lib/haptics';
 import { useAuthStore } from '../../../stores/authStore';
-import { api, ApiError } from '../../../lib/api';
-import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
-import { Header } from '../../../components/layout/Header';
-import { useColors, type AppColors } from '../../../contexts/ThemeContext';
-import { Colors } from '../../../constants/colors';
-import { FontSize, FontWeight, Spacing } from '../../../constants/theme';
+import { api } from '../../../lib/api';
+import { daysInMonth, parseKey, toKey, todayKey } from '../../../lib/records/dates';
+
+/** Day / month / year boxes → 'YYYY-MM-DD', '' when all empty, null when invalid. */
+function birthDateKey(day: string, month: string, year: string): string | null {
+  if (!day && !month && !year) return '';
+  const d = Number(day), m = Number(month), y = Number(year);
+  const thisYear = parseKey(todayKey()).y;
+  if (!Number.isInteger(y) || y < 1900 || y > thisYear) return null;
+  if (!Number.isInteger(m) || m < 1 || m > 12) return null;
+  if (!Number.isInteger(d) || d < 1 || d > daysInMonth(y, m - 1)) return null;
+  const key = toKey(y, m - 1, d);
+  return key > todayKey() ? null : key;
+}
+
+function inRange(text: string, min: number, max: number): number | null {
+  const n = Number(text);
+  return Number.isInteger(n) && n >= min && n <= max ? n : null;
+}
 
 export default function EditProfileScreen() {
-  const { user, profile, fetchProfile } = useAuthStore();
-  const theme = useColors();
-  const styles = createStyles(theme);
+  const { profile, fetchProfile } = useAuthStore();
+  const dob = profile?.date_of_birth ? parseKey(profile.date_of_birth) : null;
 
   const [name, setName] = useState(profile?.display_name ?? '');
-  const [dob, setDob] = useState(profile?.date_of_birth ?? '');
-  const [cycleLength, setCycleLength] = useState(String(profile?.average_cycle_length ?? 28));
-  const [profileLoading, setProfileLoading] = useState(false);
+  const [day, setDay] = useState(dob ? String(dob.d) : '');
+  const [month, setMonth] = useState(dob ? String(dob.m0 + 1) : '');
+  const [year, setYear] = useState(dob ? String(dob.y) : '');
+  const [cycle, setCycle] = useState(String(profile?.average_cycle_length ?? 28));
+  const [period, setPeriod] = useState(String(profile?.average_period_length ?? 5));
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordLoading, setPasswordLoading] = useState(false);
+  const touch = <T,>(setter: (v: T) => void) => (v: T) => { setter(v); setError(''); };
+  const digits = (setter: (v: string) => void) => touch((v: string) => setter(v.replace(/\D/g, '')));
 
-  const handleSaveProfile = async () => {
-    setProfileLoading(true);
+  const save = async () => {
+    const birth = birthDateKey(day, month, year);
+    const cycleDays = inRange(cycle, 14, 60);
+    const periodDays = inRange(period, 1, 15);
+    if (!name.trim()) return setError('Enter your name.');
+    if (birth === null) return setError('Check the date of birth — or leave all three boxes empty.');
+    if (cycleDays === null) return setError('Time between periods should be between 14 and 60 days.');
+    if (periodDays === null) return setError('Period length should be between 1 and 15 days.');
+
+    setSaving(true);
+    setError('');
     try {
       await api.patch('/me', {
-        display_name: name || null,
-        date_of_birth: dob || null,
-        average_cycle_length: parseInt(cycleLength) || 28,
+        display_name: name.trim(),
+        date_of_birth: birth || null,
+        average_cycle_length: cycleDays,
+        average_period_length: periodDays,
       });
       await fetchProfile();
-      Alert.alert('Saved!', 'Your profile has been updated.');
-    } catch (err) {
-      Alert.alert('Error', err instanceof Error ? err.message : 'Something went wrong');
+      haptics.success();
+      showToast('Your details are saved.');
+    } catch {
+      setError('Your details couldn’t be saved. Check your connection and try again.');
     } finally {
-      setProfileLoading(false);
+      setSaving(false);
     }
   };
 
-  const handleChangePassword = async () => {
-    Alert.alert('Coming soon', 'Password change will be available in a future update.');
-  };
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      <Header title="Edit Profile" showBack />
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+    <ScreenLarge title="My details" back={{ label: 'Profile' }}>
+      <View style={{ gap: space.xl }}>
+        <TextField label="Your name" value={name} onChangeText={touch(setName)} autoCapitalize="words" />
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account Information</Text>
-          <View style={styles.emailRow}>
-            <Text style={styles.emailLabel}>Email</Text>
-            <Text style={styles.emailValue}>{user?.email ?? '—'}</Text>
+        <View>
+          <FieldLabel label="Date of birth" optional />
+          <View style={{ flexDirection: 'row', gap: space.xs }}>
+            <TextField label="Day" value={day} onChangeText={digits(setDay)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
+            <TextField label="Month" value={month} onChangeText={digits(setMonth)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
+            <TextField label="Year" value={year} onChangeText={digits(setYear)} keyboardType="number-pad" maxLength={4} style={{ flex: 1.4 }} />
           </View>
-          <Input label="Display Name" value={name} onChangeText={setName} placeholder="Your name" />
-          <Input label="Date of Birth" value={dob} onChangeText={setDob} placeholder="YYYY-MM-DD" keyboardType="numbers-and-punctuation" />
-          <Input label="Average Cycle Length (days)" value={cycleLength} onChangeText={setCycleLength} keyboardType="number-pad" placeholder="28" />
-          <Button label="Save Profile" onPress={handleSaveProfile} loading={profileLoading} size="lg" fullWidth style={styles.btn} />
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Change Password</Text>
-          <Input label="New Password" value={newPassword} onChangeText={setNewPassword} placeholder="At least 6 characters" secureTextEntry />
-          <Input label="Confirm New Password" value={confirmPassword} onChangeText={setConfirmPassword} placeholder="Repeat new password" secureTextEntry />
-          <Button label="Update Password" onPress={handleChangePassword} loading={passwordLoading} size="lg" fullWidth style={styles.btn} />
-        </View>
+        <TextField label="Usual days between periods" hint="From the start of one period to the start of the next" value={cycle} onChangeText={digits(setCycle)} keyboardType="number-pad" maxLength={2} />
+        <TextField label="Usual period length in days" value={period} onChangeText={digits(setPeriod)} keyboardType="number-pad" maxLength={2} />
 
-      </ScrollView>
-    </SafeAreaView>
+        <InlineError message={error} />
+        <Button label="Save my details" icon="check" loading={saving} onPress={save} />
+      </View>
+    </ScreenLarge>
   );
-}
-
-function createStyles(c: AppColors) {
-  const Colors = c;
-  return StyleSheet.create({
-    container: { padding: Spacing.md, paddingBottom: Spacing.xxl },
-    section: { marginBottom: Spacing.xl },
-    sectionTitle: {
-      fontSize: FontSize.sm,
-      fontWeight: FontWeight.semibold,
-      color: Colors.textMuted,
-      textTransform: 'uppercase',
-      letterSpacing: 0.8,
-      marginBottom: Spacing.md,
-    },
-    emailRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: Spacing.sm,
-      paddingHorizontal: Spacing.md,
-      backgroundColor: Colors.surfaceElevated,
-      borderRadius: 8,
-      marginBottom: Spacing.sm,
-    },
-    emailLabel: { fontSize: FontSize.sm, color: Colors.textMuted, fontWeight: FontWeight.medium },
-    emailValue: { fontSize: FontSize.sm, color: Colors.textPrimary, fontWeight: FontWeight.semibold },
-    btn: { marginTop: Spacing.md },
-  });
 }

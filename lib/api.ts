@@ -1,24 +1,35 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { Config } from '../constants/config';
+
+// expo-secure-store has no web implementation (it throws there). The web build only exists
+// for the design preview, so fall back to localStorage on web instead of crashing.
+const tokenStore = Platform.OS === 'web'
+  ? {
+      getItemAsync: async (k: string) => { try { return globalThis.localStorage?.getItem(k) ?? null; } catch { return null; } },
+      setItemAsync: async (k: string, v: string) => { try { globalThis.localStorage?.setItem(k, v); } catch {} },
+      deleteItemAsync: async (k: string) => { try { globalThis.localStorage?.removeItem(k); } catch {} },
+    }
+  : SecureStore;
 
 const ACCESS_KEY = 'atossa_access_token';
 const REFRESH_KEY = 'atossa_refresh_token';
 
 export async function getStoredAccessToken(): Promise<string | null> {
-  return SecureStore.getItemAsync(ACCESS_KEY);
+  return tokenStore.getItemAsync(ACCESS_KEY);
 }
 
 export async function saveTokens(access: string, refresh: string): Promise<void> {
   await Promise.all([
-    SecureStore.setItemAsync(ACCESS_KEY, access),
-    SecureStore.setItemAsync(REFRESH_KEY, refresh),
+    tokenStore.setItemAsync(ACCESS_KEY, access),
+    tokenStore.setItemAsync(REFRESH_KEY, refresh),
   ]);
 }
 
 export async function clearTokens(): Promise<void> {
   await Promise.all([
-    SecureStore.deleteItemAsync(ACCESS_KEY),
-    SecureStore.deleteItemAsync(REFRESH_KEY),
+    tokenStore.deleteItemAsync(ACCESS_KEY),
+    tokenStore.deleteItemAsync(REFRESH_KEY),
   ]);
 }
 
@@ -29,7 +40,7 @@ export function setSessionExpiredHandler(cb: () => void) {
 }
 
 async function attemptRefresh(): Promise<string | null> {
-  const refresh = await SecureStore.getItemAsync(REFRESH_KEY);
+  const refresh = await tokenStore.getItemAsync(REFRESH_KEY);
   if (!refresh) return null;
   try {
     const res = await fetch(`${Config.apiUrl}/auth/refresh`, {
@@ -49,6 +60,12 @@ async function attemptRefresh(): Promise<string | null> {
   }
 }
 
+// Fire-and-forget: the free-tier backend spins down when idle, so wake it (and its DB
+// connection) while the user is still typing credentials instead of on the login tap.
+export function warmBackend(): void {
+  fetch(`${Config.apiUrl}/warmup`).catch(() => {});
+}
+
 export class ApiError extends Error {
   constructor(public readonly status: number, message: string) {
     super(message);
@@ -56,13 +73,15 @@ export class ApiError extends Error {
   }
 }
 
+const SIGN_IN_PATHS = new Set(['/auth/login', '/auth/apple', '/auth/google']);
+
 async function request<T>(
   method: string,
   path: string,
   body?: unknown,
   _retry = true,
 ): Promise<T> {
-  const token = await SecureStore.getItemAsync(ACCESS_KEY);
+  const token = await tokenStore.getItemAsync(ACCESS_KEY);
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -72,7 +91,9 @@ async function request<T>(
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  if (res.status === 401 && _retry) {
+  // A 401 from a sign-in call means the credentials were rejected, not that a
+  // session expired — fall through so the server's reason reaches the user.
+  if (res.status === 401 && _retry && !SIGN_IN_PATHS.has(path)) {
     const newToken = await attemptRefresh();
     if (newToken) return request<T>(method, path, body, false);
     _onSessionExpired?.();
@@ -95,6 +116,7 @@ async function request<T>(
 export const api = {
   get:    <T>(path: string)                 => request<T>('GET', path),
   post:   <T>(path: string, body?: unknown) => request<T>('POST', path, body),
+  put:    <T>(path: string, body: unknown)  => request<T>('PUT', path, body),
   patch:  <T>(path: string, body: unknown)  => request<T>('PATCH', path, body),
   delete: <T>(path: string)                 => request<T>('DELETE', path),
 };

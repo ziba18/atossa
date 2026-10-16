@@ -1,11 +1,7 @@
 export const Config = {
-  supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!,
-  supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
   apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000',
-  admobAppIdIos: process.env.EXPO_PUBLIC_ADMOB_APP_ID_IOS ?? '',
-  admobAppIdAndroid: process.env.EXPO_PUBLIC_ADMOB_APP_ID_ANDROID ?? '',
   // Google Sign-In OAuth client IDs from Google Cloud Console.
-  // - webClientId is the Web OAuth client; Supabase verifies ID tokens
+  // - webClientId is the Web OAuth client; the backend verifies ID tokens
   //   against this audience, so GoogleSignin must request it as the
   //   audience even on iOS/Android.
   // - iosClientId / androidClientId are the native client IDs; required
@@ -13,4 +9,11 @@ export const Config = {
   googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '',
   googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
   googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? '',
+};
+
+// Public legal pages, served by the backend (backend/app/routers/legal.py). The privacy URL
+// is also the one to give App Store Connect.
+export const LegalUrls = {
+  privacy: `${Config.apiUrl}/privacy`,
+  terms: `${Config.apiUrl}/terms`,
 };

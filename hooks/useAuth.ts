@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { api, clearTokens, getStoredAccessToken, setSessionExpiredHandler } from '../lib/api';
 import { useAuthStore, type AuthUser } from '../stores/authStore';
-import { useUIStore } from '../stores/uiStore';
 import { syncDailyLogReminder } from '../lib/notifications';
 import type { Profile } from '../types/database';
+import { IS_PREVIEW, PREVIEW_USER_ID } from '../lib/preview/flag';
+import { PREVIEW_EMAIL, PREVIEW_PROFILE } from '../lib/preview/seed';
 
 let authInitStarted = false;
 
@@ -14,6 +15,15 @@ function startAuthInit() {
   setSessionExpiredHandler(() => {
     useAuthStore.getState().signOut();
   });
+
+  // Design preview: signed in as "Sam" immediately, no tokens, no network.
+  if (IS_PREVIEW) {
+    const { setSession, setUser, setProfile } = useAuthStore.getState();
+    setUser({ id: PREVIEW_USER_ID, email: PREVIEW_EMAIL });
+    setProfile(PREVIEW_PROFILE);
+    setSession({ access_token: 'design-preview' });
+    return;
+  }
 
   (async () => {
     const { setSession, setUser, setProfile } = useAuthStore.getState();
@@ -49,20 +59,10 @@ export function useAuth() {
   const isLoading = useAuthStore((s) => s.isLoading);
   const isInitialized = useAuthStore((s) => s.isInitialized);
   const signOut = useAuthStore((s) => s.signOut);
-  const syncedDarkMode = useRef(false);
   const syncedDailyReminder = useRef(false);
 
   useEffect(() => {
-    if (!profile || syncedDarkMode.current) return;
-    syncedDarkMode.current = true;
-    if (typeof profile.dark_mode === 'boolean') {
-      const { isDarkMode, setDarkMode } = useUIStore.getState();
-      if (profile.dark_mode !== isDarkMode) setDarkMode(profile.dark_mode);
-    }
-  }, [profile]);
-
-  useEffect(() => {
-    if (!profile || !profile.onboarding_complete || syncedDailyReminder.current) return;
+    if (IS_PREVIEW || !profile || !profile.onboarding_complete || syncedDailyReminder.current) return;
     syncedDailyReminder.current = true;
     syncDailyLogReminder(profile.daily_log_reminder_enabled, profile.daily_log_reminder_time).catch(() => {});
   }, [profile]);

@@ -1,33 +1,25 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { SafeScreen } from '../../components/layout/SafeScreen';
-import { Header } from '../../components/layout/Header';
-import { Icon } from '../../components/ui/Icon';
-import { useColors, type AppColors } from '../../contexts/ThemeContext';
-import { FontSize, Spacing } from '../../constants/theme';
+import { Linking } from 'react-native';
+import { space } from '../../constants/atossaUI';
+import { Button, Card, ScreenLarge, Txt } from '../../components/atossa/kit';
+
+const SUPPORT_EMAIL = 'zamaniziba18@gmail.com';
 
 export default function ForgotPasswordScreen() {
-  const theme = useColors();
-  const styles = createStyles(theme);
-
   return (
-    <SafeScreen>
-      <Header title="Reset Password" showBack />
-      <View style={styles.container}>
-        <Icon name="send" size={48} color={theme.textMuted} />
-        <Text style={styles.title}>Coming soon</Text>
-        <Text style={styles.body}>
-          Password reset by email will be available in a future update. For now, please contact support if you need access to your account.
-        </Text>
-      </View>
-    </SafeScreen>
+    <ScreenLarge title="Forgot your password?" back={{ label: 'Sign in' }}>
+      <Card style={{ gap: space.sm }}>
+        <Txt variant="body">
+          Resetting a password by email isn’t available in the app yet. Email us from the address you signed up with and we’ll help you get back in.
+        </Txt>
+        <Txt variant="headline" selectable>{SUPPORT_EMAIL}</Txt>
+      </Card>
+      <Button
+        label="Email support"
+        icon="send"
+        style={{ marginTop: space.xxl }}
+        onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Atossa password help')}`).catch(() => {})}
+      />
+    </ScreenLarge>
   );
-}
-
-function createStyles(c: AppColors) {
-  return StyleSheet.create({
-    container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.xl, gap: Spacing.md },
-    title: { fontSize: FontSize.xl, fontFamily: 'Fraunces_400Regular_Italic', color: c.textPrimary },
-    body: { fontSize: FontSize.md, fontFamily: 'Fraunces_400Regular', color: c.textMuted, textAlign: 'center', lineHeight: 22 },
-  });
 }
