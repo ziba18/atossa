@@ -41,10 +41,14 @@ def basket_login_with_apple(body: SocialAuthRequest):
 
 @router.post("/auth/google", response_model=SupabaseSessionResponse)
 def basket_login_with_google(body: SocialAuthRequest):
-    if not settings.basket_google_web_client_id:
+    audiences = [settings.basket_google_web_client_id.strip()] + [
+        c.strip() for c in settings.basket_google_known_client_ids.split(",")
+    ]
+    audiences = list(dict.fromkeys(a for a in audiences if a))
+    if not audiences:
         raise HTTPException(status_code=500, detail="Google sign-in is not configured on the server")
     try:
-        claims = verify_google_id_token(body.id_token, settings.basket_google_web_client_id, body.access_token)
+        claims = verify_google_id_token(body.id_token, audiences, body.access_token)
     except SocialAuthError as e:
         raise HTTPException(status_code=401, detail=str(e))
     return _session(claims["email"], body.display_name or claims.get("name"))
