@@ -5,6 +5,34 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-19 — 7-agent cloud team set up
+
+- **Why:** the app was taken off the App Store and the owner is unhappy with the result (design
+  most of all). Asked for 7 agents (Data, AI Brain, Safety, Finance, Marketing, Design, Project
+  Manager) running in parallel every 4 hours, all day, with the laptop shut, plus start- and
+  end-of-day reports.
+- **Shape:** 7 Claude Code routines on the "Default" cloud env. Cron `0 3,7,11,15,19,23 * * *` UTC
+  for the six workers, `40 3,7,11,15,19,23 * * *` for the PM so it reads fresh work. 07 UTC run =
+  start of day, 19 UTC run = end of day (07:00/19:00 London in winter, 08:00/20:00 BST).
+  Models: Sonnet 5.5, except Design and PM on Opus 5.5.
+- **Office:** branch `claude/agents-hq` (cut from `mvp-symptom-capture` at `921f5ab`, first commit
+  `b679e27`). `claude/` prefix because cloud sessions can push to `claude/*` branches. Each agent
+  writes only its own `agents/<name>/` folder; `agents/bin/push.sh` does a rebase-and-retry push so
+  parallel runs don't conflict. Owner approvals go in `agents/OWNER.md`.
+- **Connectors (all read-only by rule):** Data → Clinical-Trials; Safety → Supabase (advisors/schema);
+  Finance → Supabase (org/plan); Design → Lovable (read-only, sending spends credits); PM → Google
+  Drive (report docs). AI Brain and Marketing → none. Creating a routine without
+  `mcp_connections` attaches **every** connector by default, so both were cleared afterwards.
+- **Deliberate limits:** no agent posts, DMs, emails, signs up, applies for dataset access or spends
+  credits without a matching line in `OWNER.md`. There are no LinkedIn/WhatsApp/Instagram connectors,
+  and Higgsfield (AI video + TikTok publishing) is not attached until the owner approves a budget.
+  Finance can't see bank accounts or invoices; anything the owner hasn't confirmed is marked ESTIMATE.
+- **Test run (Data, `cse_01AU3NpJejtRsNyduSA5b8Qz`):** clone, branch checkout, WebSearch and
+  Clinical-Trials work. **WebFetch fails** (`getaddrinfo ENOTFOUND` for ncbi.nlm.nih.gov,
+  ukbiobank.ac.uk, figshare.com): the Default environment's network allowlist. Fix (owner):
+  claude.ai/code → environment settings → network access **Full** (or add research domains).
+- Watch run caps and plan usage: 42 runs/day.
+
 ## 2026-10-16 — main merged; Basket Buddy sign-in endpoints; daily 5am cloud health check
 
 - **`mvp-symptom-capture` merged into `main`** and pushed (`4d21bc0`), at the user's request while

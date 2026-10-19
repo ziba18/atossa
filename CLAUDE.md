@@ -150,6 +150,21 @@ see below). The chat tab now has a real `/chat` backend (see below).
 
 
 
+### Agent team — 7 cloud routines (2026-10-19)
+The app was pulled from the App Store; the owner wants a full team working around the clock.
+Seven routines run in Anthropic's cloud (laptop can be off), every 4 h at 03/07/11/15/19/23 UTC;
+the PM runs 40 min later to read their work. Their shared office is branch **`claude/agents-hq`**
+(never merged): `agents/README.md`, `RULES.md`, `CONTEXT.md`, `OWNER.md` (owner approvals/answers —
+the only way to authorise outward actions), `bin/push.sh`, and one folder per agent with
+`CHARTER.md` (edit to change the job), `STATE.md`, `log/`. Daily reports by the PM:
+`agents/reports/YYYY-MM-DD-{morning,evening}.md` (07:40 and 19:40 UTC) + a Google Doc in Drive folder
+"Atossa Agents". Code changes only on `claude/<agent>-*` branches for review — agents never push to
+`main`/`mvp-symptom-capture`, never deploy, never post/message/spend. Routine IDs: Data
+`trig_01VSCYE3DLGUf9bHJ3vMMtFe`, AI Brain `trig_011hE271Ypq4Y3vBBXHykv8c`, Safety
+`trig_014WdTMMf85x26Q9wZUDQJ1t`, Finance `trig_013YCD2yE9RfHBxNBXntpNos`, Marketing
+`trig_019DKEPVZSKVNwEqFtU8Q7CB`, Design `trig_01MoabdY1SRHc6Tj1eC1RG2d` (Opus), PM
+`trig_01Ju1pFcLkez7B5u4rUWe5wY` (Opus). Manage at https://claude.ai/code/routines. See WORKLOG 2026-10-19.
+
 ### Daily cloud health check (2026-10-16)
 Routine "Atossa daily health check (5am)" (`trig_01SdCbNC4eBveA7ZgyXLBPxD`,
 https://claude.ai/code/routines/trig_01SdCbNC4eBveA7ZgyXLBPxD) runs every day at 05:00 **UTC** in
