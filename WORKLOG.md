@@ -33,6 +33,23 @@ what was decided and why. Newest entries at the top.
   claude.ai/code → environment settings → network access **Full** (or add research domains).
 - Watch run caps and plan usage: 42 runs/day.
 
+- **Same evening — Pro-plan usage, lean schedule.** claude.ai showed "Approaching weekly usage limit"
+  on the **Pro** plan; 42 runs/day can't fit. All 7 were paused, then the owner chose the **lean schedule**:
+  PM `40 6,19 * * *` (reports), Design `0 8,14 * * *`, Data `0 9`, AI Brain `0 10`, Safety `0 11`,
+  Finance `0 12`, Marketing `0 13` UTC; Design and PM moved Opus → Sonnet. The owner then reset the weekly
+  limit (usage page: weekly 0%, resets Wed 8 PM) and all 7 were re-enabled. Usage credits ($24.13)
+  auto-spend toggle is OFF and stays off. RULES.md now requires **checkpoint pushes** every ~10 min so a
+  run cut off by a limit keeps its work (`f7aee79` on `claude/agents-hq`).
+- **Network:** at the owner's request, Default env network access set Limited → **Full** in the browser
+  ("Environment updated"). Fixes the WebFetch DNS failures. The two allowlisted domains became redundant.
+- **Kling / ElevenLabs:** Kling's developer API has no free tier (prepaid packs), so "keep video free" =
+  kling.ai website free credits only; Marketing keeps `content/kling-queue.md` of paste-ready prompts.
+  ElevenLabs free plan (10k credits/mo, API key, no card) is approved in `agents/OWNER.md` for voice-overs;
+  needs the owner's key added as a **network secret** on the Default environment. No claude.ai connector
+  exists for either.
+- **Usage checks:** cloud agents can't read the usage meter. Probe routine `trig_01TaWWmHZwHyK8WtWWYbFCod`
+  checks whether the `Claude_Code_Remote` connector can (see result below).
+
 ## 2026-10-16 — main merged; Basket Buddy sign-in endpoints; daily 5am cloud health check
 
 - **`mvp-symptom-capture` merged into `main`** and pushed (`4d21bc0`), at the user's request while

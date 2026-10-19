@@ -152,8 +152,10 @@ see below). The chat tab now has a real `/chat` backend (see below).
 
 ### Agent team — 7 cloud routines (2026-10-19)
 The app was pulled from the App Store; the owner wants a full team working around the clock.
-Seven routines run in Anthropic's cloud (laptop can be off), every 4 h at 03/07/11/15/19/23 UTC;
-the PM runs 40 min later to read their work. Their shared office is branch **`claude/agents-hq`**
+Seven routines run in Anthropic's cloud (laptop can be off). **Lean schedule (owner is on Pro):**
+PM 06:40 + 19:40 UTC (morning/evening reports), Design 08:00 + 14:00, Data 09:00, AI Brain 10:00,
+Safety 11:00, Finance 12:00, Marketing 13:00 — all Sonnet 5.5, staggered to spread the 5-hour window.
+Their shared office is branch **`claude/agents-hq`**
 (never merged): `agents/README.md`, `RULES.md`, `CONTEXT.md`, `OWNER.md` (owner approvals/answers —
 the only way to authorise outward actions), `bin/push.sh`, and one folder per agent with
 `CHARTER.md` (edit to change the job), `STATE.md`, `log/`. Daily reports by the PM:
@@ -162,8 +164,10 @@ the only way to authorise outward actions), `bin/push.sh`, and one folder per ag
 `main`/`mvp-symptom-capture`, never deploy, never post/message/spend. Routine IDs: Data
 `trig_01VSCYE3DLGUf9bHJ3vMMtFe`, AI Brain `trig_011hE271Ypq4Y3vBBXHykv8c`, Safety
 `trig_014WdTMMf85x26Q9wZUDQJ1t`, Finance `trig_013YCD2yE9RfHBxNBXntpNos`, Marketing
-`trig_019DKEPVZSKVNwEqFtU8Q7CB`, Design `trig_01MoabdY1SRHc6Tj1eC1RG2d` (Opus), PM
-`trig_01Ju1pFcLkez7B5u4rUWe5wY` (Opus). Manage at https://claude.ai/code/routines. See WORKLOG 2026-10-19.
+`trig_019DKEPVZSKVNwEqFtU8Q7CB`, Design `trig_01MoabdY1SRHc6Tj1eC1RG2d`, PM
+`trig_01Ju1pFcLkez7B5u4rUWe5wY`. Usage: check claude.ai/settings/usage; "usage credits" auto-spend is
+OFF — keep it off. Default env network access = **Full** (2026-10-19). Video = Kling **web free
+credits only** (API is paid); voice = ElevenLabs free plan. Manage at https://claude.ai/code/routines. See WORKLOG 2026-10-19.
 
 ### Daily cloud health check (2026-10-16)
 Routine "Atossa daily health check (5am)" (`trig_01SdCbNC4eBveA7ZgyXLBPxD`,
