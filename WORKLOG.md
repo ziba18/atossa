@@ -5,6 +5,26 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-20 — agent workspace moved to a private repo; owner decisions
+
+- **Why:** `ziba18/atossa` is **public**, so agent reports, security findings, contacts and owner decisions on
+  `claude/agents-hq` were world-readable. The owner doesn't want this repo private: private Actions minutes
+  (2,000/month) can't cover the 10-minute keep-warm job, and Render's link to the repo would need re-checking.
+- **Move:** created **private** `ziba18/atossa-hq` and copied the `agents/` folder (snapshot of `bf34868`, 42 files)
+  to `main` + `claude/agents-hq` (`4fd5c4f`, rules update `761b520`). Local clone: `~/projects/atossa-hq`. All 7
+  routines now have two sources: cloud checkouts are `/home/user/atossa-hq` (office, push here) and
+  `/home/user/atossa` (app code; `claude/<agent>-*` code branches still go here). Cloud cwd is `/home/user`.
+  RULES.md now covers both repos: nothing secret anywhere; nothing exploit-level or personal in the public one.
+- **Gotchas:** (1) a create call with `mcp_connections: []` still attaches **all** connectors, so always follow it
+  with `clear_mcp_connections: true`. (2) The cloud auto-mode classifier blocked a bare "probe: push test" push
+  ("Modify Shared Resources"). Real agent prompts now state the owner's authorisation and the exact folder they own.
+- **Owner decisions** (recorded in `agents/OWNER.md`): 2.3 rejection details (new app record needed; Extended Review
+  warning, so submit only when polished); Apple account stays under the coworker's account (transfer dropped);
+  card shadows approved; **Today = capture-first** with up to 3 guided follow-up questions (agent decision at the
+  owner's request); **KI EndoLIST access granted** (PhysioNet account + DUA only). The DUA allows research use
+  only, no sharing, data stays local. A permission request to the corresponding author is drafted in Drive
+  ("Atossa Agents" folder), not sent.
+
 ## 2026-10-19 — 7-agent cloud team set up
 
 - **Why:** the app was taken off the App Store and the owner is unhappy with the result (design

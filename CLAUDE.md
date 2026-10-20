@@ -155,12 +155,12 @@ The app was pulled from the App Store; the owner wants a full team working aroun
 Seven routines run in Anthropic's cloud (laptop can be off). **Lean schedule (owner is on Pro):**
 PM 06:40 + 19:40 UTC (morning/evening reports), Design 08:00 + 14:00, Data 09:00, AI Brain 10:00,
 Safety 11:00, Finance 12:00, Marketing 13:00 — all Sonnet 5.5, staggered to spread the 5-hour window.
-Their shared office is branch **`claude/agents-hq`**
-(never merged): `agents/README.md`, `RULES.md`, `CONTEXT.md`, `OWNER.md` (owner approvals/answers —
+Their shared office is the **private repo `ziba18/atossa-hq`**, branch **`claude/agents-hq`**
+(moved there 2026-10-20 because this app repo is public; local clone `~/projects/atossa-hq`): `agents/README.md`, `RULES.md`, `CONTEXT.md`, `OWNER.md` (owner approvals/answers —
 the only way to authorise outward actions), `bin/push.sh`, and one folder per agent with
 `CHARTER.md` (edit to change the job), `STATE.md`, `log/`. Daily reports by the PM:
 `agents/reports/YYYY-MM-DD-{morning,evening}.md` (07:40 and 19:40 UTC) + a Google Doc in Drive folder
-"Atossa Agents". Code changes only on `claude/<agent>-*` branches for review — agents never push to
+"Atossa Agents". Code changes only on `claude/<agent>-*` branches **in this (public) repo** for review — agents never push to
 `main`/`mvp-symptom-capture`, never deploy, never post/message/spend. Routine IDs: Data
 `trig_01VSCYE3DLGUf9bHJ3vMMtFe`, AI Brain `trig_011hE271Ypq4Y3vBBXHykv8c`, Safety
 `trig_014WdTMMf85x26Q9wZUDQJ1t`, Finance `trig_013YCD2yE9RfHBxNBXntpNos`, Marketing
