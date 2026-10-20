@@ -7,11 +7,11 @@ export const colors = {
   canvas: '#F7F3EE', // app background
   surface: '#FFFFFF', // cards, sheets, PDF
   sunken: '#EFE9E1', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
-  hairline: '#E2DAD0', // card borders, dividers — decorative only
+  hairline: '#D6CCBF', // card borders, dividers — decorative only
   borderStrong: '#8F867C', // input + chip outlines (3:1 UI contrast)
   ink: '#1F1B18', // body text, Sam's words
   ink2: '#5A534D', // secondary text, Atossa's tidy values
-  ink3: '#756C64', // labels, "why I'm asking", timestamps, chevrons
+  ink3: '#6B625A', // labels, "why I'm asking", timestamps, chevrons
   plum: '#4A2C4F', // ACTION ONLY: primary buttons, mic, selected tab, links, selection
   plumPressed: '#3A2140',
   plumTint: '#EFE6EF', // selected chips / segments, user bubble
@@ -29,7 +29,7 @@ export const colors = {
 } as const;
 
 /** Single-hue severity ramp for 0–2, 3–4, 5–6, 7–8, 9–10. Always shown with the digit. */
-export const severityRamp = ['#E4D6E6', '#C3A6C7', '#9A729F', '#6E4775', '#3E2144'] as const;
+export const severityRamp = ['#E4D6E6', '#C3A6C7', '#85598B', '#6E4775', '#3E2144'] as const;
 
 /** Ramp step (0–4) for a 0–10 score. */
 export function severityStep(n: number): 0 | 1 | 2 | 3 | 4 {
@@ -111,8 +111,10 @@ export const heights = {
 } as const;
 
 /** Only the Today hero and the document preview get a shadow. */
-export const shadows: { hero: ViewStyle; sheet: ViewStyle; toast: ViewStyle; thumb: ViewStyle } = {
+export const shadows: { hero: ViewStyle; card: ViewStyle; sheet: ViewStyle; toast: ViewStyle; thumb: ViewStyle } = {
   hero: { boxShadow: '0 2px 16px rgba(31,27,24,0.06)' }, // y 2, blur 16, ink at 6%
+  /** Resting card: two soft layers so white cards lift off the cream canvas. */
+  card: { boxShadow: '0 1px 3px rgba(31,27,24,0.08), 0 6px 20px rgba(31,27,24,0.05)' },
   sheet: { boxShadow: '0 -8px 32px rgba(31,27,24,0.12)' },
   /** The floating toast (kit only). */
   toast: { boxShadow: '0 6px 24px rgba(31,27,24,0.12)' },

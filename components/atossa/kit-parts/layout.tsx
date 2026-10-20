@@ -132,12 +132,12 @@ const toneStyle = (tone: CardTone): ViewStyle => {
     case 'error': case 'coral': return { backgroundColor: colors.errorTint, borderColor: colors.error };
     case 'green': return { backgroundColor: colors.savedTint, borderColor: colors.savedTint };
     case 'hero': return { ...shadows.hero };
-    default: return {};
+    default: return { ...shadows.card };
   }
 };
 
 /**
- * White card, hairline border, radius 20, padding 20, NO shadow. `tone="hero"` adds the one
+ * White card, hairline border, radius 20, padding 20, soft resting shadow. `tone="hero"` swaps in the one
  * permitted soft shadow (Today hero / document preview only). `edge="clay"` draws the 4 px
  * bleeding edge on the left.
  */
