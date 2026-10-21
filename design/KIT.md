@@ -15,7 +15,7 @@ No raw hex, font names or magic numbers in screens.
   never describing a body. Severity = the single-hue ramp, **always with the digit**.
 - **No `Alert.alert`** — use `ConfirmCard` in-page. **No 700 weight** (Inter 400/500/600 only; never
   pass `fontWeight`; the serif never takes a weight).
-- No shadows except `tone="hero"` (Today hero, document preview). Cards: white, hairline, radius 20.
+- Cards: white, hairline, radius 20, soft two-layer `shadows.card` (owner approved 2026-10-20); hero keeps its own shadow.
 - Dates only via `lib/records/format.ts`; "today" only via `todayKey()` (preview pins it).
   Counts of notes only via `noteCount()`.
 - Product rules: never name a condition, give likelihoods, causes or treatments; no predictions,
