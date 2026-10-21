@@ -99,7 +99,7 @@ export const radii = { input: 14, card: 20, sheet: 28, pill: 999 } as const;
 export const heights = {
   primary: 56, secondary: 48, chip: 44, addChip: 36, segmented: 36, datePill: 36, minHit: 44,
   /** Tab bar content height, excluding the bottom safe-area inset. */
-  tabBar: 52,
+  tabBar: 62,
   /** One-line toast (kit only). */
   toast: 48,
   /**
