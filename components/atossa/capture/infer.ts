@@ -56,19 +56,40 @@ function whenFrom(lower: string): string | undefined {
   return undefined;
 }
 
+/** Clauses split on punctuation and "but", so a negation only reaches its own clause. */
+const clausesOf = (lower: string) => lower.split(/[.,;!?]|\bbut\b|\bthough\b|\bwhich\b/).map((c) => c.trim()).filter(Boolean);
+// Negation or an all-clear: the thing was NOT affected ("no pain at work", "work was fine").
+const LOST = /\b(couldn'?t|can'?t|cannot|unable|not able|wasn'?t able|missed|bail(?:ed)?|had to (?:leave|stop|cancel|miss)|was a no)\b/;
+const CLEAR = /\b(no|not|nothing|never|without|fine|ok|okay|good|alright|normal|didn'?t|did not|doesn'?t|does not|don'?t|wasn'?t|wouldn'?t)\b|n['’]t\b/;
+// Sleep is the reverse: "didn't sleep", "wasn't able to sleep" ARE the impact; "slept fine" is not.
+const SLEEP_LOST = /\b(didn'?t|did not|couldn'?t|can'?t|cannot|wasn'?t able to|unable to|barely|hardly|not much|no)\b.*\b(sleep|slept)\b|\b(woke|awake|up all night)\b/;
+const SLEEP_OK = /\b(slept|sleeping|sleep)\b.*\b(fine|well|ok|okay|good|ok)\b/;
+
 function impactsFrom(lower: string): string[] {
-  const out: string[] = [];
-  if (/\b(work|study|studying|school|uni|college|job|office|shift)\b/.test(lower)) out.push('Work or study');
-  if (/\b(sleep|slept|sleeping|woke|awake)\b/.test(lower)) out.push('Sleep');
-  if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga)\b/.test(lower)) out.push('Exercise');
-  if (/\b(plans|friends|cancel|cancelled|canceled)\b/.test(lower)) out.push('Plans with people');
-  return out;
+  const out = new Set<string>();
+  for (const c of clausesOf(lower)) {
+    const cleared = CLEAR.test(c) && !LOST.test(c);
+    if (/\b(work|study|studying|school|uni|college|job|office|shift)\b/.test(c) && !cleared) out.add('Work or study');
+    if (/\b(sleep|slept|sleeping|woke|awake)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
+    if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga)\b/.test(c) && !cleared) out.add('Exercise');
+    if (/\b(plans|friends|cancel|cancelled|canceled)\b/.test(c) && !cleared) out.add('Plans with people');
+  }
+  return [...out];
 }
 
-/** "7 out of 10", "7/10", "a 7 out of ten". */
+const NUM_WORDS: Record<string, number> = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+const NUM = '(?:10|ten|[0-9]|zero|one|two|three|four|five|six|seven|eight|nine)';
+const toNum = (t: string) => (t in NUM_WORDS ? NUM_WORDS[t] : Number(t));
+
+/** "7 out of 10", "seven out of ten", "7/10", "it's a seven", "7ish". Several scores -> the highest (worst). */
 function scoreFrom(lower: string): number | undefined {
-  const m = lower.match(/\b(10|[0-9])\s*(?:\/|out of)\s*(?:10|ten)\b/);
-  return m ? Number(m[1]) : undefined;
+  const found: number[] = [];
+  for (const m of lower.matchAll(new RegExp(`\\b(${NUM})\\s*(?:/|out of)\\s*(?:10|ten)\\b`, 'g'))) found.push(toNum(m[1]));
+  if (!found.length) {
+    const m = lower.match(new RegExp(`\\b(?:it['’]?s|its|about|around|maybe|like)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`));
+    if (m) found.push(toNum(m[1]));
+  }
+  return found.length ? Math.max(...found) : undefined;
 }
 
 /**
@@ -87,7 +108,8 @@ function triedFrom(words: string): string | undefined {
 
 export function prefillFrom(words: string): Prefill {
   const lower = words.toLowerCase();
-  const zones = zonesFrom(lower);
+  // Negated phrases are dropped first, so "No back pain today, only my tummy" doesn't fill Lower back.
+  const zones = zonesFrom(lower.replace(/\b(?:no|not|without|never)\b(?! able)[^,.;!?]*/g, ' '));
   const impacts = impactsFrom(lower);
   return {
     zones: zones.length ? zones : undefined,

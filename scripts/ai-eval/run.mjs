@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import { prefillFrom } from '../../components/atossa/capture/infer.ts';
 
-const items = JSON.parse(fs.readFileSync(new URL('./items.v0.json', import.meta.url), 'utf8'));
+const items = JSON.parse(fs.readFileSync(new URL(process.argv.find((a) => a.endsWith('.json')) ?? './items.v0.json', 'file://' + process.cwd() + '/scripts/ai-eval/'), 'utf8'));
 const FIELDS = ['zones', 'when', 'duration', 'impacts', 'worst', 'tried'];
 const norm = (v) => (v == null ? null : Array.isArray(v) ? (v.length ? [...v].sort().join('|') : null) : String(v).toLowerCase());
 const stats = Object.fromEntries(FIELDS.map((f) => [f, { gold: 0, fills: 0, correct: 0, wrong: 0, miss: 0, missedStated: [], wrongList: [] }]));
