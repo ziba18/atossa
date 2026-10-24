@@ -5,6 +5,30 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-24 — Merged AI Brain + Safety agent work; output guard live on /chat
+
+Owner approved. Merged into `mvp-symptom-capture` and pushed (Render redeploys the backend):
+- **AI Brain:** `claude/ai-brain-negation-rules` (eval harness `scripts/ai-eval/` + negation-aware,
+  spoken-number pre-fill in `capture/infer.ts`; harness shows 0 wrong fills on v0) and
+  `claude/ai-brain-output-guard` (`backend/app/services/output_guard.py`).
+- **Guard wired into `POST /chat`** (`93b0e25`): emergency wording in the user's last message returns
+  the fixed URGENT text without calling the model; every model reply goes through `check()` and is
+  swapped for the fallback on a hit; only reason codes are logged, never text. As written, the guard
+  replaced 6 of 10 ordinary Sage follow-ups ("worse with exercise?", "is this normal for you?",
+  "any medication?", "related to your period?", "your diet changed", "which symptoms of yours") —
+  bare topic words now only count inside advice/assertion/reassurance phrasing. 30 tests pass.
+  Still English-only and paraphrase-blind; AI Brain's charter now says keep improving it.
+- **Safety:** token `type` claim checked on decode (old tokens without it count as access, so no one
+  is logged out); deps fastapi 0.115.5 → 0.159.1 (starlette 1.10) and python-jose 3.5.0; in-process
+  rate limits (auth 20/min, chat 30/min per client). Verified in a fresh venv against the real DB:
+  register/me/refresh OK, refresh-as-access and access-as-refresh 401, 21st login 429, test
+  account deleted. Known gap: the limiter trusts the first X-Forwarded-For entry (spoofable) —
+  passed back to Safety.
+- Agents told via atossa-hq `OWNER.md`; Design charter now requires **SVG-only icons**.
+No EAS build / `eas update`.
+
+---
+
 ## 2026-10-24 — Merged the Design agent's redesign stack
 
 Owner approved the design stack. Merged `claude/design-card-facts` (which
