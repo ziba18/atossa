@@ -1,7 +1,7 @@
 // The Today chat composer: one pill — "+" (attach) · her words · mic · send.
 // Mic dictates INTO the box (on-device, same hook as the capture sheet); she sends when ready.
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, type TextInputInstance } from 'react-native';
 import { InlineError, Txt } from '../kit';
 import { colors, fonts, radii, space } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
@@ -24,7 +24,7 @@ export const Composer = forwardRef<ComposerHandle, {
   { text, onChangeText, attachments, onRemoveAttachment, onAttach, onSend, sending, placeholder },
   ref,
 ) {
-  const input = useRef<TextInput>(null);
+  const input = useRef<TextInputInstance>(null);
   useImperativeHandle(ref, () => ({ focus: () => input.current?.focus() }), []);
 
   // Dictation appends to whatever was already typed when recording started.

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { Button, ChipGroup, InlineError, TextField, type ChipOption } from '../../../components/atossa/kit';
@@ -31,7 +31,7 @@ const chipOptions = (options: number[], withOther?: boolean): ChipOption[] => [
  */
 export default function OnboardingBasics() {
   const router = useRouter();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const [part, setPart] = useState<'cycle' | 'period'>('cycle');
   const [cycle, setCycle] = useState<Choice | null>(null);
   const [otherCycle, setOtherCycle] = useState('');

@@ -10,6 +10,9 @@ Plan/status: `design/PORT_PLAN.md`; WORKLOG 2026-10-01/02. Final agent review 9/
 Open: Friends still shows a computed cycle phase (user to decide), app icon, and an
 Expo Go device check before any TestFlight build.
 
+**SDK 58 (2026-10-24, uncommitted):** Expo Go moved to SDK 58, so the project is now
+expo 58 / RN 0.88 — see WORKLOG 2026-10-24.
+
 **SDK 57 (2026-09-25, uncommitted):** upgraded from Expo SDK 54 / RN 0.81
 to SDK 57 / RN 0.86 so the app runs in the App Store Expo Go (SDK 57 only).
 Test with plain `npx expo start` + QR scan. `expo-dev-client` removed.

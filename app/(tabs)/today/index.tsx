@@ -2,9 +2,7 @@
 // "+" (photo / file / log), dictation and send. Replies come from Sage (POST /chat), which never
 // diagnoses. Any chat can become a structured note for the GP through the capture sheet.
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View,
-} from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button, HeaderAvatar, IconButton, InlineError, Txt, curly } from '../../../components/atossa/kit';
@@ -56,7 +54,7 @@ export default function TodayScreen() {
   const [bleeding, setBleeding] = useState(false);
   const [attachError, setAttachError] = useState('');
   const composer = useRef<ComposerHandle>(null);
-  const scroll = useRef<ScrollView>(null);
+  const scroll = useRef<ScrollViewInstance>(null);
 
   useEffect(() => { useChatStore.getState().load(userId); }, [userId]);
 

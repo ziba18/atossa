@@ -1,8 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  ActivityIndicator, Pressable, ScrollView, StyleSheet, View,
-  type StyleProp, type ViewStyle,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import { haptics } from '../../../lib/haptics';
@@ -203,7 +200,7 @@ export function ChipGroup(props: ChipGroupProps) {
   };
 
   // Scroll the (first) selected chip into view in scroll rows.
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const xs = useRef<Record<string, { x: number; w: number }>>({});
   const viewW = useRef(0);
   const firstSelected = isMulti ? (props.value as string[])[0] : (props.value as string | null);

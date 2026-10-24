@@ -5,6 +5,25 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-24 — Upgrade to Expo SDK 58
+
+The App Store Expo Go on the user's phone updated to SDK 58 and refused the
+SDK 57 project ("Project is incompatible with this version of Expo Go");
+older Expo Go can't be installed on iOS. Changes (uncommitted): expo
+57.0.26 → 58.0.19, React Native 0.86.3 → 0.88.0, React 19.3, all expo-* to
+58.x, gesture-handler 3.3, screens 4.30, safe-area 5.10, svg 15.16.
+`expo-speech-recognition` stays at 57 (lazy-required, not in Expo Go anyway).
+Breaking changes handled:
+- RN 0.88 makes `ScrollView`/`View`/`TextInput` function components, so refs
+  are typed with `ScrollViewInstance` / `HostInstance` / `TextInputInstance`.
+- `BottomTabBarProps` no longer has `navigation`: `MainTabBar` uses
+  `emitter.emit` (tabPress), `navigateToTab(route.key)`, and
+  `descriptors[key].navigation.dispatch` for the nested-stack RESET.
+Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
+**Not yet run in Expo Go.** Check re-tapping a tab still resets its stack.
+
+---
+
 ## 2026-10-20 — agent workspace moved to a private repo; owner decisions
 
 - **Why:** `ziba18/atossa` is **public**, so agent reports, security findings, contacts and owner decisions on

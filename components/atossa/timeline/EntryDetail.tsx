@@ -2,7 +2,7 @@
 // every row editable in place with the same editors. Date via DatePill + DayChooser (no future).
 // Delete is confirmed in-page (ConfirmCard), never Alert.alert.
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View, type HostInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   Button, Card, ChipGroup, ConfirmCard, DatePill, DayChooser, EmptyState, InlineError, NotedRow, ScreenLarge,
@@ -58,7 +58,7 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
   const deleting = useRef(false);
   const loaded = useRecordsStore((st) => st.loadedFor != null && !st.loading);
   /** The open editor's host node, and which opening has already been scrolled into view (N9). */
-  const editorNode = useRef<View | null>(null);
+  const editorNode = useRef<HostInstance | null>(null);
   const revealed = useRef(0);
   const opening = useRef(0);
 

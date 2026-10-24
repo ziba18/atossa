@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
@@ -19,12 +19,12 @@ export function OnboardingScreen({
   helper?: string;
   back?: { label: string; onPress?: () => void };
   children: React.ReactNode;
-  scrollRef?: React.RefObject<ScrollView | null>;
+  scrollRef?: React.RefObject<ScrollViewInstance | null>;
 }) {
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView
-        ref={scrollRef as React.RefObject<ScrollView>}
+        ref={scrollRef as React.RefObject<ScrollViewInstance>}
         contentContainerStyle={styles.column}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"

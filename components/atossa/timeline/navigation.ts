@@ -1,7 +1,7 @@
 // Routes into Timeline's detail screens and the shared "back" behaviour for them.
 // `from` = the visible title of the screen the detail was opened from (BackChevron label).
 import { useRef, type RefObject } from 'react';
-import { Dimensions, Platform, type LayoutChangeEvent, type ScrollView } from 'react-native';
+import { Dimensions, Platform, type LayoutChangeEvent, type ScrollView, type ScrollViewInstance } from 'react-native';
 import type { useRouter } from 'expo-router';
 
 type Router = ReturnType<typeof useRouter>;
@@ -61,7 +61,7 @@ export const AFTER_SHEET_MS = 320;
  * card's onLayout (pass the event): on web the ScrollView ref can be null (react-native-web /
  * React 19), so the layout event's DOM node is used to find the scroll container instead.
  */
-export function revealConfirm(scrollRef: RefObject<ScrollView | null>, e?: LayoutChangeEvent) {
+export function revealConfirm(scrollRef: RefObject<ScrollViewInstance | null>, e?: LayoutChangeEvent) {
   type ScrollNode = { scrollToEnd?: (o: { animated: boolean }) => void; parentElement?: ScrollNode | null };
   let webNode: ScrollNode | null = null;
   if (Platform.OS === 'web' && e) {
@@ -70,7 +70,7 @@ export function revealConfirm(scrollRef: RefObject<ScrollView | null>, e?: Layou
     webNode = n;
   }
   const go = (animated: boolean) => () => {
-    const sv = scrollRef.current ?? (webNode as unknown as ScrollView | null);
+    const sv = scrollRef.current ?? (webNode as unknown as ScrollViewInstance | null);
     sv?.scrollToEnd({ animated });
   };
   setTimeout(go(true), 60);
@@ -86,13 +86,13 @@ export function revealConfirm(scrollRef: RefObject<ScrollView | null>, e?: Layou
  * screen, so scrollToEnd silently did nothing (UX #13). On web a null is ignored while the last
  * node is still in the document; on native it behaves like a plain useRef.
  */
-export function useScrollRef(): RefObject<ScrollView | null> {
-  const holder = useRef<RefObject<ScrollView | null> | null>(null);
+export function useScrollRef(): RefObject<ScrollViewInstance | null> {
+  const holder = useRef<RefObject<ScrollViewInstance | null> | null>(null);
   if (!holder.current) {
-    let node: ScrollView | null = null;
+    let node: ScrollViewInstance | null = null;
     holder.current = {
       get current() { return node; },
-      set current(v: ScrollView | null) {
+      set current(v: ScrollViewInstance | null) {
         if (v != null || Platform.OS !== 'web') node = v;
         else if (!(node as unknown as { isConnected?: boolean } | null)?.isConnected) node = null;
       },
@@ -125,7 +125,7 @@ type DomNode = {
  * Web: walks up the DOM to the scroll container (ScrollView refs can be null there — see
  * useScrollRef); native: measures in the window and against the ScrollView's content.
  */
-export function revealBlock(scrollRef: RefObject<ScrollView | null>, node: unknown) {
+export function revealBlock(scrollRef: RefObject<ScrollViewInstance | null>, node: unknown) {
   if (!node) return;
   if (Platform.OS === 'web') {
     setTimeout(() => {

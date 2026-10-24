@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Pressable, ScrollView, StyleSheet, View,
-  type LayoutChangeEvent, type StyleProp, type ViewStyle,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
@@ -29,7 +26,7 @@ export function ScreenLarge({
   children?: React.ReactNode;
   scroll?: boolean;
   contentStyle?: StyleProp<ViewStyle>;
-  scrollRef?: React.RefObject<ScrollView | null>;
+  scrollRef?: React.RefObject<ScrollViewInstance | null>;
   /** Pinned under the scroll area (rare — e.g. a share bar). */
   footer?: React.ReactNode;
 }) {
@@ -51,7 +48,7 @@ export function ScreenLarge({
     <SafeAreaView edges={['top']} style={styles.screen}>
       {scroll ? (
         <ScrollView
-          ref={scrollRef as React.RefObject<ScrollView>}
+          ref={scrollRef as React.RefObject<ScrollViewInstance>}
           contentContainerStyle={[styles.column, styles.scrollContent, contentStyle]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"

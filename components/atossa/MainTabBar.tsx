@@ -16,7 +16,7 @@ export const VISIBLE_TABS = ['today', 'timeline', 'doctor'];
 /** Visible title → tab route ("from" params carry titles). */
 const TAB_BY_TITLE: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
 
-type AnyRoute = { name: string; params?: any; state?: { key?: string; index?: number; routes?: AnyRoute[] } };
+type AnyRoute = { key?: string; name: string; params?: any; state?: { key?: string; index?: number; routes?: AnyRoute[] } };
 
 /** Profile (and its records) were opened from a tab: find which, via the `from` param. */
 function profileOrigin(route: AnyRoute | undefined): string {
@@ -28,7 +28,7 @@ function profileOrigin(route: AnyRoute | undefined): string {
  * Three tabs: Lucide 24 / 1.75 stroke, 11/13 500 label. Unselected ink3, selected plum, no pill.
  * Near-opaque white bar with a hairline top. Hidden while the keyboard is up.
  */
-export function MainTabBar({ state, navigation }: BottomTabBarProps) {
+export function MainTabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const [keyboard, setKeyboard] = useState(false);
 
@@ -59,7 +59,7 @@ export function MainTabBar({ state, navigation }: BottomTabBarProps) {
   };
   const resetToRoot = (route: AnyRoute) => {
     // = CommonActions.reset(...) aimed at the tab's own stack (expo-router vendors react-navigation).
-    navigation.dispatch({ type: 'RESET', payload: { index: 0, routes: [{ name: 'index' }] }, target: route.state!.key } as any);
+    descriptors[route.key!].navigation.dispatch({ type: 'RESET', payload: { index: 0, routes: [{ name: 'index' }] }, target: route.state!.key } as any);
   };
 
   return (
@@ -77,7 +77,7 @@ export function MainTabBar({ state, navigation }: BottomTabBarProps) {
             aria-selected={focused}
             accessibilityLabel={tab.label}
             onPress={() => {
-              const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true }) as {
+              const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true }) as {
                 defaultPrevented: boolean; preventDefault?: () => void;
               };
               if (event.defaultPrevented) return;
@@ -91,7 +91,7 @@ export function MainTabBar({ state, navigation }: BottomTabBarProps) {
                 event.preventDefault?.();
                 resetToRoot(r);
               }
-              if (!isCurrent) navigation.navigate(route.name);
+              if (!isCurrent) navigateToTab(route.key);
             }}
             style={styles.tab}
           >

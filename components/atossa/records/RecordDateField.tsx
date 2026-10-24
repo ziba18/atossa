@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { colors, radii, space } from '../../../constants/atossaUI';
 import type { DatePrecision } from '../../../types/records';
 import { MONTH_NAMES, addDays, parseKey, toKey, todayKey } from '../../../lib/records/dates';
@@ -177,7 +177,7 @@ export function RecordDateField({
 function YearRow({
   years, selected, focus, onPick, label,
 }: { years: number[]; selected: number | null; focus: number; onPick: (y: number) => void; label: string }) {
-  const ref = useRef<ScrollView | null>(null);
+  const ref = useRef<ScrollViewInstance | null>(null);
   const viewW = useRef(0);
   const chips = useRef<Record<number, { x: number; w: number }>>({});
   const target = selected ?? focus;

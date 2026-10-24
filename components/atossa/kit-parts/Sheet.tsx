@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  AccessibilityInfo, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, PanResponder, Platform, Pressable,
-  ScrollView, StyleSheet, View, useWindowDimensions,
-  type NativeScrollEvent, type NativeSyntheticEvent,
-} from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, layout, motion, radii, shadows, space } from '../../../constants/atossaUI';
 import { Icon, type IconName } from '../../ui/Icon';
@@ -40,7 +36,7 @@ export interface SheetProps {
   /** Close-button label for screen readers. */
   closeLabel?: string;
   /** The body ScrollView, e.g. to `scrollTo({ y: 0 })` when the content changes step. */
-  scrollRef?: React.RefObject<ScrollView | null>;
+  scrollRef?: React.RefObject<ScrollViewInstance | null>;
   /** 20 pt glyph before the title (e.g. clay droplet on Log bleeding). */
   titleIcon?: { name: IconName; color?: string };
 }
@@ -139,7 +135,7 @@ export function Sheet({
 
   const body = scroll ? (
     <ScrollView
-      ref={scrollRef as React.RefObject<ScrollView>}
+      ref={scrollRef as React.RefObject<ScrollViewInstance>}
       onScroll={onScroll}
       scrollEventThrottle={32}
       style={full ? { flex: 1 } : { flexGrow: 0, flexShrink: 1 }}

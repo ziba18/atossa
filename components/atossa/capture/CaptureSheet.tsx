@@ -3,7 +3,7 @@
 // "That's all for now" saves from step 2 on. X / Android back / swipe / scrim always close;
 // with unsaved words the sheet first asks "Keep this note?" in-page (never Alert.alert).
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
 import {
   Button, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
 } from '../kit';
@@ -68,7 +68,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   const [editingRow, setEditingRow] = useState<NotedField | null>(null);
 
   // Every step (and every question) opens at the top, heading and "Why I'm asking" visible (UX #8).
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const notedY = useRef(0);
   useEffect(() => { scrollRef.current?.scrollTo({ y: 0, animated: false }); }, [stage, qIndex]);
 
@@ -117,11 +117,11 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   useEffect(() => { if (!visible) dictation.cancel(); }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => dictation.cancel(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const typeRef = useRef<TextInput>(null);
+  const typeRef = useRef<TextInputInstance>(null);
   useEffect(() => {
     if (mode === 'type' && stage === 'capture' && !confirmClose) {
       const id = setTimeout(() => {
-        const input = typeRef.current as (TextInput & { setSelectionRange?: (a: number, b: number) => void }) | null;
+        const input = typeRef.current as (TextInputInstance & { setSelectionRange?: (a: number, b: number) => void }) | null;
         input?.focus();
         // "Add more": caret at the END of her words, never in front of them (UX #22).
         const len = draftRef.current.words.length;
