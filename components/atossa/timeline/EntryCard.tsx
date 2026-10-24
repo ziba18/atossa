@@ -125,12 +125,11 @@ export function EntryCard({
             <GlyphLine icon={symptomGlyph(s)} text={top} />
             {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
-              // The severity words sit INSIDE the pill ("9/10 at worst", N7) so nothing dangles
-              // after it; the facts follow on the same line and wrap under the pill as a block.
+              // The severity words sit INSIDE the pill ("9/10 at worst", N7); long facts wrap below it
               <View style={styles.facts}>
                 {tag != null ? <SeverityTag value={tag} suffix={keep(`/10${tagWord ? ` ${tagWord}` : ''}`)} /> : null}
                 {facts ? (
-                  <Txt variant="secondary" numberOfLines={2} style={styles.factText}>{facts}</Txt>
+                  <Txt variant="secondary" numberOfLines={3} style={styles.factText}>{facts}</Txt>
                 ) : null}
               </View>
             ) : null}
@@ -216,7 +215,7 @@ export function EntryCard({
 
 const styles = StyleSheet.create({
   stack: { gap: space.xs },
-  facts: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  facts: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.xs, rowGap: space.xs },
   factText: { flexShrink: 1, minWidth: 0 },
   // N11: the 4 pt clay edge sits inside the card's own padding, so bleeding content lines up
   // with every other card (x 41, not 45).
