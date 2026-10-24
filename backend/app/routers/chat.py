@@ -3,6 +3,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies import get_current_user
 from app.models.user import User
+from app.services.rate_limit import limit
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services import output_guard
 from app.services.llm import LLMUnavailable, chat_completion
@@ -11,7 +12,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 log = logging.getLogger(__name__)
 
 
-@router.post("", response_model=ChatResponse)
+@router.post("", response_model=ChatResponse, dependencies=[Depends(limit("chat", 30, 60))])
 def chat(body: ChatRequest, current_user: User = Depends(get_current_user)):
     last_user_text = body.messages[-1].content
     # Emergency wording gets the fixed urgent message; the model is not called at all.

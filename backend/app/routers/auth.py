@@ -12,9 +12,11 @@ from app.services.auth import (
     create_access_token, create_refresh_token, create_user,
     decode_token, get_or_create_social_user, get_user_by_email, verify_password,
 )
+from app.services.rate_limit import limit
 from app.services.social_auth import SocialAuthError, verify_apple_identity_token, verify_google_id_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+_auth_limit = Depends(limit("auth", 20, 60))
 
 
 def _issue_tokens_for_social_user(db: Session, email: str, display_name: str | None) -> TokenResponse:
@@ -30,7 +32,7 @@ def _issue_tokens_for_social_user(db: Session, email: str, display_name: str | N
     )
 
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED, dependencies=[_auth_limit])
 def register(body: RegisterRequest, db: Session = Depends(get_db)):
     if get_user_by_email(db, body.email):
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -43,7 +45,7 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, dependencies=[_auth_limit])
 def login(body: LoginRequest, db: Session = Depends(get_db)):
     user = get_user_by_email(db, body.email)
     if not user or not user.hashed_password or not verify_password(body.password, user.hashed_password):
@@ -54,7 +56,7 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/apple", response_model=TokenResponse)
+@router.post("/apple", response_model=TokenResponse, dependencies=[_auth_limit])
 def login_with_apple(body: SocialAuthRequest, db: Session = Depends(get_db)):
     try:
         claims = verify_apple_identity_token(body.id_token, settings.apple_bundle_id)
@@ -63,7 +65,7 @@ def login_with_apple(body: SocialAuthRequest, db: Session = Depends(get_db)):
     return _issue_tokens_for_social_user(db, claims["email"], body.display_name)
 
 
-@router.post("/google", response_model=TokenResponse)
+@router.post("/google", response_model=TokenResponse, dependencies=[_auth_limit])
 def login_with_google(body: SocialAuthRequest, db: Session = Depends(get_db)):
     if not settings.google_web_client_id:
         raise HTTPException(status_code=500, detail="Google sign-in is not configured on the server")
