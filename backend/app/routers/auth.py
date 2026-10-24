@@ -82,7 +82,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 @router.post("/refresh", response_model=TokenResponse)
 def refresh(body: RefreshRequest):
     try:
-        user_id = decode_token(body.refresh_token)
+        user_id = decode_token(body.refresh_token, "refresh")
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     return TokenResponse(

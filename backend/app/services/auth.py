@@ -19,7 +19,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def create_access_token(user_id: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
-    return jwt.encode({"sub": user_id, "exp": expire}, settings.secret_key, algorithm=settings.algorithm)
+    return jwt.encode({"sub": user_id, "exp": expire, "type": "access"}, settings.secret_key, algorithm=settings.algorithm)
 
 
 def create_refresh_token(user_id: str) -> str:
@@ -27,9 +27,12 @@ def create_refresh_token(user_id: str) -> str:
     return jwt.encode({"sub": user_id, "exp": expire, "type": "refresh"}, settings.secret_key, algorithm=settings.algorithm)
 
 
-def decode_token(token: str) -> str:
-    """Returns the user_id from a valid token, raises JWTError if invalid."""
+def decode_token(token: str, expected_type: str = "access") -> str:
+    """Returns the user_id from a valid token of the expected type, raises JWTError if invalid."""
     payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+    # Tokens issued before the "type" claim existed are access tokens.
+    if payload.get("type", "access") != expected_type:
+        raise JWTError("Wrong token type")
     user_id: str = payload.get("sub")
     if not user_id:
         raise JWTError("Missing subject")
