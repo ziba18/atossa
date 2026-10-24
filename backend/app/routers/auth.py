@@ -80,10 +80,12 @@ def get_me(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/refresh", response_model=TokenResponse)
-def refresh(body: RefreshRequest):
+def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
     try:
         user_id = decode_token(body.refresh_token, "refresh")
     except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+    if not db.query(User).filter(User.id == user_id).first():
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     return TokenResponse(
         access_token=create_access_token(user_id),
