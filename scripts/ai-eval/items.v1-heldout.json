@@ -1,0 +1,300 @@
+[
+ {
+  "id": "v1-01",
+  "strata": "x",
+  "text": "Ache low in my tummy on the right, 5 out of 10, couldn't go to work.",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-02",
+  "strata": "x",
+  "text": "Slept fine and work was ok, just a dull ache in my pelvis on the left.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-03",
+  "strata": "x",
+  "text": "Not in any pain today, no problem at the gym.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-04",
+  "strata": "x",
+  "text": "I can't sleep because of the cramps, nine out of ten at night.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-05",
+  "strata": "x",
+  "text": "It stopped me going swimming and I had to cancel on my sister.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise",
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-06",
+  "strata": "x",
+  "text": "Cramps for about 3 days, mostly lower back. I didn't miss work though.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": "For about 3 days",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-07",
+  "strata": "x",
+  "text": "Pain was 2 out of 10 this morning but 8/10 by evening.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-08",
+  "strata": "x",
+  "text": "Constant pain in my belly in the middle, took co-codamol.",
+  "gold": {
+   "zones": [
+    "Lower tummy centre"
+   ],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Took co-codamol"
+  }
+ },
+ {
+  "id": "v1-09",
+  "strata": "x",
+  "text": "I wouldn't say it affected my sleep.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-10",
+  "strata": "x",
+  "text": "Around 6 hours of sleep, woke up twice with pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-11",
+  "strata": "x",
+  "text": "It hurts in my legs and my bottom, maybe a 4.",
+  "gold": {
+   "zones": [
+    "Legs",
+    "Bottom"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 4,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-12",
+  "strata": "x",
+  "text": "Missed my yoga class, pain 7/10, tummy on the left.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-13",
+  "strata": "x",
+  "text": "No cramps this week, nothing stopped me seeing friends.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-14",
+  "strata": "x",
+  "text": "Been awake since 3am, stomach pain on the right.",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-15",
+  "strata": "x",
+  "text": "Pain is about 3 hours after eating, not sure what it is.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-16",
+  "strata": "x",
+  "text": "Nothing at work was affected but I couldn't exercise.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-17",
+  "strata": "x",
+  "text": "Back is fine, pelvic pain on the left, ten out of ten.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 10,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-18",
+  "strata": "x",
+  "text": "I tried a heat pad and it helped a bit.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Tried a heat pad and it helped a bit"
+  }
+ },
+ {
+  "id": "v1-19",
+  "strata": "x",
+  "text": "Lower back pain since the weekend, 6 out of 10, couldn't do my shift.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": "Since the weekend",
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v1-20",
+  "strata": "x",
+  "text": "Only my period makes it bad. I was off school.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ }
+]
