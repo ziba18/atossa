@@ -5,11 +5,25 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-10-24 — Merged the Design agent's redesign stack
+
+Owner approved the design stack. Merged `claude/design-card-facts` (which
+contains the whole stack: token pass → capture-first Today → tab-bar pill →
+Welcome card → document-first For my doctor → Timeline week rules → card
+facts wrap) into `mvp-symptom-capture` as `4055b71`, on top of the SDK 58
+upgrade (now committed as `e69edc4`). Only conflict: `today/index.tsx` —
+took the design version; the chat moved to `today/chat.tsx`, which got the
+SDK 58 `ScrollViewInstance` ref fix. Verified: `tsc --noEmit` clean, iOS
+`expo export` OK. Frontend only (no backend change). Pushed. **No EAS
+build or `eas update`** (owner: check in Expo Go first via `npx expo start`).
+
+---
+
 ## 2026-10-24 — Upgrade to Expo SDK 58
 
 The App Store Expo Go on the user's phone updated to SDK 58 and refused the
 SDK 57 project ("Project is incompatible with this version of Expo Go");
-older Expo Go can't be installed on iOS. Changes (uncommitted): expo
+older Expo Go can't be installed on iOS. Changes (committed `e69edc4`): expo
 57.0.26 → 58.0.19, React Native 0.86.3 → 0.88.0, React 19.3, all expo-* to
 58.x, gesture-handler 3.3, screens 4.30, safe-area 5.10, svg 15.16.
 `expo-speech-recognition` stays at 57 (lazy-required, not in Expo Go anyway).
