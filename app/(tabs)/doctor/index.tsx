@@ -76,6 +76,7 @@ export default function DoctorScreen() {
   const { visitType, agenda, include, setVisitType, setRange, setAgenda, loadAgenda, setInclude } = useDoctorBuilder();
   const { doc, range, hasLast, rangeNote, upcoming } = useDoctorDoc();
 
+  const [customise, setCustomise] = useState(false);
   const [busy, setBusy] = useState<'share' | 'print' | null>(null);
   const [actionError, setActionError] = useState('');
   const [noteError, setNoteError] = useState('');
@@ -193,6 +194,46 @@ export default function DoctorScreen() {
         </Card>
       ) : null}
 
+      <Step title={nothingYet ? 'Your summary' : 'Preview'}>
+        {nothingYet ? (
+          <Card>
+            <EmptyState
+              message={olderData
+                ? 'Nothing logged in this time. Choose a longer range above, or add a note.'
+                : 'Nothing to share yet. Notes you add will appear here, in your words.'}
+              action={{ label: 'Add a note', onPress: () => openCapture() }}
+              style={{ paddingVertical: space.xl }} />
+          </Card>
+        ) : doc.empty ? (
+          <Card>
+            <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
+          </Card>
+        ) : (
+          <DocumentPreview doc={doc} />
+        )}
+      </Step>
+
+      {nothingYet && !olderData ? null : (
+        <Pressable
+          onPress={() => setCustomise((v) => !v)}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: customise }}
+          accessibilityLabel="Customise this summary"
+          style={{
+            marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm,
+            minHeight: heights.secondary, paddingVertical: space.sm,
+          }}
+        >
+          <Icon name="settings" size={24} color={colors.plum} />
+          <View style={{ flex: 1 }}>
+            <Txt variant="headline">Customise this summary</Txt>
+            <Txt variant="secondary">{joinFacts(visitType ?? 'Any visit', doc.rangeLabel)}</Txt>
+          </View>
+          <Icon name={customise ? 'chevron-up' : 'chevron-down'} size={24} color={colors.ink2} />
+        </Pressable>
+      )}
+      {customise ? (
+        <View>
       {nothingYet ? null : (
         <Step title="What’s this appointment for?">
           <ChipGroup
@@ -227,29 +268,13 @@ export default function DoctorScreen() {
         </View>
       )}
 
-      <Step title={nothingYet ? 'Your summary' : 'Preview'}>
-        {nothingYet ? (
-          <Card>
-            <EmptyState
-              message={olderData
-                ? 'Nothing logged in this time. Choose a longer range above, or add a note.'
-                : 'Nothing to share yet. Notes you add will appear here, in your words.'}
-              action={{ label: 'Add a note', onPress: () => openCapture() }}
-              style={{ paddingVertical: space.xl }} />
-          </Card>
-        ) : doc.empty ? (
-          <Card>
-            <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
-          </Card>
-        ) : (
-          <DocumentPreview doc={doc} />
-        )}
-      </Step>
-
       {doc.available.length ? (
         <Step title="Sections">
           <SectionToggles sections={doc.available} include={include} onChange={setInclude} />
         </Step>
+      ) : null}
+
+        </View>
       ) : null}
 
       <SafetyLine style={{ marginTop: space.xxl }} />

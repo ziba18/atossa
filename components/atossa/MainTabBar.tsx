@@ -25,7 +25,7 @@ function profileOrigin(route: AnyRoute | undefined): string {
 }
 
 /**
- * Three tabs: Lucide 24 / 1.75 stroke, 11/13 500 label. Unselected ink3, selected plum, no pill.
+ * Three tabs: Lucide 24 / 1.75 stroke, 11/13 500 label. Unselected ink3, selected plum on a plumTint pill.
  * Near-opaque white bar with a hairline top. Hidden while the keyboard is up.
  */
 export function MainTabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
@@ -95,8 +95,10 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
             }}
             style={styles.tab}
           >
-            <Icon name={tab.icon} size={24} color={tint} />
-            <Txt maxFontSizeMultiplier={1.6} style={[typeScale.tab, { color: tint }]}>{tab.label}</Txt>
+            <View style={[styles.pill, focused && styles.pillOn]}>
+              <Icon name={tab.icon} size={24} color={tint} />
+            </View>
+            <Txt maxFontSizeMultiplier={1.6} style={[typeScale.tab, { color: tint }, focused && styles.labelOn]}>{tab.label}</Txt>
           </Pressable>
         );
       })}
@@ -109,5 +111,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row', backgroundColor: colors.tabBar, borderTopWidth: StyleSheet.hairlineWidth * 2,
     borderTopColor: colors.hairline,
   },
-  tab: { flex: 1, height: heights.tabBar, alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 2 },
+  // Selected = tinted pill + heavier label, so state never rests on colour alone (WCAG 1.4.1).
+  pill: { width: 56, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  pillOn: { backgroundColor: colors.plumTint },
+  labelOn: { fontWeight: '700' },
+  tab: { flex: 1, height: heights.tabBar, alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 2 },
 });

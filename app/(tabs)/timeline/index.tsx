@@ -152,7 +152,11 @@ function ListView({
           // Week header: 15/600 ink2 (groupLabel) — quieter than the card titles it groups.
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
           <View key={g.key} style={{ marginTop: i === 0 ? space.xl : space.xxl }}>
-            <Txt variant="groupLabel" accessibilityRole="header" style={{ marginBottom: space.xs }}>{g.label}</Txt>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm }}>
+              <Txt variant="groupLabel" accessibilityRole="header">{g.label}</Txt>
+              {/* Hairline rule runs out from the label so each week reads as its own block. */}
+              <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
+            </View>
             <View style={{ gap: space.sm }}>
               {g.items.map((item) => <EntryCard key={item.key} item={item} onPress={() => onOpen(item)} />)}
             </View>
