@@ -1,17 +1,32 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.chat import ChatRequest, ChatResponse
+from app.services import output_guard
 from app.services.llm import LLMUnavailable, chat_completion
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+log = logging.getLogger(__name__)
 
 
 @router.post("", response_model=ChatResponse)
 def chat(body: ChatRequest, current_user: User = Depends(get_current_user)):
+    last_user_text = body.messages[-1].content
+    # Emergency wording gets the fixed urgent message; the model is not called at all.
+    if output_guard.is_emergency(last_user_text):
+        log.info("chat guard: emergency_input")
+        return ChatResponse(reply=output_guard.URGENT)
     # Only the message text is forwarded — no user id, email, or profile data.
     try:
         reply = chat_completion([m.model_dump() for m in body.messages])
     except LLMUnavailable as e:
         raise HTTPException(status_code=e.status_code, detail=str(e))
-    return ChatResponse(reply=reply)
+    # The system prompt is not enough on its own: replies that name a condition, give a cause
+    # or probability, recommend treatment or reassure are swapped for a fixed fallback.
+    user_text = " ".join(m.content for m in body.messages if m.role == "user")
+    result = output_guard.check(reply, user_text)
+    if not result.ok:
+        log.info("chat guard: replaced reply (%s)", ",".join(result.reasons))  # reasons only, never text
+    return ChatResponse(reply=result.text)

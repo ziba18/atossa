@@ -1,6 +1,6 @@
 """Deterministic guard for any model-written text before it reaches the user.
 
-Prototype (not wired in). The product rule: Atossa never names a condition as a finding,
+Wired into POST /chat (app/routers/chat.py). The product rule: Atossa never names a condition as a finding,
 gives a probability, suggests a cause, or recommends treatment. A system prompt alone is
 not enough, so every model-written string goes through check() and, on a hit, is replaced
 by a fixed fallback. The user's own words are not checked here: echoing them back is fine.
@@ -20,20 +20,30 @@ _CONDITIONS = [
     r"pmdd", r"pms", r"hypothyroid\w*", r"insulin resistance", r"diabetes", r"anaemia",
     r"anemia", r"ectopic", r"miscarriage", r"infertility", r"menopause", r"perimenopause",
 ]
+# Questions Sage is meant to ask ("does it get worse with exercise?", "are you taking any
+# medication?", "is it related to your period?") must pass, so bare topic words only count
+# inside advice, assertion or reassurance phrasing.
+_ADVICE_OBJECT = (r"(?:medication|medicine|painkillers?|supplements?|vitamin\s?\w+|magnesium|"
+                  r"turmeric|heat pads?|hot water bottles?|exercis\w*|yoga|diet|cutting out \w+|"
+                  r"the pill|contraceptives?|hormone therapy)")
 _PATTERNS = {
     "condition": r"\b(?:" + "|".join(_CONDITIONS) + r")\b",
     "hedged_diagnosis": r"\b(?:you (?:may|might|could|probably|likely) (?:have|be suffering)|"
-                        r"this (?:sounds|looks|seems) like|consistent with|suggests?|indicat\w+|"
-                        r"signs? of|symptoms? of|points? to|typical of|diagnos\w+)\b",
-    "cause": r"\b(?:caused by|because of|due to|results? from|is (?:often )?a sign|"
-             r"the reason|that is why|triggered by|linked to|related to)\b",
-    "probability": r"\b(?:\d{1,3}\s?%|percent|likely|unlikely|probabl\w+|chances? (?:are|of)|odds)\b",
-    "treatment": r"\b(?:you (?:should|could|can|might want to) (?:take|try|use|avoid|eat|stop)|"
-                 r"i (?:recommend|suggest|advise)|try taking|ibuprofen|paracetamol|naproxen|"
-                 r"mefenamic|codeine|metformin|inositol|contraceptive|the pill|hormone therapy|"
-                 r"supplements?|vitamin\s?\w+|magnesium|turmeric|heat pad|hot water bottle|"
-                 r"exercise|diet|medication|dose)\b",
-    "reassurance": r"\b(?:nothing to worry|normal|not serious|don'?t worry|perfectly fine)\b",
+                        r"(?:this|that|it) (?:sounds|looks|seems) like (?:a |an )?(?:condition|disorder|"
+                        r"syndrome|disease|infection|problem with)|consistent with|"
+                        r"(?:this|that|it|which) (?:suggests?|indicates?|points? to)|typical of|"
+                        r"signs? of (?:a |an |something)|diagnos\w+)\b",
+    "cause": r"\b(?:caused by|(?:is|are|could be|may be|might be|probably|likely) "
+             r"(?:due to|because of|linked to|related to|triggered by|a sign)|"
+             r"results? from|the reason (?:for|is|why)|that is why|that's why)\b",
+    "probability": r"\b(?:\d{1,3}\s?%|percent|chances? (?:are|of)|odds|"
+                   r"(?:most |very |quite )?(?:likely|unlikely|probably) (?:to be|that|is|it's|caused))\b",
+    "treatment": r"\b(?:you (?:should|could|can|might want to|may want to) (?:take|try|use|avoid|eat|stop|start|cut)|"
+                 r"i (?:recommend|suggest|advise)|(?:try|consider) (?:taking |using |doing |some )?" + _ADVICE_OBJECT +
+                 r"|" + _ADVICE_OBJECT + r" (?:may|might|can|could|will|often) (?:help|ease|relieve|reduce)|"
+                 r"ibuprofen|paracetamol|naproxen|mefenamic|codeine|metformin|inositol|dose)\b",
+    "reassurance": r"\b(?:nothing to worry|(?:that's|that is|this is|it's|it is) (?:perfectly |completely |quite |very )?"
+                   r"(?:normal|common|fine|nothing)|not serious|don'?t worry|perfectly fine)\b",
 }
 _COMPILED = {k: re.compile(v, re.I) for k, v in _PATTERNS.items()}
 

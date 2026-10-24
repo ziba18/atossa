@@ -11,6 +11,13 @@ BAD = [
     "Don't worry, that's normal.",
     "Symptoms of adenomyosis can include that.",
     "Inositol supplements may help.",
+    "It's probably related to your hormones.",
+    "That's completely normal during a period.",
+    "You should try cutting out dairy.",
+    "Consider taking magnesium before bed.",
+    "Heat pads can help with this kind of pain.",
+    "This suggests something hormonal.",
+    "It's most likely that this is stress.",
 ]
 GOOD = [
     "How strong is it, usually and at its worst?",
@@ -18,6 +25,13 @@ GOOD = [
     "Thanks. Is it only around your period, or at other times too?",
     "I can't assess that, but your GP can.",
     "Did it get in the way of anything today?",
+    "Does the pain get worse with exercise or after eating?",
+    "Is this pattern normal for you, or is it new?",
+    "Are you taking any medication for it at the moment? It's useful to note for your GP.",
+    "How long does it usually last, and is it related to your period?",
+    "You mentioned your diet changed. When did that start?",
+    "Which symptoms of yours bother you the most day to day?",
+    "Does anything make it better or worse, like rest, heat or movement?",
 ]
 
 @pytest.mark.parametrize("t", BAD)
