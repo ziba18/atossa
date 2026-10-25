@@ -29,6 +29,9 @@ const PROMPT = 'What’s been going on with your body?';
 /** Below ~400 pt the prompt rags as "…going on with / your body?"; break it evenly instead (V29). */
 const PROMPT_NARROW = 'What’s been going on\nwith your body?';
 
+/** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
+const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
+
 export function HeroCard() {
   const { width } = useWindowDimensions();
   return (
@@ -55,6 +58,15 @@ export function HeroCard() {
         </Txt>
       </View>
       <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
+      <View style={styles.next} accessible accessibilityLabel="After you speak, Atossa asks only for what’s missing: when, how strong, and where.">
+        <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.sm }}>Next:</Txt>
+        {NEXT_STEPS.map((label, i) => (
+          <View key={label} style={styles.nextItem}>
+            {i > 0 ? <View style={styles.nextDot} /> : null}
+            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{label}</Txt>
+          </View>
+        ))}
+      </View>
     </Card>
   );
 }
@@ -172,6 +184,12 @@ const styles = StyleSheet.create({
   center: { textAlign: 'center' },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
+  next: {
+    flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center',
+    marginTop: space.md, paddingTop: space.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.hairline,
+  },
+  nextItem: { flexDirection: 'row', alignItems: 'center' },
+  nextDot: { width: 3, height: 3, borderRadius: 2, backgroundColor: colors.ink3, marginHorizontal: space.sm },
   chipsWrap: { marginHorizontal: -layout.gutter },
   chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xl },
   fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xl },
