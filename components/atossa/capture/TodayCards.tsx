@@ -90,7 +90,8 @@ export function StarterChips({ onPeriod }: { onPeriod: () => void }) {
         ))}
       </ScrollView>
       <LinearGradient
-        colors={[`${colors.canvas}00`, colors.canvas]}
+        colors={[`${colors.canvas}00`, `${colors.canvas}E6`, colors.canvas]}
+        locations={[0, 0.6, 1]}
         start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }}
         style={[styles.fade, { pointerEvents: 'none' }]}
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
   nextItem: { flexDirection: 'row', alignItems: 'center' },
   nextDot: { width: 3, height: 3, borderRadius: 2, backgroundColor: colors.ink3, marginHorizontal: space.sm },
   chipsWrap: { marginHorizontal: -layout.gutter },
-  chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xl },
-  fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xl },
+  chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
+  fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },
   factRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
 });
