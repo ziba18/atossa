@@ -201,9 +201,10 @@ export function HeroNumber({
   accessibilityHint?: string;
 }) {
   const body = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt> : null}
-      <View style={{ flex: 1, gap: space.xxs }}>
+      {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
+      <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, gap: space.xxs }}>
         <Txt variant="headline">{line}</Txt>
         <Txt variant="secondary">{sub}</Txt>
       </View>
