@@ -216,6 +216,21 @@ export function HeroNumber({
   return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint}>{body}</PressableCard>;
 }
 
+/** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
+export function QuickTile({ label, icon, onPress }: { label: string; icon: IconName; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [styles.qtile, pressed && { backgroundColor: colors.canvas }]}
+    >
+      <View aria-hidden style={styles.qicon}><Icon name={icon} size={20} color={colors.ink} /></View>
+      <Txt variant="secondary" style={{ flex: 1, color: colors.ink }} maxFontSizeMultiplier={1.4}>{label}</Txt>
+    </Pressable>
+  );
+}
+
 // ---- Rows & text helpers ------------------------------------------------------------------
 
 /**
@@ -404,6 +419,12 @@ export function GlyphLine({
 }
 
 const styles = StyleSheet.create({
+  qtile: {
+    flexBasis: '48%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 56,
+    paddingHorizontal: space.sm, paddingVertical: space.xs, borderRadius: 16, backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
+  },
+  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter },
   // Ends clear of the toast zone, so a toast never sits over the last action (UX #30).

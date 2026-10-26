@@ -1,11 +1,11 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
 import React, { useEffect, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
-  Button, Card, Chip, FactLine, HeroNumber, InlineError, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
+  Button, Card, Chip, FactLine, HeroNumber, InlineError, QuickTile, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
 import { colors, layout, radii, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
@@ -20,7 +20,7 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
 import { MicButton } from './MicButton';
 import { nextAppointment } from './AppointmentCard';
-import { Icon, type IconName } from '../../ui/Icon';
+import { type IconName } from '../../ui/Icon';
 import { addDays, diffDays } from '../../../lib/records/dates';
 
 // Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
@@ -294,16 +294,12 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
   return (
     <View style={styles.qgrid}>
       {QUICK_ROWS.map((r) => (
-        <Pressable
+        <QuickTile
           key={r.label}
+          label={r.label}
+          icon={r.icon}
           onPress={() => (r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'speak', tag: r.tag }))}
-          accessibilityRole="button"
-          accessibilityLabel={r.label}
-          style={({ pressed }) => [styles.qtile, pressed && { backgroundColor: colors.canvas }]}
-        >
-          <View aria-hidden style={styles.qicon}><Icon name={r.icon} size={20} color={colors.ink} /></View>
-          <Txt variant="secondary" style={{ flex: 1, color: colors.ink }} maxFontSizeMultiplier={1.4}>{r.label}</Txt>
-        </Pressable>
+        />
       ))}
     </View>
   );
@@ -311,12 +307,6 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 
 const styles = StyleSheet.create({
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  qtile: {
-    flexBasis: '48%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 56,
-    paddingHorizontal: space.sm, paddingVertical: space.xs, borderRadius: 16, backgroundColor: colors.surface,
-    borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
-  },
-  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
