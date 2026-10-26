@@ -29,3 +29,11 @@ def test_old_message_does_not_turn_every_reply_urgent():
     # chat.py decides emergencies on the latest message only and calls check(..., check_emergency=False)
     assert g.check("How long has it lasted?", history, check_emergency=False).ok
     assert g.check("How long has it lasted?", history).text == g.URGENT  # default stays fail-closed
+
+
+def test_long_unspaced_input_is_fast():
+    import time
+    t = time.perf_counter()
+    g.is_emergency("a" * 20000)
+    g.check("a" * 2000, "a" * 2000)
+    assert time.perf_counter() - t < 0.5  # was ~1.5 s: an unbounded \w+ in the weeks-pregnant pattern

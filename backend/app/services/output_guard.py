@@ -170,7 +170,7 @@ _BODY = [
     r"worst pain|worst (?:I'?ve|i have) ever|pain (?:came|comes) on suddenly|sudden(?:ly)? (?:stabbing|sharp|severe|intense)",
     r"excruciating|unbearable", r"pain is (?:10|ten)(?:/| out of )(?:10|ten)", r"(?:10|ten)(?:/| out of )(?:10|ten) pain",
     r"can'?t stand up", r"pregnan\w+.{0,60}(?:bleed|pain|spotting)|(?:bleed|pain|spotting).{0,60}pregnan\w+",
-    r"(?:\d+|\w+) weeks pregnant.{0,60}(?:pain|bleed|spotting)", r"high fever.{0,40}(?:severe|pain)|(?:severe|pain).{0,40}high fever",
+    r"(?:\d{1,2}|\w{3,8}) weeks pregnant.{0,60}(?:pain|bleed|spotting)", r"high fever.{0,40}(?:severe|pain)|(?:severe|pain).{0,40}high fever",
 ]
 _SELF = [
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
