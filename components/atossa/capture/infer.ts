@@ -128,13 +128,16 @@ export interface Answered {
   impact: boolean;
 }
 
+export const MAX_FOLLOW_UPS = 3; // owner decision 2026-10-26: capture first, at most 3 guided questions
+
 /**
- * The follow-ups still worth asking, in order. The starter tag decides the first one:
+ * The follow-ups still worth asking, in order (impact last, so it is the one dropped when all four
+ * are open: site, timing and severity are the core of a standard pain history, SOCRATES). The starter tag decides the first one:
  * "Pain today" → strength, "Something new" → when. "Just a quick note" asks nothing.
  */
 export function questionsFor(answered: Answered, tag?: string): Question[] {
   if (tag === 'Just a quick note') return [];
   let order = [...ALL_QUESTIONS];
   if (tag === 'Something new') order = ['when', 'where', 'strength', 'impact'];
-  return order.filter((q) => !answered[q]).slice(0, 4);
+  return order.filter((q) => !answered[q]).slice(0, MAX_FOLLOW_UPS);
 }
