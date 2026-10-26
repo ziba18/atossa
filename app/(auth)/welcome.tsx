@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors, layout, space } from '../../constants/atossaUI';
@@ -8,7 +8,8 @@ import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
 
 const STEPS = [
-  'Tell Atossa how you feel, by voice or text.',
+  // Browsers have no voice capture here, so the web pilot only promises typing.
+  Platform.OS === 'web' ? 'Tell Atossa how you feel, in your own words.' : 'Tell Atossa how you feel, by voice or text.',
   'Atossa asks only for what is missing.',
   'Show your doctor a clear summary.',
 ];
