@@ -91,3 +91,13 @@ def test_refusals_and_questions_pass_but_refusal_plus_claim_does_not():
     assert not check("I can't say that it's normal and it's probably nothing.", "x").ok
     assert not check("I can't say, but it's probably PCOS.", "x").ok
     assert not check("You should take a pregnancy test.", "x").ok
+
+
+def test_unicode_and_spacing_evasions():
+    from app.services.output_guard import check, is_emergency
+    for t in ["You have p.c.o.s", "It's probably P​COS.", "Take ibu​profen 400mg", "Try magn3sium daily", "It's likely PCОS."]:
+        assert not check(t, "x").ok, t
+    for t in ["I just f​aint​ed", "I fa1nted", "i f a i n t e d", "I want to k​ill myself", "can't br​eathe"]:
+        assert is_emergency(t), t
+    assert not is_emergency("I took 2 tablets at 4pm, pain 7/10 b4 my period")
+    assert check("Thanks for sharing - e.g. is it on the left or right?", "x").ok
