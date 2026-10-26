@@ -7,6 +7,7 @@ import {
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
+import { GhostEntry } from '../../../components/atossa/timeline/GhostEntry';
 import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
@@ -128,6 +129,7 @@ function ListView({
     return (
       <EmptyState
         fill
+        illustration={<GhostEntry />}
         icon="list"
         message="Nothing here yet. Your notes will line up here by date."
         action={{ label: 'Add a note', onPress: () => openCapture() }}

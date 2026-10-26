@@ -251,14 +251,16 @@ export function FactLine({
 }
 
 /**
- * Calm empty state: one line in ink2, optional single action. No guilt, no illustrations.
+ * Calm empty state: one line in ink2, optional single action. No guilt. `illustration` is for a quiet, wordless SVG only.
  * `icon`: a 32 pt ink3 glyph above the line. `fill`: centre it vertically in the remaining
  * space (give the parent flex: 1 / flexGrow: 1) instead of hanging from the top (V30).
  */
 export function EmptyState({
-  message, action, icon, fill, style,
+  message, action, icon, illustration, fill, style,
 }: {
   message: string;
+  /** Replaces the glyph with a decorative node (e.g. a ghost card). */
+  illustration?: React.ReactNode;
   action?: { label: string; onPress: () => void };
   icon?: IconName;
   fill?: boolean;
@@ -266,7 +268,7 @@ export function EmptyState({
 }) {
   return (
     <View style={[styles.empty, fill && styles.emptyFill, style]}>
-      {icon ? <Icon name={icon} size={32} color={colors.ink3} /> : null}
+      {illustration ?? (icon ? <Icon name={icon} size={32} color={colors.ink3} /> : null)}
       <Txt variant="body" color={colors.ink2} style={{ textAlign: 'center' }}>{message}</Txt>
       {action ? <Button label={action.label} onPress={action.onPress} style={{ alignSelf: 'stretch' }} /> : null}
     </View>
