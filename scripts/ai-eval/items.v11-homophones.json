@@ -1,0 +1,215 @@
+[
+ {
+  "id": "v11-01",
+  "strata": "b11",
+  "text": "pain is a for out of ten today",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-02",
+  "strata": "b11",
+  "text": "its a sex out of ten and its in my lower tummy on the left",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-03",
+  "strata": "b11",
+  "text": "it was a won out of ten honestly",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-04",
+  "strata": "b11",
+  "text": "pain is ate out of ten",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-05",
+  "strata": "b11",
+  "text": "my back hurts bad it started to days ago",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-06",
+  "strata": "b11",
+  "text": "I could not go to work today the pain was a nine",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-07",
+  "strata": "b11",
+  "text": "I couldn't sleep at all last night pain in my lower tummy",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-08",
+  "strata": "b11",
+  "text": "it's been sore for free days now",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-09",
+  "strata": "b11",
+  "text": "tummy hurts like a six and I cancelled plans with my friends",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-10",
+  "strata": "b11",
+  "text": "no pain at work today but my back is sore",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-11",
+  "strata": "b11",
+  "text": "pain on the write side of my tummy about a five",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-12",
+  "strata": "b11",
+  "text": "pane in my lower back its a seven",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-13",
+  "strata": "b11",
+  "text": "it hurts when i hav sex so we stopped",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-14",
+  "strata": "b11",
+  "text": "um so like it's been all the time like constant you know",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v11-15",
+  "strata": "b11",
+  "text": "pain in my left side of my belly uh maybe an eight out of ten",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ }
+]

@@ -64,14 +64,16 @@ function whenFrom(lower: string): string | undefined {
 /** Clauses split on punctuation and "but", so a negation only reaches its own clause. */
 const clausesOf = (lower: string) => lower.split(/[.,;!?]|\bbut\b|\bthough\b|\bwhich\b/).map((c) => c.trim()).filter(Boolean);
 // Negation or an all-clear: the thing was NOT affected ("no pain at work", "work was fine").
-const LOST = /\b(skipped|(?:didn'?t|did not) (?:go|make it|manage)|couldn'?t|can'?t|cannot|unable|not able|wasn'?t able|missed|bail(?:ed)?|had to (?:leave|stop|cancel|miss)|(?:went|go|gone|came|come|sent) home|left early|was a no)\b/;
+const LOST = /\b(skipped|(?:didn'?t|did not) (?:go|make it|manage)|couldn'?t|could not|can'?t|cannot|unable|not able|wasn'?t able|missed|bail(?:ed)?|had to (?:leave|stop|cancel|miss)|(?:went|go|gone|came|come|sent) home|left early|was a no)\b/;
 const CLEAR = /\b(no|not|nothing|never|without|fine|ok|okay|good|alright|normal|great|brilliant|lovely|enjoyed|well|still|went|even|didn'?t|did not|doesn'?t|does not|don'?t|wasn'?t|wouldn'?t)\b|hardly|barely|n['’]t\b/;
 // Sleep is the reverse: "didn't sleep", "wasn't able to sleep" ARE the impact; "slept fine" is not.
 const SLEEP_LOST = /\b(didn'?t|did not|couldn'?t|can'?t|cannot|wasn'?t able to|unable to|barely|hardly|not much|no)\b.*\b(sleep|slept)\b(?! (?:problems?|issues?|trouble))|\b(woke|awake|up all night|kept me up)\b/;
 const SLEEP_OK = /\b(slept|sleeping|sleep)\b.*\b(fine|well|ok|okay|good|great|brilliant)\b|\bslept (?:like a (?:log|baby)|through|soundly)\b|\bno (?:sleep )?(?:problems?|issues?|trouble)\b/;
 
-function impactsFrom(lower: string): string[] {
+function impactsFrom(lowerRaw: string): string[] {
   const out = new Set<string>();
+  // Speech recognisers often hear "six" as "sex": "it's a sex out of ten" is a score, not the Sex impact.
+  const lower = lowerRaw.replace(/\bsex\s*(?:out of|\/)\s*(?:10|ten)\b/g, ' ');
   for (const c of clausesOf(lower)) {
     const cleared = CLEAR.test(c) && !LOST.test(c);
     if (/\b(work|study|studying|school|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
