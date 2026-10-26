@@ -7,6 +7,11 @@ import { BackChevron, Txt } from '../atossa/kit';
 // Browsers can't deliver the daily reminder, so web onboarding skips that step.
 export const ONBOARDING_STEPS = Platform.OS === 'web' ? 3 : 4;
 
+// The name question is skipped when the person already gave a name at sign-up, so the first screen they see
+// should read "Step 1", not "Step 2". Set when the name screen is shown; cleared on Welcome.
+let nameStepShown = false;
+export const resetOnboardingSteps = () => { nameStepShown = false; };
+
 /**
  * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
  * above four quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
@@ -22,6 +27,10 @@ export function OnboardingScreen({
   children: React.ReactNode;
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
 }) {
+  if (step === 1) nameStepShown = true;
+  const skipped = step > 1 && !nameStepShown;
+  const shown = skipped ? step - 1 : step;
+  const total = skipped ? ONBOARDING_STEPS - 1 : ONBOARDING_STEPS;
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView
@@ -35,11 +44,11 @@ export function OnboardingScreen({
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
           <View style={styles.segments} aria-hidden>
-            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
-              <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
+            {Array.from({ length: total }, (_, i) => (
+              <View key={i} style={[styles.segment, i < shown && styles.segmentDone]} />
             ))}
           </View>
-          <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
+          <Txt variant="caption" style={styles.step}>{`Step ${shown} of ${total}`}</Txt>
           <Txt variant="largeTitle" accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>

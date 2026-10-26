@@ -1,3 +1,4 @@
+import { resetOnboardingSteps } from '../../components/auth/OnboardingScreen';
 import React, { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,7 +21,7 @@ const STEPS = [
  */
 export default function WelcomeScreen() {
   const router = useRouter();
-  useEffect(() => track('Welcome Viewed'), []);
+  useEffect(() => { resetOnboardingSteps(); track('Welcome Viewed'); }, []);
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
