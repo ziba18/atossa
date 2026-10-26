@@ -155,7 +155,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
 
 _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|didn'?t|don'?t|doesn'?t|haven'?t|hasn'?t|"
                   r"nor|none|n'?t|not even|hardly|a bit|slightly|a little|bit of a)\b|\bn't\b", re.I)
-_PAST = re.compile(r"\b(?:years? ago|(?:19|20)\d\d|last (?:year|decade)|as a (?:teen|child)|used to|in the past|back then|when i was (?:a )?(?:teen|kid|child|younger))\b", re.I)
+_PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen|child)|used to|in the past|back then|when i was (?:a )?(?:teen|kid|child|younger))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _BODY = [
     r"can'?t (?:breathe|catch my breath|get (?:any )?air)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",

@@ -25,7 +25,7 @@ def test_replay_sets(i):
 
 
 def test_old_message_does_not_turn_every_reply_urgent():
-    history = "I fainted last month. It's been mild cramps since, 3 out of 10"
+    history = "I fainted this morning. It has been mild cramps since, 3 out of 10"
     # chat.py decides emergencies on the latest message only and calls check(..., check_emergency=False)
     assert g.check("How long has it lasted?", history, check_emergency=False).ok
     assert g.check("How long has it lasted?", history).text == g.URGENT  # default stays fail-closed
@@ -37,3 +37,10 @@ def test_long_unspaced_input_is_fast():
     g.is_emergency("a" * 20000)
     g.check("a" * 2000, "a" * 2000)
     assert time.perf_counter() - t < 0.5  # was ~1.5 s: an unbounded \w+ in the weeks-pregnant pattern
+
+
+def test_old_events_are_not_emergencies_but_ongoing_ones_are():
+    assert not g.is_emergency("I fainted last week but I'm fine")
+    assert not g.is_emergency("I fainted 2 weeks ago")
+    assert g.is_emergency("bleeding heavily since last week and still going")
+    assert g.is_emergency("I fainted this morning")
