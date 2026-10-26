@@ -24,8 +24,7 @@ function PageCrop({ doc, width, height, onHeight }: { doc: DoctorDoc; width: num
     <View
       style={{ width, height, overflow: 'hidden' }}
       pointerEvents="none"
-      importantForAccessibility="no-hide-descendants"
-      accessibilityElementsHidden
+      aria-hidden
     >
       <View
         style={{ position: 'absolute', top: 0, left: 0, width: A4.width, transform: [{ scale }], transformOrigin: 'top left' }}
