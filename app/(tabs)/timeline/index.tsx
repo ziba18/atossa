@@ -9,6 +9,7 @@ import {
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
 import { GhostEntry } from '../../../components/atossa/timeline/GhostEntry';
+import { PatternsView } from '../../../components/atossa/timeline/PatternsView';
 import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
@@ -29,6 +30,7 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 const MODES: { value: TimelineMode; label: string }[] = [
   { value: 'list', label: 'List' },
   { value: 'month', label: 'Month' },
+  { value: 'patterns', label: 'Patterns' },
 ];
 
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
@@ -79,7 +81,7 @@ export default function TimelineScreen() {
   // A quiet plum glyph, not a filled disc (V16). Hidden while the empty List shows its own
   // "Add a note" button, so there is only one primary for one action.
   const waiting = loading && !loadedFor;
-  const emptyList = mode === 'list' && feed.length === 0 && !waiting;
+  const emptyList = (mode === 'list' || mode === 'patterns') && feed.length === 0 && !waiting;
   const header = (
     <>
       {emptyList ? null : <AddButton label="Add a note" onPress={() => openCapture()} />}
@@ -97,6 +99,8 @@ export default function TimelineScreen() {
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : mode === 'list' ? (
         <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
+      ) : mode === 'patterns' ? (
+        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}
