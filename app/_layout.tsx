@@ -8,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Platform, View, useWindowDimensions } from 'react-native';
 import '../hooks/useAuth';
 import { cancelPredictedCycleReminders } from '../lib/notifications';
-import { UI } from '../constants/atossaUI';
+import { UI, colors } from '../constants/atossaUI';
 import { ErrorScreen, ToastHost } from '../components/atossa/kit';
 import { useFonts } from 'expo-font';
 // Per-weight imports so only the fonts we use are bundled. Inter 400/500/600 for all UI;
@@ -76,8 +76,9 @@ function AppShell() {
     <>
       <StatusBar style="dark" />
       {isTablet ? (
-        <View style={{ flex: 1, alignItems: 'center', backgroundColor: UI.colors.background }}>
-          <View style={{ flex: 1, width: UI.maxContentWidth }}>
+        <View style={{ flex: 1, alignItems: 'center', backgroundColor: colors.sunken }}>
+          {/* Wide screens (web, iPad): the app is one canvas column on a quieter surround, so the tab bar reads as part of it. */}
+          <View style={{ flex: 1, width: UI.maxContentWidth, backgroundColor: colors.canvas, borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.hairline }}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="(auth)" />
