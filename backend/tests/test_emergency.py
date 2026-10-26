@@ -60,3 +60,16 @@ def test_resolved_events_do_not_alarm_but_ongoing_do():
     assert g.is_emergency("bleeding heavily and it won't stop")
     assert g.is_emergency("heavy bleeding has not stopped")
     assert g.is_emergency("I fainted and it hasn't passed")
+
+
+def test_gaps_found_on_fresh_phrasings():
+    from app.services.output_guard import is_emergency
+    for t in ["I think I might be having a miscarriage, lots of blood", "My lips are going blue and I'm struggling to get air",
+              "my face is drooping and my speech is slurred"]:
+        assert is_emergency(t), t
+
+
+def test_pain_idiom_is_not_self_harm():
+    from app.services.output_guard import emergency_kind
+    assert emergency_kind("The pain was killing me yesterday but is fine now") is None
+    assert emergency_kind("I want to kill myself") == "self_harm"

@@ -189,7 +189,10 @@ _BODY = [
     r"agoni[sz]ing|doubled over", r"soaked .{0,15}(?:pads?|tampons?).{0,25}(?:half an hour|an hour|\d+ minutes)",
     r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
     r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop bleeding",
-    r"(?:trouble|difficulty|hard to|struggling to) breath\w*", r"pressure in (?:my )?chest", r"lips (?:are |turning |gone )?blue",
+    r"(?:trouble|difficulty|hard to|struggling to) breath\w*", r"pressure in (?:my )?chest", r"lips (?:are |turning |gone |going )?blue", r"struggling to (?:get )?(?:air|breath\w*)",
+    r"face (?:is )?(?:drooping|dropping)|slurred speech|speech (?:is |has gone |went )?slurred|can'?t (?:lift|move) (?:my )?(?:arm|leg)",
+    r"(?:having|think i(?:'m| am)?|might be having|am having) (?:\w+ ){0,3}miscarr\w+", r"lots of blood",
+    r"\bmiscarr\w+.{0,40}(?:blood|bleed|pain)|(?:blood|bleed|pain).{0,40}\bmiscarr\w+",
     r"might pass out", r"(?:room is |everything is )spinning.{0,60}(?:pain|horrific)", r"pain (?:is |was )?(?:horrific|agonising|agonizing|intense)",
     r"(?:so intense|too much).{0,40}(?:can'?t move|crying on the)", r"crying on the (?:bathroom )?floor",
     r"out of nowhere.{0,40}severe|severe.{0,40}(?:sick|sweaty|sweating)", r"worst (?:\w+ )?of my life", r"screaming",
@@ -265,9 +268,13 @@ _PREG_WHOLE = re.compile(r"\bpregnan\w+\b", re.I)
 _PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided)\b", re.I)
 
 
+# "the pain was killing me" describes pain, it is not a statement about self-harm.
+_IDIOM = re.compile(r"\b(?:pain|cramps?|period|backache|headache)\b[^.,;!?]{0,15}\bkill(?:ing|s|ed)? me\b", re.I)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
-    user_text = _norm(user_text)
+    user_text = _IDIOM.sub(" ", _norm(user_text))
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text):
         return "self_harm"
     if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text):
