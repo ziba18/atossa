@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { Tabs } from 'expo-router';
 import { MainTabBar } from '../../components/atossa/MainTabBar';
 import { CaptureSheet } from '../../components/atossa/capture/CaptureSheet';
@@ -28,7 +29,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="timeline" options={{ title: 'Timeline' }} />
       <Tabs.Screen name="doctor" options={{ title: 'For my doctor' }} />
       {/* Reached from the avatar (HeaderAvatar) top-right on every tab, not the tab bar. */}
-      <Tabs.Screen name="profile" options={{ href: null }} />
+      {/* On web `href: null` drops the route from the URL map, so /profile bounced to Today; MainTabBar already hides it. */}
+      <Tabs.Screen name="profile" options={Platform.OS === 'web' ? {} : { href: null }} />
     </Tabs>
     <CaptureSheet />
     </>
