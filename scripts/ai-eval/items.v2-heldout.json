@@ -1,0 +1,577 @@
+[
+ {
+  "id": "v2-01",
+  "strata": "h2",
+  "text": "Sharp stabbing pain on my right side below my belly button, probably a 7 out of 10, had to leave work early.",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-02",
+  "strata": "h2",
+  "text": "Back ache all day but it didn't stop me doing anything.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-03",
+  "strata": "h2",
+  "text": "Honestly nothing hurts right now, slept great and hit the gym.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-04",
+  "strata": "h2",
+  "text": "My legs feel heavy and achy, mainly the thighs.",
+  "gold": {
+   "zones": [
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-05",
+  "strata": "h2",
+  "text": "Pain when I go to the loo, in my bottom, about a 6.",
+  "gold": {
+   "zones": [
+    "Bottom"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-06",
+  "strata": "h2",
+  "text": "Deep cramping inside, up to 8 out of 10 last night, I barely slept.",
+  "gold": {
+   "zones": [
+    "Deep inside"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-07",
+  "strata": "h2",
+  "text": "It hurts during sex so we stopped.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-08",
+  "strata": "h2",
+  "text": "Only hurts around my period, otherwise I'm fine.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-09",
+  "strata": "h2",
+  "text": "The pain is there all the time now, even when I'm not on my period.",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-10",
+  "strata": "h2",
+  "text": "Cramps in the middle of my lower tummy since yesterday.",
+  "gold": {
+   "zones": [
+    "Lower tummy centre"
+   ],
+   "when": null,
+   "duration": "Since yesterday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-11",
+  "strata": "h2",
+  "text": "Cancelled dinner with my friends because I felt awful, lower left tummy mostly.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-12",
+  "strata": "h2",
+  "text": "I managed my run fine today, no pain at all.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-13",
+  "strata": "h2",
+  "text": "Rated it a four this morning, then a nine after lunch.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-14",
+  "strata": "h2",
+  "text": "Took two paracetamol and it didn't touch it.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Took two paracetamol and it didn't touch it"
+  }
+ },
+ {
+  "id": "v2-15",
+  "strata": "h2",
+  "text": "No sleep problems, no work problems, just tired.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-16",
+  "strata": "h2",
+  "text": "Lower back and down my legs, ten out of ten, couldn't get out of bed so I missed my lectures.",
+  "gold": {
+   "zones": [
+    "Lower back",
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": 10,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-17",
+  "strata": "h2",
+  "text": "I'm not sure where it is exactly, kind of everywhere.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-18",
+  "strata": "h2",
+  "text": "My tummy on the right was fine today but the left hurt.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-19",
+  "strata": "h2",
+  "text": "Woke up three times in the night with cramps.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-20",
+  "strata": "h2",
+  "text": "The pain wasn't bad enough to affect my job.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-21",
+  "strata": "h2",
+  "text": "Tried a heat pad.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Tried a heat pad"
+  }
+ },
+ {
+  "id": "v2-22",
+  "strata": "h2",
+  "text": "Been like this for about two weeks.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "For about two weeks",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-23",
+  "strata": "h2",
+  "text": "Right side pain, 5/10, and it comes and goes, mostly at night.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-24",
+  "strata": "h2",
+  "text": "Did not go to yoga as I was in too much pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-25",
+  "strata": "h2",
+  "text": "Can't concentrate at uni with this pain, left tummy, around a 6.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-26",
+  "strata": "h2",
+  "text": "Mum says I should see someone about the pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-27",
+  "strata": "h2",
+  "text": "Not in pain in my back but my bottom stings when I poo.",
+  "gold": {
+   "zones": [
+    "Bottom"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-28",
+  "strata": "h2",
+  "text": "The pain was a seven earlier but it's gone down to a two now.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-29",
+  "strata": "h2",
+  "text": "I stayed in bed and didn't see anyone all weekend.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-30",
+  "strata": "h2",
+  "text": "Dull ache low in the middle of my tummy and in my lower back.",
+  "gold": {
+   "zones": [
+    "Lower tummy centre",
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-31",
+  "strata": "h2",
+  "text": "Zero out of ten today, a good day.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 0,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-32",
+  "strata": "h2",
+  "text": "Since Monday the cramps have been constant.",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": "Since Monday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-33",
+  "strata": "h2",
+  "text": "Took ibuprofen and it helped quite a bit.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Took ibuprofen and it helped quite a bit"
+  }
+ },
+ {
+  "id": "v2-34",
+  "strata": "h2",
+  "text": "I had to call in sick and couldn't do my shift.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-35",
+  "strata": "h2",
+  "text": "Pain deep inside, not on either side, rated 3.",
+  "gold": {
+   "zones": [
+    "Deep inside"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 3,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-36",
+  "strata": "h2",
+  "text": "Gym was cancelled so I didn't miss anything.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-37",
+  "strata": "h2",
+  "text": "Sex has been too painful lately.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-38",
+  "strata": "h2",
+  "text": "I was awake half the night because of the pain, but still went into work.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-39",
+  "strata": "h2",
+  "text": "Period started today, cramps on both sides low down, six out of ten.",
+  "gold": {
+   "zones": [
+    "Lower tummy left",
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v2-40",
+  "strata": "h2",
+  "text": "Felt okay, a bit bloated but no real pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]

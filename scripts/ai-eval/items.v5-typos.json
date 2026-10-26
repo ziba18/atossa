@@ -1,0 +1,366 @@
+[
+ {
+  "id": "v5-01",
+  "strata": "typo",
+  "text": "pain in me belly on the left side, bout a 6",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-02",
+  "strata": "typo",
+  "text": "cant sleep cos of the cramps, its a eight out of ten",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-03",
+  "strata": "typo",
+  "text": "my stomache is killing me on the right",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-04",
+  "strata": "typo",
+  "text": "off work again, pelvic pain on and off",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-05",
+  "strata": "typo",
+  "text": "it hurts in my lower back, been like this for 2 weeks",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": "For 2 weeks",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-06",
+  "strata": "typo",
+  "text": "Pain level 5 slash 10 in my tummy centre",
+  "gold": {
+   "zones": [
+    "Lower tummy centre"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-07",
+  "strata": "typo",
+  "text": "couldnt go gym today",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-08",
+  "strata": "typo",
+  "text": "had to cancel on my mum, belly really sore",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-09",
+  "strata": "typo",
+  "text": "no pain today at all thank god",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-10",
+  "strata": "typo",
+  "text": "period pains are the worst, lower down on the left, nine",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-11",
+  "strata": "typo",
+  "text": "my back is aching and i feel sick",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-12",
+  "strata": "typo",
+  "text": "Its been constant for ages, all the time now",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-13",
+  "strata": "typo",
+  "text": "sharp pain deep inside, like a stabbing, 7/10 around midnight",
+  "gold": {
+   "zones": [
+    "Deep inside"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-14",
+  "strata": "typo",
+  "text": "couldn't concentrate at work cos of tummy cramps on my right hand side",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-15",
+  "strata": "typo",
+  "text": "i did not miss any work this week",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-16",
+  "strata": "typo",
+  "text": "Cant do yoga cos of the leg pain",
+  "gold": {
+   "zones": [
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-17",
+  "strata": "typo",
+  "text": "cramps woke me up, bad one tonight, ten out of ten",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": 10,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-18",
+  "strata": "typo",
+  "text": "my tummy hurts since yesterday",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "Since yesterday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-19",
+  "strata": "typo",
+  "text": "Pain only with my period, never other times",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-20",
+  "strata": "typo",
+  "text": "back pain, lower, mostly in the evenings, three days now",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": "For three days",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-21",
+  "strata": "typo",
+  "text": "stayed in bed all day, didnt see my friends",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-22",
+  "strata": "typo",
+  "text": "low down pain right side and in my bum",
+  "gold": {
+   "zones": [
+    "Lower tummy right",
+    "Bottom"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-23",
+  "strata": "typo",
+  "text": "ibuprofen did nothing for it",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Ibuprofen did nothing for it"
+  }
+ },
+ {
+  "id": "v5-24",
+  "strata": "typo",
+  "text": "tired but nothing else hurts",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v5-25",
+  "strata": "typo",
+  "text": "feels like a 6 now but was a 9 this morning",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ }
+]
