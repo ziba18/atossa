@@ -10,7 +10,7 @@ export function GhostEntry({ width = 260 }: { width?: number }) {
   return (
     <Svg
       width={width} height={h} viewBox="0 0 260 112"
-      accessibilityElementsHidden
+      aria-hidden
     >
       <Rect x={1} y={1} width={258} height={110} rx={18} fill={colors.surface} stroke={colors.hairline} strokeWidth={1.5} strokeDasharray="6 5" />
       <Circle cx={28} cy={26} r={7} fill={colors.sunken} />

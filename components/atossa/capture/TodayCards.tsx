@@ -52,7 +52,7 @@ export function HeroCard() {
           accessibilityHint="Opens a new note and starts recording"
         />
         {/* The primary action's label outranks the secondary link (V7). */}
-        <Txt variant="headline" style={styles.micLabel} importantForAccessibility="no" accessibilityElementsHidden>
+        <Txt variant="headline" style={styles.micLabel} aria-hidden>
           Tap to talk
         </Txt>
       </View>

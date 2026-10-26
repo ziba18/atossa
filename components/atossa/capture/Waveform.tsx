@@ -47,7 +47,7 @@ export function Waveform({ recording, seconds }: { recording: boolean; seconds: 
 
   return (
     <View style={styles.wrap} accessibilityLiveRegion="none">
-      <View style={styles.bars} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+      <View style={styles.bars} aria-hidden>
         {values.map((v, i) => (
           <Animated.View key={i} style={[styles.bar, { transform: [{ scaleY: v }] }]} />
         ))}

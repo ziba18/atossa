@@ -101,8 +101,7 @@ export function SeverityRow({
       </View>
       <View
         style={[styles.captions, { paddingLeft: captionPad, paddingRight: captionPad + lastInset }]}
-        importantForAccessibility="no-hide-descendants"
-        accessibilityElementsHidden
+        aria-hidden
       >
         <Txt variant="caption">0 = none</Txt>
         <Txt variant="caption">10 = worst</Txt>
