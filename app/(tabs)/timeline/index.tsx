@@ -7,6 +7,7 @@ import {
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
+import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
 import {
@@ -80,7 +81,7 @@ export default function TimelineScreen() {
     <ScreenLarge title="Timeline" right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
       <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
       {mode === 'list' ? (
-        <ListView feed={feed} filter={filter} setFilter={setFilter} onOpen={open} />
+        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
       ) : (
         <MonthView
           feed={feed}
@@ -113,9 +114,10 @@ export default function TimelineScreen() {
 // ---- List -----------------------------------------------------------------------------------
 
 function ListView({
-  feed, filter, setFilter, onOpen,
+  feed, symptoms, filter, setFilter, onOpen,
 }: {
   feed: FeedItem[];
+  symptoms: ReturnType<typeof useRecordsStore.getState>['records']['symptom'];
   filter: (typeof TIMELINE_FILTERS)[number];
   setFilter: (f: (typeof TIMELINE_FILTERS)[number]) => void;
   onOpen: (item: ListItem) => void;
@@ -134,15 +136,18 @@ function ListView({
   }
 
   return (
-    <View style={{ marginTop: space.lg }}>
-      <ChipGroup
-        scroll
-        bleed
-        accessibilityLabel="Show"
-        options={TIMELINE_FILTERS}
-        value={filter}
-        onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
-      />
+    <View>
+      <RecentStrip symptoms={symptoms} />
+      <View style={{ marginTop: space.lg }}>
+        <ChipGroup
+          scroll
+          bleed
+          accessibilityLabel="Show"
+          options={TIMELINE_FILTERS}
+          value={filter}
+          onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
+        />
+      </View>
       {groups.length === 0 && filter !== 'All' ? (
         <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.xxxl }}>
           {EMPTY_FILTER_TEXT[filter]}
