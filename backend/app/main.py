@@ -1,4 +1,6 @@
 from fastapi import Depends, FastAPI
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -7,6 +9,14 @@ from app.database import get_db
 from app.routers import auth, profiles, cycles, connections, chat, records, legal, basket_buddy
 
 app = FastAPI(title="Atossa API", version="1.0.0")
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error(request, exc: RequestValidationError):
+    """422 with the field and the rule only: FastAPI's default also echoes back the submitted
+    value, which would repeat a password or a long note in the response."""
+    detail = [{"loc": list(e.get("loc", ())), "msg": e.get("msg", ""), "type": e.get("type", "")} for e in exc.errors()]
+    return JSONResponse(status_code=422, content={"detail": detail})
 
 app.add_middleware(
     CORSMiddleware,

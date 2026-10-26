@@ -24,6 +24,8 @@ def password_problem(password: str, email: str = "") -> str | None:
     """Return a user-facing reason the password is not acceptable, or None."""
     if len(password) < 8:
         return "Password must be at least 8 characters"
+    if "\x00" in password:
+        return "Password contains a character that is not allowed"
     if len(password.encode("utf-8")) > MAX_BYTES:
         return "Password must be at most 72 bytes"
     lowered = password.lower()
