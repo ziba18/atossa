@@ -6,10 +6,10 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User, Profile
 from app.schemas.auth import (
-    LoginRequest, RegisterRequest, RefreshRequest, SocialAuthRequest, TokenResponse, UserResponse,
+    ChangePasswordRequest, LoginRequest, RegisterRequest, RefreshRequest, SocialAuthRequest, TokenResponse, UserResponse,
 )
 from app.services.auth import (
-    create_access_token, create_refresh_token, create_user,
+    create_access_token, create_refresh_token, create_user, hash_password,
     decode_token, get_or_create_social_user, get_user_by_email, verify_password,
 )
 from app.services.rate_limit import limit
@@ -91,3 +91,16 @@ def refresh(body: RefreshRequest):
         access_token=create_access_token(user_id),
         refresh_token=create_refresh_token(user_id),
     )
+
+
+@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT, dependencies=[_auth_limit])
+def change_password(body: ChangePasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    # Accounts created through Apple/Google have no password to change.
+    if not current_user.hashed_password or not verify_password(body.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    if len(body.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    if body.new_password == body.current_password:
+        raise HTTPException(status_code=400, detail="Choose a different password")
+    current_user.hashed_password = hash_password(body.new_password)
+    db.commit()
