@@ -16,3 +16,11 @@ First pass scored 7% wrong-fill; one more fix ("nothing") was then tuned on it, 
 
 ## compare.mjs
 `node scripts/ai-eval/compare.mjs a.json b.json` diffs two `--json` runs (deltas per field, ids newly wrong / fixed).
+
+## items.v16-uk.json (2026-10-26)
+40 synthetic UK-phrasing notes ("period pain from hell", "rang in sick", "donkey's years"), written before running.
+First contact: 2 wrong of 27 fills; one was a gold-label error (v16-11 "about a 6" is a score, fixed in gold), the other a
+relative's score read as hers (v16-28 "Mum's ... a 9; mine's a 5"). After the fix (possessive/bare relative at sentence start,
+";" splits sentences): 0 wrong of 26 fills, recall 68%; no change on any other set (compare.mjs). Now a dev set.
+Misses left open: impacts for "missed my netball match", "kip", "telly and duvet day"; `tried` for "popped a couple of
+paracetamol", "hot water bottle glued to my tummy", "had a bath".

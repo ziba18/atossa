@@ -135,15 +135,16 @@ function triedFrom(words: string): string | undefined {
 }
 
 const OTHER_NOUN = '(?:sister|mum|mom|mother|dad|father|brother|friend|cousin|partner|boyfriend|girlfriend|husband|wife|colleague|daughter|son|aunt|auntie|nan|nana|gran|granny|grandma|neighbour|neighbor|boss|teacher)';
-const OTHER_SUBJECT = new RegExp(`^(?:my ${OTHER_NOUN}\\b|she\\b|he\\b|her\\b|his\\b|they\\b|their\\b)`, 'i');
+// "My mum's pain", "Mum's had it worse": a possessive or bare relative at the start is someone else too.
+const OTHER_SUBJECT = new RegExp(`^(?:(?:my )?${OTHER_NOUN}(?:['’]s)?\\b|she\\b|he\\b|her\\b|his\\b|they\\b|their\\b)`, 'i');
 const OTHER_MENTION = new RegExp(`\\bmy ${OTHER_NOUN}\\b`, 'i');
 const THIRD_PERSON = /\b(?:she|he|her|his|hers|they|their)\b/i;
 const FIRST_PERSON = /\b(?:i|i['’]m|i['’]ve|i['’]d|me|mine|myself)\b/i;
 
 /** Sentences about someone else ("My mum had to leave work", "She says her legs ache") say nothing about her. */
 export function ownWords(words: string): string {
-  // (No lookbehind, so it runs on any JS engine: sentences are the runs up to and including . ! ?)
-  return (words.match(/[^.!?]+[.!?]*\s*/g) ?? [words])
+  // (No lookbehind, so it runs on any JS engine: sentences are the runs up to and including . ! ? ;)
+  return (words.match(/[^.!?;]+[.!?;]*\s*/g) ?? [words])
     .filter((s) => {
       const t = s.trim();
       if (OTHER_SUBJECT.test(t)) return false;
