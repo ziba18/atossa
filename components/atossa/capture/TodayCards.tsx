@@ -62,8 +62,9 @@ export function HeroCard() {
         <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.sm }}>Next:</Txt>
         {NEXT_STEPS.map((label, i) => (
           <View key={label} style={styles.nextItem}>
-            {i > 0 ? <View style={styles.nextDot} /> : null}
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{label}</Txt>
+            {/* Separator trails its label, so a wrapped line never starts with a stray dot. */}
+            {i < NEXT_STEPS.length - 1 ? <View style={styles.nextDot} /> : null}
           </View>
         ))}
       </View>
