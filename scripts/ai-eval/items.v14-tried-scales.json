@@ -1,0 +1,264 @@
+[
+ {
+  "id": "v14-01",
+  "strata": "b14",
+  "text": "Took two co-codamol and lay down, didn't help much.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Took two co-codamol and lay down, didn't help much"
+  }
+ },
+ {
+  "id": "v14-02",
+  "strata": "b14",
+  "text": "I used a hot water bottle all evening.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Used a hot water bottle all evening"
+  }
+ },
+ {
+  "id": "v14-03",
+  "strata": "b14",
+  "text": "Tried yoga. Pain is a six.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": "Tried yoga"
+  }
+ },
+ {
+  "id": "v14-04",
+  "strata": "b14",
+  "text": "I've been taking magnesium for a week.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Been taking magnesium for a week"
+  }
+ },
+ {
+  "id": "v14-05",
+  "strata": "b14",
+  "text": "Took nothing, just rode it out.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-06",
+  "strata": "b14",
+  "text": "Haven't tried anything yet.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-07",
+  "strata": "b14",
+  "text": "The doctor said to try a TENS machine.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-08",
+  "strata": "b14",
+  "text": "It took ages to get to sleep.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-09",
+  "strata": "b14",
+  "text": "Took the bus home early because of pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-10",
+  "strata": "b14",
+  "text": "My friend took painkillers; I used a heat patch.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Used a heat patch"
+  }
+ },
+ {
+  "id": "v14-11",
+  "strata": "b14",
+  "text": "I took a day off and tried to rest, still a 7.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": "Took a day off and tried to rest, still a 7"
+  }
+ },
+ {
+  "id": "v14-12",
+  "strata": "b14",
+  "text": "Pain is 3 on a scale of 5.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-13",
+  "strata": "b14",
+  "text": "It's a 4 out of 5 today.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-14",
+  "strata": "b14",
+  "text": "Pain level: 8/10 right now.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-15",
+  "strata": "b14",
+  "text": "I'd say 50% bad.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-16",
+  "strata": "b14",
+  "text": "Rated 6 out of ten but 3/5 on the app I used before.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-17",
+  "strata": "b14",
+  "text": "been like this for ages and ages",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-18",
+  "strata": "b14",
+  "text": "it's been a fortnight now",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-19",
+  "strata": "b14",
+  "text": "a couple of months on and off",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v14-20",
+  "strata": "b14",
+  "text": "Since I was 14.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]

@@ -42,6 +42,8 @@ function zonesFrom(lower: string): string[] {
 
 /** How long, lifted from her words: "Since Tuesday", "For 3 days". */
 function durationFrom(lower: string): string | undefined {
+  // How long she has been taking a remedy is not how long it has hurt ("taking magnesium for a week").
+  lower = lower.replace(/\b(?:been )?(?:taking|using|trying)\b[^.,;!?]*/g, ' ');
   const since = lower.match(
     new RegExp(`\\bsince (${[...WEEKDAYS, 'yesterday', 'this morning', 'last night', 'last week', 'last month', 'the weekend'].join('|')})\\b`),
   );
@@ -76,6 +78,7 @@ function impactsFrom(lowerRaw: string): string[] {
   // Speech recognisers often hear "six" as "sex": "it's a sex out of ten" is a score, not the Sex impact.
   const lower = lowerRaw.replace(/\bsex\s*(?:out of|\/)\s*(?:10|ten)\b/g, ' ');
   for (const c of clausesOf(lower)) {
+    if (/^(?:i(?:'ve| have)? )?(?:tried|took|used|been taking|been using|trying)\b/.test(c) && !LOST.test(c)) continue; // a remedy, not an impact ("tried yoga")
     const cleared = CLEAR.test(c) && !LOST.test(c);
     if (/\b(work|study|studying|school|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
     if (/\b(sleep|slept|sleeping|woke|awake|kept me up)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
@@ -119,6 +122,8 @@ function triedFrom(words: string): string | undefined {
   // Cut at "then" ("tried a hot bath, then slept") and drop "tried nothing yet" (not having tried is not a try).
   const clause = hit.trim().split(/,?\s+then\b/i)[0].replace(/[,\s]+$/, '');
   if (/^(?:tried|took|used|been taking|been using)\s+(?:nothing|nowt|none|no\b|not)/i.test(clause)) return undefined;
+  // "took the bus home", "took ages", "used before": not a remedy.
+  if (/^(?:took|used|been taking|been using)\s+(?:the |a )?(?:bus|train|tube|tram|taxi|cab|car|ages|hours|forever|a while|time|before|to\b|up\b|it\b|that\b|this\b|already|again|today)/i.test(clause)) return undefined;
   return clause.split(/\s+/).length >= 2 ? cap(clause) : undefined;
 }
 
@@ -142,7 +147,12 @@ export function ownWords(words: string): string {
 
 export function prefillFrom(allWords: string): Prefill {
   const words = ownWords(allWords);
-  const lower = words.toLowerCase();
+  // Another scale ("3 on a scale of 5", "4 out of 5", "3/5", "50%") is not a 0-10 score; drop it before reading numbers.
+  const lower = words.toLowerCase()
+    .replace(/\b\d+\s+on a scale of \d+\b/g, ' ')
+    .replace(/\bscale of (?:1 ?(?:to|-) ?)?\d+\b/g, ' ')
+    .replace(/\b\d+\s*(?:out of|\/)\s*(?:5|five|3|three|7|seven|20|100)\b/g, ' ')
+    .replace(/\b\d+\s?%/g, ' ');
   // Negated phrases are dropped first, so "No back pain today, only my tummy" doesn't fill Lower back.
   const zones = zonesFrom(lower);
   const impacts = impactsFrom(lower);
