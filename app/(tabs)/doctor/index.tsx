@@ -157,7 +157,7 @@ export default function DoctorScreen() {
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
         <Button
           label="Share PDF"
           icon="share-2"
