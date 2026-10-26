@@ -39,9 +39,11 @@ export function setSessionExpiredHandler(cb: () => void) {
   _onSessionExpired = cb;
 }
 
-async function attemptRefresh(): Promise<string | null> {
+type RefreshResult = { token: string } | { token: null; network: boolean };
+
+async function refreshOnce(): Promise<RefreshResult> {
   const refresh = await tokenStore.getItemAsync(REFRESH_KEY);
-  if (!refresh) return null;
+  if (!refresh) return { token: null, network: false };
   try {
     const res = await fetch(`${Config.apiUrl}/auth/refresh`, {
       method: 'POST',
@@ -50,14 +52,23 @@ async function attemptRefresh(): Promise<string | null> {
     });
     if (!res.ok) {
       await clearTokens();
-      return null;
+      return { token: null, network: false };
     }
     const data = await res.json();
     await saveTokens(data.access_token, data.refresh_token);
-    return data.access_token as string;
+    return { token: data.access_token as string };
   } catch {
-    return null;
+    // Offline or the server is waking up: the refresh token is still good, so keep it.
+    return { token: null, network: true };
   }
+}
+
+// One refresh at a time: parallel 401s share it, which matters once refresh tokens rotate.
+let refreshing: Promise<RefreshResult> | null = null;
+
+function attemptRefresh(): Promise<RefreshResult> {
+  if (!refreshing) refreshing = refreshOnce().finally(() => { refreshing = null; });
+  return refreshing;
 }
 
 // Fire-and-forget: the free-tier backend spins down when idle, so wake it (and its DB
@@ -94,8 +105,9 @@ async function request<T>(
   // A 401 from a sign-in call means the credentials were rejected, not that a
   // session expired — fall through so the server's reason reaches the user.
   if (res.status === 401 && _retry && !SIGN_IN_PATHS.has(path)) {
-    const newToken = await attemptRefresh();
-    if (newToken) return request<T>(method, path, body, false);
+    const refreshed = await attemptRefresh();
+    if (refreshed.token) return request<T>(method, path, body, false);
+    if ('network' in refreshed && refreshed.network) throw new ApiError(0, 'No connection. Please try again.');
     _onSessionExpired?.();
     throw new ApiError(401, 'Session expired. Please log in again.');
   }
