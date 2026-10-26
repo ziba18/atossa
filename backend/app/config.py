@@ -10,6 +10,11 @@ class Settings(BaseSettings):
     # Expected audiences for verifying social sign-in identity tokens.
     apple_bundle_id: str = "com.attosa.app"
     google_web_client_id: str = ""
+    # Sign in with Apple token revocation on account deletion (Apple account-deletion rule).
+    # All three empty = revocation is skipped. The .p8 key text belongs in the host env only.
+    apple_team_id: str = ""
+    apple_key_id: str = ""
+    apple_private_key: str = ""
     # Basket Buddy ("Groceries Mate", a separate app) signs in with Apple/Google through this
     # server too; see routers/basket_buddy.py. Its data stays in its own Supabase project, so
     # the server needs that project's secret (service_role) key to create sessions there.
