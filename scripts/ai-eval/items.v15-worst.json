@@ -1,0 +1,327 @@
+[
+ {
+  "id": "v15-01",
+  "strata": "b15",
+  "text": "Pain scale says 7 today.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-02",
+  "strata": "b15",
+  "text": "Pain level was an 8 this morning.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-03",
+  "strata": "b15",
+  "text": "It peaked at 9 around midnight.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-04",
+  "strata": "b15",
+  "text": "Topped out at a 6.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-05",
+  "strata": "b15",
+  "text": "Worst it got was 10.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 10,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-06",
+  "strata": "b15",
+  "text": "Probably a 5 on a good day, an 8 on a bad one.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-07",
+  "strata": "b15",
+  "text": "Scoring it a 4 right now.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 4,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-08",
+  "strata": "b15",
+  "text": "I'd give it a 7.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-09",
+  "strata": "b15",
+  "text": "Pain: 6.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-10",
+  "strata": "b15",
+  "text": "Was in at 8 for an hour.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-11",
+  "strata": "b15",
+  "text": "Rate it 5 out of 10, steady.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-12",
+  "strata": "b15",
+  "text": "Between a 6 and a 7.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-13",
+  "strata": "b15",
+  "text": "No pain, a zero today.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 0,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-14",
+  "strata": "b15",
+  "text": "Pain 2/10 today, great.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 2,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-15",
+  "strata": "b15",
+  "text": "I'm at about a three.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 3,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-16",
+  "strata": "b15",
+  "text": "Seven.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-17",
+  "strata": "b15",
+  "text": "Level 7",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-18",
+  "strata": "b15",
+  "text": "My pain was in the sevens all day",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-19",
+  "strata": "b15",
+  "text": "10/10 awful",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 10,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-20",
+  "strata": "b15",
+  "text": "hurts like a 9",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-21",
+  "strata": "b15",
+  "text": "up to a 6 when I stand",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-22",
+  "strata": "b15",
+  "text": "nothing like yesterday, that was a 9",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-23",
+  "strata": "b15",
+  "text": "6 or 7 out of 10",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-24",
+  "strata": "b15",
+  "text": "I'd say 3-4 out of 10",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 4,
+   "tried": null
+  }
+ },
+ {
+  "id": "v15-25",
+  "strata": "b15",
+  "text": "7ish",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]
