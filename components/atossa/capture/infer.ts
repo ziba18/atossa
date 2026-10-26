@@ -130,11 +130,14 @@ export interface Answered {
 
 /**
  * The follow-ups still worth asking, in order. The starter tag decides the first one:
- * "Pain today" → strength, "Something new" → when. "Just a quick note" asks nothing.
+ * "Pain today" → strength, "Something new" → when. "Just a quick note" asks nothing;
+ * "Tired" and "Mood" skip the where question.
  */
 export function questionsFor(answered: Answered, tag?: string): Question[] {
   if (tag === 'Just a quick note') return [];
   let order = [...ALL_QUESTIONS];
   if (tag === 'Something new') order = ['when', 'where', 'strength', 'impact'];
+  // "Where do you feel it?" makes no sense for a tired or low-mood note; the other questions still apply.
+  if (tag === 'Tired' || tag === 'Mood') order = order.filter((q) => q !== 'where');
   return order.filter((q) => !answered[q]).slice(0, 4);
 }
