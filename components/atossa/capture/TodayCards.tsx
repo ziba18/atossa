@@ -1,11 +1,11 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
-  Button, Card, Chip, FactLine, InlineError, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast,
+  Button, Card, Chip, FactLine, InlineError, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
 import { colors, layout, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
@@ -204,6 +204,23 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
   );
 }
 
+/** Counts up to `target` once on first show (about half a second); straight to the number under Reduce Motion. */
+function useCountUp(target: number): number {
+  const reduce = useReduceMotion();
+  const [n, setN] = useState(reduce ? target : 0);
+  useEffect(() => {
+    if (reduce || target <= 1) { setN(target); return; }
+    const start = Date.now();
+    const id = setInterval(() => {
+      const t = Math.min(1, (Date.now() - start) / 500);
+      setN(Math.round(target * (1 - (1 - t) * (1 - t))));
+      if (t >= 1) clearInterval(id);
+    }, 40);
+    return () => clearInterval(id);
+  }, [target, reduce]);
+  return n;
+}
+
 /** The screen's one big number: days to the next appointment, else notes in the last 7 days. */
 export function HeroNumberCard() {
   const router = useRouter();
@@ -211,11 +228,12 @@ export function HeroNumberCard() {
   const appts = useRecordsStore((s) => s.records.appointment);
   const today = todayKey();
   const next = nextAppointment(appts);
+  const count = useCountUp(next ? Math.max(0, diffDays(today, next.data.date)) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
   const total = noteCount(symptoms);
   let big: string; let line: string; let sub: string; let target: string;
   if (next) {
     const days = diffDays(today, next.data.date);
-    big = days === 0 ? '' : String(days);
+    big = days === 0 ? '' : String(count);
     line = days === 0 ? 'Your appointment is today' : days === 1 ? 'day until your appointment' : 'days until your appointment';
     sub = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
     target = '/(tabs)/doctor';
@@ -226,7 +244,7 @@ export function HeroNumberCard() {
     target = '';
   } else {
     const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
-    big = String(week);
+    big = String(count);
     line = week === 1 ? 'note this week' : 'notes this week';
     sub = `${notesLabel(total)} in all`;
     target = '/(tabs)/timeline';
