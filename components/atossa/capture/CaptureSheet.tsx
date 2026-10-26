@@ -276,7 +276,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   // ---- body ---------------------------------------------------------------------------------
   // Nothing said yet: sit the mic lower so the step does not read as an empty sheet.
   const idleSpeak = mode === 'speak' && !draft.words && !recording;
-  const signpost = urgentSignpost([draft.words, draft.whereText, draft.tried].join(". "));
+  const signpost = urgentSignpost([draft.words, draft.whereText, draft.tried, draft.when, draft.duration, draft.stoppedWords, other].join(". "));
   let body: React.ReactNode;
   if (confirmClose) {
     body = (
