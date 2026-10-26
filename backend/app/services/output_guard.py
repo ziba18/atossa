@@ -78,7 +78,7 @@ _ACK_OPENER = re.compile(
     r"(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:you|your)\b|it sounds like (?:you(?:'ve| have|'re| are)?|your|the \w+(?: \w+)? (?:has|have|is|are|was|were)|it(?:'s| has) been)|for now,? i(?:'m| am) (?:just )?here|i can help you|thanks|thank you|noted|got it|okay|ok|understood|alright|sure|i see|makes sense|i hear you|i understand|i'?m sorry|sorry|no worries|no rush|no problem|take your time|"
     r"if you(?:'d| would) like,? you could (?:bring|show|share|take) (?:this|the|your) (?:summary|notes?|log)\b|"
     r"your (?:doctor|gp) (?:may|might|will|could) find (?:it|this) (?:useful|helpful)\b|"
-    r"that sounds (?:really |so |very )?(?:like a lot|tough|hard|difficult|painful|exhausting|frustrating|awful|rough|draining|miserable|worrying)|"
+    r"that sounds (?:really |so |very )?(?:like a lot|tough|hard|difficult|painful|exhausting|frustrating|awful|rough|draining|miserable|worrying|scary|frightening|upsetting|horrible|stressful|overwhelming|distressing|lonely|unpleasant|grim)|"
     r"i(?:'ve| have) (?:noted|saved|added|recorded|logged|put)|i can'?t (?:assess|say|diagnose|tell)|i(?:'m| am) not able to (?:say|assess|tell|diagnose)|that helps me (?:capture|note|record|describe|write|put)|your gp can|"
     r"you can (?:skip|edit|come back|add|change|stop)|you don'?t have to|that'?s (?:noted|saved|added)|that is (?:noted|saved|added)|"
     r"tell me|you mentioned|(?:that )?sounds like (?:it (?:really )?(?:knocked|wiped|floored) you|a (?:rough|long|hard|tough|bad) (?:night|day|week))|let\'?s (?:make it easy|keep it simple|take it slowly|go step by step|just get)|in the meantime,? i can help you|you can tap|you should see your gp|it(?:'s| is) useful to note|it might help to note|"

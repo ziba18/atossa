@@ -131,3 +131,13 @@ def test_invented_scores_and_severity_labels():
     assert check("I've recorded 7 out of 10. Is that right?", "it's a 7 out of 10").ok
     assert check("Would you say it's closer to a 3 or a 7 out of 10?", "about a 5").ok
     assert check("Is it mild, moderate or severe?", "pain").ok
+
+
+def test_feeling_words_in_acknowledgements_pass_but_carry_no_claims():
+    from app.services.output_guard import check
+    assert check("That sounds scary, especially on the tube. How are you feeling now?", "I felt sick").ok
+    for bad in ["That sounds scary, but it is probably just your hormones. How are you now?",
+                "That sounds upsetting. A heat pad should help a lot.",
+                "That sounds stressful, and stress often makes cramps worse.",
+                "That sounds scary, especially as fainting can come from low iron."]:
+        assert not check(bad, "I felt sick").ok, bad
