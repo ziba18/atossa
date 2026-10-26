@@ -64,11 +64,11 @@ function whenFrom(lower: string): string | undefined {
 /** Clauses split on punctuation and "but", so a negation only reaches its own clause. */
 const clausesOf = (lower: string) => lower.split(/[.,;!?]|\bbut\b|\bthough\b|\bwhich\b/).map((c) => c.trim()).filter(Boolean);
 // Negation or an all-clear: the thing was NOT affected ("no pain at work", "work was fine").
-const LOST = /\b(skipped|(?:didn'?t|did not) (?:go|make it|manage)|couldn'?t|can'?t|cannot|unable|not able|wasn'?t able|missed|bail(?:ed)?|had to (?:leave|stop|cancel|miss)|was a no)\b/;
-const CLEAR = /\b(no|not|nothing|never|without|fine|ok|okay|good|alright|normal|great|brilliant|lovely|enjoyed|well|still|went|even|didn'?t|did not|doesn'?t|does not|don'?t|wasn'?t|wouldn'?t)\b|n['’]t\b/;
+const LOST = /\b(skipped|(?:didn'?t|did not) (?:go|make it|manage)|couldn'?t|can'?t|cannot|unable|not able|wasn'?t able|missed|bail(?:ed)?|had to (?:leave|stop|cancel|miss)|(?:went|go|gone|came|come|sent) home|left early|was a no)\b/;
+const CLEAR = /\b(no|not|nothing|never|without|fine|ok|okay|good|alright|normal|great|brilliant|lovely|enjoyed|well|still|went|even|didn'?t|did not|doesn'?t|does not|don'?t|wasn'?t|wouldn'?t)\b|hardly|barely|n['’]t\b/;
 // Sleep is the reverse: "didn't sleep", "wasn't able to sleep" ARE the impact; "slept fine" is not.
 const SLEEP_LOST = /\b(didn'?t|did not|couldn'?t|can'?t|cannot|wasn'?t able to|unable to|barely|hardly|not much|no)\b.*\b(sleep|slept)\b(?! (?:problems?|issues?|trouble))|\b(woke|awake|up all night)\b/;
-const SLEEP_OK = /\b(slept|sleeping|sleep)\b.*\b(fine|well|ok|okay|good|great|brilliant)\b|\bno (?:sleep )?(?:problems?|issues?|trouble)\b/;
+const SLEEP_OK = /\b(slept|sleeping|sleep)\b.*\b(fine|well|ok|okay|good|great|brilliant)\b|\bslept (?:like a (?:log|baby)|through|soundly)\b|\bno (?:sleep )?(?:problems?|issues?|trouble)\b/;
 
 function impactsFrom(lower: string): string[] {
   const out = new Set<string>();
@@ -94,6 +94,8 @@ function scoreFrom(lower: string): number | undefined {
   for (const m of lower.matchAll(new RegExp(`\\b(?:rated(?: it)?|was|scored|then)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "it's a four but it spikes to an eight": a peak is the worst, whatever else was said.
   for (const m of lower.matchAll(new RegExp(`\\b(?:spikes?|goes up|goes|rises?|peaks?|climbs?|gets?|up)\\s+to\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
+  // "it hit a nine for twenty minutes": reaching a score is a peak too.
+  for (const m of lower.matchAll(new RegExp(`\\b(?:hit|hits|reached|reaches|touched)\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   if (!found.length) {
     const m = lower.match(new RegExp(`\\b(?:it['’]?s|its|about|around|maybe|like)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`));
     if (m) found.push(toNum(m[1]));

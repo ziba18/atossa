@@ -1,0 +1,344 @@
+[
+ {
+  "id": "v7-01",
+  "strata": "b7",
+  "text": "Pain on both sides of my tummy tonight, the right is the worse one.",
+  "gold": {
+   "zones": [
+    "Lower tummy left",
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-02",
+  "strata": "b7",
+  "text": "It's either side really, low down, hard to say which.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-03",
+  "strata": "b7",
+  "text": "Cramping low on the left and also the right, like a band across.",
+  "gold": {
+   "zones": [
+    "Lower tummy left",
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-04",
+  "strata": "b7",
+  "text": "Agony this morning, absolute agony.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-05",
+  "strata": "b7",
+  "text": "Only a mild ache today, nothing much.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-06",
+  "strata": "b7",
+  "text": "The pain was unbearable last night, honestly the worst I can remember.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-07",
+  "strata": "b7",
+  "text": "It's a bit niggly, not too bad, in my lower back.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-08",
+  "strata": "b7",
+  "text": "I had to leave early and go home sick from work.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-09",
+  "strata": "b7",
+  "text": "Went home poorly from the office at lunchtime because of the cramps.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-10",
+  "strata": "b7",
+  "text": "Left college early today, couldn't sit through the lecture.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-11",
+  "strata": "b7",
+  "text": "Skipped my shift, couldn't get out of bed with the pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-12",
+  "strata": "b7",
+  "text": "The work meeting went really well today and my back felt okay.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-13",
+  "strata": "b7",
+  "text": "Pain in the middle low down, maybe a 5, came on after lunch.",
+  "gold": {
+   "zones": [
+    "Lower tummy centre"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-14",
+  "strata": "b7",
+  "text": "Slept badly again, woke at 3 with pelvic pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-15",
+  "strata": "b7",
+  "text": "Slept like a log, no pain at all.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-16",
+  "strata": "b7",
+  "text": "It hurts to have sex at the moment so we've avoided it.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-17",
+  "strata": "b7",
+  "text": "I cancelled dinner with my friends because of it.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-18",
+  "strata": "b7",
+  "text": "Dinner with friends was lovely, hardly noticed my back.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-19",
+  "strata": "b7",
+  "text": "It's constant, been there pretty much all day every day.",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-20",
+  "strata": "b7",
+  "text": "Only comes on when my period starts, otherwise fine.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-21",
+  "strata": "b7",
+  "text": "Took paracetamol, didn't touch it, pain around a 7.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": "Took paracetamol, didn't touch it, pain around a 7"
+  }
+ },
+ {
+  "id": "v7-22",
+  "strata": "b7",
+  "text": "Pain is worse on the left than the right.",
+  "gold": {
+   "zones": [
+    "Lower tummy left",
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-23",
+  "strata": "b7",
+  "text": "Feels like a 4 usually but hit a 9 for twenty minutes.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v7-24",
+  "strata": "b7",
+  "text": "Lower back and legs both aching, been like this for about two weeks.",
+  "gold": {
+   "zones": [
+    "Lower back",
+    "Legs"
+   ],
+   "when": null,
+   "duration": "For about two weeks",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]
