@@ -34,7 +34,8 @@ const MAX_ATTACHMENTS = 4;
 
 function greeting(name: string | null | undefined): string {
   const hour = new Date().getHours();
-  const part = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
+  // 00:00-04:59 is neither morning nor evening for someone awake with symptoms.
+  const part = hour < 5 ? 'Hello' : hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
   const first = isHumanName(name) ? name!.trim().split(/\s+/)[0] : '';
   return first ? `${part}, ${first}` : part;
 }

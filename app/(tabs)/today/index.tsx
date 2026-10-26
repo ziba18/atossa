@@ -19,7 +19,8 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 
 function greeting(name: string | null | undefined): string {
   const hour = new Date().getHours(); // time of day only — dates always come from todayKey()
-  const part = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
+  // 00:00-04:59 is neither morning nor evening for someone awake with symptoms.
+  const part = hour < 5 ? 'Hello' : hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
   const first = isHumanName(name) ? name!.trim().split(/\s+/)[0] : '';
   return first ? `${part}, ${first}` : part;
 }
