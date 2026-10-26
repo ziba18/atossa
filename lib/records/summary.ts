@@ -397,7 +397,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
 
   // 2. How often and how strong — over the strip window (the range, or its last 93 days).
   if (notes.length) {
-    const stripFrom = inclusiveDays(from, to) > STRIP_MAX_DAYS ? addDays(to, -(STRIP_MAX_DAYS - 1)) : from;
+    const cappedFrom = inclusiveDays(from, to) > STRIP_MAX_DAYS ? addDays(to, -(STRIP_MAX_DAYS - 1)) : from;
+    // Days before the first entry were never recorded, so they are not shown as days with no note: the
+    // window starts at the first entry (at least 14 days wide, so a new user's strip is not one cell).
+    const firstEntry = [...notes.map((s) => s.date), ...bleedDays.map((d) => d.date)].sort()[0];
+    const startAt = firstEntry && firstEntry < addDays(to, -13) ? firstEntry : addDays(to, -13);
+    const stripFrom = firstEntry && startAt > cappedFrom ? startAt : cappedFrom;
     const windowNotes = notes.filter((s) => s.date >= stripFrom);
     const total = inclusiveDays(stripFrom, to);
     const bleedSet = new Set(bleedDays.filter((d) => bleedingStatus(d) !== 'spotting').map((d) => d.date));
@@ -436,7 +441,9 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         bars,
         strip: {
           from: stripFrom, to, label: windowLabel, days,
-          windowNote: stripFrom !== from ? `Shows the last ${total} days of the range.` : '',
+          windowNote: stripFrom === from ? ''
+            : stripFrom > cappedFrom ? 'Starts near your first entry; earlier days were not recorded.'
+            : `Shows the last ${total} days of the range.`,
         },
         caption:
           `Notes were logged on ${noteDays} of ${total} days` +
