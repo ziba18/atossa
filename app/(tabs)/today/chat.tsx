@@ -175,7 +175,7 @@ function ChatScreen() {
             placeholder={placeholder}
           />
           <Txt variant="caption" style={[styles.center, { marginTop: space.xs }]}>
-            Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
+            Replies are written by an AI and can contain mistakes. Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
           </Txt>
         </View>
       </KeyboardAvoidingView>
