@@ -10,7 +10,7 @@ import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } fr
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
-  HeroCard, LatestNoteCard, RoughDayCard, StarterChips, latestNote,
+  HeroCard, HeroNumberCard, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
 } from '../../../components/atossa/capture/TodayCards';
 import { space } from '../../../constants/atossaUI';
 import { isHumanName } from '../../../lib/humanName';
@@ -42,9 +42,10 @@ export default function TodayScreen() {
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      <HeroCard />
+      <HeroNumberCard />
+      <View style={{ marginTop: space.md }}><HeroCard /></View>
       <View style={{ marginTop: space.md }}>
-        <StarterChips onPeriod={() => setBleeding(true)} />
+        <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={2} label="Loading your notes" /></View>
