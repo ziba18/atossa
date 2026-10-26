@@ -18,7 +18,7 @@ def chat(body: ChatRequest, current_user: User = Depends(get_current_user)):
     # Emergency wording gets the fixed urgent message; the model is not called at all.
     if output_guard.is_emergency(last_user_text):
         log.info("chat guard: emergency_input")
-        return ChatResponse(reply=output_guard.URGENT)
+        return ChatResponse(reply=output_guard.urgent_text(last_user_text))
     # Only the message text is forwarded — no user id, email, or profile data.
     try:
         reply = chat_completion([m.model_dump() for m in body.messages])
