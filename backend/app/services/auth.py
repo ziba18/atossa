@@ -18,18 +18,18 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
-def create_access_token(user_id: str) -> str:
+def create_access_token(user_id: str, version: int = 0) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
-    return jwt.encode({"sub": user_id, "exp": expire, "type": "access"}, settings.secret_key, algorithm=settings.algorithm)
+    return jwt.encode({"sub": user_id, "exp": expire, "type": "access", "ver": version}, settings.secret_key, algorithm=settings.algorithm)
 
 
-def create_refresh_token(user_id: str) -> str:
+def create_refresh_token(user_id: str, version: int = 0) -> str:
     expire = datetime.now(timezone.utc) + timedelta(days=settings.refresh_token_expire_days)
-    return jwt.encode({"sub": user_id, "exp": expire, "type": "refresh"}, settings.secret_key, algorithm=settings.algorithm)
+    return jwt.encode({"sub": user_id, "exp": expire, "type": "refresh", "ver": version}, settings.secret_key, algorithm=settings.algorithm)
 
 
-def decode_token(token: str, expected_type: str = "access") -> str:
-    """Returns the user_id from a valid token of the expected type, raises JWTError if invalid."""
+def decode_claims(token: str, expected_type: str = "access") -> tuple[str, int]:
+    """Returns (user_id, token_version) from a valid token of the expected type, raises JWTError if invalid."""
     payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
     # Tokens issued before the "type" claim existed are access tokens.
     if payload.get("type", "access") != expected_type:
@@ -37,7 +37,13 @@ def decode_token(token: str, expected_type: str = "access") -> str:
     user_id: str = payload.get("sub")
     if not user_id:
         raise JWTError("Missing subject")
-    return user_id
+    # Tokens issued before "ver" existed count as version 0.
+    return user_id, int(payload.get("ver", 0))
+
+
+def decode_token(token: str, expected_type: str = "access") -> str:
+    """Returns the user_id from a valid token of the expected type, raises JWTError if invalid."""
+    return decode_claims(token, expected_type)[0]
 
 
 def get_user_by_email(db: Session, email: str) -> User | None:

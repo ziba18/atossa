@@ -17,6 +17,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     hashed_password: Mapped[str | None] = mapped_column(String, nullable=True)  # null for OAuth users
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Bumped to sign the account out everywhere: tokens carry the number they were issued with.
+    token_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     profile: Mapped["Profile"] = relationship("Profile", back_populates="user", uselist=False)

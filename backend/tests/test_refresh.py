@@ -31,14 +31,14 @@ def call(token, user):
 
 
 def test_refresh_returns_new_pair_for_existing_user():
-    out = call(create_refresh_token("u1"), SimpleNamespace(id="u1", is_active=True))
+    out = call(create_refresh_token("u1"), SimpleNamespace(id="u1", is_active=True, token_version=0))
     assert decode_token(out.access_token) == "u1"
     assert decode_token(out.refresh_token, "refresh") == "u1"
 
 
 def test_access_token_cannot_refresh():
     with pytest.raises(HTTPException) as e:
-        call(create_access_token("u1"), SimpleNamespace(id="u1", is_active=True))
+        call(create_access_token("u1"), SimpleNamespace(id="u1", is_active=True, token_version=0))
     assert e.value.status_code == 401
 
 
@@ -50,10 +50,10 @@ def test_deleted_user_cannot_refresh():
 
 def test_garbage_token_rejected():
     with pytest.raises(HTTPException):
-        call("not.a.jwt", SimpleNamespace(id="u1", is_active=True))
+        call("not.a.jwt", SimpleNamespace(id="u1", is_active=True, token_version=0))
 
 
 def test_deactivated_user_cannot_refresh():
     with pytest.raises(HTTPException) as e:
-        call(create_refresh_token("u1"), SimpleNamespace(id="u1", is_active=False))
+        call(create_refresh_token("u1"), SimpleNamespace(id="u1", is_active=False, token_version=0))
     assert e.value.status_code == 401
