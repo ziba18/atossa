@@ -23,6 +23,9 @@ const config: ExpoConfig = {
   runtimeVersion: { policy: 'fingerprint' },
   updates: {
     url: 'https://u.expo.dev/8d09758f-8216-49a8-933f-d8e23b1fb914',
+    // Store builds do not fetch unreviewed JS on their own (S-058). Remove this line to go back to
+    // Expo's default of checking for an update on every launch.
+    checkAutomatically: 'ON_ERROR_RECOVERY',
   },
   orientation: 'portrait',
   icon: './assets/icon.png',
