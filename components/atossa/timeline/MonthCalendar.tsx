@@ -11,7 +11,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path } from 'react-native-svg';
 import { IconButton, Txt } from '../kit';
-import { colors, fonts, radii, space } from '../../../constants/atossaUI';
+import { colors, fonts, radii, severityColor, space } from '../../../constants/atossaUI';
 import {
   MONTH_NAMES, WEEKDAY_LETTERS, daysInMonth, firstWeekdayOffset, toKey, todayKey,
 } from '../../../lib/records/dates';
@@ -23,6 +23,8 @@ export interface DayMark {
   bleeding?: DayBleeding;
   /** Symptom notes that day (from noteCount). */
   notes: number;
+  /** Highest 0-10 strength noted that day: tints the day's disc on the plum ramp (the number is also in the spoken label). */
+  worst?: number;
   /** Anything at all on the day (incl. appointments) — future days are only tappable if true. */
   hasEntries: boolean;
 }
@@ -100,6 +102,7 @@ function a11yLabel(key: string, mark: DayMark | undefined, isToday: boolean): st
   else if (mark?.bleeding === 'spotting') parts.push('spotting logged');
   else if (mark?.bleeding === 'none-flow') parts.push('period logged, no flow');
   if (mark?.notes) parts.push(notesLabel(mark.notes));
+  if (mark?.worst != null) parts.push(`at worst ${mark.worst} out of 10`);
   return parts.join(', ');
 }
 
@@ -113,6 +116,7 @@ function DayCell({
 }) {
   const solid = mark?.bleeding === 'bleeding';
   const spotting = mark?.bleeding === 'spotting';
+  const tint = !solid && !spotting && mark?.worst != null ? severityColor(mark.worst) : null;
   return (
     <Pressable
       onPress={onPress}
@@ -133,12 +137,13 @@ function DayCell({
           ) : null}
           <View style={styles.discWrap}>
             {/* Today ring sits outside a filled/hatched disc so both read. */}
-            {isToday ? <View style={[styles.todayRing, (solid || spotting) && styles.todayRingOuter]} /> : null}
+            {isToday ? <View style={[styles.todayRing, (solid || spotting || tint) && styles.todayRingOuter]} /> : null}
             {spotting ? <SpottingHatch /> : null}
             {spotting ? <View pointerEvents="none" style={styles.spotClear} /> : null}
             <View
               style={[
                 styles.disc,
+                tint && { backgroundColor: tint.bg },
                 solid && { backgroundColor: colors.clay },
                 pressed && !solid && !disabled && { backgroundColor: colors.sunken },
               ]}
@@ -149,6 +154,7 @@ function DayCell({
                   styles.num,
                   future && !solid && !spotting && { color: colors.ink3 },
                   solid && styles.numOnClay,
+                  tint && { color: tint.fg },
                   spotting && { color: colors.clay },
                 ]}
               >

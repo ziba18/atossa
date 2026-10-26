@@ -23,7 +23,7 @@ import { TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type Timelin
 import { colors, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { parseKey, todayKey } from '../../../lib/records/dates';
-import { bleedingStatus, noteCount } from '../../../lib/records/format';
+import { bleedingStatus, noteCount, worstOf } from '../../../lib/records/format';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 
@@ -223,7 +223,11 @@ function MonthView({
       list.push(s);
       byDay.set(s.data.date, list);
     }
-    for (const [k, list] of byDay) get(k).notes = noteCount(list);
+    for (const [k, list] of byDay) {
+      get(k).notes = noteCount(list);
+      const worsts = list.map((r) => worstOf(r.data)).filter((n): n is number => n != null);
+      if (worsts.length) get(k).worst = Math.max(...worsts);
+    }
     for (const p of periodDays) {
       const d = p.data;
       get(d.date).bleeding = bleedingStatus(d) === 'spotting' ? 'spotting' : d.flow === 'None' ? 'none-flow' : 'bleeding';
