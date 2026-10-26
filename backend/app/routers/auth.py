@@ -13,11 +13,13 @@ from app.services.auth import (
     decode_token, get_or_create_social_user, get_user_by_email, verify_password,
 )
 from app.services.password_policy import password_problem
-from app.services.rate_limit import limit
+from app.services.rate_limit import FailureThrottle, limit
 from app.services.social_auth import SocialAuthError, verify_apple_identity_token, verify_google_id_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 _auth_limit = Depends(limit("auth", 20, 60))
+# 8 wrong passwords for one email in 15 minutes locks that email for the rest of the window.
+_login_failures = FailureThrottle(8, 900)
 
 
 def _issue_tokens_for_social_user(db: Session, email: str, display_name: str | None) -> TokenResponse:
@@ -49,9 +51,13 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse, dependencies=[_auth_limit])
 def login(body: LoginRequest, db: Session = Depends(get_db)):
+    email_key = body.email.strip().lower()
+    _login_failures.check(email_key)
     user = get_user_by_email(db, body.email)
     if not user or not user.hashed_password or not verify_password(body.password, user.hashed_password):
+        _login_failures.fail(email_key)
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    _login_failures.clear(email_key)
     return TokenResponse(
         access_token=create_access_token(user.id),
         refresh_token=create_refresh_token(user.id),

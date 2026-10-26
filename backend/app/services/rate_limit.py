@@ -43,3 +43,41 @@ def limit(name: str, max_calls: int, per_seconds: int):
                     del _hits[k]
 
     return dependency
+
+
+class FailureThrottle:
+    """Counts failed attempts per key (e.g. an email) so one account cannot be guessed at from many IPs.
+
+    In-process like `limit`. Locks the key for `window` seconds after `max_failures` misses; a success clears it.
+    """
+
+    def __init__(self, max_failures: int, window: int):
+        self.max_failures = max_failures
+        self.window = window
+        self._fails: dict[str, deque] = defaultdict(deque)
+
+    def _prune(self, key: str, now: float) -> deque:
+        q = self._fails[key]
+        while q and now - q[0] > self.window:
+            q.popleft()
+        if not q:
+            self._fails.pop(key, None)
+        return q
+
+    def check(self, key: str) -> None:
+        now = time.monotonic()
+        with _lock:
+            if len(self._prune(key, now)) >= self.max_failures:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many sign-in attempts. Please try again later.",
+                    headers={"Retry-After": str(self.window)},
+                )
+
+    def fail(self, key: str) -> None:
+        with _lock:
+            self._fails[key].append(time.monotonic())
+
+    def clear(self, key: str) -> None:
+        with _lock:
+            self._fails.pop(key, None)
