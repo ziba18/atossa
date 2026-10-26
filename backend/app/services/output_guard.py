@@ -50,12 +50,14 @@ _COMPILED = {k: re.compile(v, re.I) for k, v in _PATTERNS.items()}
 _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|didn'?t|don'?t|doesn'?t|haven'?t|hasn'?t|"
                   r"nor|none|n'?t|not even|hardly)\b|\bn't\b", re.I)
 _PAST = re.compile(r"\b(?:years? ago|(?:19|20)\d\d|last (?:year|decade)|as a (?:teen|child)|used to|in the past|back then|when i was (?:a )?(?:teen|kid|child|younger))\b", re.I)
-_OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they)\b", re.I)
+_OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _BODY = [
     r"can'?t (?:breathe|catch my breath|get (?:any )?air)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
     r"(?:tight|crushing) chest", r"faint(?:ed|ing)?", r"passed out|blacked out|black(?:ing)? out", r"collaps\w+",
     r"going to (?:pass out|collapse|faint)", r"fell over", r"everything (?:went|goes|turned) (?:black|dark|grey|gray|white)", r"woke (?:up )?on the floor",
-    r"gushing", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
+    r"gushing", r"lost (?:so |a lot of |too )?much blood|lost a lot of blood", r"can'?t get my breath|gasping|heart is (?:pounding|racing).{0,40}breath",
+    r"agoni[sz]ing|doubled over", r"soaked .{0,15}(?:pads?|tampons?).{0,25}(?:half an hour|an hour|\d+ minutes)",
+    r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
     r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop bleeding",
     r"(?:trouble|difficulty|hard to|struggling to) breath\w*", r"pressure in (?:my )?chest", r"lips (?:are |turning |gone )?blue",
     r"might pass out", r"(?:room is |everything is )spinning.{0,60}(?:pain|horrific)", r"pain (?:is |was )?(?:horrific|agonising|agonizing|intense)",
@@ -99,11 +101,17 @@ def _hits(rx, text: str) -> bool:
     return False
 
 
+_PREG_WHOLE = re.compile(r"\bpregnan\w+\b", re.I)
+_PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided)\b", re.I)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     if _hits(_SELF_RX, user_text):
         return "self_harm"
     if _hits(_BODY_RX, user_text):
+        return "medical"
+    if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
         return "medical"
     return None
 
