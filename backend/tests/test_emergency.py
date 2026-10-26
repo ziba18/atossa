@@ -53,3 +53,10 @@ def test_slang_selfharm_and_onesided_pregnancy_pain():
     assert g.emergency_kind("I've got a positive test and terrible pain on my right side") == "medical"
     assert g.emergency_kind("I'm 7 weeks pregnant and a bit tired") is None
     assert g.emergency_kind("my sister said she wanted to unalive herself last year") is None
+
+
+def test_resolved_events_do_not_alarm_but_ongoing_do():
+    assert not g.is_emergency("heavy bleeding stopped hours ago")
+    assert g.is_emergency("bleeding heavily and it won't stop")
+    assert g.is_emergency("heavy bleeding has not stopped")
+    assert g.is_emergency("I fainted and it hasn't passed")
