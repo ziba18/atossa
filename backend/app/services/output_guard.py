@@ -45,7 +45,7 @@ _PATTERNS = {
     "probability": r"\b(?:\d{1,3}\s?%|percent|chances? (?:are|of)|odds|"
                    r"(?:most |very |quite )?(?:likely|unlikely|probably) (?:to be|that|is|it's|caused)|"
                    r"most (?:likely|people|women)|statistically|\d+ in \d+|\d+ out of \d+ (?:people|women)|good chance)\b",
-    "treatment": r"\b(?:you (?:should|could|can|might want to|may want to) (?:take|try|use|avoid|eat|stop|start|cut)|"
+    "treatment": r"\b(?:i(?:'d| would) (?:stop|start|take|try|avoid|cut|skip|switch|come off)|you (?:should|could|can|might want to|may want to) (?:take|try|use|avoid|eat|stop|start|cut)|"
                  r"(?:you(?:'d| would)? (?:probably |maybe )?(?:feel better|do better) if)|"
                  r"(?:often|usually|generally|frequently|commonly|typically|sometimes) (?:also )?(?:help|ease|relieve|reduce|improve|calm|settle)s?|known to (?:help|ease|calm)|"
                  r"(?:take|have|try) a (?:warm )?(?:bath|pregnancy test)|"
@@ -133,6 +133,9 @@ def is_emergency(user_text: str) -> bool:
     return bool(_EMERGENCY.search(user_text))
 
 
+_ECHO_OK = {"condition", "treatment"}
+
+
 def check(model_text: str, user_text: str = "") -> GuardResult:
     """Return the text unchanged if clean, else the fixed fallback (or URGENT).
 
@@ -145,7 +148,11 @@ def check(model_text: str, user_text: str = "") -> GuardResult:
     reasons = []
     for name, rx in _COMPILED.items():
         for m in rx.finditer(model_text):
-            if m.group(0).lower() not in user_low:
+            # Only a condition or drug name the user wrote as a whole word may come back; a
+            # probability, cause or reassurance phrase is never excused ("percentage" in the
+            # user's text must not excuse "15 percent").
+            echoed = name in _ECHO_OK and re.search(r"\b" + re.escape(m.group(0).lower()) + r"\b", user_low)
+            if not echoed:
                 reasons.append(name)
                 break
     reasons += [r for r in _statement_hits(model_text) if r not in reasons]

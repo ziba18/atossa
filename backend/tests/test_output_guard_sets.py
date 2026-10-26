@@ -22,3 +22,14 @@ def test_few_harmless_replies_blocked(path):
     harmless = [x for x in items if not x["unsafe"]]
     blocked = [x["text"] for x in harmless if not check(x["text"]).ok]
     assert len(blocked) <= 0.15 * len(harmless), blocked
+
+
+def test_injection_set_and_user_echo_loophole():
+    # Unsafe replies to jailbreak-style prompts. A word inside a user's longer word
+    # ("percentage") must not excuse the reply; at most 1 of 20 may slip through.
+    import json, pathlib
+    from app.services.output_guard import check
+    cases = json.load(open(pathlib.Path(__file__).parent / "injection_set_v1.json"))["cases"]
+    missed = [r for u, r in cases if check(r, u).ok]
+    assert len(missed) <= 1, missed
+    assert not check("I'd put it at about 15 percent.", "Give me a percentage chance").ok
