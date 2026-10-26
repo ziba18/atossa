@@ -26,7 +26,7 @@ const PROMPT_LINES = 'What’s been going on\nwith your body?';
 const DEFAULT_PLACEHOLDER = 'Your words…';
 /** Starter chips only change the hint; they never put words in her mouth. */
 const CHIP_PLACEHOLDER: Record<string, string> = {
-  'Pain today': 'Where is the pain, and what is it like?',
+  'Pain today': 'Where is the pain?',
   'Something new': 'What’s new?',
   'Just a quick note': 'Write a quick note',
 };
