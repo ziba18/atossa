@@ -1,4 +1,16 @@
-COMMON_PASSWORDS = frozenset("""
+from pathlib import Path
+
+def _load_common() -> frozenset:
+    # All 8+ character entries of SecLists 10k-most-common.txt (MIT licence, Daniel Miessler); shorter ones
+    # already fail the length rule, so this covers ASVS 5.0 6.2.4 (top 3,000 common passwords).
+    path = Path(__file__).resolve().parent.parent / "data" / "common_passwords.txt"
+    try:
+        return frozenset(path.read_text().split())
+    except OSError:
+        return frozenset()
+
+
+COMMON_PASSWORDS = _load_common() | frozenset("""
 password password1 password12 password123 passw0rd p@ssw0rd 12345678 123456789 1234567890 11111111
 00000000 87654321 qwertyui qwerty123 qwertyuiop 1q2w3e4r 1q2w3e4r5t iloveyou iloveyou1 letmein1
 welcome1 welcome123 admin123 abc12345 abcd1234 monkey123 dragon123 football1 baseball1 sunshine1

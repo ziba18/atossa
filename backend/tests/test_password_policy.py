@@ -15,3 +15,10 @@ def test_rejects_short_common_repeated_and_email_name():
 def test_rejects_over_bcrypt_limit():
     assert password_problem("x1" * 40) is not None
     assert password_problem("é" * 40) is not None
+
+
+def test_list_file_is_loaded_and_blocks_listed_entries():
+    from app.services.password_policy import COMMON_PASSWORDS
+    # Every 8+ character entry from the public top-10k list; shorter ones fail the length rule anyway.
+    assert len(COMMON_PASSWORDS) >= 2000
+    assert password_problem("01234567") is not None
