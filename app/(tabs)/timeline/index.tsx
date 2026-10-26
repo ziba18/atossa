@@ -23,7 +23,7 @@ import { TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type Timelin
 import { colors, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { parseKey, todayKey } from '../../../lib/records/dates';
-import { bleedingStatus, noteCount, worstOf } from '../../../lib/records/format';
+import { bleedingStatus, noteCount, notesLabel, worstOf } from '../../../lib/records/format';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 
@@ -187,6 +187,11 @@ function ListView({
               <Txt variant="groupLabel" accessibilityRole="header">{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
               <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
+              {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (
+                <Txt variant="caption" maxFontSizeMultiplier={1.4}>
+                  {notesLabel(g.items.filter((x) => x.kind === 'symptom').length)}
+                </Txt>
+              ) : null}
             </View>
             <View style={{ gap: space.sm }}>
               {g.items.map((item, j) => (
