@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { space } from '../../../constants/atossaUI';
-import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow } from '../../../components/atossa/kit';
+import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
@@ -59,6 +59,11 @@ export default function SettingsScreen() {
           </View>
         ) : null}
       </Card>
+      {Platform.OS === 'web' ? (
+        <Txt variant="secondary" style={{ marginTop: space.md }}>
+          Reminders are sent by the phone app. Your choices here are saved, but a web browser won’t show them.
+        </Txt>
+      ) : null}
     </ScreenLarge>
   );
 }
