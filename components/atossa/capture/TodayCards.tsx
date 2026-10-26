@@ -5,7 +5,7 @@ import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
-  Button, Card, Chip, FactLine, InlineError, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
+  Button, Card, Chip, FactLine, HeroNumber, InlineError, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
 import { colors, layout, radii, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
@@ -270,23 +270,12 @@ export function HeroNumberCard() {
     sub = total === week ? 'Open them in your Timeline' : `${notesLabel(total)} in all`;
     target = '/(tabs)/timeline';
   }
-  const body = (
-    <View style={styles.heroNum}>
-      {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt> : null}
-      <View style={{ flex: 1, gap: space.xxs }}>
-        <Txt variant="headline">{line}</Txt>
-        <Txt variant="secondary">{sub}</Txt>
-      </View>
-    </View>
-  );
-  if (!target) return <Card>{body}</Card>;
   return (
-    <PressableCard
-      onPress={() => router.push(target as any)}
+    <HeroNumber
+      big={big} line={line} sub={sub}
+      onPress={target ? () => router.push(target as any) : undefined}
       accessibilityHint={next ? 'Opens For my doctor' : 'Opens Timeline'}
-    >
-      {body}
-    </PressableCard>
+    />
   );
 }
 
@@ -321,7 +310,6 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  heroNum: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   qtile: {
     flexBasis: '48%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 56,

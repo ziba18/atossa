@@ -187,6 +187,32 @@ export function PressableCard({
   );
 }
 
+/**
+ * The screen's one big number: a 48 pt numeral (omit `big` for a sentence-only state), a headline
+ * line and a secondary sub-line. Pass `onPress` to make the whole card a PressableCard.
+ */
+export function HeroNumber({
+  big, line, sub, onPress, accessibilityHint,
+}: {
+  big?: string;
+  line: string;
+  sub: string;
+  onPress?: () => void;
+  accessibilityHint?: string;
+}) {
+  const body = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+      {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt> : null}
+      <View style={{ flex: 1, gap: space.xxs }}>
+        <Txt variant="headline">{line}</Txt>
+        <Txt variant="secondary">{sub}</Txt>
+      </View>
+    </View>
+  );
+  if (!onPress) return <Card>{body}</Card>;
+  return <PressableCard onPress={onPress} accessibilityHint={accessibilityHint}>{body}</PressableCard>;
+}
+
 // ---- Rows & text helpers ------------------------------------------------------------------
 
 /**
