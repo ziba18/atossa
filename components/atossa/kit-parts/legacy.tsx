@@ -55,7 +55,7 @@ export function TextField({
           accessibilityLabel={label}
           accessibilityHint={error || undefined}
           textAlignVertical={multiline ? 'top' : 'center'}
-          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1 }, error ? { borderColor: colors.error, borderWidth: 2 } : null]}
+          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1, minWidth: 0 }, error ? { borderColor: colors.error, borderWidth: 2 } : null]}
         />
         {secret ? (
           <Pressable
