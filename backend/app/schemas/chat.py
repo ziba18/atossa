@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, field_validator
 
 MAX_MESSAGES = 20          # recent history only — bounds cost and free-tier token use
 MAX_MESSAGE_LENGTH = 2000
+MAX_TOTAL_LENGTH = 6000    # whole request, so 20 long messages can't burn the free-tier token quota
 
 
 class ChatMessage(BaseModel):
@@ -28,6 +29,12 @@ class ChatRequest(BaseModel):
     def last_is_from_user(cls, v: list[ChatMessage]) -> list[ChatMessage]:
         if v[-1].role != "user":
             raise ValueError("The last message must be from the user")
+        # Drop the oldest turns instead of failing, so a long chat keeps working.
+        v = list(v)
+        while len(v) > 1 and sum(len(m.content) for m in v) > MAX_TOTAL_LENGTH:
+            v.pop(0)
+        while len(v) > 1 and v[0].role != "user":
+            v.pop(0)
         return v
 
 
