@@ -105,13 +105,14 @@ _MAX_PLAIN_WORDS = 14
 
 _HOMOGLYPHS = str.maketrans({"а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "х": "x", "у": "y", "і": "i", "ѕ": "s", "ԁ": "d",
                              "ο": "o", "ρ": "p", "α": "a", "ε": "e", "ι": "i", "κ": "k", "ν": "v", "τ": "t", "υ": "u"})
+_QUOTES = str.maketrans({"\u2019": "'", "\u2018": "'", "\u02bc": "'", "\u2032": "'", "\u201c": '"', "\u201d": '"'})
 _LEET = {"0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "@": "a", "$": "s"}
 
 
 def _norm(text: str) -> str:
     """Undo cheap evasions before any pattern runs: width/zero-width/soft-hyphen characters, accents,
     Cyrillic/Greek look-alikes, spaced or dotted letters ("P C O S", "p.c.o.s") and digits inside words ("fa1nted")."""
-    t = unicodedata.normalize("NFKC", text)
+    t = unicodedata.normalize("NFKC", text).translate(_QUOTES)
     t = "".join(c for c in unicodedata.normalize("NFD", t) if unicodedata.category(c) not in ("Cf", "Mn"))
     t = t.translate(_HOMOGLYPHS)
     t = re.sub(r"(?<=[A-Za-z])[0134@$](?=[A-Za-z])", lambda m: _LEET[m.group(0)], t)

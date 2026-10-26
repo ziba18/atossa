@@ -111,3 +111,9 @@ def test_invented_scores_and_severity_labels():
     assert check("I've recorded 7 out of 10. Is that right?", "it's a 7 out of 10").ok
     assert check("Would you say it's closer to a 3 or a 7 out of 10?", "about a 5").ok
     assert check("Is it mild, moderate or severe?", "pain").ok
+
+
+def test_curly_apostrophes_still_trigger_emergency():
+    from app.services.output_guard import is_emergency
+    for text in ("I can’t breathe", "i can‘t breathe", "I canʼt breathe"):
+        assert is_emergency(text), text
