@@ -43,3 +43,14 @@ def test_injection_set_and_user_echo_loophole():
 ])
 def test_opener_does_not_excuse_a_claim_in_the_same_sentence(text):
     assert not check(text).ok
+
+
+def test_long_harmless_replies_and_refusal_then_claim():
+    # 4-sentence Sage-style replies must pass; a refusal does not excuse a claim after it.
+    import json
+    from pathlib import Path
+    items = json.loads((Path(__file__).parent / "guard_set_v11.json").read_text())
+    blocked = [x["text"] for x in items if not check(x["text"]).ok]
+    assert len(blocked) <= 1, blocked
+    for t in ["I can't say what's causing it, but it's probably hormonal.", "I can't diagnose, but you should take magnesium."]:
+        assert not check(t).ok

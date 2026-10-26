@@ -71,7 +71,7 @@ _ADVICE_MODAL = re.compile(
 # or a pointer to the GP; every other statement (explanations, tips, reassurance in new words) is
 # swapped for the fallback, so a paraphrase the regexes above never saw still cannot get through.
 _ACK_OPENER = re.compile(
-    r"^(?:thanks|thank you|noted|got it|okay|ok|understood|alright|sure|i see|makes sense|i hear you|i understand|i'?m sorry|sorry|no worries|no rush|no problem|take your time|"
+    r"^(?:(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:you|your)\b|it sounds like (?:you(?:'ve| have|'re| are)?|your|the \w+(?: \w+)? (?:has|have|is|are|was|were)|it(?:'s| has) been)|for now,? i(?:'m| am) (?:just )?here|i can help you|thanks|thank you|noted|got it|okay|ok|understood|alright|sure|i see|makes sense|i hear you|i understand|i'?m sorry|sorry|no worries|no rush|no problem|take your time|"
     r"that sounds (?:really |so |very )?(?:like a lot|tough|hard|difficult|painful|exhausting|frustrating|awful|rough|draining|miserable|worrying)|"
     r"i(?:'ve| have) (?:noted|saved|added|recorded|logged|put)|i can'?t (?:assess|say|diagnose|tell)|i(?:'m| am) not able to (?:say|assess|tell|diagnose)|that helps me (?:capture|note|record|describe|write|put)|your gp can|"
     r"you can (?:skip|edit|come back|add|change|stop)|you don'?t have to|that'?s (?:noted|saved|added)|that is (?:noted|saved|added)|"
@@ -81,7 +81,7 @@ _ACK_OPENER = re.compile(
 )
 _MAX_ACK_WORDS = 20
 # Phrases an acknowledgement may contain although they hold a claim word.
-_ACK_SAFE = re.compile(r"\b(?:what it means|if you(?:'re| are) worried|ready for (?:them|your gp|your doctor)|worth (?:noting|jotting|writing|adding)|your cycle|could be useful|can help you|may help your gp|would help your gp)\b", re.I)
+_ACK_SAFE = re.compile(r"\b(?:what it means|to help you (?:describe|put|write|note|capture|explain)\b[^.]*|(?:your gp|your doctor) can (?:help|look|advise|assess|check)(?: with that)?|(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:your|you)\b[^.]*|if you(?:'re| are) worried|ready for (?:them|your gp|your doctor)|worth (?:noting|jotting|writing|adding)|your cycle|could be useful|can help you|may help your gp|would help your gp)\b", re.I)
 # A short statement that is not on the opener list still passes unless it carries a claim:
 # a body-system or cause word, a hedge, a verdict, or advice.
 _CLAIM = re.compile(
@@ -102,11 +102,21 @@ def _sentences(text: str) -> list[str]:
     return [t.strip() for t in re.split(r"(?<=[.!?])\s+|\n+", text) if t.strip()]
 
 
+# A refusal ("I can't say what's causing it") is safe in itself; what follows it is still checked.
+_REFUSAL = re.compile(r"\bi (?:can'?t|cannot|(?:am|'m) not able to)\b[^,;]*", re.I)
+
+
 def _statement_hits(model_text: str) -> list[str]:
     reasons = []
     for sent in _sentences(model_text):
         if sent.endswith("?"):
             continue
+        rest = _REFUSAL.sub(" ", sent).strip(" ,;")
+        rest = re.sub(r"^(?:but|and|so)\s+", "", rest, flags=re.I)
+        if rest != sent and len(rest.split()) <= 2:
+            continue
+        if rest != sent:
+            sent = rest[:1].upper() + rest[1:]
         if _ADVICE_MODAL.search(sent):
             reasons.append("advice")
         elif (ack := _ACK_OPENER.match(sent)) and len(sent.split()) <= _MAX_ACK_WORDS:
