@@ -88,9 +88,9 @@ function impactsFrom(lowerRaw: string): string[] {
     if (/^(?:i(?:'ve| have)? )?(?:tried|took|used|been taking|been using|trying)\b/.test(c) && !LOST.test(c)) continue; // a remedy, not an impact ("tried yoga")
     const cleared = CLEAR.test(c) && !LOST.test(c);
     if (/\b(work|study|studying|school|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
-    if (/\b(sleep|slept|sleeping|woke|awake|kept me up)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
+    if (/\b(sleep|slept|sleeping|woke|awake|kept me up|kip|up half the night)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
     if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga|pilates|netball|football|hockey|rugby|jogging|(?:go|went|going) (?:for a )?run(?:ning)?)\b/.test(c) && !cleared) out.add('Exercise');
-    if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in)\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
+    if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in|(?:couldn'?t|could not|didn'?t) leave the house)\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
     if (/\bsex\b/.test(c) && !cleared) out.add('Sex');
   }
   return [...out];
