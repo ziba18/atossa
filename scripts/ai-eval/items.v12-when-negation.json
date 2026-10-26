@@ -70,7 +70,7 @@
   "text": "Not just around my period, it comes at other times too.",
   "gold": {
    "zones": [],
-   "when": null,
+   "when": "At other times too",
    "duration": null,
    "impacts": [],
    "worst": null,

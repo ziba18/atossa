@@ -59,6 +59,9 @@ function durationFrom(lower: string): string | undefined {
  */
 function whenFrom(lower: string): string | undefined {
   if (/\b(all the time|constant(ly)?|every day|non-?stop)\b/.test(lower)) return 'All the time';
+  // Explicitly also at other times (chip "At other times too"); a negation next to it ("no pain outside my period") is left to the chip question.
+  if (!/\b(?:no|not|never|nothing|n['’]t|without)\b[^.,;]{0,25}\b(?:outside|between|other times)\b/.test(lower)
+    && (/\bother times (?:too|as well)\b|\b(?:outside|between) (?:of )?(?:my )?(?:periods?|cycles?)\b|\b(?:not just|not only|more than just)\b[^.,;]{0,25}\bperiods?\b/.test(lower))) return 'At other times too';
   if (/\b(?:never|not|n['’]t|no) (?:\w+ )?only\b/.test(lower)) return undefined; // "never only on my period", "not only around my period"
   if (/\bonly (?:\w+ )?(?:(?:hurts?|happens?|get|gets) )?(?:during|on|around|before|with) my period\b/.test(lower)) return 'Only around my period';
   return undefined;
