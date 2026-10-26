@@ -193,12 +193,15 @@ export default function DoctorScreen() {
 
       {upcoming ? (
         <Card style={{ marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-          <View style={{
+          {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
+          {winWidth < 240 ? null : (
+          <View aria-hidden style={{
             width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
             alignItems: 'center', justifyContent: 'center',
           }}>
             <Icon name="calendar" size={22} color={colors.ink} />
           </View>
+          )}
           <View style={{ flex: 1 }}>
             <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
             <Txt variant="headline">
