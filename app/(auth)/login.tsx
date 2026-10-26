@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/atossaUI';
-import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
+import { Button, InlineError, ScreenLarge, TextField, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
@@ -19,6 +19,13 @@ export default function LoginScreen() {
   const [passwordError, setPasswordError] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // The server sleeps when idle; a first sign-in can take up to a minute. Say so rather than look frozen.
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    if (!loading) { setSlow(false); return; }
+    const t = setTimeout(() => setSlow(true), 6000);
+    return () => clearTimeout(t);
+  }, [loading]);
 
   const handleLogin = async () => {
     const trimmed = email.trim();
@@ -73,6 +80,11 @@ export default function LoginScreen() {
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
         <Button label={loading ? 'Signing in…' : 'Sign in'} loading={loading} onPress={handleLogin} />
+        {slow ? (
+          <Txt variant="secondary" style={{ textAlign: 'center' }}>
+            Still working. The first sign-in after a quiet spell can take up to a minute.
+          </Txt>
+        ) : null}
         <Button label="Create a new account" variant="text" onPress={() => router.replace('/(auth)/register')} />
       </View>
 
