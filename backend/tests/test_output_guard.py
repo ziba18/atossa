@@ -51,3 +51,23 @@ def test_emergency():
     r = check("How strong is it?", "I passed out this morning")
     assert r.text == URGENT
     assert not is_emergency("it hurts a bit after lunch")
+
+
+def test_emergency_wording_variants_and_no_false_alarms():
+    for text in [
+        "i'm bleeding really heavily", "bleeding through a pad every hour", "sudden sharp pain on one side",
+        "the pain is unbearable", "I'm coughing up blood", "I think I'm having a miscarriage",
+        "I'm pregnant and have bad cramps", "can't catch my breath", "pain 10/10",
+    ]:
+        assert is_emergency(text), text
+    for text in ["I've been having cramps", "my period was heavy", "the cramps come and go", "pain 4/10 after lunch"]:
+        assert not is_emergency(text), text
+
+
+def test_self_harm_gets_support_lines_not_the_pain_message():
+    from app.services.output_guard import SELF_HARM, emergency_message
+    assert is_emergency("I want to end my life")
+    assert emergency_message("I want to end my life") == SELF_HARM
+    assert "116 123" in SELF_HARM and "999" in SELF_HARM
+    assert emergency_message("I fainted") == URGENT
+    assert check("anything", "I feel suicidal").text == SELF_HARM
