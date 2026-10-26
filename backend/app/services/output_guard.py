@@ -276,12 +276,22 @@ _PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:gett
 _IDIOM = re.compile(r"\b(?:pain|cramps?|period|backache|headache)\b[^.,;!?]{0,15}\bkill(?:ing|s|ed)? me\b", re.I)
 
 
+# Two parts of one message split by a comma ("stabbing pain, curled up on the floor") need one look at the whole text.
+_WHOLE = re.compile(r"\b(?:stabbing|agony|agonising|screaming)\b.{0,60}\b(?:curled up|on the floor|can'?t move)\b|"
+                    r"\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b", re.I | re.S)
+
+
+def _hits_whole(rx, text: str) -> bool:
+    m = rx.search(text)
+    return bool(m) and not (_NEG.search(text[max(0, m.start() - 40):m.start()]) or _PAST.search(text) or _OTHER.search(text[:m.start()]))
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     user_text = _IDIOM.sub(" ", _norm(user_text))
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text):
         return "self_harm"
-    if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text):
+    if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text) or _hits_whole(_WHOLE, user_text):
         return "medical"
     if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
         return "medical"
