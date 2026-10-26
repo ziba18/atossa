@@ -54,16 +54,18 @@ SELF_HARM = (
 
 _SELF_HARM_RX = re.compile(
     r"\b(?:suicid\w+|kill(?:ing)? myself|end(?:ing)? my (?:own )?life|self[- ]harm\w*|want(?:ed)? to die|"
-    r"don'?t want to (?:be here|live|wake up))\b",
+    r"don'?t want to (?:be here|live|wake up)|end it all|hurt(?:ing)? myself|overdos\w+|"
+    r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers))\b",
     re.I,
 )
 _EMERGENCY = re.compile(
-    r"\b(?:can'?t breathe|can'?t (?:catch|get) my breath|struggling to breathe|chest pain|coughing up blood|"
-    r"faint(?:ed|ing)?|passed out|passing out|collaps\w+|"
+    r"\b(?:can'?t breathe?|can'?t breath\b|can'?t (?:catch|get) my breath|struggling to breathe|chest pain|coughing up blood|"
+    r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
     r"bleeding (?:through|heavily|badly)|(?:very |really |so )?heavy bleeding|bleeding (?:really |very |so )(?:heavily|badly)|"
-    r"severe (?:sudden )?pain|worst pain|unbearable pain|pain (?:is |was )?unbearable|pain (?:is |was )?(?:10|ten)(?:/| out of )10|"
-    r"sudden (?:sharp |stabbing )?pain|miscarr\w+|"
+    r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?|"
+    r"worst (?:pain )?(?:i'?ve|i have) ever|pain so bad|(?:big )?clots? (?:the size of|bigger than)|pain (?:is |was )?unbearable|pain (?:is |was )?(?:a )?(?:10|ten)(?:/| out of )10|"
+    r"sudden (?:sharp |stabbing )?pain|\bi(?:'?m| am| think i'?m)? (?:\w+ ){0,3}miscarr\w+|"
     r"pregnan\w+ and (?:bleeding|pain|cramp\w*)|(?:i'?m|i am|am) pregnant.{0,40}(?:bleeding|pain|cramp\w*))\b",
     re.I,
 )
