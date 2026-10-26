@@ -82,3 +82,12 @@ def test_own_disclaimer_passes_and_invented_links_numbers_blocked():
     assert not check("Call 0800 123 4567 for help.", "pain").ok
     assert not check("See https://example.com/quiz for more.", "pain").ok
     assert not check("Women like you often have fibroids.", "pain").ok
+
+
+def test_refusals_and_questions_pass_but_refusal_plus_claim_does_not():
+    from app.services.output_guard import check
+    assert check("I can't tell you whether that's normal, but I can write it down for your GP. When did it start?", "what's normal?").ok
+    assert check("I've noted that. Did you take a pregnancy test, or would you like to add that to your note?", "I'm late").ok
+    assert not check("I can't say that it's normal and it's probably nothing.", "x").ok
+    assert not check("I can't say, but it's probably PCOS.", "x").ok
+    assert not check("You should take a pregnancy test.", "x").ok

@@ -49,7 +49,7 @@ _PATTERNS = {
     "treatment": r"\b(?:i(?:'d| would) (?:stop|start|take|try|avoid|cut|skip|switch|come off)|you (?:should|could|can|might want to|may want to) (?:take|try|use|avoid|eat|stop|start|cut)|"
                  r"(?:you(?:'d| would)? (?:probably |maybe )?(?:feel better|do better) if)|"
                  r"(?:often|usually|generally|frequently|commonly|typically|sometimes) (?:also )?(?:help|ease|relieve|reduce|improve|calm|settle)s?|known to (?:help|ease|calm)|"
-                 r"(?:take|have|try) a (?:warm )?(?:bath|pregnancy test)|"
+                 r"(?<!did you )(?<!have you )(?<!do you )(?<!had you )(?:take|have|try) a (?:warm )?(?:bath|pregnancy test)|"
                  r"(?:give|prescribe)s? you the pill|lose (?:some )?weight|laparoscopy|surgery|hysterectomy|naproxen|"
                  r"i (?:recommend|suggest|advise)|(?:try|consider) (?:taking |using |doing |some )?" + _ADVICE_OBJECT +
                  r"|" + _ADVICE_OBJECT + r" (?:may|might|can|could|will|often) (?:help|ease|relieve|reduce)|"
@@ -106,7 +106,7 @@ def _sentences(text: str) -> list[str]:
 
 
 # A refusal ("I can't say what's causing it") is safe in itself; what follows it is still checked.
-_REFUSAL = re.compile(r"\bi (?:can'?t|cannot|(?:am|'m) not able to)\b[^,;]*", re.I)
+_REFUSAL = re.compile(r"\bi (?:can'?t|cannot|(?:am|'m) not able to)\b(?:(?!\b(?:but|and|probably|likely|maybe|possibly|although)\b)[^,;])*", re.I)
 
 
 def _claims(text: str, user_low: str) -> bool:
@@ -249,6 +249,9 @@ STRICT_STATEMENTS = os.environ.get("GUARD_STRICT_STATEMENTS", "1") != "0"
 _ECHO_OK = {"condition", "treatment"}
 
 
+_SAFE_REFUSAL = re.compile(r"\bi (?:can'?t|cannot|(?:am|'m) not able to) (?:say|tell you|assess|know|judge)\b(?:(?!\b(?:but|and|probably|likely|maybe|possibly|although)\b)[^,;.?!])*", re.I)
+
+
 def check(model_text: str, user_text: str = "", check_emergency: bool = True) -> GuardResult:
     """Return the text unchanged if clean, else the fixed fallback (or URGENT).
 
@@ -260,7 +263,10 @@ def check(model_text: str, user_text: str = "", check_emergency: bool = True) ->
     user_low = user_text.lower()
     reasons = []
     for name, rx in _COMPILED.items():
-        for m in rx.finditer(model_text):
+        # "I can't tell you whether that's normal" is a refusal, not reassurance: look at the text
+        # without such a clause (only when the refusal has no "but/and/probably..." inside it).
+        scan = _SAFE_REFUSAL.sub(" ", model_text) if name in ("reassurance", "cause") else model_text
+        for m in rx.finditer(scan):
             # Only a condition or drug name the user wrote as a whole word may come back; a
             # probability, cause or reassurance phrase is never excused ("percentage" in the
             # user's text must not excuse "15 percent").
