@@ -8,6 +8,7 @@ import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import type { DoctorDoc } from '../../../lib/records/summary';
+import { Icon } from '../../ui/Icon';
 import { Sheet, Txt } from '../kit';
 import { A4, DocumentView } from './DocumentView';
 
@@ -71,11 +72,16 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
         {pages === 1 ? 'One page · tap to read it' : `About ${pages} pages · tap to read it`}
       </Txt>
       {doc.sections.length ? (
-        <View style={{ marginTop: space.md, gap: space.xxs }}>
+        <View style={{ marginTop: space.md, gap: space.xs }}>
           <Txt variant="groupLabel">In this summary</Txt>
-          {doc.sections.map((sec) => (
-            <Txt key={sec.id} variant="secondary">{sec.title}</Txt>
-          ))}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md, rowGap: space.xs }}>
+            {doc.sections.map((sec) => (
+              <View key={sec.id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.xs, flexBasis: '100%' }}>
+                <View aria-hidden style={{ marginTop: 2 }}><Icon name="check" size={16} color={colors.ink3} /></View>
+                <Txt variant="secondary" style={{ flex: 1 }}>{sec.title}</Txt>
+              </View>
+            ))}
+          </View>
         </View>
       ) : null}
 
