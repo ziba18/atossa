@@ -59,9 +59,13 @@ function durationFrom(lower: string): string | undefined {
  */
 function whenFrom(lower: string): string | undefined {
   if (/\b(all the time|constant(ly)?|every day|non-?stop)\b/.test(lower)) return 'All the time';
+  // "it hurts between periods" counts; "between cycles it's fine" does not (needs a symptom word and no all-clear in that clause).
+  for (const c of clausesOf(lower)) {
+    if (/\b(?:outside|between) (?:of )?(?:my )?(?:periods?|cycles?)\b/.test(c) && /\b(?:hurt\w*|pain\w*|ache\w*|aching|cramp\w*|sore|twinges?|bleed\w*|spotting)\b/.test(c) && !CLEAR.test(c)) return 'At other times too';
+  }
   // Explicitly also at other times (chip "At other times too"); a negation next to it ("no pain outside my period") is left to the chip question.
   if (!/\b(?:no|not|never|nothing|n['’]t|without)\b[^.,;]{0,25}\b(?:outside|between|other times)\b/.test(lower)
-    && (/\bother times (?:too|as well)\b|\b(?:outside|between) (?:of )?(?:my )?(?:periods?|cycles?)\b|\b(?:not just|not only|more than just)\b[^.,;]{0,25}\bperiods?\b/.test(lower))) return 'At other times too';
+    && (/\bother times (?:too|as well)\b|\b(?:not just|not only|more than just)\b[^.,;]{0,25}\bperiods?\b/.test(lower))) return 'At other times too';
   if (/\b(?:never|not|n['’]t|no) (?:\w+ )?only\b/.test(lower)) return undefined; // "never only on my period", "not only around my period"
   if (/\bonly (?:\w+ )?(?:(?:hurts?|happens?|get|gets) )?(?:during|on|around|before|with) my period\b/.test(lower)) return 'Only around my period';
   return undefined;
