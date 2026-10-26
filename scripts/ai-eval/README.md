@@ -13,3 +13,6 @@ First pass scored 7% wrong-fill; one more fix ("nothing") was then tuned on it, 
 
 ## --json
 `node --experimental-strip-types scripts/ai-eval/run.mjs items.v8-blind.json --json` prints counts per field (gold, fills, correct, wrong, miss, spurious = filled where gold was empty, mismatch = filled differently) and ids only, never note text. Diff two branches with `diff <(… --json) <(… --json)`.
+
+## compare.mjs
+`node scripts/ai-eval/compare.mjs a.json b.json` diffs two `--json` runs (deltas per field, ids newly wrong / fixed).
