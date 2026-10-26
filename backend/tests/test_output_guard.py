@@ -51,3 +51,11 @@ def test_emergency():
     r = check("How strong is it?", "I passed out this morning")
     assert r.text == URGENT
     assert not is_emergency("it hurts a bit after lunch")
+
+
+def test_false_attribution_blocked_true_echo_passes():
+    from app.services.output_guard import check
+    assert not check("You mentioned it's probably your thyroid.", "my cramps are bad").ok
+    assert not check("You told me it's likely hormonal.", "it hurts").ok
+    assert check("You said the pain is worse at night.", "the pain is worse at night").ok
+    assert check("You mentioned your diet changed. When did that start?", "my diet changed").ok

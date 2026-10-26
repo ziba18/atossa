@@ -138,7 +138,10 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
             # An opener does not excuse a claim in the rest of the sentence ("Thanks, it's likely hormonal").
             # (Echo openers - "You mentioned your diet changed" - restate the user's words, so they are exempt.)
             echo = re.match(r"you (?:said|told me|mentioned|wrote)", ack.group(0), re.I)
-            if not echo and _claims(_ACK_SAFE.sub("", sent[ack.end():]), ul):
+            # ...but only claim words the user really wrote: "You mentioned it's probably your thyroid" is a
+            # claim falsely put in her mouth, so an echo opener restates only words found in her own text.
+            # (With no user text at all there is nothing to compare against, so the old exemption stands.)
+            if (not echo or user_low) and _claims(_ACK_SAFE.sub("", sent[ack.end():]), user_low if echo else ul):
                 reasons.append("statement")
         elif len(sent.split()) > _MAX_PLAIN_WORDS or _claims(sent, ul):
             reasons.append("statement")
