@@ -70,6 +70,14 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
       <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>
         {pages === 1 ? 'One page · tap to read it' : `About ${pages} pages · tap to read it`}
       </Txt>
+      {doc.sections.length ? (
+        <View style={{ marginTop: space.md, gap: space.xxs }}>
+          <Txt variant="groupLabel">In this summary</Txt>
+          {doc.sections.map((sec) => (
+            <Txt key={sec.id} variant="secondary">{sec.title}</Txt>
+          ))}
+        </View>
+      ) : null}
 
       <Sheet visible={open} onClose={() => setOpen(false)} title="Your summary" full scroll={false} closeLabel="Close summary">
         <ScrollView
