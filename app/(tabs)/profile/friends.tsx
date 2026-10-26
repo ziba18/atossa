@@ -110,6 +110,7 @@ export default function FriendsScreen() {
       <Card style={{ gap: space.sm }}>
         <TextField
           label="Friend’s email"
+          placeholder="friend@example.com"
           value={inviteEmail}
           onChangeText={(v) => { setInviteEmail(v); setInviteError(''); setInviteSent(''); }}
           keyboardType="email-address"

@@ -34,7 +34,7 @@ export function ScreenLarge({
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
       <View style={styles.titleRow}>
-        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flex: 1, flexShrink: 1 }}>{title}</Txt>
+        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flex: 1, flexShrink: 1 }}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}
       </View>
       {subtitle ? (
