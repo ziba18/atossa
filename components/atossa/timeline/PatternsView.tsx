@@ -107,6 +107,11 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
               </View>
             ))}
           </View>
+          {/* First and last day under the bars so 12 bars are not anonymous (spoken text already gives the range). */}
+          <View style={styles.axis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
+            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
+          </View>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
@@ -168,6 +173,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
 const styles = StyleSheet.create({
   numRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs, marginTop: space.xxs },
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },
+  axis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs, paddingRight: 10 },
   weekCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
   weekNum: { fontSize: 11 },
   weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.ink2 },
