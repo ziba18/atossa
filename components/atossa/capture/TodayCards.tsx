@@ -174,7 +174,8 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
       accessibilityHint="Opens the note"
     >
       <View style={{ gap: space.sm }}>
-        <Txt variant="caption">{`Your latest note · ${date}`}</Txt>
+        {/* Non-breaking spaces keep the date together, so at 320 it wraps before it rather than orphaning the time. */}
+        <Txt variant="caption">{`Your latest note · ${date.replace(/ /g, '\u00A0')}`}</Txt>
         {words ? <Quote numberOfLines={4}>{words}</Quote> : <Txt variant="headline">Rough day</Txt>}
         {worst != null || facts ? (
           <View style={styles.factRow}>
