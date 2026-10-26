@@ -202,7 +202,7 @@ export default function DoctorScreen() {
           <View style={{ flex: 1 }}>
             <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
             <Txt variant="headline">
-              {joinFacts(upcoming.data.who.trim(), formatDay(upcoming.data.date))}
+              {joinFacts(upcoming.data.who.trim(), formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
             </Txt>
           </View>
         </Card>
