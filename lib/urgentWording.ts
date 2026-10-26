@@ -18,10 +18,26 @@ function normalise(text: string): string {
   return t.replace(/[\u2018\u2019\u02bc\u2032]/g, (c) => QUOTES[c] ?? c);
 }
 
+// "No fainting", "I haven't fainted", "not struggling to breathe": the person is saying it did NOT happen.
+const NEGATED_BEFORE = /\b(?:no|not|never|without|haven't|hasn't|hadn't|didn't|wasn't|isn't|nor)\b(?:\s+(?:\w+,?)){0,3}\s*$/i;
+
+function hit(pattern: RegExp, text: string): boolean {
+  const re = new RegExp(pattern.source, 'gi');
+  for (const sentence of text.split(/(?<=[.!?;])\s+|\n+/)) {
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(sentence)) !== null) {
+      if (!NEGATED_BEFORE.test(sentence.slice(0, m.index))) return true;
+      if (m[0].length === 0) re.lastIndex++;
+    }
+  }
+  return false;
+}
+
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
   const t = normalise(text);
-  if (SELF_HARM_PATTERN.test(t)) return SELF_HARM_SIGNPOST;
-  if (EMERGENCY_PATTERN.test(t)) return URGENT_SIGNPOST;
+  if (hit(SELF_HARM_PATTERN, t)) return SELF_HARM_SIGNPOST;
+  if (hit(EMERGENCY_PATTERN, t)) return URGENT_SIGNPOST;
   return null;
 }
