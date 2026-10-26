@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
@@ -200,18 +200,20 @@ export function HeroNumber({
   onPress?: () => void;
   accessibilityHint?: string;
 }) {
+  // Under ~240 pt wide (200% text) 17 pt "appointment" no longer fits the column and breaks mid-word.
+  const narrow = useWindowDimensions().width < 240;
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt> : null}
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
       <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, gap: space.xxs }}>
-        <Txt variant="headline">{line}</Txt>
+        <Txt variant="headline" style={narrow ? { fontSize: 15, lineHeight: 20 } : undefined}>{line}</Txt>
         <Txt variant="secondary">{sub}</Txt>
       </View>
     </View>
   );
   if (!onPress) return <Card>{body}</Card>;
-  return <PressableCard onPress={onPress} accessibilityHint={accessibilityHint}>{body}</PressableCard>;
+  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint}>{body}</PressableCard>;
 }
 
 // ---- Rows & text helpers ------------------------------------------------------------------
