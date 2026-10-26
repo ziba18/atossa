@@ -212,7 +212,7 @@ export function HeroNumberCard() {
   }
   const body = (
     <View style={styles.heroNum}>
-      {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }} aria-hidden>{big}</Txt> : null}
+      {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt> : null}
       <View style={{ flex: 1, gap: space.xxs }}>
         <Txt variant="headline">{line}</Txt>
         <Txt variant="secondary">{sub}</Txt>
@@ -223,7 +223,6 @@ export function HeroNumberCard() {
   return (
     <PressableCard
       onPress={() => router.push(target as any)}
-      accessibilityLabel={`${big} ${line}. ${sub}`}
       accessibilityHint={next ? 'Opens For my doctor' : 'Opens Timeline'}
     >
       {body}
