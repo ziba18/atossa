@@ -8,7 +8,7 @@
 //   today     = 1.5 ink ring
 // Empty days are plain. No streaks, no "missed" states, no animation.
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path } from 'react-native-svg';
 import { IconButton, Txt } from '../kit';
 import { colors, fonts, radii, space } from '../../../constants/atossaUI';
@@ -41,6 +41,8 @@ export function MonthCalendar({
   onDayPress: (key: string) => void;
 }) {
   const today = todayKey();
+  // Narrow phones (320): "September 2026" at title size wraps to two lines between the arrows.
+  const narrow = useWindowDimensions().width < 360;
   const offset = firstWeekdayOffset(year, month0);
   const days = daysInMonth(year, month0);
   const cells: (number | null)[] = [...Array(offset).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
@@ -50,7 +52,7 @@ export function MonthCalendar({
     <View>
       <View style={styles.head}>
         <IconButton icon="chevron-left" color={colors.plum} label="Previous month" onPress={onPrev} />
-        <Txt variant="title" accessibilityRole="header" style={{ textAlign: 'center', flex: 1 }}>
+        <Txt variant="title" accessibilityRole="header" style={[{ textAlign: 'center', flex: 1 }, narrow && { fontSize: 20, lineHeight: 26 }]}>
           {`${MONTH_NAMES[month0]} ${year}`}
         </Txt>
         <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
