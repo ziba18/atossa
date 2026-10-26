@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { Config } from '../constants/config';
 
@@ -7,22 +8,40 @@ import { Config } from '../constants/config';
 const tokenStore = Platform.OS === 'web'
   ? {
       getItemAsync: async (k: string) => { try { return globalThis.localStorage?.getItem(k) ?? null; } catch { return null; } },
-      setItemAsync: async (k: string, v: string) => { try { globalThis.localStorage?.setItem(k, v); } catch {} },
+      setItemAsync: async (k: string, v: string, _options?: unknown) => { try { globalThis.localStorage?.setItem(k, v); } catch {} },
       deleteItemAsync: async (k: string) => { try { globalThis.localStorage?.removeItem(k); } catch {} },
     }
   : SecureStore;
 
+// This device only: tokens are not carried to another phone by a backup restore.
+const KEYCHAIN = { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY };
+
 const ACCESS_KEY = 'atossa_access_token';
 const REFRESH_KEY = 'atossa_refresh_token';
 
+// Keychain items can outlive an uninstall on iOS, while AsyncStorage is wiped with the app. A marker
+// kept in AsyncStorage tells a fresh install from an update, so a reinstalled app never wakes up
+// signed in as the previous user.
+const INSTALL_MARKER = 'atossa_install_marker';
+
+async function dropTokensFromPreviousInstall(): Promise<void> {
+  if (Platform.OS === 'web') return;
+  try {
+    if (await AsyncStorage.getItem(INSTALL_MARKER)) return;
+    await clearTokens();
+    await AsyncStorage.setItem(INSTALL_MARKER, '1');
+  } catch {}
+}
+
 export async function getStoredAccessToken(): Promise<string | null> {
+  await dropTokensFromPreviousInstall();
   return tokenStore.getItemAsync(ACCESS_KEY);
 }
 
 export async function saveTokens(access: string, refresh: string): Promise<void> {
   await Promise.all([
-    tokenStore.setItemAsync(ACCESS_KEY, access),
-    tokenStore.setItemAsync(REFRESH_KEY, refresh),
+    tokenStore.setItemAsync(ACCESS_KEY, access, KEYCHAIN),
+    tokenStore.setItemAsync(REFRESH_KEY, refresh, KEYCHAIN),
   ]);
 }
 
