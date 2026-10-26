@@ -1,7 +1,7 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
@@ -26,14 +26,13 @@ const WASH = [`${colors.plumTint}80`, `${colors.canvas}CC`, `${colors.surface}00
 const WASH_STOPS = [0, 0.18, 0.4] as const;
 
 const PROMPT = 'What’s been going on with your body?';
-/** Below ~400 pt the prompt rags as "…going on with / your body?"; break it evenly instead (V29). */
-const PROMPT_NARROW = 'What’s been going on\nwith your body?';
+/** Broken evenly at every width: unforced it either rags ("…with / your body?") or leaves "body?" alone on line 2 (V29). */
+const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 
 /** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
 export function HeroCard() {
-  const { width } = useWindowDimensions();
   return (
     <Card tone="hero" style={styles.hero}>
       <LinearGradient
@@ -44,7 +43,7 @@ export function HeroCard() {
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
-        {width < 400 ? PROMPT_NARROW : PROMPT}
+        {PROMPT_BALANCED}
       </Txt>
       <View style={styles.heroMic}>
         <MicButton
