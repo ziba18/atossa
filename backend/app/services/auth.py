@@ -13,6 +13,15 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
+# A real hash to compare against when the email is unknown, so a miss costs as long as a hit.
+_DUMMY_HASH = pwd_context.hash("unused-password-for-timing")
+
+
+def verify_password_or_dummy(plain: str, hashed: str | None) -> bool:
+    ok = verify_password(plain, hashed or _DUMMY_HASH)
+    return bool(hashed) and ok
+
+
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
