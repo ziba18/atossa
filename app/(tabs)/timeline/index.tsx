@@ -8,6 +8,7 @@ import {
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
 import { GhostEntry } from '../../../components/atossa/timeline/GhostEntry';
+import { PatternsView } from '../../../components/atossa/timeline/PatternsView';
 import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
@@ -27,6 +28,7 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 const MODES: { value: TimelineMode; label: string }[] = [
   { value: 'list', label: 'List' },
   { value: 'month', label: 'Month' },
+  { value: 'patterns', label: 'Patterns' },
 ];
 
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
@@ -83,6 +85,8 @@ export default function TimelineScreen() {
       <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
       {mode === 'list' ? (
         <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
+      ) : mode === 'patterns' ? (
+        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}

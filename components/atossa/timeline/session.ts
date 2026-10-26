@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 // Timeline view choices remembered for the session (not persisted): List/Month and the filter.
 
-export type TimelineMode = 'list' | 'month';
+export type TimelineMode = 'list' | 'month' | 'patterns';
 export type TimelineFilter = 'All' | 'Symptoms' | 'Bleeding' | 'Appointments' | 'Medicines';
 
 export const TIMELINE_FILTERS: TimelineFilter[] = ['All', 'Symptoms', 'Bleeding', 'Appointments', 'Medicines'];
