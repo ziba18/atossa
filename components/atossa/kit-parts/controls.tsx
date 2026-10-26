@@ -53,6 +53,8 @@ export function Button({
       accessibilityState={{ disabled: !!inactive, busy: !!loading }}
       style={({ pressed }) => [
         styles.btnBase,
+        // A 2% press-in on the filled and outlined buttons: the colour change alone is only ~1.2:1.
+        pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.98 }] },
         variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.plumPressed : colors.plum }],
         variant === 'secondary' && [styles.secondary, { borderColor: inactive ? colors.hairline : colors.borderStrong, backgroundColor: pressed ? colors.sunken : 'transparent' }],
         variant === 'destructiveOutline' && [styles.secondary, { borderColor: colors.error, backgroundColor: pressed ? colors.errorTint : 'transparent', opacity: inactive ? 0.5 : 1 }],

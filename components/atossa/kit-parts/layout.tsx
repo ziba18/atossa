@@ -175,7 +175,7 @@ export function PressableCard({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
-      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.canvas }, style]}
+      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken }, style]}
     >
       {edge ? <View style={styles.clayEdge} /> : null}
       <View style={{ flex: 1, minWidth: 0 }}>{children}</View>
