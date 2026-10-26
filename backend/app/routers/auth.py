@@ -17,6 +17,12 @@ from app.services.rate_limit import FailureThrottle, limit
 from app.services.social_auth import SocialAuthError, verify_apple_identity_token, verify_google_id_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+def _social_detail(e: SocialAuthError, provider: str) -> str:
+    """Token-library wording stays out of the response; messages that tell the person what to do (e.g. an unconfirmed email) pass through."""
+    text = str(e)
+    return f"{provider} sign-in failed" if text.startswith("Invalid") else text
 _auth_limit = Depends(limit("auth", 20, 60))
 # 8 wrong passwords for one email in 15 minutes locks that email for the rest of the window.
 _login_failures = FailureThrottle(8, 900)
@@ -69,7 +75,7 @@ def login_with_apple(body: SocialAuthRequest, db: Session = Depends(get_db)):
     try:
         claims = verify_apple_identity_token(body.id_token, settings.apple_bundle_id)
     except SocialAuthError as e:
-        raise HTTPException(status_code=401, detail=str(e))
+        raise HTTPException(status_code=401, detail=_social_detail(e, "Apple"))
     return _issue_tokens_for_social_user(db, claims["email"], body.display_name)
 
 
@@ -80,7 +86,7 @@ def login_with_google(body: SocialAuthRequest, db: Session = Depends(get_db)):
     try:
         claims = verify_google_id_token(body.id_token, settings.google_web_client_id, body.access_token)
     except SocialAuthError as e:
-        raise HTTPException(status_code=401, detail=str(e))
+        raise HTTPException(status_code=401, detail=_social_detail(e, "Google"))
     return _issue_tokens_for_social_user(db, claims["email"], body.display_name or claims.get("name"))
 
 
