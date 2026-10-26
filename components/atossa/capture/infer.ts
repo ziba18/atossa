@@ -138,8 +138,8 @@ const FIRST_PERSON = /\b(?:i|i['’]m|i['’]ve|i['’]d|me|mine|myself)\b/i;
 
 /** Sentences about someone else ("My mum had to leave work", "She says her legs ache") say nothing about her. */
 export function ownWords(words: string): string {
-  return words
-    .split(/(?<=[.!?])\s+/)
+  // (No lookbehind, so it runs on any JS engine: sentences are the runs up to and including . ! ?)
+  return (words.match(/[^.!?]+[.!?]*\s*/g) ?? [words])
     .filter((s) => {
       const t = s.trim();
       if (OTHER_SUBJECT.test(t)) return false;
