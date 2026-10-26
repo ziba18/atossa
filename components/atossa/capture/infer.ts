@@ -117,7 +117,26 @@ function triedFrom(words: string): string | undefined {
   return clause.split(/\s+/).length >= 2 ? cap(clause) : undefined;
 }
 
-export function prefillFrom(words: string): Prefill {
+const OTHER_NOUN = '(?:sister|mum|mom|mother|dad|father|brother|friend|cousin|partner|boyfriend|girlfriend|husband|wife|colleague|daughter|son|aunt|auntie|nan|nana|gran|granny|grandma|neighbour|neighbor|boss|teacher)';
+const OTHER_SUBJECT = new RegExp(`^(?:my ${OTHER_NOUN}\\b|she\\b|he\\b|her\\b|his\\b|they\\b|their\\b)`, 'i');
+const OTHER_MENTION = new RegExp(`\\bmy ${OTHER_NOUN}\\b`, 'i');
+const THIRD_PERSON = /\b(?:she|he|her|his|hers|they|their)\b/i;
+const FIRST_PERSON = /\b(?:i|i['’]m|i['’]ve|i['’]d|me|mine|myself)\b/i;
+
+/** Sentences about someone else ("My mum had to leave work", "She says her legs ache") say nothing about her. */
+export function ownWords(words: string): string {
+  return words
+    .split(/(?<=[.!?])\s+/)
+    .filter((s) => {
+      const t = s.trim();
+      if (OTHER_SUBJECT.test(t)) return false;
+      return !(OTHER_MENTION.test(t) && THIRD_PERSON.test(t) && !FIRST_PERSON.test(t));
+    })
+    .join(' ');
+}
+
+export function prefillFrom(allWords: string): Prefill {
+  const words = ownWords(allWords);
   const lower = words.toLowerCase();
   // Negated phrases are dropped first, so "No back pain today, only my tummy" doesn't fill Lower back.
   const zones = zonesFrom(lower);

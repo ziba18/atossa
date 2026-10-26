@@ -1,0 +1,345 @@
+[
+ {
+  "id": "v8-01",
+  "strata": "b8",
+  "text": "Been hurting since Tuesday, mostly my lower back.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": "Since Tuesday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-02",
+  "strata": "b8",
+  "text": "This has been going on since 3rd October.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-03",
+  "strata": "b8",
+  "text": "It started last Thursday and hasn't let up.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-04",
+  "strata": "b8",
+  "text": "Pain for the past three days, around a 6.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "For the past three days",
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-05",
+  "strata": "b8",
+  "text": "Been like this for a couple of weeks now.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "For a couple of weeks",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-06",
+  "strata": "b8",
+  "text": "Had it for about 2 months on and off.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "For about 2 months",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-07",
+  "strata": "b8",
+  "text": "Started about a month ago I think.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-08",
+  "strata": "b8",
+  "text": "Since yesterday my tummy has been sore, low down on the right.",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": "Since yesterday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-09",
+  "strata": "b8",
+  "text": "Hurts since this morning.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "Since this morning",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-10",
+  "strata": "b8",
+  "text": "Every day for six weeks, non-stop.",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": "For six weeks",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-11",
+  "strata": "b8",
+  "text": "Cramps low in my tummy and a pounding headache, bloated too.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-12",
+  "strata": "b8",
+  "text": "Lower back ache plus my legs feel heavy, tired all day.",
+  "gold": {
+   "zones": [
+    "Lower back",
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-13",
+  "strata": "b8",
+  "text": "Headache and sore tummy, the tummy pain is on the left, a 5.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-14",
+  "strata": "b8",
+  "text": "Bloating after eating, tummy tight, nausea, and I slept badly.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-15",
+  "strata": "b8",
+  "text": "Sore legs and a sore back but my tummy is fine.",
+  "gold": {
+   "zones": [
+    "Legs",
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-16",
+  "strata": "b8",
+  "text": "My sister has really bad period pain, I'm worried I'll end up the same.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-17",
+  "strata": "b8",
+  "text": "My mum had to leave work early with cramps when I was a kid.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-18",
+  "strata": "b8",
+  "text": "My friend cancelled our plans because of her back.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-19",
+  "strata": "b8",
+  "text": "My mum says her pain is a nine every month.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-20",
+  "strata": "b8",
+  "text": "My doctor told my cousin it was in her tummy, left side.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-21",
+  "strata": "b8",
+  "text": "I don't have back pain but my partner does.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-22",
+  "strata": "b8",
+  "text": "She says her legs ache all the time.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-23",
+  "strata": "b8",
+  "text": "My sister slept badly because of her cramps.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-24",
+  "strata": "b8",
+  "text": "My mum had it too. I get sharp pain on the right low down, about a 7.",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v8-25",
+  "strata": "b8",
+  "text": "Like my sister, mine is all the time and I can't sleep.",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ }
+]
