@@ -1,7 +1,7 @@
 // For my doctor — the summary builder. Everything on this tab only repeats what Sam entered.
 // One model (lib/records/summary.ts) feeds the preview, Show on screen and the PDF.
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/atossaUI';
 import {
@@ -159,13 +159,13 @@ export default function DoctorScreen() {
       <InlineError message={actionError} />
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
         <Button
-          label="Share PDF"
+          label={Platform.OS === 'web' ? 'Save as PDF' : 'Share PDF'}
           icon="share-2"
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
           style={{ flex: 1 }}
-          accessibilityHint={doc.empty ? 'Nothing to share yet' : 'Makes a PDF and opens the share sheet'}
+          accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
         <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
         <BarIconButton
