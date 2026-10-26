@@ -73,3 +73,9 @@ def test_pain_idiom_is_not_self_harm():
     from app.services.output_guard import emergency_kind
     assert emergency_kind("The pain was killing me yesterday but is fine now") is None
     assert emergency_kind("I want to kill myself") == "self_harm"
+
+
+def test_ordinary_period_notes_do_not_trigger():
+    from app.services.output_guard import is_emergency
+    assert not is_emergency("Clots the size of a 5p coin on day 1")
+    assert not is_emergency("Period started, lots of blood on day 2 but normal for me")
