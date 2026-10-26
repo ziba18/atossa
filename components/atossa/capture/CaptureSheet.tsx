@@ -297,6 +297,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
         <Txt variant="secondary" style={{ marginTop: space.xs }}>
           {mode === 'speak' ? 'Say it however it comes. Messy is fine.' : 'Write it however it comes. Messy is fine.'}
         </Txt>
+        {tag && tag !== 'Just a quick note' ? <Txt variant="caption" style={{ marginTop: space.xs }}>{`About: ${tag === 'Pain today' ? 'Pain' : tag}`}</Txt> : null}
         {past ? <Txt variant="caption" style={{ marginTop: space.xs }}>{`Note for ${formatDay(draft.date)}`}</Txt> : null}
         {voiceNotice && mode === 'type' ? (
           <Txt variant="secondary" color={colors.ink} style={{ marginTop: space.sm }}>{VOICE_UNAVAILABLE}</Txt>
