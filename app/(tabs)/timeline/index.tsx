@@ -3,7 +3,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, ScreenLarge, SegmentedControl, Txt,
+  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
@@ -39,6 +39,7 @@ export default function TimelineScreen() {
   const loadError = useRecordsStore((s) => s.error);
   const loadedFor = useRecordsStore((s) => s.loadedFor);
   const load = useRecordsStore((s) => s.load);
+  const loading = useRecordsStore((s) => s.loading);
   const userId = useAuthStore((s) => s.user?.id);
   const periodDay = useRecordsStore((s) => s.records.period_day);
   const appointment = useRecordsStore((s) => s.records.appointment);
@@ -75,7 +76,8 @@ export default function TimelineScreen() {
 
   // A quiet plum glyph, not a filled disc (V16). Hidden while the empty List shows its own
   // "Add a note" button, so there is only one primary for one action.
-  const emptyList = mode === 'list' && feed.length === 0;
+  const waiting = loading && !loadedFor;
+  const emptyList = mode === 'list' && feed.length === 0 && !waiting;
   const header = (
     <>
       {emptyList ? null : <AddButton label="Add a note" onPress={() => openCapture()} />}
@@ -89,7 +91,9 @@ export default function TimelineScreen() {
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
       <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
-      {mode === 'list' ? (
+      {waiting ? (
+        <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
+      ) : mode === 'list' ? (
         <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
       ) : (
         <MonthView

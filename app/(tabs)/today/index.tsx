@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button, HeaderAvatar, InlineError, ScreenLarge, Txt } from '../../../components/atossa/kit';
+import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
@@ -30,6 +30,7 @@ export default function TodayScreen() {
   const loadError = useRecordsStore((s) => s.error);
   const loadedFor = useRecordsStore((s) => s.loadedFor);
   const load = useRecordsStore((s) => s.load);
+  const loading = useRecordsStore((s) => s.loading);
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
 
@@ -42,11 +43,15 @@ export default function TodayScreen() {
       <View style={{ marginTop: space.md }}>
         <StarterChips onPeriod={() => setBleeding(true)} />
       </View>
+      {loading && !loadedFor ? (
+        <View style={{ marginTop: space.xl }}><SkeletonCards count={2} label="Loading your notes" /></View>
+      ) : (
       <View style={{ marginTop: space.xl, gap: space.xl }}>
         {latest ? <LatestNoteCard note={latest} /> : null}
         <AppointmentCard />
         <RoughDayCard />
       </View>
+      )}
       <View style={{ marginTop: space.lg, alignItems: 'center', gap: space.xxs }}>
         <Button
           label="Talk it through instead"
