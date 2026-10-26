@@ -53,6 +53,7 @@ const config: ExpoConfig = {
       backgroundColor: '#FFFFFF',
     },
     package: 'com.attosa.app',
+    allowBackup: false,
     permissions: [
       'android.permission.VIBRATE',
       'android.permission.RECEIVE_BOOT_COMPLETED',
