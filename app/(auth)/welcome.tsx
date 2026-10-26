@@ -3,7 +3,8 @@ import React, { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { colors, layout, space } from '../../constants/atossaUI';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
@@ -27,12 +28,17 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+      {/* Brand band: a plum-tint wash that settles into the paper (decorative). */}
+      <LinearGradient
+        colors={[`${colors.plumTint}B3`, `${colors.canvas}00`]}
+        style={[styles.band, compact && { height: 120 }, { pointerEvents: 'none' }]}
+      />
       <ScrollView contentContainerStyle={[styles.column, compact && { paddingBottom: space.md }]} showsVerticalScrollIndicator={false}>
         <View style={[styles.top, compact && { minHeight: 32, paddingTop: 0 }]}>
-          <Txt variant="caption" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>ATOSSA</Txt>
+          <Txt variant="hero" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={[styles.wordmark, compact && { fontSize: 32, lineHeight: 38 }]}>Atossa</Txt>
         </View>
 
-        <View style={[styles.hero, compact && { paddingTop: space.xs, paddingBottom: space.sm }]}>
+        <View style={[styles.hero, compact && { paddingTop: space.sm, paddingBottom: space.sm }]}>
           <Txt variant="hero">Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
             {Platform.OS === 'web' ? 'Write it' : 'Say it'} the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
@@ -72,14 +78,15 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Quiet brand mark: spaced capitals in plum, so it never competes with the serif hero line.
-  wordmark: { fontSize: 15, letterSpacing: 3, fontWeight: '600' },
+  // Brand mark: the approved Instrument Serif Italic wordmark in plum on a soft plum-tint band.
+  wordmark: { fontFamily: fonts.serif, fontSize: 40, lineHeight: 46 },
+  band: { position: 'absolute', top: 0, left: 0, right: 0, height: 200 },
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: {
     flexGrow: 1, width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center',
     paddingHorizontal: layout.gutter, paddingBottom: space.xl,
   },
-  top: { minHeight: 44, justifyContent: 'center', paddingTop: space.sm },
+  top: { minHeight: 64, justifyContent: 'center', paddingTop: space.sm },
   // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
   // anchored actions (not above the headline).
   hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.xxl, paddingBottom: space.xl },
