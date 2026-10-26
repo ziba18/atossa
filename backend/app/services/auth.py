@@ -23,7 +23,10 @@ def verify_password_or_dummy(plain: str, hashed: str | None) -> bool:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    try:
+        return pwd_context.verify(plain, hashed)
+    except ValueError:  # e.g. a NUL character, which bcrypt cannot hash
+        return False
 
 
 def create_access_token(user_id: str) -> str:
