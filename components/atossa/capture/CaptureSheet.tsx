@@ -258,6 +258,18 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     );
   } else if (!confirmClose && stage === 'questions') {
     footer = <Button label="That’s all for now" variant="text" onPress={save} loading={saving} />;
+  } else if (!confirmClose && stage === 'review') {
+    // Sticky, so saving never sits below seven rows of scrolling.
+    footer = (
+      <View style={styles.actions}>
+        <Button label="Looks right, save" onPress={save} loading={saving} />
+        {/* One primary, then a quiet row of two text actions (V13). */}
+        <View style={styles.secondaryActions}>
+          <Button label="Fix something" variant="text" onPress={fixSomething} style={{ flex: 1 }} />
+          <Button label="Add more" variant="text" onPress={addMore} style={{ flex: 1 }} />
+        </View>
+      </View>
+    );
   }
 
   // ---- body ---------------------------------------------------------------------------------
@@ -364,14 +376,6 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
           onReveal={(y) => scrollRef.current?.scrollTo({ y: Math.max(0, notedY.current + y - space.md), animated: true })}
         />
         <InlineError message={saveError} style={{ marginTop: space.md }} />
-        <View style={styles.actions}>
-          <Button label="Looks right, save" onPress={save} loading={saving} />
-          {/* One primary, then a quiet row of two text actions (V13). */}
-          <View style={styles.secondaryActions}>
-            <Button label="Fix something" variant="text" onPress={fixSomething} style={{ flex: 1 }} />
-            <Button label="Add more" variant="text" onPress={addMore} style={{ flex: 1 }} />
-          </View>
-        </View>
       </View>
     );
   }
@@ -404,6 +408,6 @@ const styles = StyleSheet.create({
   typedFocus: { borderColor: colors.plum, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
   micArea: { alignItems: 'center', marginTop: space.xl, gap: space.xs },
   micLabel: { fontFamily: fonts.medium },
-  actions: { marginTop: space.xl, gap: space.xs },
+  actions: { gap: space.xxs },
   secondaryActions: { flexDirection: 'row', gap: space.xs },
 });
