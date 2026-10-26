@@ -371,12 +371,6 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   } else {
     body = (
       <View onLayout={(e) => { notedY.current = e.nativeEvent.layout.y; }}>
-        {signpost ? (
-          // Fixed line only (H4): no label, no score, nothing stored; the note saves as usual.
-          <Card tone="sunken" style={{ marginBottom: space.md }}>
-            <Txt accessibilityRole="alert">{signpost}</Txt>
-          </Card>
-        ) : null}
         <NotedCard
           draft={draft}
           onChange={patch}
@@ -402,6 +396,13 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       closeLabel={confirmClose ? 'Keep editing' : 'Close'}
     >
       {confirmClose && saveError ? <InlineError message={saveError} style={{ marginBottom: space.md }} /> : null}
+      {signpost && !confirmClose ? (
+        // Fixed line only (H4): no label, no score, nothing stored; the note saves as usual.
+        // Shown on every step, because "That's all for now" saves without reaching the noted card.
+        <Card tone="sunken" style={{ marginBottom: space.md }}>
+          <Txt accessibilityRole="alert">{signpost}</Txt>
+        </Card>
+      ) : null}
       {body}
     </Sheet>
   );
