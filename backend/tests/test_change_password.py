@@ -15,7 +15,7 @@ class FakeDb:
 
 
 def user(pw="old-password-1"):
-    return SimpleNamespace(hashed_password=hash_password(pw) if pw else None)
+    return SimpleNamespace(hashed_password=hash_password(pw) if pw else None, token_version=0)
 
 
 def call(u, cur, new):

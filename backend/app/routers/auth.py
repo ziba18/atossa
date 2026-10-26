@@ -10,7 +10,7 @@ from app.schemas.auth import (
 )
 from app.services.auth import (
     create_access_token, create_refresh_token, create_user, hash_password,
-    decode_token, get_or_create_social_user, get_user_by_email, verify_password,
+    decode_claims, get_or_create_social_user, get_user_by_email, verify_password,
 )
 from app.services.password_policy import password_problem
 from app.services.rate_limit import FailureThrottle, limit
@@ -30,8 +30,8 @@ def _issue_tokens_for_social_user(db: Session, email: str, display_name: str | N
             profile.display_name = display_name
             db.commit()
     return TokenResponse(
-        access_token=create_access_token(user.id),
-        refresh_token=create_refresh_token(user.id),
+        access_token=create_access_token(user.id, user.token_version),
+        refresh_token=create_refresh_token(user.id, user.token_version),
     )
 
 
@@ -44,8 +44,8 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=problem)
     user = create_user(db, body.email, body.password, body.display_name)
     return TokenResponse(
-        access_token=create_access_token(user.id),
-        refresh_token=create_refresh_token(user.id),
+        access_token=create_access_token(user.id, user.token_version),
+        refresh_token=create_refresh_token(user.id, user.token_version),
     )
 
 
@@ -59,8 +59,8 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     _login_failures.clear(email_key)
     return TokenResponse(
-        access_token=create_access_token(user.id),
-        refresh_token=create_refresh_token(user.id),
+        access_token=create_access_token(user.id, user.token_version),
+        refresh_token=create_refresh_token(user.id, user.token_version),
     )
 
 
@@ -92,14 +92,15 @@ def get_me(current_user: User = Depends(get_current_user)):
 @router.post("/refresh", response_model=TokenResponse)
 def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
     try:
-        user_id = decode_token(body.refresh_token, "refresh")
+        user_id, version = decode_claims(body.refresh_token, "refresh")
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
-    if not db.query(User).filter(User.id == user_id).first():
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.is_active or user.token_version != version:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     return TokenResponse(
-        access_token=create_access_token(user_id),
-        refresh_token=create_refresh_token(user_id),
+        access_token=create_access_token(user_id, user.token_version),
+        refresh_token=create_refresh_token(user_id, user.token_version),
     )
 
 
@@ -113,4 +114,12 @@ def change_password(body: ChangePasswordRequest, db: Session = Depends(get_db), 
     if body.new_password == body.current_password:
         raise HTTPException(status_code=400, detail="Choose a different password")
     current_user.hashed_password = hash_password(body.new_password)
+    current_user.token_version += 1  # every other signed-in device must sign in again
+    db.commit()
+
+
+@router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT, dependencies=[_auth_limit])
+def logout_all(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """Sign this account out everywhere (all access and refresh tokens issued so far stop working)."""
+    current_user.token_version += 1
     db.commit()
