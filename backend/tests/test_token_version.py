@@ -65,7 +65,7 @@ def test_tokens_without_ver_count_as_version_zero():
 
 
 def test_logout_all_and_change_password_bump_the_version():
-    u = SimpleNamespace(id="u1", is_active=True, token_version=0, hashed_password=hash_password("old-password-1"))
+    u = SimpleNamespace(id="u1", email="sam@example.com", is_active=True, token_version=0, hashed_password=hash_password("old-password-1"))
     logout_all(db=Db(u), current_user=u)
     assert u.token_version == 1
     out = change_password(ChangePasswordRequest(current_password="old-password-1", new_password="new-password-22"), db=Db(u), current_user=u)

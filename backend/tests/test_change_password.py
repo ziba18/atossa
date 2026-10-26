@@ -15,7 +15,7 @@ class FakeDb:
 
 
 def user(pw="old-password-1"):
-    return SimpleNamespace(id="u1", hashed_password=hash_password(pw) if pw else None, token_version=0)
+    return SimpleNamespace(id="u1", email="sam.jones@example.com", hashed_password=hash_password(pw) if pw else None, token_version=0)
 
 
 def call(u, cur, new):
@@ -30,7 +30,7 @@ def test_changes_password_when_current_is_right():
     assert verify_password("new-password-2", u.hashed_password)
 
 
-@pytest.mark.parametrize("cur,new", [("wrong-password", "new-password-2"), ("old-password-1", "short"), ("old-password-1", "old-password-1")])
+@pytest.mark.parametrize("cur,new", [("wrong-password", "new-password-2"), ("old-password-1", "short"), ("old-password-1", "password123"), ("old-password-1", "x" * 80), ("old-password-1", "sam.jones"), ("old-password-1", "old-password-1")])
 def test_rejects_bad_requests_and_keeps_old_password(cur, new):
     u = user()
     with pytest.raises(HTTPException) as e:
