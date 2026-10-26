@@ -7,6 +7,12 @@ import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
 
+const STEPS = [
+  'Tell Atossa how you feel, by voice or text.',
+  'Atossa asks only for what is missing.',
+  'Show your doctor a clear summary.',
+];
+
 /**
  * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
  * from Today), one plain sentence, then the actions anchored low. No imagery.
@@ -39,6 +45,16 @@ export default function WelcomeScreen() {
               ))}
             </View>
           </Card>
+          <View style={styles.steps}>
+            {STEPS.map((t, i) => (
+              <View key={t} style={styles.step}>
+                <View style={styles.stepNum}>
+                  <Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt>
+                </View>
+                <Txt variant="secondary" style={styles.stepText}>{t}</Txt>
+              </View>
+            ))}
+          </View>
         </View>
 
         <View style={styles.actions}>
@@ -58,10 +74,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: layout.gutter, paddingBottom: space.xl,
   },
   top: { minHeight: 44, justifyContent: 'center', paddingTop: space.sm },
-  hero: { flexGrow: 1, justifyContent: 'center', gap: space.sm, paddingVertical: space.huge },
+  hero: { flexGrow: 1, justifyContent: 'center', gap: space.sm, paddingVertical: space.xxl },
   example: { gap: space.xs, marginTop: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   tag: { backgroundColor: colors.plumTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
   tagText: { fontWeight: '600' },
+  steps: { gap: space.sm, marginTop: space.lg },
+  step: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  stepNum: {
+    width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  stepText: { flex: 1 },
   actions: { gap: space.xs },
 });
