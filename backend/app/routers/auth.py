@@ -95,7 +95,8 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
         user_id = decode_token(body.refresh_token, "refresh")
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
-    if not db.query(User).filter(User.id == user_id).first():
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     return TokenResponse(
         access_token=create_access_token(user_id),
