@@ -109,8 +109,9 @@ def change_password(body: ChangePasswordRequest, db: Session = Depends(get_db), 
     # Accounts created through Apple/Google have no password to change.
     if not current_user.hashed_password or not verify_password(body.current_password, current_user.hashed_password):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
-    if len(body.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    problem = password_problem(body.new_password, current_user.email)
+    if problem:
+        raise HTTPException(status_code=400, detail=problem)
     if body.new_password == body.current_password:
         raise HTTPException(status_code=400, detail="Choose a different password")
     current_user.hashed_password = hash_password(body.new_password)
