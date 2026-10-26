@@ -32,7 +32,7 @@ function zonesFrom(lower: string): string[] {
     if (tummy && /\b(centre|center|middle)\b/.test(c)) zones.add('Lower tummy centre');
     if (tummy && /\bright\b/.test(c)) zones.add('Lower tummy right');
     if (tummy && /\bboth sides\b/.test(c)) zones.add('Lower tummy left').add('Lower tummy right');
-    if (/\b(lower back|my back|back pain|back ache|backache|in my back)\b/.test(c)) zones.add('Lower back');
+    if (/\b(lower back|my back|back pain|back ache|backache|in my back|(?:sore|aching|achy|painful|tender|stiff) back)\b/.test(c)) zones.add('Lower back');
     if (/\bdeep inside\b|\bdeep\b[^.,;]{0,20}\binside\b/.test(c)) zones.add('Deep inside');
     if (/\blegs?\b/.test(c)) zones.add('Legs');
     if (/\b(my bottom|in my bottom|bum)\b/.test(c)) zones.add('Bottom');
