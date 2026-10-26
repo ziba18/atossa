@@ -55,7 +55,7 @@ const hasIcon = (child: React.ReactNode) =>
  * optional trailing value (ink-3) and a chevron when it navigates.
  */
 export function GroupRow({
-  icon, label, detail, quote, value, onPress, chevron = true, accessibilityLabel,
+  icon, label, detail, quote, value, onPress, chevron = true, accessibilityLabel, destructive,
 }: {
   icon?: IconName;
   label: string;
@@ -66,6 +66,8 @@ export function GroupRow({
   onPress: () => void;
   chevron?: boolean;
   accessibilityLabel?: string;
+  /** Error-red icon and label (Delete account); the confirm step still follows. */
+  destructive?: boolean;
 }) {
   return (
     <Pressable
@@ -74,9 +76,9 @@ export function GroupRow({
       accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join('. ')}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.canvas }]}
     >
-      {icon ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
+      {icon ? <Icon name={icon} size={GLYPH} color={destructive ? colors.error : colors.ink} /> : null}
       <View style={styles.text}>
-        <Txt variant="body">{label}</Txt>
+        <Txt variant="body" color={destructive ? colors.error : undefined}>{label}</Txt>
         {detail ? <Txt variant="secondary">{detail}</Txt> : null}
         {quote ? <Quote numberOfLines={2}>{quote}</Quote> : null}
       </View>

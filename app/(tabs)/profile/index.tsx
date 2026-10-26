@@ -157,6 +157,7 @@ export default function ProfileScreen() {
           <GroupRow
             icon="trash-2"
             label="Delete account"
+            destructive
             chevron={false}
             onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(true); }}
           />
