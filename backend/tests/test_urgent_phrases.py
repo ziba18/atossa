@@ -10,6 +10,6 @@ PHRASES = json.load(open(os.path.join(os.path.dirname(__file__), "urgent_phrases
 
 
 def test_shared_phrase_list():
-    # scripts/urgent-wording.test.mjs checks the app's copy of the patterns against the same file.
+    # scripts/urgent-wording-live.test.mjs runs the app check against the same file.
     wrong = [(t, want) for t, want in PHRASES if is_emergency(t) != want]
     assert wrong == []
