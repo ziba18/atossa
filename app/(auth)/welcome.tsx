@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
         <View style={styles.top}>
-          <Txt variant="headline" color={colors.ink2} accessibilityRole="header">Atossa</Txt>
+          <Txt variant="caption" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>ATOSSA</Txt>
         </View>
 
         <View style={styles.hero}>
@@ -68,6 +68,8 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Quiet brand mark: spaced capitals in plum, so it never competes with the serif hero line.
+  wordmark: { fontSize: 15, letterSpacing: 3, fontWeight: '600' },
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: {
     flexGrow: 1, width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center',
