@@ -139,7 +139,7 @@ function ListView({
 
   return (
     <View>
-      <RecentStrip symptoms={symptoms} />
+      {/* Filters lead so the chips never move when the strip comes and goes. */}
       <View style={{ marginTop: space.lg }}>
         <ChipGroup
           scroll
@@ -150,6 +150,10 @@ function ListView({
           onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
         />
       </View>
+      {/* The strip counts symptom notes, so it only shows where those are on the list. */}
+      {filter === 'All' || filter === 'Symptoms' ? (
+        <RecentStrip symptoms={symptoms} />
+      ) : null}
       {groups.length === 0 && filter !== 'All' ? (
         <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.xxxl }}>
           {EMPTY_FILTER_TEXT[filter]}
