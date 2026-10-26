@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { RecordDetail } from '../../../../../components/atossa/records/RecordDetail';
+import { safeBackLabel } from '../../../../../components/atossa/timeline/navigation';
 import { KIND_INFO, firstParam, toDataKind } from '../../../../../components/atossa/records/recordKinds';
 
 /** /(tabs)/profile/records/[kind]/[id] (id or `new`). Back label = `from`, else the list name. */
@@ -10,7 +11,7 @@ export default function ProfileRecordScreen() {
   const kind = toDataKind(params.kind);
   if (!kind) return <Redirect href={'/(tabs)/profile' as any} />;
   const info = KIND_INFO[kind];
-  const backLabel = firstParam(params.from).trim() || info.listTitle;
+  const backLabel = safeBackLabel(params.from, info.listTitle);
 
   const done = () => {
     if (router.canGoBack()) router.back();

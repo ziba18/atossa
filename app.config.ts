@@ -32,6 +32,16 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.attosa.app',
+    // Apple's required-reason API declaration for the app's own use (UserDefaults, via local
+    // storage). Reason CA92.1 = app-only data, per https://docs.expo.dev/guides/apple-privacy/.
+    privacyManifests: {
+      NSPrivacyAccessedAPITypes: [
+        {
+          NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+          NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
+        },
+      ],
+    },
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },

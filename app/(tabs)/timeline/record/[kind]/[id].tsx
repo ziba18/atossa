@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { RecordDetail } from '../../../../../components/atossa/records/RecordDetail';
+import { safeBackLabel } from '../../../../../components/atossa/timeline/navigation';
 import { firstParam, toDataKind } from '../../../../../components/atossa/records/recordKinds';
 
 /**
@@ -12,7 +13,7 @@ export default function TimelineRecordScreen() {
   const params = useLocalSearchParams<{ kind: string; id: string; from?: string }>();
   const kind = toDataKind(params.kind);
   if (!kind) return <Redirect href={'/(tabs)/timeline' as any} />;
-  const backLabel = firstParam(params.from).trim() || 'Timeline';
+  const backLabel = safeBackLabel(params.from);
 
   const done = () => {
     if (router.canGoBack()) router.back();
