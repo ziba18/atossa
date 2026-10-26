@@ -7,6 +7,7 @@ import {
 } from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
+import { IS_PREVIEW } from '../../../lib/preview/flag';
 import { computeCycleMath, PHASE_LABEL } from '../../../algorithms/cyclePhase';
 import type { CyclePhaseLog } from '../../../algorithms/cyclePhaseLog';
 import type { CycleLog } from '../../../types/database';
@@ -44,6 +45,8 @@ export default function FriendsScreen() {
 
   const load = useCallback(async () => {
     if (!user) return;
+    // Design preview has no backend: show the empty state, not a network error.
+    if (IS_PREVIEW) { setLoading(false); return; }
     try {
       const [pendingRes, friendsRes, myLogs] = await Promise.all([
         api.get<PendingInvite[]>('/connections/pending'),
