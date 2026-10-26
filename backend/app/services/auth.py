@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
-from jose import JWTError, jwt
+import jwt
+from jwt import PyJWTError as JWTError
 from passlib.context import CryptContext
 from sqlalchemy import func
 from sqlalchemy.orm import Session
