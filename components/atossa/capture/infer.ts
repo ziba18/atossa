@@ -89,7 +89,7 @@ function impactsFrom(lowerRaw: string): string[] {
     const cleared = CLEAR.test(c) && !LOST.test(c);
     if (/\b(work|study|studying|school|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
     if (/\b(sleep|slept|sleeping|woke|awake|kept me up)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
-    if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga)\b/.test(c) && !cleared) out.add('Exercise');
+    if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga|pilates|netball|football|hockey|rugby|jogging|(?:go|went|going) (?:for a )?run(?:ning)?)\b/.test(c) && !cleared) out.add('Exercise');
     if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in)\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
     if (/\bsex\b/.test(c) && !cleared) out.add('Sex');
   }
