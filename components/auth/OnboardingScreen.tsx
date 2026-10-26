@@ -1,10 +1,11 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
 
-export const ONBOARDING_STEPS = 4;
+// Browsers can't deliver the daily reminder, so web onboarding skips that step.
+export const ONBOARDING_STEPS = Platform.OS === 'web' ? 3 : 4;
 
 /**
  * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption

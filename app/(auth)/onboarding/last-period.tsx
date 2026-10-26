@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, space } from '../../../constants/atossaUI';
 import { Button, Card, DayChooser, InlineError, Txt } from '../../../components/atossa/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { api } from '../../../lib/api';
+import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isFuture } from '../../../lib/records/dates';
 import { formatDay } from '../../../lib/records/format';
@@ -12,6 +13,7 @@ import { track } from '../../../lib/analytics';
 
 export default function OnboardingLastPeriod() {
   const router = useRouter();
+  const fetchProfile = useAuthStore((s) => s.fetchProfile);
   const savePeriodDays = useRecordsStore((s) => s.savePeriodDays);
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -20,6 +22,20 @@ export default function OnboardingLastPeriod() {
   const choose = (key: string) => {
     setError(isFuture(key) ? 'Choose today or a day before today.' : '');
     setSelected(isFuture(key) ? null : key);
+  };
+
+  // Web has no reminder step (browsers can't send the phone notification): finish here instead.
+  const goNext = async () => {
+    if (Platform.OS !== 'web') { router.push('/(auth)/onboarding/reminders'); return; }
+    await api.patch('/me', {
+      notifications_enabled: false,
+      daily_log_reminder_enabled: false,
+      daily_log_reminder_time: '20:00',
+      onboarding_complete: true,
+    });
+    await fetchProfile();
+    track('Onboarding Completed', { reminder: false });
+    router.replace('/(tabs)/today' as any);
   };
 
   const handleNext = async () => {
@@ -33,7 +49,7 @@ export default function OnboardingLastPeriod() {
         api.post('/cycles', { period_start: selected }),
       ]);
       track('Onboarding Step Completed', { step: 'last_period', skipped: false });
-      router.push('/(auth)/onboarding/reminders');
+      await goNext();
     } catch {
       setError('We couldn’t save that date. Check your connection and try again.');
     } finally {
@@ -60,7 +76,7 @@ export default function OnboardingLastPeriod() {
         <Button label={loading ? 'Saving…' : 'Next'} loading={loading} disabled={!selected} onPress={handleNext} />
         <Button label="I’m not sure" variant="text" disabled={loading} onPress={() => {
           track('Onboarding Step Completed', { step: 'last_period', skipped: true });
-          router.push('/(auth)/onboarding/reminders');
+          goNext().catch(() => setError('We couldn’t finish setting up. Check your connection and try again.'));
         }} />
       </View>
     </OnboardingScreen>
