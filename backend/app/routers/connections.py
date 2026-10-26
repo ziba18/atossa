@@ -6,6 +6,7 @@ from app.dependencies import get_current_user
 from app.models.user import User, Profile
 from app.models.cycle import CycleLog
 from app.models.social import ConnectedAccount
+from app.services.user_quota import check_user_quota
 from app.schemas.connection import (
     InviteFriendRequest, ConnectionResponse, FriendSummary, FriendCycleLog,
 )
@@ -24,6 +25,7 @@ def invite_friend(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    check_user_quota("invite-day", current_user.id, 20, 24 * 3600)
     invite_email = body.invite_email.lower()
     if invite_email == current_user.email.lower():
         raise HTTPException(status_code=400, detail="You can't invite yourself")
