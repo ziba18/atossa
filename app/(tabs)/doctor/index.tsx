@@ -165,7 +165,7 @@ export default function DoctorScreen() {
       <InlineError message={actionError} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs }}>
         <Button
-          label={Platform.OS === 'web' ? 'Save as PDF' : 'Share PDF'}
+          label={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
           icon="share-2"
           onPress={share}
           loading={busy === 'share'}
@@ -180,7 +180,7 @@ export default function DoctorScreen() {
         />
       </View>
       {Platform.OS === 'web' && !doc.empty ? (
-        <Txt variant="caption">Save as PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
+        <Txt variant="caption">Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
       ) : null}
     </View>
   );
