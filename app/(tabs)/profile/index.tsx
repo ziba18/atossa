@@ -134,6 +134,16 @@ export default function ProfileScreen() {
           detail="Share only your cycle phase with people you invite"
           onPress={() => router.push('/(tabs)/profile/friends' as any)}
         />
+      </Group>
+
+      <GroupHeading title="About" style={{ marginTop: space.xxl }} />
+      <Group>
+        <GroupRow icon="file-text" label="Privacy policy" onPress={() => openLegal('privacy')} />
+        <GroupRow icon="file-text" label="Terms of use" onPress={() => openLegal('terms')} />
+      </Group>
+
+      <GroupHeading title="Account" style={{ marginTop: space.xxl }} />
+      <Group>
         <GroupRow
           icon="log-out"
           label="Sign out"
@@ -176,12 +186,6 @@ export default function ProfileScreen() {
           ]}
         />
       ) : null}
-
-      <GroupHeading title="About" style={{ marginTop: space.xxl }} />
-      <Group>
-        <GroupRow icon="file-text" label="Privacy policy" onPress={() => openLegal('privacy')} />
-        <GroupRow icon="file-text" label="Terms of use" onPress={() => openLegal('terms')} />
-      </Group>
 
       <SafetyLine style={{ marginTop: space.xxl }} />
       <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.sm }}>
