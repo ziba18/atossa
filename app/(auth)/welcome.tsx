@@ -1,6 +1,6 @@
 import { resetOnboardingSteps } from '../../components/auth/OnboardingScreen';
 import React, { useEffect } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors, layout, space } from '../../constants/atossaUI';
@@ -21,16 +21,18 @@ const STEPS = [
  */
 export default function WelcomeScreen() {
   const router = useRouter();
+  // Short phones (iPhone SE, 568 high): drop the 3-step strip and tighten the top so both buttons stay on screen.
+  const compact = useWindowDimensions().height < 700;
   useEffect(() => { resetOnboardingSteps(); track('Welcome Viewed'); }, []);
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
-        <View style={styles.top}>
+      <ScrollView contentContainerStyle={[styles.column, compact && { paddingBottom: space.md }]} showsVerticalScrollIndicator={false}>
+        <View style={[styles.top, compact && { minHeight: 32, paddingTop: 0 }]}>
           <Txt variant="caption" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>ATOSSA</Txt>
         </View>
 
-        <View style={styles.hero}>
+        <View style={[styles.hero, compact && { paddingTop: space.xs, paddingBottom: space.sm }]}>
           <Txt variant="hero">Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
             {Platform.OS === 'web' ? 'Write it' : 'Say it'} the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
@@ -47,7 +49,7 @@ export default function WelcomeScreen() {
               ))}
             </View>
           </Card>
-          <View style={styles.steps}>
+          {compact ? null : <View style={styles.steps}>
             {STEPS.map((t, i) => (
               <View key={t} style={styles.step}>
                 <View style={styles.stepNum}>
@@ -56,7 +58,7 @@ export default function WelcomeScreen() {
                 <Txt variant="secondary" style={styles.stepText}>{t}</Txt>
               </View>
             ))}
-          </View>
+          </View>}
         </View>
 
         <View style={styles.actions}>
