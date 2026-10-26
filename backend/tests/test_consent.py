@@ -57,3 +57,14 @@ def test_other_updates_leave_consent_alone(world):
     update_profile(ProfileUpdate(display_name="Sam"), current_user=user, db=db)
     p = db.query(Profile).one()
     assert p.consent_version == 1 and p.consented_at == first
+
+
+def test_consent_cannot_be_erased_or_lowered(world):
+    from fastapi import HTTPException
+    db, user = world
+    update_profile(ProfileUpdate(consent_version=2), current_user=user, db=db)
+    out = update_profile(ProfileUpdate(consent_version=None), current_user=user, db=db)
+    assert out.consent_version == 2
+    with pytest.raises(HTTPException) as e:
+        update_profile(ProfileUpdate(consent_version=1), current_user=user, db=db)
+    assert e.value.status_code == 400

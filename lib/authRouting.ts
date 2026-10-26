@@ -10,8 +10,10 @@ export const CONSENT_VERSION = 1;
  * e.g. Apple sign-in that hid it).
  */
 export function routeAfterSignIn(profile: Profile | null | undefined): string {
-  // consent_version is null until agreed. An older backend omits it (undefined): then there is nothing to ask.
-  if (profile && profile.consent_version === null) return '/(auth)/onboarding/consent';
+  // consent_version is null until agreed, and lower than CONSENT_VERSION once the text has changed. An older backend omits it (undefined): then there is nothing to ask.
+  if (profile && (profile.consent_version === null || (typeof profile.consent_version === 'number' && profile.consent_version < CONSENT_VERSION))) {
+    return '/(auth)/onboarding/consent';
+  }
   if (profile?.onboarding_complete) return '/(tabs)/today';
   if (!isHumanName(profile?.display_name)) return '/(auth)/onboarding/name';
   return '/(auth)/onboarding/basics';

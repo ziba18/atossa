@@ -15,6 +15,8 @@ const cases = [
   [{ ...done, onboarding_complete: false, consent_version: null }, '/(auth)/onboarding/consent'],
   [{ ...done, consent_version: 1 }, '/(tabs)/today'],
   [{ ...done }, '/(tabs)/today'],
+  [{ ...done, consent_version: 0 }, '/(auth)/onboarding/consent'],
+  [{ ...done, consent_version: 5 }, '/(tabs)/today'],
   [{ display_name: 'Sam', onboarding_complete: false, consent_version: 1 }, '/(auth)/onboarding/basics'],
 ];
 const bad = cases.filter(([p, want]) => routeAfterSignIn(p) !== want).map(([p]) => JSON.stringify(p));

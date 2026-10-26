@@ -36,6 +36,13 @@ def update_profile(
     # model_dump(exclude_unset=True) only returns fields the client actually sent,
     # so a PATCH with {"dark_mode": true} won't overwrite all other fields with None.
     changes = body.model_dump(exclude_unset=True)
+    if "consent_version" in changes:
+        # Consent can be given or renewed, never erased or wound back by a client request.
+        new = changes["consent_version"]
+        if new is None:
+            del changes["consent_version"]
+        elif profile.consent_version is not None and new < profile.consent_version:
+            raise HTTPException(status_code=400, detail="Consent version cannot go down")
     for field, value in changes.items():
         setattr(profile, field, value)
     if changes.get("consent_version") is not None:
