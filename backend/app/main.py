@@ -8,6 +8,8 @@ from app.config import settings
 from app.database import get_db
 from app.routers import auth, profiles, connections, chat, records, legal, basket_buddy
 
+MAX_BODY_BYTES = 256 * 1024
+
 app = FastAPI(title="Atossa API", version="1.0.0")
 
 
@@ -29,6 +31,11 @@ app.add_middleware(
 
 @app.middleware("http")
 async def security_headers(request, call_next):
+    # No legitimate request is near this size (a record is capped at 20,000 characters).
+    # Only the declared length is checked; the host's edge limit covers chunked uploads.
+    declared = request.headers.get("content-length", "")
+    if declared.isdigit() and int(declared) > MAX_BODY_BYTES:
+        return JSONResponse(status_code=413, content={"detail": "Request is too large"})
     response = await call_next(request)
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("Referrer-Policy", "no-referrer")
