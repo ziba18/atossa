@@ -22,3 +22,10 @@ def test_replay_sets(i):
     miss = [t for t in SETS[i]["emergency"] if not g.is_emergency(t)]
     fa = [t for t in SETS[i]["harmless"] if g.is_emergency(t)]
     assert len(miss) <= 1 and not fa, (miss, fa)
+
+
+def test_old_message_does_not_turn_every_reply_urgent():
+    history = "I fainted last month. It's been mild cramps since, 3 out of 10"
+    # chat.py decides emergencies on the latest message only and calls check(..., check_emergency=False)
+    assert g.check("How long has it lasted?", history, check_emergency=False).ok
+    assert g.check("How long has it lasted?", history).text == g.URGENT  # default stays fail-closed

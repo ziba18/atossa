@@ -132,13 +132,13 @@ def is_emergency(user_text: str) -> bool:
     return emergency_kind(user_text) is not None
 
 
-def check(model_text: str, user_text: str = "") -> GuardResult:
+def check(model_text: str, user_text: str = "", check_emergency: bool = True) -> GuardResult:
     """Return the text unchanged if clean, else the fixed fallback (or URGENT).
 
     Words the user themselves wrote are allowed back (e.g. their doctor's diagnosis quoted
     by them), so a hit that is a verbatim substring of user_text is ignored.
     """
-    if user_text and is_emergency(user_text):
+    if check_emergency and user_text and is_emergency(user_text):
         return GuardResult(False, urgent_text(user_text), ["emergency_input"])
     user_low = user_text.lower()
     reasons = []

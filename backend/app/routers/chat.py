@@ -27,7 +27,9 @@ def chat(body: ChatRequest, current_user: User = Depends(get_current_user)):
     # The system prompt is not enough on its own: replies that name a condition, give a cause
     # or probability, recommend treatment or reassure are swapped for a fixed fallback.
     user_text = " ".join(m.content for m in body.messages if m.role == "user")
-    result = output_guard.check(reply, user_text)
+    # Emergency wording was already handled above on the latest message only: an older message
+    # ("I fainted last month") must not turn every later reply into the urgent text.
+    result = output_guard.check(reply, user_text, check_emergency=False)
     if not result.ok:
         log.info("chat guard: replaced reply (%s)", ",".join(result.reasons))  # reasons only, never text
     return ChatResponse(reply=result.text)
