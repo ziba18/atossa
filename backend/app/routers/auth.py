@@ -12,6 +12,7 @@ from app.services.auth import (
     create_access_token, create_refresh_token, create_user, hash_password,
     decode_token, get_or_create_social_user, get_user_by_email, verify_password,
 )
+from app.services.password_policy import password_problem
 from app.services.rate_limit import limit
 from app.services.social_auth import SocialAuthError, verify_apple_identity_token, verify_google_id_token
 
@@ -36,8 +37,9 @@ def _issue_tokens_for_social_user(db: Session, email: str, display_name: str | N
 def register(body: RegisterRequest, db: Session = Depends(get_db)):
     if get_user_by_email(db, body.email):
         raise HTTPException(status_code=400, detail="Email already registered")
-    if len(body.password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    problem = password_problem(body.password, body.email)
+    if problem:
+        raise HTTPException(status_code=400, detail=problem)
     user = create_user(db, body.email, body.password, body.display_name)
     return TokenResponse(
         access_token=create_access_token(user.id),
