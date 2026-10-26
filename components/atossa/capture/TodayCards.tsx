@@ -212,7 +212,7 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
         {worst != null || facts ? (
           <View style={styles.factRow}>
             {worst != null ? <SeverityTag value={worst} suffix={suffix} /> : null}
-            {facts ? <View style={{ flex: 1 }}><FactLine parts={[facts]} numberOfLines={2} /></View> : null}
+            {facts ? <View style={{ flex: 1, minWidth: 110 }}><FactLine parts={[facts]} numberOfLines={2} /></View> : null}
           </View>
         ) : null}
       </View>
@@ -341,5 +341,5 @@ const styles = StyleSheet.create({
   chipsWrap: { marginHorizontal: -layout.gutter },
   chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
   fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },
-  factRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  factRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs },
 });
