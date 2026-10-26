@@ -33,10 +33,10 @@ export default function WelcomeScreen() {
         <View style={styles.hero}>
           <Txt variant="hero">Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
-            Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
+            {Platform.OS === 'web' ? 'Write it' : 'Say it'} the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
           </Txt>
           <Card style={styles.example}>
-            <Txt variant="caption" color={colors.ink2}>What you say</Txt>
+            <Txt variant="caption" color={colors.ink2}>{Platform.OS === 'web' ? 'What you write' : 'What you say'}</Txt>
             <Quote>Sharp low belly pain since Tuesday, worse in the evening, missed work.</Quote>
             <Txt variant="caption" color={colors.ink2}>What your doctor sees</Txt>
             <View style={styles.tags}>
