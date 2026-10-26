@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
         <View style={styles.hero}>
           <Txt variant="hero">Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
-            Say it the way you'd tell a friend. Atossa tidies it into a clear summary for your doctor.
+            Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
           </Txt>
           <Card style={styles.example}>
             <Txt variant="caption" color={colors.ink2}>What you say</Txt>
@@ -58,7 +58,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: layout.gutter, paddingBottom: space.xl,
   },
   top: { minHeight: 44, justifyContent: 'center', paddingTop: space.sm },
-  hero: { flexGrow: 1, justifyContent: 'center', gap: space.sm, paddingVertical: space.huge },
+  // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
+  // anchored actions (not above the headline).
+  hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.huge, paddingBottom: space.xl },
   example: { gap: space.xs, marginTop: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   tag: { backgroundColor: colors.plumTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },

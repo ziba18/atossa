@@ -7,7 +7,8 @@ import { useRouter } from 'expo-router';
 import {
   Button, Card, DayChooser, FieldLabel, InlineError, Sheet, TextField, Txt, showToast,
 } from '../kit';
-import { space } from '../../../constants/atossaUI';
+import { colors, space } from '../../../constants/atossaUI';
+import { Icon } from '../../ui/Icon';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
 import { formatDay, noteCount, notesLabel } from '../../../lib/records/format';
@@ -38,19 +39,25 @@ export function AppointmentCard() {
     const isToday = next.data.date === todayKey();
     // Title = who; meta = date + count on its own line, so long names don't bury the count.
     card = (
-      <Card style={{ gap: space.xxs }}>
-        {/* On the day it reads "Appointment today", as For my doctor's header does (N22). */}
-        <Txt variant="caption">{isToday ? 'Appointment today' : 'Next appointment'}</Txt>
-        <Txt variant="headline">{who}</Txt>
-        <Txt variant="secondary">
-          {`${isToday ? 'Today' : formatDay(next.data.date)} · ${count > 0 ? `${notesLabel(count)} ready` : 'No notes yet'}`}
-        </Txt>
-        <Button
-          label="Preview summary"
-          variant="text"
-          align="start"
-          onPress={() => router.push('/(tabs)/doctor' as any)}
-        />
+      <Card style={{ flexDirection: 'row', gap: space.md }}>
+        {/* Same calendar badge as For my doctor's appointment card. */}
+        <View aria-hidden style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="calendar" size={22} color={colors.ink} />
+        </View>
+        <View style={{ flex: 1, gap: space.xxs }}>
+          {/* On the day it reads "Appointment today", as For my doctor's header does (N22). */}
+          <Txt variant="caption">{isToday ? 'Appointment today' : 'Next appointment'}</Txt>
+          <Txt variant="headline">{who}</Txt>
+          <Txt variant="secondary">
+            {`${isToday ? 'Today' : formatDay(next.data.date)} · ${count > 0 ? `${notesLabel(count)} ready` : 'No notes yet'}`}
+          </Txt>
+          <Button
+            label="Preview summary"
+            variant="text"
+            align="start"
+            onPress={() => router.push('/(tabs)/doctor' as any)}
+          />
+        </View>
       </Card>
     );
   } else {

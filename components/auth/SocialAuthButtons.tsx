@@ -55,7 +55,7 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
   return (
     <View style={{ gap: space.sm }}>
       {divider ? (
-        <View style={styles.dividerRow} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <View style={styles.dividerRow} aria-hidden>
           <View style={styles.line} />
           <Txt variant="caption">or</Txt>
           <View style={styles.line} />

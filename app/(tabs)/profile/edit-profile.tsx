@@ -76,9 +76,9 @@ export default function EditProfileScreen() {
         <View>
           <FieldLabel label="Date of birth" optional />
           <View style={{ flexDirection: 'row', gap: space.xs }}>
-            <TextField label="Day" value={day} onChangeText={digits(setDay)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
-            <TextField label="Month" value={month} onChangeText={digits(setMonth)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
-            <TextField label="Year" value={year} onChangeText={digits(setYear)} keyboardType="number-pad" maxLength={4} style={{ flex: 1.4 }} />
+            <TextField label="Day" subLabel value={day} onChangeText={digits(setDay)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
+            <TextField label="Month" subLabel value={month} onChangeText={digits(setMonth)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
+            <TextField label="Year" subLabel value={year} onChangeText={digits(setYear)} keyboardType="number-pad" maxLength={4} style={{ flex: 1.4 }} />
           </View>
         </View>
 

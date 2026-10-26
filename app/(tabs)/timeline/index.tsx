@@ -3,10 +3,12 @@ import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, ChipGroup, EmptyState, HeaderAvatar, ScreenLarge, SegmentedControl, Txt,
+  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
+import { GhostEntry } from '../../../components/atossa/timeline/GhostEntry';
+import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
 import {
@@ -80,7 +82,7 @@ export default function TimelineScreen() {
     <ScreenLarge title="Timeline" right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
       <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
       {mode === 'list' ? (
-        <ListView feed={feed} filter={filter} setFilter={setFilter} onOpen={open} />
+        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
       ) : (
         <MonthView
           feed={feed}
@@ -113,9 +115,10 @@ export default function TimelineScreen() {
 // ---- List -----------------------------------------------------------------------------------
 
 function ListView({
-  feed, filter, setFilter, onOpen,
+  feed, symptoms, filter, setFilter, onOpen,
 }: {
   feed: FeedItem[];
+  symptoms: ReturnType<typeof useRecordsStore.getState>['records']['symptom'];
   filter: (typeof TIMELINE_FILTERS)[number];
   setFilter: (f: (typeof TIMELINE_FILTERS)[number]) => void;
   onOpen: (item: ListItem) => void;
@@ -126,6 +129,7 @@ function ListView({
     return (
       <EmptyState
         fill
+        illustration={<GhostEntry />}
         icon="list"
         message="Nothing here yet. Your notes will line up here by date."
         action={{ label: 'Add a note', onPress: () => openCapture() }}
@@ -134,15 +138,22 @@ function ListView({
   }
 
   return (
-    <View style={{ marginTop: space.lg }}>
-      <ChipGroup
-        scroll
-        bleed
-        accessibilityLabel="Show"
-        options={TIMELINE_FILTERS}
-        value={filter}
-        onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
-      />
+    <View>
+      {/* Filters lead so the chips never move when the strip comes and goes. */}
+      <View style={{ marginTop: space.lg }}>
+        <ChipGroup
+          scroll
+          bleed
+          accessibilityLabel="Show"
+          options={TIMELINE_FILTERS}
+          value={filter}
+          onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
+        />
+      </View>
+      {/* The strip counts symptom notes, so it only shows where those are on the list. */}
+      {filter === 'All' || filter === 'Symptoms' ? (
+        <RecentStrip symptoms={symptoms} />
+      ) : null}
       {groups.length === 0 && filter !== 'All' ? (
         <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.xxxl }}>
           {EMPTY_FILTER_TEXT[filter]}
@@ -158,7 +169,11 @@ function ListView({
               <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
             </View>
             <View style={{ gap: space.sm }}>
-              {g.items.map((item) => <EntryCard key={item.key} item={item} onPress={() => onOpen(item)} />)}
+              {g.items.map((item, j) => (
+                <FadeIn key={item.key} index={i === 0 ? j : 0}>
+                  <EntryCard item={item} onPress={() => onOpen(item)} />
+                </FadeIn>
+              ))}
             </View>
           </View>
         ))
@@ -201,13 +216,16 @@ function MonthView({
   const prefix = `${month.y}-${String(month.m0 + 1).padStart(2, '0')}-`;
   let bleedingDays = 0;
   let spottingDays = 0;
+  let noteDays = 0;
   for (const [k, m] of Object.entries(marks)) {
     if (!k.startsWith(prefix)) continue;
+    if (m.notes > 0) noteDays++;
     if (m.bleeding === 'bleeding') bleedingDays++;
     else if (m.bleeding === 'spotting') spottingDays++;
   }
   const summary = [
-    bleedingDays ? `Bleeding logged on ${dayWord(bleedingDays)} this month.` : '',
+    noteDays ? `Notes on ${dayWord(noteDays)} this month.` : '',
+    bleedingDays ? `Bleeding logged on ${dayWord(bleedingDays)}.` : '',
     spottingDays ? `Spotting logged on ${dayWord(spottingDays)}.` : '',
   ].filter(Boolean).join(' ');
 

@@ -22,7 +22,7 @@ import { Txt } from './Txt';
  * kit FieldLabel (17/600 ink); `optional` adds " · Optional" inline; `hint` sits under it.
  */
 export function TextField({
-  label, value, onChangeText, placeholder, multiline, maxLength, hint, error, secret, style, optional, ...inputProps
+  label, value, onChangeText, placeholder, multiline, maxLength, hint, error, secret, style, optional, subLabel, ...inputProps
 }: {
   label: string;
   /** Shows " · Optional" inline after the label (same as FieldLabel / RecordDateField). */
@@ -34,17 +34,26 @@ export function TextField({
   maxLength?: number;
   hint?: string;
   error?: string;
+  /** Quiet label for a part of a larger field (Day / Month / Year under "Date of birth"): secondary text, not the 17/600 field label. */
+  subLabel?: boolean;
   /** Password field with a Show / Hide button. */
   secret?: boolean;
   style?: StyleProp<ViewStyle>;
 } & Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'autoCorrect' | 'autoFocus' | 'returnKeyType' | 'onSubmitEditing' | 'textContentType'>) {
   const [shown, setShown] = React.useState(false);
+  const [focused, setFocused] = React.useState(false);
   return (
     <View style={style}>
-      <FieldLabel label={label} optional={optional} hint={hint} style={{ marginBottom: 0 }} />
+      {subLabel ? (
+        <Txt variant="secondary" style={{ marginTop: space.xs }}>{label}</Txt>
+      ) : (
+        <FieldLabel label={label} optional={optional} hint={hint} style={{ marginBottom: 0 }} />
+      )}
       <View style={secret ? styles.secretRow : null}>
         <TextInput
           {...inputProps}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
@@ -55,7 +64,7 @@ export function TextField({
           accessibilityLabel={label}
           accessibilityHint={error || undefined}
           textAlignVertical={multiline ? 'top' : 'center'}
-          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1 }, error ? { borderColor: colors.error, borderWidth: 2 } : null]}
+          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1, minWidth: 0 }, error ? { borderColor: colors.error, borderWidth: 2 } : focused ? styles.inputFocused : null]}
         />
         {secret ? (
           <Pressable
@@ -92,7 +101,6 @@ export function Toggle({
       disabled={disabled}
       accessibilityLabel={label}
       accessibilityState={{ checked: value, disabled }}
-      aria-checked={value}
       trackColor={{ true: colors.plum, false: colors.borderStrong }}
       thumbColor={colors.surface}
       ios_backgroundColor={colors.borderStrong}
@@ -361,6 +369,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.xs,
   },
   back: { flexDirection: 'row', alignItems: 'center', minHeight: 44, alignSelf: 'flex-start', marginLeft: -6, paddingRight: space.xs },
+  // Plum 2px focus ring on every platform (RN-web's default is a near-black browser outline; iOS had none).
+  inputFocused: { borderColor: colors.plum, borderWidth: 2, paddingHorizontal: space.md - 1, paddingVertical: space.sm - 1, ...({ outlineStyle: 'none' } as object) },
   input: {
     marginTop: space.sm, minHeight: heights.primary, borderRadius: radii.input, borderWidth: 1, borderColor: colors.borderStrong,
     backgroundColor: colors.surface, paddingHorizontal: space.md, paddingVertical: space.sm,
