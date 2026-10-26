@@ -7,7 +7,7 @@ import { BackChevron, Txt } from '../atossa/kit';
 export const ONBOARDING_STEPS = 4;
 
 /**
- * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
+ * (step 0 = the consent screen, which has no progress strip.) One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
  * above four quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
@@ -33,12 +33,12 @@ export function OnboardingScreen({
       >
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
-          <View style={styles.segments} aria-hidden>
+          {step > 0 ? <View style={styles.segments} aria-hidden>
             {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
               <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
             ))}
-          </View>
-          <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
+          </View> : null}
+          {step > 0 ? <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt> : null}
           <Txt variant="largeTitle" accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>
