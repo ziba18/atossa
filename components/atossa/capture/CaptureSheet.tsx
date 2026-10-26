@@ -273,6 +273,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   }
 
   // ---- body ---------------------------------------------------------------------------------
+  // Nothing said yet: sit the mic lower so the step does not read as an empty sheet.
+  const idleSpeak = mode === 'speak' && !draft.words && !recording;
   let body: React.ReactNode;
   if (confirmClose) {
     body = (
@@ -314,7 +316,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 style={[styles.box, styles.transcript]}
               />
             ) : null}
-            <View style={styles.micArea}>
+            <View style={[styles.micArea, idleSpeak && styles.micAreaIdle]}>
               {recording ? <Waveform recording={recording} seconds={seconds} /> : null}
               <MicButton
                 recording={recording}
@@ -322,6 +324,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 accessibilityLabel={recording ? 'Stop recording' : micLabel}
               />
               <Txt variant="secondary" color={colors.ink} style={styles.micLabel}>{micLabel}</Txt>
+              {idleSpeak ? <Txt variant="caption" style={{ textAlign: 'center' }}>Then Atossa asks only for what’s missing.</Txt> : null}
             </View>
             <InlineError message={dictation.error} style={{ marginTop: space.md }} />
           </>
@@ -406,6 +409,7 @@ const styles = StyleSheet.create({
   typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, minHeight: 180 },
   // Plum 2px ring (padding trimmed 1 so the text does not shift); replaces RN-web's near-black outline.
   typedFocus: { borderColor: colors.plum, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
+  micAreaIdle: { marginTop: space.xxl * 2 },
   micArea: { alignItems: 'center', marginTop: space.xl, gap: space.xs },
   micLabel: { fontFamily: fonts.medium },
   actions: { gap: space.xxs },
