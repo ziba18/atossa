@@ -90,7 +90,7 @@ _ACK_SAFE = re.compile(r"\b(?:what it means|not (?:quite )?sure|guess at anythin
 # a body-system or cause word, a hedge, a verdict, or advice.
 _CLAIM = re.compile(
     r"\b(?:hormon\w*|cycle|ovar\w*|womb|uter\w*|cysts?|tissue|scar\w*|thyroid|progesterone|oestrogen|estrogen|insulin|"
-    r"infect\w*|inflam\w*|stress\w*|diet|vitamin\w*|supplements?|remed\w*|flare\w*|condition|syndrome|disease|serious|harmless|"
+    r"infect\w*|inflam\w*|stress\w*|diet|vitamin\w*|supplements?|remed\w*|flare\w*|condition|syndrome|disease|serious|mild|moderate|severe|extreme|harmless|"
     r"benign|alarming|concern\w*|worr\w*|ibuprofen|paracetamol|iron|blood test|ovulat\w*|process|"
     r"will (?:pass|go|clear|settle|resolve)|go away|clear up|settle|sort (?:it|this)|guess|bet|likel\w*|probabl\w*|chances?|"
     r"usually|typical\w*|frequent\w*|tends? to|often|rarely|always|mostly|typical|signals?|indicat\w*|linked|reason|because|due|culprit|cause\w*|"
@@ -294,6 +294,16 @@ def check(model_text: str, user_text: str = "", check_emergency: bool = True) ->
             if not echoed:
                 reasons.append(name)
                 break
+    # A score the user never gave ("that's about a 7 out of 10") is an invented number.
+    # (Only when we have her text to compare with, and not inside a question: "closer to a 3 or a 7?" is fine.)
+    user_digits = set(re.findall(r"\d+", user_text))
+    if user_text.strip():
+        for sent in _sentences(model_text):
+            if sent.endswith("?"):
+                continue
+            for sm in re.finditer(r"(\d+)\s*(?:/|out of)\s*(?:10|ten)\b", sent, re.I):
+                if sm.group(1) not in user_digits and "invented_score" not in reasons:
+                    reasons.append("invented_score")
     if _LINK_OR_NUMBER.search(model_text) and not _LINK_OR_NUMBER.search(user_text):
         reasons.append("link_or_number")
     if STRICT_STATEMENTS:

@@ -101,3 +101,13 @@ def test_unicode_and_spacing_evasions():
         assert is_emergency(t), t
     assert not is_emergency("I took 2 tablets at 4pm, pain 7/10 b4 my period")
     assert check("Thanks for sharing - e.g. is it on the left or right?", "x").ok
+
+
+def test_invented_scores_and_severity_labels():
+    from app.services.output_guard import check
+    assert not check("That's about a 7 out of 10, which is moderate.", "it hurts").ok
+    assert not check("Your pain level is 8 out of 10 so it is severe.", "it hurts").ok
+    assert not check("I've recorded 7 out of 10.", "it's a 6").ok
+    assert check("I've recorded 7 out of 10. Is that right?", "it's a 7 out of 10").ok
+    assert check("Would you say it's closer to a 3 or a 7 out of 10?", "about a 5").ok
+    assert check("Is it mild, moderate or severe?", "pain").ok
