@@ -147,7 +147,8 @@ suspend accounts that break these terms.</p>
 <h2>Limits</h2>
 <p>As far as the law allows, we aren't liable for indirect losses, or for decisions made
 based on what's recorded in the app. Nothing in these terms limits rights you have under
-consumer law.</p>
+consumer law, and nothing excludes liability for death or personal injury caused by our
+negligence, or for fraud.</p>
 
 <h2>Changes</h2>
 <p>If we change these terms, we'll update this page and its date, and tell you in the app
