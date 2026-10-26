@@ -22,7 +22,7 @@ import { Txt } from './Txt';
  * kit FieldLabel (17/600 ink); `optional` adds " · Optional" inline; `hint` sits under it.
  */
 export function TextField({
-  label, value, onChangeText, placeholder, multiline, maxLength, hint, error, secret, style, optional, ...inputProps
+  label, value, onChangeText, placeholder, multiline, maxLength, hint, error, secret, style, optional, subLabel, ...inputProps
 }: {
   label: string;
   /** Shows " · Optional" inline after the label (same as FieldLabel / RecordDateField). */
@@ -34,6 +34,8 @@ export function TextField({
   maxLength?: number;
   hint?: string;
   error?: string;
+  /** Quiet label for a part of a larger field (Day / Month / Year under "Date of birth"): secondary text, not the 17/600 field label. */
+  subLabel?: boolean;
   /** Password field with a Show / Hide button. */
   secret?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -42,7 +44,11 @@ export function TextField({
   const [focused, setFocused] = React.useState(false);
   return (
     <View style={style}>
-      <FieldLabel label={label} optional={optional} hint={hint} style={{ marginBottom: 0 }} />
+      {subLabel ? (
+        <Txt variant="secondary" style={{ marginTop: space.xs }}>{label}</Txt>
+      ) : (
+        <FieldLabel label={label} optional={optional} hint={hint} style={{ marginBottom: 0 }} />
+      )}
       <View style={secret ? styles.secretRow : null}>
         <TextInput
           {...inputProps}
