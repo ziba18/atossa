@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/atossaUI';
-import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
+import { Button, InlineError, ScreenLarge, TextField, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
@@ -21,6 +21,13 @@ export default function RegisterScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // The server sleeps when idle; a first request can take up to a minute. Say so rather than look frozen.
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    if (!loading) { setSlow(false); return; }
+    const t = setTimeout(() => setSlow(true), 6000);
+    return () => clearTimeout(t);
+  }, [loading]);
 
   const clear = (key: string) => setErrors((e) => (e[key] ? { ...e, [key]: '' } : e));
 
@@ -61,6 +68,11 @@ export default function RegisterScreen() {
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
         <Button label={loading ? 'Creating your account…' : 'Create account'} loading={loading} onPress={handleRegister} />
+        {slow ? (
+          <Txt variant="secondary" style={{ textAlign: 'center' }}>
+            Still working. The first request after a quiet spell can take up to a minute.
+          </Txt>
+        ) : null}
         <LegalLinks />
         <Button label="I already have an account" variant="text" onPress={() => router.replace('/(auth)/login')} />
       </View>
