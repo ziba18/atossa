@@ -5,7 +5,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
+import { CHAT_ENABLED } from '../../../lib/features';
 import { Button, IconButton, InlineError, Txt, curly } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { AttachSheet } from '../../../components/atossa/chat/AttachSheet';
@@ -39,7 +40,13 @@ function greeting(name: string | null | undefined): string {
   return first ? `${part}, ${first}` : part;
 }
 
-export default function ChatScreen() {
+export default function ChatRoute() {
+  // A saved link or old navigation state must not reach the chat while it is switched off.
+  if (!CHAT_ENABLED) return <Redirect href={'/(tabs)/today' as any} />;
+  return <ChatScreen />;
+}
+
+function ChatScreen() {
   const router = useRouter();
   const name = useAuthStore((s) => s.profile?.display_name);
   const userId = useAuthStore((s) => s.user?.id ?? null);
