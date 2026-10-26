@@ -79,3 +79,11 @@ def test_ordinary_period_notes_do_not_trigger():
     from app.services.output_guard import is_emergency
     assert not is_emergency("Clots the size of a 5p coin on day 1")
     assert not is_emergency("Period started, lots of blood on day 2 but normal for me")
+
+
+def test_informal_phrasings_from_unseen_set():
+    from app.services.output_guard import emergency_kind
+    assert emergency_kind("I just want to disappear forever") == "self_harm"
+    for t in ["I've had a seizure", "can't wake my partner up", "been bleeding for 3 weeks non stop and i feel so weak",
+              "i took a load of co-codamol i dont know why", "omg the pain is unreal i think im gonna be sick and pass out"]:
+        assert emergency_kind(t) == "medical", t
