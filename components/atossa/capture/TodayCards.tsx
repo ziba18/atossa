@@ -142,7 +142,7 @@ export function RoughDayCard() {
       setValue(null);
       showToast(`Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your GP.`);
     } catch {
-      setError("That didn't save. Check your connection and try again.");
+      setError("That didn’t save. Check your connection and try again.");
     } finally {
       setSaving(false);
     }

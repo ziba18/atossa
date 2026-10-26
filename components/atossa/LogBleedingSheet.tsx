@@ -78,7 +78,7 @@ export function LogBleedingSheet({
       const what = status === 'spotting' ? 'Spotting' : 'Bleeding';
       showToast(`Saved. ${what} logged for ${isToday ? 'today' : formatRelativeDay(date)}.`);
     } catch {
-      setError("That didn't save. Check your connection and try again.");
+      setError("That didn’t save. Check your connection and try again.");
     } finally {
       setSaving(false);
     }

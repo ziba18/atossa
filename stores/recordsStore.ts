@@ -95,7 +95,7 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
       }
       set({ records: buckets, loadedFor: userId, loading: false });
     } catch {
-      set({ loading: false, error: "We couldn't load your information. Check your connection and try again." });
+      set({ loading: false, error: "We couldn’t load your information. Check your connection and try again." });
     }
   },
 

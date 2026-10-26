@@ -39,18 +39,18 @@ export function messageForErrorCode(code: ExpoSpeechRecognitionErrorCode): strin
       return "Microphone access is off — turn it on in Settings, or type instead.";
     case 'no-speech':
     case 'speech-timeout':
-      return "We couldn't hear anything — try again, or type instead.";
+      return "We couldn’t hear anything — try again, or type instead.";
     case 'service-not-allowed':
     case 'language-not-supported':
-      return "Voice input isn't available on this device right now — try typing instead.";
+      return "Voice input isn’t available on this device right now — try typing instead.";
     case 'audio-capture':
       return "Something interrupted the recording — try again, or type instead.";
     case 'network':
-      return "That needed a network connection it couldn't get — try again, or type instead.";
+      return "That needed a network connection it couldn’t get — try again, or type instead.";
     case 'busy':
       return "Voice input is still finishing up from last time — wait a moment and try again.";
     case 'interrupted':
-      return "Recording was interrupted — try again when you're ready.";
+      return "Recording was interrupted — try again when you’re ready.";
     default:
       return "Something went wrong with voice input — try again, or type instead.";
   }

@@ -174,7 +174,7 @@ export function RecordDetail({
   if (!draft) {
     return (
       <ScreenLarge title={info.title} back={{ label: backLabel, onPress: onDone }}>
-        {loadedFor ? <EmptyState message="This entry isn't here any more." /> : null}
+        {loadedFor ? <EmptyState message="This entry isn’t here any more." /> : null}
       </ScreenLarge>
     );
   }
@@ -207,7 +207,7 @@ export function RecordDetail({
       showToast(info.saved);
       leave();
     } catch {
-      setError("That couldn't be saved. Check your connection and try again.");
+      setError("That couldn’t be saved. Check your connection and try again.");
     } finally {
       setBusy(false);
     }
@@ -223,7 +223,7 @@ export function RecordDetail({
       leave();
     } catch {
       setConfirming(false);
-      setError("That couldn't be deleted. Check your connection and try again.");
+      setError("That couldn’t be deleted. Check your connection and try again.");
     } finally {
       setBusy(false);
     }

@@ -73,7 +73,7 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
   if (!rec) {
     return (
       <ScreenLarge title="Note" back={{ label: from, onPress: back }}>
-        {deleting.current ? null : <EmptyState message="This note isn't here any more." />}
+        {deleting.current ? null : <EmptyState message="This note isn’t here any more." />}
       </ScreenLarge>
     );
   }
@@ -107,7 +107,7 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
       setEditing(null);
       setDraft(null);
     } catch {
-      setError("That didn't save. Check your connection and try again.");
+      setError("That didn’t save. Check your connection and try again.");
     } finally {
       setSaving(false);
     }
@@ -123,7 +123,7 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
       showToast('Note deleted.');
     } catch {
       deleting.current = false;
-      setError("That didn't delete. Check your connection and try again.");
+      setError("That didn’t delete. Check your connection and try again.");
       setSaving(false);
     }
   };

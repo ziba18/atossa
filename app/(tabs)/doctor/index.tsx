@@ -99,7 +99,7 @@ export default function DoctorScreen() {
       await saveDoctorNote(text);
       lastSaved.current = text;
     } catch {
-      setNoteError("Your words couldn't be saved just now. They're still in this summary.");
+      setNoteError("Your words couldn’t be saved just now. They’re still in this summary.");
     }
   };
 
@@ -113,7 +113,7 @@ export default function DoctorScreen() {
         if (Platform.OS !== 'web') showToast('Summary ready to share.');
       });
     } catch (e) {
-      if (!isCancel(e)) setActionError("The summary couldn't be made into a PDF. Please try again.");
+      if (!isCancel(e)) setActionError("The summary couldn’t be made into a PDF. Please try again.");
     } finally {
       setBusy(null);
     }
@@ -125,7 +125,7 @@ export default function DoctorScreen() {
     try {
       await printSummary(summaryToHtml(doc));
     } catch (e) {
-      if (!isCancel(e)) setActionError("The summary couldn't be sent to a printer. Please try again.");
+      if (!isCancel(e)) setActionError("The summary couldn’t be sent to a printer. Please try again.");
     } finally {
       setBusy(null);
     }

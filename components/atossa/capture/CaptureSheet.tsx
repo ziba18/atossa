@@ -217,7 +217,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       const n = noteCount(useRecordsStore.getState().records.symptom);
       showToast(`Saved. ${notesLabel(n)} ready for your GP.`);
     } catch {
-      setSaveError("That didn't save. Check your connection and try again.");
+      setSaveError("That didn’t save. Check your connection and try again.");
       setSaving(false);
     }
   };

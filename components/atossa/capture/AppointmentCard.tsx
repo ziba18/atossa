@@ -109,7 +109,7 @@ export function AddAppointmentSheet({ visible, onClose }: { visible: boolean; on
       onClose();
       showToast('Saved.');
     } catch {
-      setError("That didn't save. Check your connection and try again.");
+      setError("That didn’t save. Check your connection and try again.");
     } finally {
       setSaving(false);
     }

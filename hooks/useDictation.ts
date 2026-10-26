@@ -39,7 +39,7 @@ export function useDictation(onTranscript: (text: string) => void) {
     clearTimer();
     setRecording(false);
     if (hadError.current) return;
-    if (!heardAnySpeech.current) setError("We couldn't hear anything — try again, or type instead.");
+    if (!heardAnySpeech.current) setError("We couldn’t hear anything — try again, or type instead.");
   });
 
   useSpeechEvent('error', (event) => {
@@ -70,7 +70,7 @@ export function useDictation(onTranscript: (text: string) => void) {
       setError(
         isRunningInExpoGo()
           ? 'Voice input works in the App Store version of Atossa, not in Expo Go — you can type instead.'
-          : "Voice input isn't available on this device — you can type instead.",
+          : "Voice input isn’t available on this device — you can type instead.",
       );
       return;
     }

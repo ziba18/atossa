@@ -94,7 +94,7 @@ export function BleedingDetail({ date: routeDate, from }: { date: string; from: 
       back();
       showToast('Saved.');
     } catch {
-      setError("That didn't save. Check your connection and try again.");
+      setError("That didn’t save. Check your connection and try again.");
       setBusy(false);
     }
   };
@@ -109,7 +109,7 @@ export function BleedingDetail({ date: routeDate, from }: { date: string; from: 
       showToast('Bleeding entry deleted.');
     } catch {
       done.current = false;
-      setError("That didn't delete. Check your connection and try again.");
+      setError("That didn’t delete. Check your connection and try again.");
       setBusy(false);
     }
   };
