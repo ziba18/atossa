@@ -72,7 +72,7 @@ export default function TimelineScreen() {
 
   // A quiet plum glyph, not a filled disc (V16). Hidden while the empty List shows its own
   // "Add a note" button, so there is only one primary for one action.
-  const emptyList = mode === 'list' && feed.length === 0;
+  const emptyList = (mode === 'list' && feed.length === 0) || (mode === 'patterns' && feed.length === 0);
   const header = (
     <>
       {emptyList ? null : <AddButton label="Add a note" onPress={() => openCapture()} />}

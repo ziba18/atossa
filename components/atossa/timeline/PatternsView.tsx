@@ -101,7 +101,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
       {m.zones.length ? (
         <FadeIn index={1}>
           <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${plural(z.days, 'day')}`).join('; ')}. Opens your notes.`}>
-            <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>Where, in your words</Txt>
+            <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>Where you felt it</Txt>
             <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} />
           </PressableCard>
         </FadeIn>
