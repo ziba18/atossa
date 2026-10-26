@@ -155,7 +155,12 @@ export function Sheet({
       {/* While closing (native fade), nothing inside takes touches. */}
       <View style={[StyleSheet.absoluteFill, { pointerEvents: visible ? 'auto' : 'none' }]}>
       <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: progress }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={closeLabel} accessibilityRole="button" />
+        {Platform.OS === 'web' ? (
+          // A plain responder view, not a button: the X is the keyboard/screen-reader way out, so the scrim is not a second "Close" Tab stop.
+          <View style={StyleSheet.absoluteFill} onStartShouldSetResponder={() => true} onResponderRelease={onClose} />
+        ) : (
+          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={closeLabel} accessibilityRole="button" />
+        )}
       </Animated.View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
