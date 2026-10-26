@@ -179,12 +179,17 @@ export default function DoctorScreen() {
   return (
     <ScreenLarge title="For my doctor" right={<HeaderAvatar />} footer={footer}>
       <Txt variant="body" color={colors.ink2}>
-        This is what you told Atossa, in your words. Choose what to include.
+        Your notes, in your words, ready to share.
       </Txt>
 
       {upcoming ? (
         <Card style={{ marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-          <Icon name="calendar" size={24} color={colors.ink} />
+          <View style={{
+            width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon name="calendar" size={22} color={colors.ink} />
+          </View>
           <View style={{ flex: 1 }}>
             <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
             <Txt variant="headline">
