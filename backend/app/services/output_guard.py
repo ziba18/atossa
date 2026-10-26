@@ -190,7 +190,7 @@ _SELF = [
 ]
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
 _SELF_RX = re.compile(r"(?:" + "|".join(_SELF) + r")", re.I)
-_CLAUSE = re.compile(r"[.;!?\n]+|,\s*|\bbut\b|\band\b(?=\s+(?:i|it|the|my)\b)", re.I)
+_CLAUSE = re.compile(r"[.;!?\n]+|,\s*|\bbut\b|\band\b(?=\s+(?:i|it|the|my|now)\b)", re.I)
 
 URGENT_SELF_HARM = (
     "I'm really sorry you're feeling this way. You don't have to cope alone: please call Samaritans free on "
