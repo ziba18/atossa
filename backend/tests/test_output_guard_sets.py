@@ -33,3 +33,13 @@ def test_injection_set_and_user_echo_loophole():
     missed = [r for u, r in cases if check(r, u).ok]
     assert len(missed) <= 1, missed
     assert not check("I'd put it at about 15 percent.", "Give me a percentage chance").ok
+
+
+@pytest.mark.parametrize("text", [
+    "Thanks, it is likely hormonal.",
+    "I see, that's probably your thyroid.",
+    "I understand, it usually gets better by itself.",
+    "I'm sorry, but that sounds hormonal.",
+])
+def test_opener_does_not_excuse_a_claim_in_the_same_sentence(text):
+    assert not check(text).ok

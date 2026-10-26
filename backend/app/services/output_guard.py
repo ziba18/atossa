@@ -73,13 +73,15 @@ _ADVICE_MODAL = re.compile(
 _ACK_OPENER = re.compile(
     r"^(?:thanks|thank you|noted|got it|okay|ok|understood|alright|sure|i see|makes sense|i hear you|i understand|i'?m sorry|sorry|no worries|take your time|"
     r"that sounds (?:really |so |very )?(?:like a lot|tough|hard|difficult|painful|exhausting|frustrating|awful|rough|draining|miserable|worrying)|"
-    r"i(?:'ve| have) (?:noted|saved|added|recorded|logged|put)|i can'?t (?:assess|say|diagnose|tell)|your gp can|"
+    r"i(?:'ve| have) (?:noted|saved|added|recorded|logged|put)|i can'?t (?:assess|say|diagnose|tell)|i(?:'m| am) not able to (?:say|assess|tell|diagnose)|that helps me (?:capture|note|record|describe|write|put)|your gp can|"
     r"you can (?:skip|edit|come back|add|change|stop)|you don'?t have to|that'?s (?:noted|saved|added)|that is (?:noted|saved|added)|"
     r"tell me|you mentioned|you can tap|you should see your gp|it(?:'s| is) useful to note|it might help to note|"
     r"this will help your (?:doctor|gp)|let me (?:check|confirm|make sure)|you (?:said|told me|mentioned|wrote)|i can only (?:help|note|write|record)|that helps me (?:understand|picture|see)|i(?:'m| am) here (?:to help|whenever|if)|it(?:'s| is) (?:completely |perfectly )?fine to |it might be worth (?:jotting|noting|writing)|that sounds like (?:a |an )?(?:\w+ ){0,2}(?:day|week|night|time|morning|month)|i(?:'ll| will) help you (?:turn|write|add|put|note|describe))\b",
     re.I,
 )
-_MAX_ACK_WORDS = 18
+_MAX_ACK_WORDS = 20
+# Phrases an acknowledgement may contain although they hold a claim word.
+_ACK_SAFE = re.compile(r"\b(?:what it means|worth (?:noting|jotting|writing|adding)|your cycle|could be useful|can help you|may help your gp|would help your gp)\b", re.I)
 # A short statement that is not on the opener list still passes unless it carries a claim:
 # a body-system or cause word, a hedge, a verdict, or advice.
 _CLAIM = re.compile(
@@ -107,8 +109,12 @@ def _statement_hits(model_text: str) -> list[str]:
             continue
         if _ADVICE_MODAL.search(sent):
             reasons.append("advice")
-        elif _ACK_OPENER.match(sent) and len(sent.split()) <= _MAX_ACK_WORDS:
-            continue
+        elif (ack := _ACK_OPENER.match(sent)) and len(sent.split()) <= _MAX_ACK_WORDS:
+            # An opener does not excuse a claim in the rest of the sentence ("Thanks, it's likely hormonal").
+            # (Echo openers - "You mentioned your diet changed" - restate the user's words, so they are exempt.)
+            echo = re.match(r"you (?:said|told me|mentioned|wrote)", ack.group(0), re.I)
+            if not echo and _CLAIM.search(_ACK_SAFE.sub("", sent[ack.end():])):
+                reasons.append("statement")
         elif len(sent.split()) > _MAX_PLAIN_WORDS or _CLAIM.search(sent):
             reasons.append("statement")
     return reasons
