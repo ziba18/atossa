@@ -36,6 +36,9 @@ const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SEL
 const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES = mk(P.RES_SRC);
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi');
 
+const PREG = /\bpregnan\w+\b/i;
+const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided)\b/i;
+
 function hit(pattern: RegExp, text: string): boolean {
   const re = new RegExp(pattern.source, 'gi');
   for (const clause of text.split(CLAUSE)) {
@@ -57,5 +60,6 @@ export function urgentSignpost(text: string): string | null {
   const t = normalise(text).replace(IDIOM, ' ');
   if (hit(SELF, t) || hit(SELF2, t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t)) return URGENT_SIGNPOST;
+  if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
   return null;
 }
