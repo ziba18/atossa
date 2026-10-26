@@ -1,0 +1,287 @@
+[
+ {
+  "id": "v6-01",
+  "strata": "asr",
+  "text": "um so my tummy's been really sore um on the left side like low down and it's about a seven i'd say",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-02",
+  "strata": "asr",
+  "text": "yeah so i couldn't sleep last night because of the cramps it was like an eight out of ten",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-03",
+  "strata": "asr",
+  "text": "so uh i had to go home early from work today the pain in my back was really bad",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-04",
+  "strata": "asr",
+  "text": "it's only when i'm on my period like only on my period and it's mostly in my pelvis on the right",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-05",
+  "strata": "asr",
+  "text": "no pain today actually i feel good i went to the gym and everything",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-06",
+  "strata": "asr",
+  "text": "it's been going on for about two weeks now i think",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "For about two weeks",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-07",
+  "strata": "asr",
+  "text": "i cancelled on my friends again because i just couldn't face it",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-08",
+  "strata": "asr",
+  "text": "like a five out of ten but it was a nine yesterday",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-09",
+  "strata": "asr",
+  "text": "it's constant it's there all the time at the moment",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-10",
+  "strata": "asr",
+  "text": "pain deep inside and also in my legs",
+  "gold": {
+   "zones": [
+    "Deep inside",
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-11",
+  "strata": "asr",
+  "text": "i didn't have to miss work thankfully just a bit of an ache",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-12",
+  "strata": "asr",
+  "text": "couldn't do my run this morning and i skipped yoga",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-13",
+  "strata": "asr",
+  "text": "um the pain is in my lower back and it's um maybe a six",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-14",
+  "strata": "asr",
+  "text": "since yesterday evening it's been kind of sharp",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "Since yesterday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-15",
+  "strata": "asr",
+  "text": "I'd say it's a four but it spikes to an eight",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-16",
+  "strata": "asr",
+  "text": "sleep was fine and work was fine it was only my belly on the right",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-17",
+  "strata": "asr",
+  "text": "this is a bit awkward but it hurts when we have sex",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-18",
+  "strata": "asr",
+  "text": "my pelvis is aching in the middle and kind of centre low",
+  "gold": {
+   "zones": [
+    "Lower tummy centre"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-19",
+  "strata": "asr",
+  "text": "I've had it since the weekend and it's quite bad about seven",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "Since the weekend",
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v6-20",
+  "strata": "asr",
+  "text": "nothing stopped me today i did everything normal",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]
