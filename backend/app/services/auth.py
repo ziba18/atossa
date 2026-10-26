@@ -54,7 +54,7 @@ def get_or_create_social_user(db: Session, email: str, display_name: str | None 
 
 def create_user(db: Session, email: str, password: str | None, display_name: str | None = None) -> User:
     user = User(
-        email=email,
+        email=email.strip().lower(),
         hashed_password=hash_password(password) if password else None,
     )
     db.add(user)
