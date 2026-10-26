@@ -8,7 +8,7 @@ export const ONBOARDING_STEPS = 4;
 
 /**
  * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
- * (no progress bar), the question as the large title, helper text in ink2, then the controls.
+ * above four quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
@@ -33,6 +33,11 @@ export function OnboardingScreen({
       >
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
+          <View style={styles.segments} accessible accessibilityLabel={`Step ${step} of ${ONBOARDING_STEPS}`}>
+            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
+              <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
+            ))}
+          </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
           <Txt variant="largeTitle" accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
@@ -52,4 +57,7 @@ const styles = StyleSheet.create({
   head: { paddingTop: space.sm, marginBottom: space.xxl },
   noBack: { height: 44 },
   step: { marginTop: space.xs, marginBottom: space.xs },
+  segments: { flexDirection: 'row', gap: 6, marginTop: space.xs },
+  segment: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.sunken },
+  segmentDone: { backgroundColor: colors.plum },
 });
