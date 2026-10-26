@@ -141,7 +141,13 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
             # ...but only claim words the user really wrote: "You mentioned it's probably your thyroid" is a
             # claim falsely put in her mouth, so an echo opener restates only words found in her own text.
             # (With no user text at all there is nothing to compare against, so the old exemption stands.)
-            if (not echo or user_low) and _claims(_ACK_SAFE.sub("", sent[ack.end():]), user_low if echo else ul):
+            rest_ack = _ACK_SAFE.sub("", sent[ack.end():])
+            # A drug or condition NAME she wrote may be thanked/acknowledged ("Thanks for telling me about the paracetamol").
+            for nm in ("treatment", "condition"):
+                rx = _COMPILED.get(nm)
+                if rx and user_low:
+                    rest_ack = rx.sub(lambda m: " " if re.search(r"\b" + re.escape(m.group(0).lower()) + r"\b", user_low) else m.group(0), rest_ack)
+            if (not echo or user_low) and _claims(rest_ack, user_low if echo else ul):
                 reasons.append("statement")
         elif len(sent.split()) > _MAX_PLAIN_WORDS or _claims(sent, ul):
             reasons.append("statement")

@@ -59,3 +59,17 @@ def test_false_attribution_blocked_true_echo_passes():
     assert not check("You told me it's likely hormonal.", "it hurts").ok
     assert check("You said the pain is worse at night.", "the pain is worse at night").ok
     assert check("You mentioned your diet changed. When did that start?", "my diet changed").ok
+
+
+def test_formatting_and_named_drug_probes():
+    from app.services.output_guard import check
+    ok = [("Are you taking ibuprofen at the moment?", "I took ibuprofen"),
+          ("Thanks for telling me about the paracetamol. Did it change how the pain felt?", "paracetamol did nothing"),
+          ("**Where** is the pain? Is it on the *left* or *right*?", "hurts"),
+          ("1) Where does it hurt? 2) When did it start?", "pain"),
+          ("That sounds hard 💜 When did it start?", "I feel awful")]
+    bad = [("Here are some possible causes:\n- PCOS\n- Fibroids", "pain"), ("**Possible causes:** hormonal imbalance, stress.", "pain"),
+           ("Try ibuprofen 400mg every 6 hours 💊", "pain"), ("1) It's probably your hormones. 2) Take magnesium.", "pain"),
+           ("Don't worry 😊 it's totally normal.", "pain"), ("Thanks, it's probably endometriosis.", "I have endometriosis")]
+    assert all(check(t, u).ok for t, u in ok)
+    assert not any(check(t, u).ok for t, u in bad)
