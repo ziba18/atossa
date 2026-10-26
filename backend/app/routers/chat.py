@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.services.rate_limit import limit
+from app.services.user_quota import check_user_quota
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services import output_guard
 from app.services.llm import LLMUnavailable, chat_completion
@@ -14,6 +15,7 @@ log = logging.getLogger(__name__)
 
 @router.post("", response_model=ChatResponse, dependencies=[Depends(limit("chat", 30, 60))])
 def chat(body: ChatRequest, current_user: User = Depends(get_current_user)):
+    check_user_quota("chat-day", current_user.id, 100, 24 * 3600)
     last_user_text = body.messages[-1].content
     # Emergency wording gets the fixed urgent message; the model is not called at all.
     if output_guard.is_emergency(last_user_text):
