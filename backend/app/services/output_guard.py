@@ -36,7 +36,7 @@ _PATTERNS = {
                         r"fits? the picture|(?:classic|textbook|common) (?:presentation|signs?|symptoms?)|"
                         r"(?:is|are) an? (?:symptom|sign) of|looks? like you (?:may|might|could)|"
                         r"(?:you(?:'re| are) )?(?:probably|likely|possibly) \w*(?:pausal|ic|emic)\b|"
-                        r"signs? of (?:a |an |something)|diagnos\w+)\b",
+                        r"signs? of (?:a |an |something)|(?<!can't )(?<!can’t )(?<!cannot )(?<!don't )(?<!won't )(?<!not )(?<!unable to )diagnos\w+)\b",
     "cause": r"\b(?:caused by|(?:is|are|could be|may be|might be|probably|likely) "
              r"(?:due to|because of|linked to|related to|triggered by|a sign)|"
              r"results? from|the reason (?:for|is|why)|that is why|that's why|"
@@ -242,6 +242,8 @@ def is_emergency(user_text: str) -> bool:
 
 # GUARD_STRICT_STATEMENTS=0 turns off the statement layer (regex layers stay on). Measured on long chatty
 # replies the layer blocks ~25-30% of harmless ones, but it catches paraphrases the regexes miss (prototypes.md).
+# A model must not invent links or phone numbers: only 999, 111 and Samaritans 116 123 may appear.
+_LINK_OR_NUMBER = re.compile(r"https?://|www\.|\b[a-z0-9-]+\.(?:com|co\.uk|org|net|io|app)\b|(?<!\d)(?:\+?\d[\d ()-]{8,}\d)(?!\d)", re.I)
 STRICT_STATEMENTS = os.environ.get("GUARD_STRICT_STATEMENTS", "1") != "0"
 _ECHO_OK = {"condition", "treatment"}
 
@@ -265,6 +267,8 @@ def check(model_text: str, user_text: str = "", check_emergency: bool = True) ->
             if not echoed:
                 reasons.append(name)
                 break
+    if _LINK_OR_NUMBER.search(model_text) and not _LINK_OR_NUMBER.search(user_text):
+        reasons.append("link_or_number")
     if STRICT_STATEMENTS:
         reasons += [r for r in _statement_hits(model_text, user_low) if r not in reasons]
     if reasons:
