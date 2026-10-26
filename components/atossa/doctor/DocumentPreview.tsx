@@ -46,7 +46,8 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
   const { width: screenW } = useWindowDimensions();
-  const pages = Math.max(1, Math.ceil((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY));
+  // 0.15 page of slack: a document that is within a few lines of a page boundary measured 2 pages in the real PDF but 3 here.
+  const pages = Math.max(1, Math.ceil((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY - 0.15));
   const inner = Math.max(0, width - 2); // inside the 1 px border
   const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : THUMB_MAX_H);
   const readerWidth = Math.min(screenW, layout.maxContentWidth) - layout.gutter * 2; // the Sheet's content gutter
