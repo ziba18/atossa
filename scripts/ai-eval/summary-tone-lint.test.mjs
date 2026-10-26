@@ -5,7 +5,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const BANNED = /\b(suggest\w*|indicat\w*|consistent with|likely|unlikely|probabl\w*|linked to|caused? by|diagnos\w*|may have|might be|abnormal|severe|moderate|trend\w*|worsen\w*|improv\w*|condition|symptoms of|sign of|you should|recommend\w*|endometrios\w*|pcos|polycystic)\b/i;
-const dirs = ['lib/records', 'components/atossa/doctor'];
+const dirs = ['lib/records', 'components/atossa/doctor', 'components/atossa/capture', 'components/atossa/chat'];
 const strip = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`\\])\/\/.*$/gm, '$1');
 let checked = 0;
 const bad = [];
