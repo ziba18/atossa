@@ -8,7 +8,7 @@ import { Button, HeaderAvatar, ScreenLarge, Txt } from '../../../components/atos
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
-  HeroCard, LatestNoteCard, RoughDayCard, StarterChips, latestNote,
+  HeroCard, HeroNumberCard, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
 } from '../../../components/atossa/capture/TodayCards';
 import { space } from '../../../constants/atossaUI';
 import { isHumanName } from '../../../lib/humanName';
@@ -31,9 +31,10 @@ export default function TodayScreen() {
 
   return (
     <ScreenLarge title="Today" subtitle={greeting(name)} right={<HeaderAvatar />}>
-      <HeroCard />
+      <HeroNumberCard />
+      <View style={{ marginTop: space.md }}><HeroCard /></View>
       <View style={{ marginTop: space.md }}>
-        <StarterChips onPeriod={() => setBleeding(true)} />
+        <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
       <View style={{ marginTop: space.xl, gap: space.xl }}>
         {latest ? <LatestNoteCard note={latest} /> : null}

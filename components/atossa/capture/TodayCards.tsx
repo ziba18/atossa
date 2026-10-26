@@ -1,7 +1,7 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
@@ -19,6 +19,9 @@ import {
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
 import { MicButton } from './MicButton';
+import { nextAppointment } from './AppointmentCard';
+import { Icon, type IconName } from '../../ui/Icon';
+import { addDays, diffDays } from '../../../lib/records/dates';
 
 // Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
 // then white — the hero is never cooler than the paper around it. Top 40% only.
@@ -180,7 +183,90 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
   );
 }
 
+/** The screen's one big number: days to the next appointment, else notes in the last 7 days. */
+export function HeroNumberCard() {
+  const router = useRouter();
+  const symptoms = useRecordsStore((s) => s.records.symptom);
+  const appts = useRecordsStore((s) => s.records.appointment);
+  const today = todayKey();
+  const next = nextAppointment(appts);
+  const total = noteCount(symptoms);
+  let big: string; let line: string; let sub: string; let target: string;
+  if (next) {
+    const days = diffDays(today, next.data.date);
+    big = days === 0 ? '' : String(days);
+    line = days === 0 ? 'Your appointment is today' : days === 1 ? 'day until your appointment' : 'days until your appointment';
+    sub = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
+    target = '/(tabs)/doctor';
+  } else if (total === 0) {
+    big = '0';
+    line = 'notes so far';
+    sub = 'Your first note starts your record';
+    target = '';
+  } else {
+    const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
+    big = String(week);
+    line = week === 1 ? 'note this week' : 'notes this week';
+    sub = `${notesLabel(total)} in all`;
+    target = '/(tabs)/timeline';
+  }
+  const body = (
+    <View style={styles.heroNum}>
+      {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }} aria-hidden>{big}</Txt> : null}
+      <View style={{ flex: 1, gap: space.xxs }}>
+        <Txt variant="headline">{line}</Txt>
+        <Txt variant="secondary">{sub}</Txt>
+      </View>
+    </View>
+  );
+  if (!target) return <Card>{body}</Card>;
+  return (
+    <PressableCard
+      onPress={() => router.push(target as any)}
+      accessibilityLabel={`${big} ${line}. ${sub}`}
+      accessibilityHint={next ? 'Opens For my doctor' : 'Opens Timeline'}
+    >
+      {body}
+    </PressableCard>
+  );
+}
+
+const QUICK_ROWS: { label: string; icon: IconName; tag?: string }[] = [
+  { label: 'Pain', icon: 'zap', tag: 'Pain today' },
+  { label: 'Bleeding', icon: 'droplet' },
+  { label: 'Tummy, bowel or bladder', icon: 'activity', tag: 'Tummy, bowel or bladder' },
+  { label: 'Tired', icon: 'moon', tag: 'Tired' },
+  { label: 'Mood', icon: 'heart', tag: 'Mood' },
+  { label: 'Skin or hair', icon: 'sparkles', tag: 'Skin or hair' },
+  { label: 'Something new', icon: 'plus', tag: 'Something new' },
+];
+
+/** Icon + label rows (replace the four outline chips); each opens a note already started on that topic. */
+export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
+  return (
+    <Card style={{ paddingVertical: space.xxs, paddingHorizontal: 0 }}>
+      {QUICK_ROWS.map((r, i) => (
+        <Pressable
+          key={r.label}
+          onPress={() => (r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'speak', tag: r.tag }))}
+          accessibilityRole="button"
+          accessibilityLabel={r.label}
+          style={({ pressed }) => [styles.qrow, i > 0 && styles.qdiv, pressed && { backgroundColor: colors.canvas }]}
+        >
+          <View aria-hidden style={styles.qicon}><Icon name={r.icon} size={20} color={colors.ink} /></View>
+          <Txt variant="body" style={{ flex: 1 }}>{r.label}</Txt>
+          <Icon name="chevron-right" size={20} color={colors.ink3} />
+        </Pressable>
+      ))}
+    </Card>
+  );
+}
+
 const styles = StyleSheet.create({
+  heroNum: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  qrow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 52, paddingHorizontal: space.md },
+  qdiv: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.hairline },
+  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
