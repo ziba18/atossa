@@ -241,31 +241,34 @@ const QUICK_ROWS: { label: string; icon: IconName; tag?: string }[] = [
   { label: 'Something new', icon: 'plus', tag: 'Something new' },
 ];
 
-/** Icon + label rows (replace the four outline chips); each opens a note already started on that topic. */
+/** Icon + label tiles, two across (replace the four outline chips); each opens a note already started on that topic. */
 export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
   return (
-    <Card style={{ paddingVertical: space.xxs, paddingHorizontal: 0 }}>
-      {QUICK_ROWS.map((r, i) => (
+    <View style={styles.qgrid}>
+      {QUICK_ROWS.map((r) => (
         <Pressable
           key={r.label}
           onPress={() => (r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'speak', tag: r.tag }))}
           accessibilityRole="button"
           accessibilityLabel={r.label}
-          style={({ pressed }) => [styles.qrow, i > 0 && styles.qdiv, pressed && { backgroundColor: colors.canvas }]}
+          style={({ pressed }) => [styles.qtile, pressed && { backgroundColor: colors.canvas }]}
         >
           <View aria-hidden style={styles.qicon}><Icon name={r.icon} size={20} color={colors.ink} /></View>
-          <Txt variant="body" style={{ flex: 1 }}>{r.label}</Txt>
-          <Icon name="chevron-right" size={20} color={colors.ink3} />
+          <Txt variant="secondary" style={{ flex: 1, color: colors.ink }} maxFontSizeMultiplier={1.4}>{r.label}</Txt>
         </Pressable>
       ))}
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   heroNum: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  qrow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 52, paddingHorizontal: space.md },
-  qdiv: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.hairline },
+  qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
+  qtile: {
+    flexBasis: '48%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 56,
+    paddingHorizontal: space.sm, paddingVertical: space.xs, borderRadius: 16, backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
+  },
   qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
