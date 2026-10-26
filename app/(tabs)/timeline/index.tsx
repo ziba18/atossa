@@ -212,13 +212,16 @@ function MonthView({
   const prefix = `${month.y}-${String(month.m0 + 1).padStart(2, '0')}-`;
   let bleedingDays = 0;
   let spottingDays = 0;
+  let noteDays = 0;
   for (const [k, m] of Object.entries(marks)) {
     if (!k.startsWith(prefix)) continue;
+    if (m.notes > 0) noteDays++;
     if (m.bleeding === 'bleeding') bleedingDays++;
     else if (m.bleeding === 'spotting') spottingDays++;
   }
   const summary = [
-    bleedingDays ? `Bleeding logged on ${dayWord(bleedingDays)} this month.` : '',
+    noteDays ? `Notes on ${dayWord(noteDays)} this month.` : '',
+    bleedingDays ? `Bleeding logged on ${dayWord(bleedingDays)}.` : '',
     spottingDays ? `Spotting logged on ${dayWord(spottingDays)}.` : '',
   ].filter(Boolean).join(' ');
 
