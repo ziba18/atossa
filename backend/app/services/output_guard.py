@@ -209,6 +209,10 @@ _BODY = [
     r"excruciating|unbearable", r"pain is (?:10|ten)(?:/| out of )(?:10|ten)", r"(?:10|ten)(?:/| out of )(?:10|ten) pain",
     r"can'?t stand up", r"pregnan\w+.{0,60}(?:bleed|pain|spotting)|(?:bleed|pain|spotting).{0,60}pregnan\w+",
     r"(?:\d{1,2}|\w{3,8}) weeks pregnant.{0,60}(?:pain|bleed|spotting)", r"pregnan\w+.{0,80}(?:one[- ]sided|on one side|shoulder)|(?:one[- ]sided|on one side|shoulder).{0,80}pregnan\w+", r"positive (?:pregnancy )?test.{0,60}(?:pain|bleed)", r"high fever.{0,40}(?:severe|pain)|(?:severe|pain).{0,40}high fever",
+    # NHS "pelvic pain" 999 list (nhs.uk/conditions/pelvic-pain, read 2026-10-26)
+    r"sudden(?:ly)? (?:feel |felt |am |got |become |became )?(?:confused|disori\w+)|confused and (?:dizzy|disori\w+)",
+    r"(?:severe|sharp|intense).{0,40}(?:light-?headed|dizz\w+)|(?:light-?headed|dizz\w+).{0,40}(?:severe|intense)",
+    r"(?:very |really |so )pale.{0,40}(?:sick|dizz\w+|faint\w*|sharp)",
 ]
 _SELF = [
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
@@ -278,7 +282,10 @@ _IDIOM = re.compile(r"\b(?:pain|cramps?|period|backache|headache)\b[^.,;!?]{0,15
 
 # Two parts of one message split by a comma ("stabbing pain, curled up on the floor") need one look at the whole text.
 _WHOLE = re.compile(r"\b(?:stabbing|agony|agonising|screaming)\b.{0,60}\b(?:curled up|on the floor|can'?t move)\b|"
-                    r"\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b", re.I | re.S)
+                    r"\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b|"
+                    # NHS pelvic-pain 999 list: pain in the tip of the shoulder together with pelvic/tummy pain (any clause)
+                    r"\btip of (?:my |the )?shoulder\b.{0,60}\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b|"
+                    r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,60}\btip of (?:my |the )?shoulder\b", re.I | re.S)
 
 
 def _hits_whole(rx, text: str) -> bool:
