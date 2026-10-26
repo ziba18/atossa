@@ -10,7 +10,7 @@ import {
 import { colors, space } from '../../../constants/atossaUI';
 import { Icon } from '../../ui/Icon';
 import { haptics } from '../../../lib/haptics';
-import { todayKey } from '../../../lib/records/dates';
+import { addDays, todayKey } from '../../../lib/records/dates';
 import { formatDay, noteCount, notesLabel } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { AppointmentData, Rec } from '../../../types/records';
@@ -37,6 +37,7 @@ export function AppointmentCard() {
   if (next) {
     const who = next.data.who.trim() || 'Appointment';
     const isToday = next.data.date === todayKey();
+    const isTomorrow = next.data.date === addDays(todayKey(), 1);
     // Title = who; meta = date + count on its own line, so long names don't bury the count.
     card = (
       <Card style={{ flexDirection: 'row', gap: space.md }}>
@@ -46,10 +47,10 @@ export function AppointmentCard() {
         </View>
         <View style={{ flex: 1, gap: space.xxs }}>
           {/* On the day it reads "Appointment today", as For my doctor's header does (N22). */}
-          <Txt variant="caption">{isToday ? 'Appointment today' : 'Next appointment'}</Txt>
+          <Txt variant="caption">{isToday ? 'Appointment today' : isTomorrow ? 'Appointment tomorrow' : 'Next appointment'}</Txt>
           <Txt variant="headline">{who}</Txt>
           <Txt variant="secondary">
-            {`${isToday ? 'Today' : formatDay(next.data.date)} · ${count > 0 ? `${notesLabel(count)} ready` : 'No notes yet'}`}
+            {`${isToday ? 'Today' : isTomorrow ? 'Tomorrow' : formatDay(next.data.date)} · ${count > 0 ? `${notesLabel(count)} ready` : 'No notes yet'}`}
           </Txt>
           <Button
             label="Preview summary"
