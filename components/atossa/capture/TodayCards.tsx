@@ -35,6 +35,18 @@ const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 /** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
+/** The brand waveform, still and decorative: the same bars as the recording indicator, as a quiet header for the hero. */
+const WAVE = [0.25, 0.4, 0.65, 0.35, 0.8, 1, 0.55, 0.9, 0.45, 0.7, 0.3, 0.55, 0.35, 0.2];
+function WaveMotif() {
+  return (
+    <View aria-hidden style={styles.wave}>
+      {WAVE.map((h, i) => (
+        <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
+      ))}
+    </View>
+  );
+}
+
 export function HeroCard() {
   return (
     <Card tone="hero" style={styles.hero}>
@@ -45,6 +57,7 @@ export function HeroCard() {
         end={{ x: 0.5, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
+      <WaveMotif />
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
         {PROMPT_BALANCED}
       </Txt>
@@ -279,6 +292,7 @@ const styles = StyleSheet.create({
   qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
+  wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
   next: {
