@@ -216,12 +216,17 @@ URGENT_SELF_HARM = (
 )
 
 
+# "heavy bleeding stopped hours ago": the thing ended ("hasn't stopped" did not).
+_RESOLVED = re.compile(r"(?<!n't )(?<!not )(?<!never )\b(?:stopped|settled|eased|resolved|subsided|passed|went away|has gone|have gone)\b", re.I)
+
+
 def _hits(rx, text: str) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
         for m in rx.finditer(clause):
             before = clause[: m.start()]
-            if _NEG.search(before[-40:]) or _PAST.search(clause) or _OTHER.search(before):
+            after = clause[m.end():]
+            if _NEG.search(before[-40:]) or _PAST.search(clause) or _OTHER.search(before) or _RESOLVED.search(after):
                 continue
             return True
     return False
