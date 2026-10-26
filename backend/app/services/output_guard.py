@@ -261,3 +261,19 @@ def check(model_text: str, user_text: str = "", check_emergency: bool = True) ->
     if reasons:
         return GuardResult(False, FALLBACK, reasons)
     return GuardResult(True, model_text, [])
+
+
+def reply_shape(text: str) -> list[str]:
+    """Soft, log-only shape check for Sage replies: at most 4 sentences and one question.
+
+    Returns short tags (never the text) so the route can log them next to the guard reasons.
+    """
+    sents = [s for s in _sentences(text) if s.strip()]
+    tags = []
+    if len(sents) > 4:
+        tags.append("too_long")
+    if text.count("?") > 1:
+        tags.append("many_questions")
+    if not sents:
+        tags.append("empty")
+    return tags

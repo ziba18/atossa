@@ -32,4 +32,7 @@ def chat(body: ChatRequest, current_user: User = Depends(get_current_user)):
     result = output_guard.check(reply, user_text, check_emergency=False)
     if not result.ok:
         log.info("chat guard: replaced reply (%s)", ",".join(result.reasons))  # reasons only, never text
+    shape = output_guard.reply_shape(result.text)
+    if shape:
+        log.info("chat shape: %s", ",".join(shape))  # soft metric, tags only
     return ChatResponse(reply=result.text)
