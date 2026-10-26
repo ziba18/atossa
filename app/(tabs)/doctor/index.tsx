@@ -109,7 +109,8 @@ export default function DoctorScreen() {
     try {
       await shareSummaryPdf(summaryToHtml(doc), 'Share your summary', () => {
         haptics.success();
-        showToast('Summary ready to share.');
+        // On web the browser's print window is the confirmation; a toast would outlive a cancelled dialog.
+        if (Platform.OS !== 'web') showToast('Summary ready to share.');
       });
     } catch (e) {
       if (!isCancel(e)) setActionError("The summary couldn't be made into a PDF. Please try again.");
