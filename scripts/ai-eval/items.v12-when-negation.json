@@ -1,0 +1,203 @@
+[
+ {
+  "id": "v12-01",
+  "strata": "b12",
+  "text": "It only hurts just before my period.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-02",
+  "strata": "b12",
+  "text": "Only on my period, otherwise fine.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-03",
+  "strata": "b12",
+  "text": "Mid cycle it twinges but mostly it's during my period.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-04",
+  "strata": "b12",
+  "text": "It happens during my period and also other times.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-05",
+  "strata": "b12",
+  "text": "Only during my period honestly.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-06",
+  "strata": "b12",
+  "text": "Not just around my period, it comes at other times too.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-07",
+  "strata": "b12",
+  "text": "Never only on my period, it's random.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-08",
+  "strata": "b12",
+  "text": "It's only ever around my period.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-09",
+  "strata": "b12",
+  "text": "No, my back hurts a lot.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-10",
+  "strata": "b12",
+  "text": "No pain today, no, my back is fine.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-11",
+  "strata": "b12",
+  "text": "No. Tummy pain on the left, a 5.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-12",
+  "strata": "b12",
+  "text": "Nope, nothing at work, but my legs ache.",
+  "gold": {
+   "zones": [
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v12-13",
+  "strata": "b12",
+  "text": "Tried a hot bath and it helped, then slept ok.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Tried a hot bath and it helped"
+  }
+ },
+ {
+  "id": "v12-14",
+  "strata": "b12",
+  "text": "Tried ibuprofen and a heat pad but nothing worked.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Tried ibuprofen and a heat pad but nothing worked"
+  }
+ },
+ {
+  "id": "v12-15",
+  "strata": "b12",
+  "text": "My sister tried a heat pad. I tried nothing yet.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]

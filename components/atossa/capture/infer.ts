@@ -57,6 +57,7 @@ function durationFrom(lower: string): string | undefined {
  */
 function whenFrom(lower: string): string | undefined {
   if (/\b(all the time|constant(ly)?|every day|non-?stop)\b/.test(lower)) return 'All the time';
+  if (/\b(?:never|not|n['’]t|no) (?:\w+ )?only\b/.test(lower)) return undefined; // "never only on my period", "not only around my period"
   if (/\bonly (?:\w+ )?(?:(?:hurts?|happens?|get|gets) )?(?:during|on|around|before|with) my period\b/.test(lower)) return 'Only around my period';
   return undefined;
 }
@@ -115,7 +116,9 @@ function triedFrom(words: string): string | undefined {
   // ", tried paracetamol" — after a comma only "tried" counts ("it hurt, took ages" doesn't).
   const hit = m?.[1] ?? words.match(/,\s*(tried\s+[^.!?;\n]+)/i)?.[1];
   if (!hit) return undefined;
-  const clause = hit.trim().replace(/[,\s]+$/, '');
+  // Cut at "then" ("tried a hot bath, then slept") and drop "tried nothing yet" (not having tried is not a try).
+  const clause = hit.trim().split(/,?\s+then\b/i)[0].replace(/[,\s]+$/, '');
+  if (/^(?:tried|took|used|been taking|been using)\s+(?:nothing|nowt|none|no\b|not)/i.test(clause)) return undefined;
   return clause.split(/\s+/).length >= 2 ? cap(clause) : undefined;
 }
 
