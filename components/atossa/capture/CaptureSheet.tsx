@@ -3,7 +3,7 @@
 // "That's all for now" saves from step 2 on. X / Android back / swipe / scrim always close;
 // with unsaved words the sheet first asks "Keep this note?" in-page (never Alert.alert).
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
+import { Platform, ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
 import {
   Button, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
 } from '../kit';
@@ -225,7 +225,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   // ---- header / footer ----------------------------------------------------------------------
   let header: React.ReactNode;
   if (!confirmClose && stage === 'capture') {
-    header = (
+    // Browsers have no voice capture here, so the web pilot shows no Speak/Type switch at all.
+    header = Platform.OS === 'web' && !voiceSupported ? null : (
       <SegmentedControl<Mode>
         accessibilityLabel="Speak or type"
         options={[{ value: 'speak', label: 'Speak' }, { value: 'type', label: 'Type' }]}
