@@ -54,7 +54,7 @@ export default function TodayScreen() {
       <View style={{ marginTop: space.xl, gap: space.xl }}>
         {latest ? <LatestNoteCard note={latest} /> : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
         {symptoms.length > 0 ? <RecentStrip symptoms={symptoms} flush /> : null}
-        <AppointmentCard />
+        <AppointmentCard inviteOnly />
         <RoughDayCard />
       </View>
       )}

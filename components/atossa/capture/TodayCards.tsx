@@ -250,8 +250,10 @@ export function HeroNumberCard() {
   if (next) {
     const days = diffDays(today, next.data.date);
     big = days === 0 ? '' : String(count);
+    const who = next.data.who.trim();
     line = days === 0 ? 'Your appointment is today' : days === 1 ? 'day until your appointment' : 'days until your appointment';
-    sub = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
+    const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
+    sub = who ? `${who} · ${notes}` : notes;
     target = '/(tabs)/doctor';
   } else if (total === 0) {
     big = '0';

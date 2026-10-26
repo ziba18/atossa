@@ -26,7 +26,8 @@ export function nextAppointment(appts: Rec<AppointmentData>[]): Rec<AppointmentD
     .sort((a, b) => a.data.date.localeCompare(b.data.date))[0];
 }
 
-export function AppointmentCard() {
+/** `inviteOnly`: Today's hero card already shows a booked appointment, so only the "add one" invitation is drawn here. */
+export function AppointmentCard({ inviteOnly = false }: { inviteOnly?: boolean }) {
   const router = useRouter();
   const appts = useRecordsStore((s) => s.records.appointment);
   const count = useRecordsStore((s) => noteCount(s.records.symptom));
@@ -34,7 +35,9 @@ export function AppointmentCard() {
   const next = nextAppointment(appts);
 
   let card: React.ReactNode;
-  if (next) {
+  if (next && inviteOnly) {
+    card = null;
+  } else if (next) {
     const who = next.data.who.trim() || 'Appointment';
     const isToday = next.data.date === todayKey();
     const isTomorrow = next.data.date === addDays(todayKey(), 1);
