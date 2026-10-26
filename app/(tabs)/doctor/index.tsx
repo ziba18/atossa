@@ -160,14 +160,14 @@ export default function DoctorScreen() {
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs }}>
         <Button
           label={Platform.OS === 'web' ? 'Save as PDF' : 'Share PDF'}
           icon="share-2"
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
-          style={{ flex: 1 }}
+          style={{ flex: 1, minWidth: 120 }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
         <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
