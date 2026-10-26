@@ -17,7 +17,7 @@ const ONE_ROW_MIN = 11 * 44;
 
 /**
  * 0–10 picker. Narrow: two rows (0–5, 6–10) — row 1 runs edge to edge (disc 0 and disc 5 touch
- * the content edges), row 2 is centred under it with the same spacing. Wide (≥ 484 pt): one
+ * the content edges), row 2 uses the same columns (6 under 0, 10 under 4). Wide (≥ 484 pt): one
  * row of 11. Nothing is pre-selected; re-tapping the selected number clears it (onChange(null)).
  *
  * Selected = SOLID plum disc + white 600 digit (lead decision V1: the one exception to
@@ -50,8 +50,9 @@ export function SeverityRow({
   const gap = cell ? Math.max(0, (width - perRow * cell) / (perRow - 1)) : 0;
   const slop = cell && cell < heights.minHit ? Math.ceil((heights.minHit - cell) / 2) : 0;
   const rows = oneRow ? [ALL] : [ALL.slice(0, 6), ALL.slice(6)];
-  // Row 2 (5 discs) is centred: its last disc (10) is inset by half a cell + half a gap.
-  const lastInset = oneRow || !cell ? 0 : (cell + gap) / 2;
+  // Row 2 (5 discs) uses the same six columns as row 1, so 6 sits under 0 and the rows read as one
+  // scale (owner chose option B, 2026-10-26); "10 = worst" sits under the 10, one column in.
+  const lastInset = oneRow || !cell ? 0 : cell + gap;
   const captionPad = cell ? (cell - dot) / 2 : 0;
 
   return (
@@ -94,8 +95,8 @@ export function SeverityRow({
                 </Pressable>
               );
             })}
-            {/* Keep the flex fallback's grid even before measurement. */}
-            {!cell && row.length === 5 ? <View style={[styles.cell, { flex: 1 }]} /> : null}
+            {/* Empty sixth column keeps row 2 aligned with row 1. */}
+            {row.length === 5 ? <View style={[styles.cell, cell ? { width: cell } : { flex: 1 }]} /> : null}
           </View>
         ))}
       </View>
