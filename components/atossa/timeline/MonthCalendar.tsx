@@ -4,7 +4,7 @@
 //               reads as one span, not six events
 //   spotting  = 36 clay hatched outline (1.5), clay numeral on a clear disc (hatch never crosses it)
 //   future    = ink3 numeral, no press state (unless something is logged there)
-//   any note  = 4 plum dot under the day
+//   any note  = 5 plum dot under the day
 //   today     = 1.5 ink ring
 // Empty days are plain. No streaks, no "missed" states, no animation.
 import React from 'react';
@@ -205,5 +205,5 @@ const styles = StyleSheet.create({
   todayRingOuter: { width: DISC + 6, height: DISC + 6, top: -3, left: -3 },
   num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
   numOnClay: { fontFamily: fonts.semibold, color: colors.white },
-  dot: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.plum, marginTop: space.xxs },
+  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.plum, marginTop: space.xxs },
 });
