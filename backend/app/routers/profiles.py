@@ -103,7 +103,11 @@ def delete_account(current_user: User = Depends(get_current_user), db: Session =
                   HealthMetric, AlertLog, EmergencyContact):
         db.query(model).filter(model.user_id == uid).delete(synchronize_session=False)
     db.query(ConnectedAccount).filter(
-        or_(ConnectedAccount.owner_user_id == uid, ConnectedAccount.viewer_user_id == uid)
+        or_(
+            ConnectedAccount.owner_user_id == uid,
+            ConnectedAccount.viewer_user_id == uid,
+            ConnectedAccount.invite_email == current_user.email.lower(),
+        )
     ).delete(synchronize_session=False)
     db.query(Profile).filter(Profile.id == uid).delete(synchronize_session=False)
     db.query(User).filter(User.id == uid).delete(synchronize_session=False)
