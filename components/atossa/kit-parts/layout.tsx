@@ -69,7 +69,7 @@ export function ScreenLarge({
           {children}
         </View>
       )}
-      {footer ? <View style={[styles.column, styles.footer]}>{footer}</View> : null}
+      {footer ? <View style={[styles.column, wide && { maxWidth: 1040 }, styles.footer]}>{footer}</View> : null}
     </SafeAreaView>
   );
 }

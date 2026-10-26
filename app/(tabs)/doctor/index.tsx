@@ -170,7 +170,7 @@ export default function DoctorScreen() {
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
-          style={{ flex: 1, minWidth: 120 }}
+          style={{ flex: 1, minWidth: 120, maxWidth: desk ? 420 : undefined }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
         <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
