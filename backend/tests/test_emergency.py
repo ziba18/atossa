@@ -44,3 +44,12 @@ def test_old_events_are_not_emergencies_but_ongoing_ones_are():
     assert not g.is_emergency("I fainted 2 weeks ago")
     assert g.is_emergency("bleeding heavily since last week and still going")
     assert g.is_emergency("I fainted this morning")
+
+
+def test_slang_selfharm_and_onesided_pregnancy_pain():
+    assert g.emergency_kind("I want to unalive myself") == "self_harm"
+    assert g.emergency_kind("I don't see the point in being here any more") == "self_harm"
+    assert g.emergency_kind("I've been thinking about ending it") == "self_harm"
+    assert g.emergency_kind("I've got a positive test and terrible pain on my right side") == "medical"
+    assert g.emergency_kind("I'm 7 weeks pregnant and a bit tired") is None
+    assert g.emergency_kind("my sister said she wanted to unalive herself last year") is None
