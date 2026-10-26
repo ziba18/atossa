@@ -1,7 +1,7 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
@@ -45,18 +45,25 @@ export function HeroCard() {
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
         {PROMPT_BALANCED}
       </Txt>
-      <View style={styles.heroMic}>
-        <MicButton
-          onPress={() => openCapture({ mode: 'speak', startRecording: true })}
-          accessibilityLabel="Tap to talk"
-          accessibilityHint="Opens a new note and starts recording"
-        />
-        {/* The primary action's label outranks the secondary link (V7). */}
-        <Txt variant="headline" style={styles.micLabel} aria-hidden>
-          Tap to talk
-        </Txt>
-      </View>
-      <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
+      {Platform.OS === 'web' ? (
+        // Browsers have no voice capture here: lead with the typed note instead of a mic that opens the Type tab.
+        <Button label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md }} />
+      ) : (
+        <>
+          <View style={styles.heroMic}>
+            <MicButton
+              onPress={() => openCapture({ mode: 'speak', startRecording: true })}
+              accessibilityLabel="Tap to talk"
+              accessibilityHint="Opens a new note and starts recording"
+            />
+            {/* The primary action's label outranks the secondary link (V7). */}
+            <Txt variant="headline" style={styles.micLabel} aria-hidden>
+              Tap to talk
+            </Txt>
+          </View>
+          <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
+        </>
+      )}
       <View style={styles.next} accessible accessibilityLabel="After you speak, Atossa asks only for what’s missing: when, how strong, and where.">
         <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.xs }}>Next:</Txt>
         {NEXT_STEPS.map((label, i) => (
