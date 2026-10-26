@@ -54,6 +54,8 @@ export default function ShowOnScreen() {
               style={{ flex: 1 }}
               contentContainerStyle={{ alignItems: 'center', paddingBottom: space.xxxl }}
               scrollEventThrottle={32}
+              // Web only: lets keyboard users focus and scroll the document.
+              {...(Platform.OS === 'web' ? ({ tabIndex: 0 } as object) : {})}
               onScroll={(e) => {
                 const next = e.nativeEvent.contentOffset.y > 2;
                 if (next !== scrolled) setScrolled(next);

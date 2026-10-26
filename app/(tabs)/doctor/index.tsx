@@ -5,7 +5,7 @@ import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/atossaUI';
 import {
-  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, Txt, showToast,
+  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, SkeletonCards, Txt, showToast,
 } from '../../../components/atossa/kit';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
@@ -133,7 +133,7 @@ export default function DoctorScreen() {
         {loadError ? (
           <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} />
         ) : (
-          <Txt variant="body" color={colors.ink2}>Loading your information…</Txt>
+          <SkeletonCards count={3} label="Loading your information" />
         )}
       </ScreenLarge>
     );
@@ -157,7 +157,7 @@ export default function DoctorScreen() {
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
         <Button
           label="Share PDF"
           icon="share-2"
@@ -179,12 +179,17 @@ export default function DoctorScreen() {
   return (
     <ScreenLarge title="For my doctor" right={<HeaderAvatar />} footer={footer}>
       <Txt variant="body" color={colors.ink2}>
-        This is what you told Atossa, in your words. Choose what to include.
+        Your notes, in your words, ready to share.
       </Txt>
 
       {upcoming ? (
         <Card style={{ marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-          <Icon name="calendar" size={24} color={colors.ink} />
+          <View style={{
+            width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon name="calendar" size={22} color={colors.ink} />
+          </View>
           <View style={{ flex: 1 }}>
             <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
             <Txt variant="headline">

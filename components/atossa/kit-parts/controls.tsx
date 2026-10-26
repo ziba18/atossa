@@ -253,7 +253,8 @@ export function ChipGroup(props: ChipGroupProps) {
         </ScrollView>
         {props.bleed ? (
           <LinearGradient
-            colors={[`${fade}00`, fade]}
+            colors={[`${fade}00`, `${fade}E6`, fade]}
+            locations={[0, 0.6, 1]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={[styles.fade, { pointerEvents: 'none' }]}
@@ -374,8 +375,8 @@ const styles = StyleSheet.create({
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   chipRow: { flexDirection: 'row', gap: space.xs, paddingRight: space.xxl },
   bleed: { marginHorizontal: -layout.gutter },
-  chipRowBleed: { paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xl },
-  fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xl },
+  chipRowBleed: { paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
+  fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },
 
   addHit: { minHeight: heights.minHit, justifyContent: 'center', alignSelf: 'flex-start' },
   addChip: {

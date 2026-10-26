@@ -21,7 +21,8 @@ import { MicButton } from './MicButton';
 import { NotedCard, type NotedField, firstFilledField } from './NotedCard';
 import { Waveform } from './Waveform';
 
-const PROMPT = 'What’s been going on with your body?';
+// Broken evenly so "body?" never sits alone on line 2 (same as the Today hero).
+const PROMPT = 'What’s been going on\nwith your body?';
 const VOICE_UNAVAILABLE = 'Voice isn’t available here, so type instead. Your words are saved the same way.';
 
 type Mode = 'speak' | 'type';
@@ -118,6 +119,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   useEffect(() => () => dictation.cancel(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const typeRef = useRef<TextInputInstance>(null);
+  const [typedFocus, setTypedFocus] = useState(false);
   useEffect(() => {
     if (mode === 'type' && stage === 'capture' && !confirmClose) {
       const id = setTimeout(() => {
@@ -256,9 +258,23 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     );
   } else if (!confirmClose && stage === 'questions') {
     footer = <Button label="That’s all for now" variant="text" onPress={save} loading={saving} />;
+  } else if (!confirmClose && stage === 'review') {
+    // Sticky, so saving never sits below seven rows of scrolling.
+    footer = (
+      <View style={styles.actions}>
+        <Button label="Looks right, save" onPress={save} loading={saving} />
+        {/* One primary, then a quiet row of two text actions (V13). */}
+        <View style={styles.secondaryActions}>
+          <Button label="Fix something" variant="text" onPress={fixSomething} style={{ flex: 1 }} />
+          <Button label="Add more" variant="text" onPress={addMore} style={{ flex: 1 }} />
+        </View>
+      </View>
+    );
   }
 
   // ---- body ---------------------------------------------------------------------------------
+  // Nothing said yet: sit the mic lower so the step does not read as an empty sheet.
+  const idleSpeak = mode === 'speak' && !draft.words && !recording;
   let body: React.ReactNode;
   if (confirmClose) {
     body = (
@@ -300,7 +316,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 style={[styles.box, styles.transcript]}
               />
             ) : null}
-            <View style={styles.micArea}>
+            <View style={[styles.micArea, idleSpeak && styles.micAreaIdle]}>
               {recording ? <Waveform recording={recording} seconds={seconds} /> : null}
               <MicButton
                 recording={recording}
@@ -308,6 +324,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 accessibilityLabel={recording ? 'Stop recording' : micLabel}
               />
               <Txt variant="secondary" color={colors.ink} style={styles.micLabel}>{micLabel}</Txt>
+              {idleSpeak ? <Txt variant="caption" style={{ textAlign: 'center' }}>Then Atossa asks only for what’s missing.</Txt> : null}
             </View>
             <InlineError message={dictation.error} style={{ marginTop: space.md }} />
           </>
@@ -321,7 +338,9 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
             placeholder="Type what’s been happening…"
             placeholderTextColor={colors.ink3}
             accessibilityLabel="Your words"
-            style={[styles.box, styles.typed]}
+            onFocus={() => setTypedFocus(true)}
+            onBlur={() => setTypedFocus(false)}
+            style={[styles.box, styles.typed, typedFocus && styles.typedFocus]}
           />
         )}
       </View>
@@ -360,14 +379,6 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
           onReveal={(y) => scrollRef.current?.scrollTo({ y: Math.max(0, notedY.current + y - space.md), animated: true })}
         />
         <InlineError message={saveError} style={{ marginTop: space.md }} />
-        <View style={styles.actions}>
-          <Button label="Looks right, save" onPress={save} loading={saving} />
-          {/* One primary, then a quiet row of two text actions (V13). */}
-          <View style={styles.secondaryActions}>
-            <Button label="Fix something" variant="text" onPress={fixSomething} style={{ flex: 1 }} />
-            <Button label="Add more" variant="text" onPress={addMore} style={{ flex: 1 }} />
-          </View>
-        </View>
       </View>
     );
   }
@@ -396,8 +407,11 @@ const styles = StyleSheet.create({
   },
   transcript: { backgroundColor: colors.plumTint, minHeight: 120 },
   typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, minHeight: 180 },
+  // Plum 2px ring (padding trimmed 1 so the text does not shift); replaces RN-web's near-black outline.
+  typedFocus: { borderColor: colors.plum, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
+  micAreaIdle: { marginTop: space.xxl * 2 },
   micArea: { alignItems: 'center', marginTop: space.xl, gap: space.xs },
   micLabel: { fontFamily: fonts.medium },
-  actions: { marginTop: space.xl, gap: space.xs },
+  actions: { gap: space.xxs },
   secondaryActions: { flexDirection: 'row', gap: space.xs },
 });

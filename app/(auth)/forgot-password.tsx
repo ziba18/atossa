@@ -7,7 +7,7 @@ const SUPPORT_EMAIL = 'zamaniziba18@gmail.com';
 
 export default function ForgotPasswordScreen() {
   return (
-    <ScreenLarge title="Forgot your password?" back={{ label: 'Sign in' }}>
+    <ScreenLarge title="Forgot password?" back={{ label: 'Sign in' }}>
       <Card style={{ gap: space.sm }}>
         <Txt variant="body">
           Resetting a password by email isn’t available in the app yet. Email us from the address you signed up with and we’ll help you get back in.
