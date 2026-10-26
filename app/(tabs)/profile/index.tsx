@@ -1,3 +1,4 @@
+import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useRef, useState } from 'react';
 import { ScrollView, type ScrollViewInstance } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
@@ -26,6 +27,7 @@ const RECORD_ICONS: Record<RecordDataKind, IconName> = { medicine: 'pill', appoi
 let previewCleared = false;
 
 export default function ProfileScreen() {
+  usePageTitle('Profile');
   const router = useRouter();
   const navigation = useNavigation();
   const { from: rawFrom } = useLocalSearchParams<{ from?: string }>();

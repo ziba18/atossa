@@ -1,5 +1,6 @@
 // For my doctor — the summary builder. Everything on this tab only repeats what Sam entered.
 // One model (lib/records/summary.ts) feeds the preview, Show on screen and the PDF.
+import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -63,6 +64,7 @@ function Step({ title, children }: { title: string; children: React.ReactNode })
 
 export default function DoctorScreen() {
   const winWidth = useWindowDimensions().width;
+  usePageTitle('For my doctor');
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
   const loading = useRecordsStore((s) => s.loading);

@@ -1,4 +1,5 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
+import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -34,6 +35,7 @@ const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 
 export default function TimelineScreen() {
   const router = useRouter();
+  usePageTitle('Timeline');
   const { mode, setMode, filter, setFilter } = useTimelineSession();
   const symptom = useRecordsStore((s) => s.records.symptom);
   const loadError = useRecordsStore((s) => s.error);

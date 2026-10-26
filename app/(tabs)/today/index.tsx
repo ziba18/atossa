@@ -1,6 +1,7 @@
 // Today — capture first. One large "tell Atossa" card (voice or type), quick starters, then the
 // latest note and the next appointment. Chat is secondary ("Talk it through").
 // Rhythm (8-pt grid): title→greeting 8 · greeting→hero 24 · hero→chips 16 · 24 between cards.
+import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -24,6 +25,7 @@ function greeting(name: string | null | undefined): string {
 
 export default function TodayScreen() {
   const router = useRouter();
+  usePageTitle('Today');
   const name = useAuthStore((s) => s.profile?.display_name);
   const symptoms = useRecordsStore((s) => s.records.symptom);
   const userId = useAuthStore((s) => s.user?.id);
