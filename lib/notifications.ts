@@ -81,7 +81,7 @@ export async function scheduleDailyLogReminder(time: string): Promise<void> {
       identifier: DAILY_LOG_REMINDER_ID,
       content: {
         title: 'Atossa',
-        body: "If today's worth noting, I'm here. Two minutes is plenty.",
+        body: "If today’s worth noting, I’m here. Two minutes is plenty.",
         data: { type: 'daily_log_reminder' },
       },
       trigger: {

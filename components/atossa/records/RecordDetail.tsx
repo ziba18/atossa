@@ -273,7 +273,7 @@ export function RecordDetail({
         <ConfirmCard
           tone="destructive"
           title="Delete this entry?"
-          message="It will be removed from your records and your summary. This can't be undone."
+          message="It will be removed from your records and your summary. This can’t be undone."
           onLayout={() => scrollRef.current?.scrollToEnd({ animated: true })}
           style={{ marginTop: space.xl }}
           actions={[

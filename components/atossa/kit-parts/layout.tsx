@@ -320,7 +320,7 @@ export function InlineError({ message, onRetry, style }: { message: string; onRe
   );
 }
 
-export const SAFETY_TEXT = "If you feel very unwell or you're worried, contact your GP, NHS 111 or 999.";
+export const SAFETY_TEXT = "If you feel very unwell or you’re worried, contact your GP, NHS 111 or 999.";
 
 /** The fixed safety line (Profile + foot of the summary builder). Static: NEVER triggered by content. */
 export function SafetyLine({ style }: { style?: StyleProp<ViewStyle> }) {

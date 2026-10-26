@@ -181,7 +181,7 @@ export function BleedingDetail({ date: routeDate, from }: { date: string; from: 
           <ConfirmCard
             tone="destructive"
             title="Delete this bleeding entry?"
-            message="It will be removed from your timeline and your summary. This can't be undone."
+            message="It will be removed from your timeline and your summary. This can’t be undone."
             onLayout={(e) => revealConfirm(scrollRef, e)}
             actions={[
               { label: 'Delete', variant: 'destructive', onPress: del },

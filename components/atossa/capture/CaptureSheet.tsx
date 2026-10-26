@@ -281,7 +281,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     body = (
       <ConfirmCard
         title="Keep this note?"
-        message="You haven't saved it yet."
+        message="You haven’t saved it yet."
         actions={[
           { label: 'Save it', variant: 'primary', onPress: save },
           { label: 'Discard', variant: 'secondary', onPress: close },

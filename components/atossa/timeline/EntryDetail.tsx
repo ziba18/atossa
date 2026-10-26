@@ -279,7 +279,7 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
           <ConfirmCard
             tone="destructive"
             title="Delete this note?"
-            message="It will be removed from your timeline and your summary. This can't be undone."
+            message="It will be removed from your timeline and your summary. This can’t be undone."
             onLayout={(e) => revealConfirm(scrollRef, e)}
             actions={[
               { label: 'Delete', variant: 'destructive', onPress: del },
