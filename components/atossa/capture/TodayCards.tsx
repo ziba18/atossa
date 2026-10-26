@@ -262,7 +262,7 @@ export function HeroNumberCard() {
     const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
     big = String(count);
     line = week === 1 ? 'note this week' : 'notes this week';
-    sub = `${notesLabel(total)} in all`;
+    sub = total === week ? 'Open them in your Timeline' : `${notesLabel(total)} in all`;
     target = '/(tabs)/timeline';
   }
   const body = (
