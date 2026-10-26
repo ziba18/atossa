@@ -39,6 +39,16 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
   );
 }
 
+/** A card that has nothing to count yet: it says so in one line instead of disappearing. */
+function EmptyLine({ title, line }: { title: string; line: string }) {
+  return (
+    <Card>
+      <Txt variant="groupLabel">{title}</Txt>
+      <Txt variant="secondary" style={{ marginTop: space.xxs }}>{line}</Txt>
+    </Card>
+  );
+}
+
 export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => void }) {
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
@@ -111,7 +121,9 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
             <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} />
           </PressableCard>
         </FadeIn>
-      ) : null}
+      ) : (
+        <EmptyLine title="Where you felt it" line="No place named in these notes. Say where it hurts and it appears here." />
+      )}
 
       {m.bleedingDays || m.spottingDays ? (
         <FadeIn index={2}>
@@ -120,7 +132,9 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
             <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m)}</Txt>
           </PressableCard>
         </FadeIn>
-      ) : null}
+      ) : (
+        <EmptyLine title="Bleeding" line="No bleeding or spotting logged in these weeks." />
+      )}
 
       {m.impacts.length ? (
         <FadeIn index={3}>
@@ -129,7 +143,11 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
             <Bars rows={m.impacts} total={m.totalDays} />
           </PressableCard>
         </FadeIn>
-      ) : null}
+      ) : (
+        <EmptyLine title="What it got in the way of" line="Nothing logged yet. Say what it stopped you doing and it appears here." />
+      )}
+
+      <EmptyLine title="Sleep and mood" line="Not recorded yet. You can mention them in any note." />
 
       {m.latest ? (
         <FadeIn index={4}>
