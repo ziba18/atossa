@@ -21,7 +21,8 @@ import { MicButton } from './MicButton';
 import { NotedCard, type NotedField, firstFilledField } from './NotedCard';
 import { Waveform } from './Waveform';
 
-const PROMPT = 'What’s been going on with your body?';
+// Broken evenly so "body?" never sits alone on line 2 (same as the Today hero).
+const PROMPT = 'What’s been going on\nwith your body?';
 const VOICE_UNAVAILABLE = 'Voice isn’t available here, so type instead. Your words are saved the same way.';
 
 type Mode = 'speak' | 'type';
@@ -118,6 +119,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   useEffect(() => () => dictation.cancel(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const typeRef = useRef<TextInputInstance>(null);
+  const [typedFocus, setTypedFocus] = useState(false);
   useEffect(() => {
     if (mode === 'type' && stage === 'capture' && !confirmClose) {
       const id = setTimeout(() => {
@@ -321,7 +323,9 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
             placeholder="Type what’s been happening…"
             placeholderTextColor={colors.ink3}
             accessibilityLabel="Your words"
-            style={[styles.box, styles.typed]}
+            onFocus={() => setTypedFocus(true)}
+            onBlur={() => setTypedFocus(false)}
+            style={[styles.box, styles.typed, typedFocus && styles.typedFocus]}
           />
         )}
       </View>
@@ -396,6 +400,8 @@ const styles = StyleSheet.create({
   },
   transcript: { backgroundColor: colors.plumTint, minHeight: 120 },
   typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, minHeight: 180 },
+  // Plum 2px ring (padding trimmed 1 so the text does not shift); replaces RN-web's near-black outline.
+  typedFocus: { borderColor: colors.plum, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
   micArea: { alignItems: 'center', marginTop: space.xl, gap: space.xs },
   micLabel: { fontFamily: fonts.medium },
   actions: { marginTop: space.xl, gap: space.xs },
