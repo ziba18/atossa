@@ -1,6 +1,7 @@
 // Today — capture first. One large "tell Atossa" card (voice or type), quick starters, then the
 // latest note and the next appointment. Chat is secondary ("Talk it through").
 // Rhythm (8-pt grid): title→greeting 8 · greeting→hero 24 · hero→chips 16 · 24 between cards.
+import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useState } from 'react';
 import { View } from 'react-native';
@@ -50,6 +51,7 @@ export default function TodayScreen() {
       ) : (
       <View style={{ marginTop: space.xl, gap: space.xl }}>
         {latest ? <LatestNoteCard note={latest} /> : null}
+        {symptoms.length > 0 ? <RecentStrip symptoms={symptoms} flush /> : null}
         <AppointmentCard />
         <RoughDayCard />
       </View>
