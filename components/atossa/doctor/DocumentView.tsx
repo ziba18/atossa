@@ -152,12 +152,13 @@ function KeyMark({ kind, st }: { kind: 'bleeding' | 'spotting'; st: St }) {
   );
 }
 
-function StripKey({ bleeding, spotting, st }: { bleeding: boolean; spotting: boolean; st: St }) {
+function StripKey({ bleeding, spotting, ghost, st }: { bleeding: boolean; spotting: boolean; ghost: boolean; st: St }) {
   return (
     <Txt style={st.meta}>
       {STRIP_KEY}
       {bleeding ? <>{' '}<KeyMark kind="bleeding" st={st} />{` = ${STRIP_BLEED_KEY}.`}</> : null}
       {spotting ? <>{' '}<KeyMark kind="spotting" st={st} />{` = ${STRIP_SPOT_KEY}.`}</> : null}
+      {ghost ? ' Faint box = a bleeding or spotting day with no note.' : null}
     </Txt>
   );
 }
@@ -185,6 +186,8 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
           <StripKey
             bleeding={section.strip.days.some((d) => d.bleeding)}
             spotting={section.strip.days.some((d) => d.spotting)}
+            // The large 'weeks' view outlines bleeding/spotting days that have no note (HeatStrip ghost cells).
+            ghost={variant !== 'page' && section.strip.days.some((d) => !d.logged && (d.bleeding || d.spotting))}
             st={st}
           />
           <Txt style={st.meta}>{joinFacts(section.caption, section.strip.windowNote)}</Txt>
