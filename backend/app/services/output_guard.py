@@ -47,7 +47,7 @@ _PATTERNS = {
     "probability": r"\b(?:\d{1,3}\s?%|percent|chances? (?:are|of)|odds|"
                    r"(?:most |very |quite )?(?:likely|unlikely|probably) (?:to be|that|is|it's|caused)|"
                    r"most (?:likely|people|women)|statistically|\d+ in \d+|\d+ out of \d+ (?:people|women)|good chance)\b",
-    "treatment": r"\b(?:i(?:'d| would) (?:stop|start|take|try|avoid|cut|skip|switch|come off)|you (?:should|could|can|might want to|may want to) (?:take|try|use|avoid|eat|stop|start|cut)|"
+    "treatment": r"\b(?:i(?:'d| would) (?:stop|start|take|try|avoid|cut|skip|switch|come off)|you (?:should|could|can|might want to|may want to) (?:take(?! (?:it |this |that |them )?(?:to|along to|with you to) (?:a |an |your )?(?:doctor|gp|appointment|pharmacist))|try|use|avoid|eat|stop|start|cut)|"
                  r"(?:you(?:'d| would)? (?:probably |maybe )?(?:feel better|do better) if)|"
                  r"(?:often|usually|generally|frequently|commonly|typically|sometimes) (?:also )?(?:help|ease|relieve|reduce|improve|calm|settle)s?|known to (?:help|ease|calm)|"
                  r"(?<!did you )(?<!have you )(?<!do you )(?<!had you )(?:take|have|try) a (?:warm )?(?:bath|pregnancy test)|"
@@ -73,7 +73,7 @@ _ADVICE_MODAL = re.compile(
 # or a pointer to the GP; every other statement (explanations, tips, reassurance in new words) is
 # swapped for the fallback, so a paraphrase the regexes above never saw still cannot get through.
 _ACK_OPENER = re.compile(
-    r"^(?:there(?:'s| is) no (?:right answer|need to (?:decide|rush|answer|explain|have it all))|"
+    r"^(?:what i can do is (?:write|turn|put|note|keep|add|record|help)|it makes sense to (?:mention|tell me|bring up|note|add)|if (?:it helps|you want|you(?:'d| would) like|you tell me [^,]{1,40}),? i(?:'ll| will| can) (?:add|note|put|write|keep|record|help)|i believe (?:you|what you)|no,? i can'?t\b|i(?:'m| am) not going to (?:read|guess|judge|say)|that sounds like (?:a |an )?(?:\w+ ){0,2}wait|noted:|there(?:'s| is) no (?:right answer|need to (?:decide|rush|answer|explain|have it all))|"
     r"what an? (?:\w+ ){1,2}(?:week|day|time|night|month)|good,? (?:that'?s|to know)|so (?:it'?s|you(?:'ve|'re)?|that'?s)\b|that(?:'s| is) (?:a )?(?:helpful|useful|clear|good|really helpful)|that detail|try describing|"
     r"(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:you|your)\b|it sounds like (?:you(?:'ve| have|'re| are)?|your|the \w+(?: \w+)? (?:has|have|is|are|was|were)|it(?:'s| has) been)|for now,? i(?:'m| am) (?:just )?here|i can help you|thanks|thank you|noted|got it|okay|ok|understood|alright|sure|i see|makes sense|i hear you|i understand|i'?m sorry|sorry|no worries|no rush|no problem|take your time|"
     r"if you(?:'d| would) like,? you could (?:bring|show|share|take) (?:this|the|your) (?:summary|notes?|log)\b|"
@@ -85,9 +85,11 @@ _ACK_OPENER = re.compile(
     r"this will help your (?:doctor|gp)|let me (?:check|confirm|make sure)|you (?:said|told me|mentioned|wrote)|i can only (?:help|note|write|record)|that helps me (?:understand|picture|see)|i(?:'m| am) here (?:to help|whenever|if)|it(?:'s| is) (?:completely |perfectly )?(?:fine|okay|ok)(?: to| if)\b|it might be worth (?:jotting|noting|writing)|that sounds like (?:a |an )?(?:\w+ ){0,2}(?:day|week|night|time|morning|month)|i(?:'ll| will) help you (?:turn|write|add|put|note|describe)|i(?:'ve| have| will|'ll| won'?t| don'?t| didn'?t|'m| am| can| know| appreciate| understand| hear) )\b",
     re.I,
 )
-_MAX_ACK_WORDS = 20
+_MAX_ACK_WORDS = 24
 # Phrases an acknowledgement may contain although they hold a claim word.
-_ACK_SAFE = re.compile(r"\b(?:what it means|not (?:quite )?sure|not be sure|(?:won'?t )?try to (?:explain|guess)(?: it)?(?:, as that'?s for your (?:doctor|gp))?|(?:(?:i hear|i understand|i can see) )?(?:that )?you(?:'re| are) worried|mostly (?:on the (?:left|right)|in the (?:evenings?|mornings?|night)|at night)|help with that|(?:starts?|eases?|stops?) (?:on|by) day (?:one|two|three|four|five|\d)|guess at anything|(?:at|for|from|off|to) (?:work|school|uni)\b|can help you get (?:your )?(?:symptoms|things|it) down(?: clearly)?|make sure|won'?t guess(?: at anything)?|stressful (?:week|day|time|night)|made (?:a|no) difference|the best person to (?:\w+ ){0,3}(?:into|about|with)(?: why it'?s happening| that)?|why it'?s happening|may be useful for your (?:appointment|gp|doctor)|will be useful for your (?:appointment|gp|doctor)|no need to (?:decide|rush|answer|explain)|to help you (?:describe|put|write|note|capture|explain)\b[^.]*|(?:your gp|your doctor) can (?:help|look|advise|assess|check)(?: with that)?|(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:your|you)\b[^.]*|if you(?:'re| are) worried|ready for (?:them|your gp|your doctor)|worth (?:noting|jotting|writing|adding)|your cycle|could be useful|can help you|may help your gp|would help your gp|(?:leave|left|leaving|miss(?:ed|ing)?|off) work(?: early)?|under what it affected|(?:the |your )?(?:heat pad|hot water bottle|bath)\b|didn'?t help(?: much)?|how often (?:this|it) happens|(?:logging|tracking) it is worth it)\b", re.I)
+_ACK_SAFE = re.compile(r"\b(?:your (?:doctor|gp) (?:may|might|will|could) find (?:it|this|that|the \w+) (?:useful|helpful)|your (?:doctor|gp) can say whether [^,.]*|(?:a )?cycle of (?:about |around |roughly )?\d+ days|(?:one|two|three|\d+) tablets?|what it means|not (?:quite )?sure|not be sure|(?:won'?t )?try to (?:explain|guess)(?: it)?(?:, as that'?s for your (?:doctor|gp))?|(?:(?:i hear|i understand|i can see) )?(?:that )?you(?:'re| are) worried|mostly (?:on the (?:left|right)|in the (?:evenings?|mornings?|night)|at night)|help with that|(?:starts?|eases?|stops?) (?:on|by) day (?:one|two|three|four|five|\d)|guess at anything|(?:at|for|from|off|to) (?:work|school|uni)\b|can help you get (?:your )?(?:symptoms|things|it) down(?: clearly)?|make sure|won'?t guess(?: at anything)?|stressful (?:week|day|time|night)|made (?:a|no) difference|the best person to (?:\w+ ){0,3}(?:into|about|with)(?: why it'?s happening| that)?|why it'?s happening|may be useful for your (?:appointment|gp|doctor)|will be useful for your (?:appointment|gp|doctor)|no need to (?:decide|rush|answer|explain)|to help you (?:describe|put|write|note|capture|explain)\b[^.]*|(?:your gp|your doctor) can (?:help|look|advise|assess|check)(?: with that)?|(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:your|you)\b[^.]*|if you(?:'re| are) worried|ready for (?:them|your gp|your doctor)|worth (?:noting|jotting|writing|adding)|your cycle|could be useful|can help you|may help your gp|would help your gp|(?:leave|left|leaving|miss(?:ed|ing)?|off) work(?: early)?|under what it affected|(?:the |your )?(?:heat pad|hot water bottle|bath)\b|didn'?t help(?: much)?|how often (?:this|it) happens|(?:logging|tracking) it is worth it)\b", re.I)
+# Signposting to real services and "I won't guess" are safe in any statement (independent set v2, 2026-10-26).
+_PLAIN_SAFE = re.compile(r"\b(?:(?:if (?:it'?s|it is|it gets|the pain (?:is|gets)) (?:very |really )?(?:severe|sudden|unbearable|worse)(?:,? (?:sudden|severe))?(?:,? or you(?:'re| are) (?:frightened|scared|worried)(?: right now)?)?,? |if you(?:'re| are) (?:worried|unsure|frightened|scared),? )?(?:please )?(?:call 999|go to a&e|call 111|ring 111|speak to your gp|see your gp|contact your gp)|(?:a |your )?(?:pharmacist|gp|doctor)(?: or (?:a |your )?(?:pharmacist|gp|doctor))? can help|if you(?:'re| are) unsure about what to take,? |(?:don'?t|wouldn'?t) want to guess|(?:wouldn'?t|isn'?t) (?:be )?right for me to guess)", re.I)
 # A short statement that is not on the opener list still passes unless it carries a claim:
 # a body-system or cause word, a hedge, a verdict, or advice.
 _CLAIM = re.compile(
@@ -127,7 +129,7 @@ def _sentences(text: str) -> list[str]:
 
 
 # A refusal ("I can't say what's causing it") is safe in itself; what follows it is still checked.
-_REFUSAL = re.compile(r"\bi (?:can'?t|cannot|(?:am|'m) not able to)\b(?:(?!\b(?:but|and|probably|likely|maybe|possibly|although)\b)[^,;])*", re.I)
+_REFUSAL = re.compile(r"(?:\bno,?\s+)?\bi(?: can'?t| cannot| am not able to|'m not able to| don'?t want to)\b(?:(?!\b(?:but|and|probably|likely|maybe|possibly|although)\b)[^,;])*", re.I)
 
 
 def _claims(text: str, user_low: str) -> bool:
@@ -153,7 +155,8 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
         if rest != sent:
             sent = rest[:1].upper() + rest[1:]
         # Only a sentence that restates the user ("So it's a dull ache...") may reuse their claim words.
-        ul = user_low if re.match(r"(?:so|you)\b", sent, re.I) else ""
+        # ...and so does a logging line ("Noted: on the pill", "I've added ibuprofen 400 mg").
+        ul = user_low if re.match(r"(?:so|you)\b|noted\b|i(?:'ve| have) (?:noted|added|recorded|logged|put)\b", sent, re.I) else ""
         if _ADVICE_MODAL.search(sent):
             reasons.append("advice")
         elif (ack := _ACK_OPENER.match(sent)) and len(sent.split()) <= _MAX_ACK_WORDS:
@@ -163,7 +166,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
             # ...but only claim words the user really wrote: "You mentioned it's probably your thyroid" is a
             # claim falsely put in her mouth, so an echo opener restates only words found in her own text.
             # (With no user text at all there is nothing to compare against, so the old exemption stands.)
-            rest_ack = _ACK_SAFE.sub("", sent[ack.end():])
+            rest_ack = _PLAIN_SAFE.sub(" ", _ACK_SAFE.sub("", sent[ack.end():]))
             # A drug or condition NAME she wrote may be thanked/acknowledged ("Thanks for telling me about the paracetamol").
             for nm in ("treatment", "condition"):
                 rx = _COMPILED.get(nm)
@@ -171,7 +174,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
                     rest_ack = rx.sub(lambda m: " " if re.search(r"\b" + re.escape(m.group(0).lower()) + r"\b", user_low) else m.group(0), rest_ack)
             if (not echo or user_low) and _claims(rest_ack, user_low if echo else ul):
                 reasons.append("statement")
-        elif len(sent.split()) > _MAX_PLAIN_WORDS or _claims(sent, ul):
+        elif len((plain := _PLAIN_SAFE.sub(" ", sent)).split()) > _MAX_PLAIN_WORDS or _claims(plain, ul):
             reasons.append("statement")
     return reasons
 
@@ -309,7 +312,7 @@ _ECHO_OK = {"condition", "treatment"}
 _ATTRIBUTED = re.compile(r"(?:^|[.!?]\s+)(?:so,? )?(?:you (?:said|mentioned|told me|wrote)|your (?:gp|doctor) (?:said|told you))\b[^.!?]*$", re.I)
 
 
-_SAFE_REFUSAL = re.compile(r"\bi (?:can'?t|cannot|(?:am|'m) not able to) (?:say|tell you|assess|know|judge)\b(?:(?!\b(?:but|and|probably|likely|maybe|possibly|although)\b)[^,;.?!])*", re.I)
+_SAFE_REFUSAL = re.compile(r"\bi(?: can'?t| cannot| am not able to|'m not able to) (?:say|tell you|assess|know|judge|advise)\b(?:(?!\b(?:but|and|probably|likely|maybe|possibly|although)\b)[^,;.?!])*", re.I)
 
 
 def check(model_text: str, user_text: str = "", check_emergency: bool = True) -> GuardResult:
