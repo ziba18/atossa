@@ -34,7 +34,7 @@ export function ScreenLarge({
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
       <View style={styles.titleRow}>
-        <Txt variant="largeTitle" accessibilityRole="header" style={{ flex: 1 }}>{title}</Txt>
+        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flex: 1, flexShrink: 1 }}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}
       </View>
       {subtitle ? (
@@ -112,7 +112,7 @@ export function BackChevron({ label, onPress }: { label: string; onPress?: () =>
 export function SectionTitle({ title, right, style }: { title: string; right?: React.ReactNode; style?: StyleProp<ViewStyle> }) {
   return (
     <View style={[styles.sectionTitle, style]}>
-      <Txt variant="title" accessibilityRole="header" style={{ flex: 1 }}>{title}</Txt>
+      <Txt variant="title" accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flex: 1, flexShrink: 1 }}>{title}</Txt>
       {right}
     </View>
   );
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: heights.toastClearance },
   head: { paddingTop: space.sm, marginBottom: space.xl },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 44 },
-  right: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  right: { flexDirection: 'row', alignItems: 'center', gap: space.xs, flexShrink: 0 },
   footer: { paddingVertical: space.sm, borderTopWidth: 1, borderTopColor: colors.hairline, backgroundColor: colors.canvas },
   // Sunken + ink2 (V31): plum is for actions/selection, so the header's only plum is "+".
   avatar: {
