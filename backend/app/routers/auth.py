@@ -104,7 +104,7 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT, dependencies=[_auth_limit])
+@router.post("/change-password", response_model=TokenResponse, dependencies=[_auth_limit])
 def change_password(body: ChangePasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # Accounts created through Apple/Google have no password to change.
     if not current_user.hashed_password or not verify_password(body.current_password, current_user.hashed_password):
@@ -116,6 +116,11 @@ def change_password(body: ChangePasswordRequest, db: Session = Depends(get_db), 
     current_user.hashed_password = hash_password(body.new_password)
     current_user.token_version += 1  # every other signed-in device must sign in again
     db.commit()
+    # This device keeps its session: hand back tokens for the new version.
+    return TokenResponse(
+        access_token=create_access_token(current_user.id, current_user.token_version),
+        refresh_token=create_refresh_token(current_user.id, current_user.token_version),
+    )
 
 
 @router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT, dependencies=[_auth_limit])
