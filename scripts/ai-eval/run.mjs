@@ -6,7 +6,7 @@ import { prefillFrom } from '../../components/atossa/capture/infer.ts';
 const items = JSON.parse(fs.readFileSync(new URL(process.argv.find((a) => a.endsWith('.json')) ?? './items.v0.json', 'file://' + process.cwd() + '/scripts/ai-eval/'), 'utf8'));
 const FIELDS = ['zones', 'when', 'duration', 'impacts', 'worst', 'tried'];
 const norm = (v) => (v == null ? null : Array.isArray(v) ? (v.length ? [...v].sort().join('|') : null) : String(v).toLowerCase());
-const stats = Object.fromEntries(FIELDS.map((f) => [f, { gold: 0, fills: 0, correct: 0, wrong: 0, miss: 0, missedStated: [], wrongList: [] }]));
+const stats = Object.fromEntries(FIELDS.map((f) => [f, { gold: 0, fills: 0, correct: 0, wrong: 0, miss: 0, spurious: 0, mismatch: 0, missedStated: [], wrongList: [] }]));
 const byStrata = {};
 for (const it of items) {
   const out = prefillFrom(it.text);
@@ -16,11 +16,18 @@ for (const it of items) {
     if (g) { s.gold++; st.gold++; }
     if (p) { s.fills++; st.fills++; }
     if (p && p === g) { s.correct++; st.correct++; }
-    else if (p) { s.wrong++; st.wrong++; s.wrongList.push(`${it.id}: got ${JSON.stringify(out[f])} want ${JSON.stringify(it.gold[f])}`); }
+    else if (p) { s.wrong++; st.wrong++; if (g) s.mismatch++; else s.spurious++; s.wrongList.push(`${it.id}: got ${JSON.stringify(out[f])} want ${JSON.stringify(it.gold[f])}`); }
     else if (g) { s.miss++; s.missedStated.push(it.id); }
   }
 }
 const pct = (a, b) => (b ? (100 * a / b).toFixed(0) + '%' : 'n/a');
+if (process.argv.includes('--json')) {
+  // Machine-readable summary for diffing two branches: counts and item ids only, never the note text.
+  const out = { items: items.length, fields: {}, strata: byStrata };
+  for (const f of FIELDS) { const { wrongList, ...rest } = stats[f]; out.fields[f] = { ...rest, wrongIds: wrongList.map((w) => w.split(':')[0]) }; }
+  console.log(JSON.stringify(out, null, 1));
+  process.exit(0);
+}
 console.log(`items: ${items.length}`);
 console.log('field      gold fills correct wrong  precision recall  wrong-fill-rate');
 let F = 0, W = 0, G = 0, C = 0;
