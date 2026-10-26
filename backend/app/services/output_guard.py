@@ -47,10 +47,24 @@ _PATTERNS = {
 }
 _COMPILED = {k: re.compile(v, re.I) for k, v in _PATTERNS.items()}
 
+SELF_HARM = (
+    "I'm really sorry you're feeling this way, and I'm glad you said so. If you might act on these "
+    "thoughts, call 999 now. You can also call Samaritans free, any time, on 116 123, or call NHS 111."
+)
+
+_SELF_HARM_RX = re.compile(
+    r"\b(?:suicid\w+|kill(?:ing)? myself|end(?:ing)? my (?:own )?life|self[- ]harm\w*|want(?:ed)? to die|"
+    r"don'?t want to (?:be here|live|wake up))\b",
+    re.I,
+)
 _EMERGENCY = re.compile(
-    r"\b(?:can'?t breathe|chest pain|faint(?:ed|ing)?|passed out|collaps\w+|soaking (?:a )?pad (?:an|every) hour|"
-    r"(?:very |really )?heavy bleeding|severe (?:sudden )?pain|worst pain|suicid\w+|kill myself|"
-    r"self[- ]harm|want to die|pregnan\w+ and (?:bleeding|pain))\b",
+    r"\b(?:can'?t breathe|can'?t (?:catch|get) my breath|struggling to breathe|chest pain|coughing up blood|"
+    r"faint(?:ed|ing)?|passed out|passing out|collaps\w+|"
+    r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
+    r"bleeding (?:through|heavily|badly)|(?:very |really |so )?heavy bleeding|bleeding (?:really |very |so )(?:heavily|badly)|"
+    r"severe (?:sudden )?pain|worst pain|unbearable pain|pain (?:is |was )?unbearable|pain (?:is |was )?(?:10|ten)(?:/| out of )10|"
+    r"sudden (?:sharp |stabbing )?pain|miscarr\w+|"
+    r"pregnan\w+ and (?:bleeding|pain|cramp\w*)|(?:i'?m|i am|am) pregnant.{0,40}(?:bleeding|pain|cramp\w*))\b",
     re.I,
 )
 
@@ -64,7 +78,12 @@ class GuardResult:
 
 def is_emergency(user_text: str) -> bool:
     """Run on the USER's text; a hit means show URGENT instead of any model output."""
-    return bool(_EMERGENCY.search(user_text))
+    return bool(_EMERGENCY.search(user_text) or _SELF_HARM_RX.search(user_text))
+
+
+def emergency_message(user_text: str) -> str:
+    """The fixed signpost for an emergency hit: self-harm gets support lines, the rest 999/A&E/111."""
+    return SELF_HARM if _SELF_HARM_RX.search(user_text) else URGENT
 
 
 def check(model_text: str, user_text: str = "") -> GuardResult:
@@ -74,7 +93,7 @@ def check(model_text: str, user_text: str = "") -> GuardResult:
     by them), so a hit that is a verbatim substring of user_text is ignored.
     """
     if user_text and is_emergency(user_text):
-        return GuardResult(False, URGENT, ["emergency_input"])
+        return GuardResult(False, emergency_message(user_text), ["emergency_input"])
     user_low = user_text.lower()
     reasons = []
     for name, rx in _COMPILED.items():
