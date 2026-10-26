@@ -58,10 +58,12 @@ function durationFrom(lower: string): string | undefined {
  * "during my period" doesn't say whether it also happens at other times, so the chip question asks.
  */
 function whenFrom(lower: string): string | undefined {
-  if (/\b(all the time|constant(ly)?|every day|non-?stop)\b/.test(lower)) return 'All the time';
+  // "tired all the time" is about tiredness, not when the pain comes.
+  const timed = lower.replace(/\b(?:tired|exhausted|knackered|shattered|fatigued|drained|sleepy|worn out|bloated|hungry|thirsty|spotty)\s+(?:\w+\s+){0,1}(?:all the time|constantly|every day|non-?stop)\b/g, ' ');
+  if (/\b(all the time|constant(ly)?|every day|non-?stop)\b/.test(timed)) return 'All the time';
   // "it hurts between periods" counts; "between cycles it's fine" does not (needs a symptom word and no all-clear in that clause).
   for (const c of clausesOf(lower)) {
-    if (/\b(?:outside|between) (?:of )?(?:my )?(?:periods?|cycles?)\b/.test(c) && /\b(?:hurt\w*|pain\w*|ache\w*|aching|cramp\w*|sore|twinges?|bleed\w*|spotting)\b/.test(c) && !CLEAR.test(c)) return 'At other times too';
+    if (/\b(?:outside|between) (?:of )?(?:my )?(?:periods?|cycles?)\b/.test(c) && /\b(?:hurt\w*|pain\w*|ache\w*|aching|cramp\w*|sore|twinges?)\b/.test(c) && !CLEAR.test(c)) return 'At other times too';
   }
   // Explicitly also at other times (chip "At other times too"); a negation next to it ("no pain outside my period") is left to the chip question.
   if (!/\b(?:no|not|never|nothing|n['’]t|without)\b[^.,;]{0,25}\b(?:outside|between|other times)\b/.test(lower)
@@ -83,11 +85,13 @@ const SLEEP_OK = /\b(slept|sleeping|sleep)\b.*\b(fine|well|ok|okay|good|great|br
 function impactsFrom(lowerRaw: string): string[] {
   const out = new Set<string>();
   // Speech recognisers often hear "six" as "sex": "it's a sex out of ten" is a score, not the Sex impact.
-  const lower = lowerRaw.replace(/\bsex\s*(?:out of|\/)\s*(?:10|ten)\b/g, ' ');
+  const lower = lowerRaw.replace(/\bsex\s*(?:out of|\/)\s*(?:10|ten)\b/g, ' ')
+    // "I think I overdid it at the gym" names a suspected cause, not something the pain stopped.
+    .replace(/\boverd(?:id|o|one|oing) it(?: (?:at|in|down) (?:the )?\w+)?/g, ' ');
   for (const c of clausesOf(lower)) {
     if (/^(?:i(?:'ve| have)? )?(?:tried|took|used|been taking|been using|trying)\b/.test(c) && !LOST.test(c)) continue; // a remedy, not an impact ("tried yoga")
     const cleared = CLEAR.test(c) && !LOST.test(c);
-    if (/\b(work|study|studying|school|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
+    if (/\b(work|study|studying|school(?! run)|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
     if (/\b(sleep|slept|sleeping|woke|awake|kept me up|kip|up half the night)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
     if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga|pilates|netball|football|hockey|rugby|jogging|(?:go|went|going) (?:for a )?run(?:ning)?)\b/.test(c) && !cleared) out.add('Exercise');
     if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in|(?:couldn'?t|could not|didn'?t) leave the house)\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
@@ -109,9 +113,15 @@ function scoreFrom(lower: string): number | undefined {
   for (const m of lower.matchAll(new RegExp(`\\b(?:(?:spikes?|goes up|goes|rises?|peaks?|climbs?|gets?|up)\\s+to|(?:peaked|topped out)\\s+(?:at|to))\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "it hit a nine for twenty minutes": reaching a score is a peak too.
   for (const m of lower.matchAll(new RegExp(`\\b(?:hit|hits|reached|reaches|touched)\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
-  if (!found.length) {
-    const m = lower.match(new RegExp(`\\b(?:it['’]?s|its|about|around|maybe|like)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`));
-    if (m) found.push(toNum(m[1]));
+  // "about a 4 most days, 7 on Tuesday": a score tied to a day is a score too (the highest wins below).
+  for (const m of lower.matchAll(new RegExp(`(?:^|[,;]\\s*|\\band\\s+)(${NUM})\\s+on\\s+(?:mon|tues|wednes|thurs|fri|satur|sun)day\\b`, 'g'))) found.push(toNum(m[1]));
+  if (!found.length || /\b(?:about|around|maybe|like)\s+(?:a\s+)?\d/.test(lower)) {
+    for (const m of lower.matchAll(new RegExp(`\\b(?:it['’]?s|its|about|around|maybe|like)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) {
+      // "keep waking me up around 4": a clock time after waking/bed, not a score.
+      if (/\b(?:up|woke|wake|waking|awake|bed|asleep|till|until|since)(?:\s+at)?\s+$/.test(lower.slice(0, m.index))) continue;
+      if (/^\s*(?:in the (?:morning|evening|afternoon)|at night|o['’]?clock)\b/.test(lower.slice(m.index + m[0].length))) continue;
+      found.push(toNum(m[1]));
+    }
   }
   return found.length ? Math.max(...found) : undefined;
 }
