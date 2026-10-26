@@ -44,6 +44,9 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
     }
   };
 
+  // The web pilot signs in by email only: Apple and Google sign-in need the installed app.
+  if (Platform.OS === 'web') return null;
+
   if (IN_EXPO_GO) {
     return (
       <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
