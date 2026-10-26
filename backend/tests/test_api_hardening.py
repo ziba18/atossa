@@ -22,3 +22,4 @@ def test_security_headers_present():
     r = TestClient(app).get("/health")
     assert r.headers["x-content-type-options"] == "nosniff"
     assert r.headers["cache-control"] == "no-store"
+    assert r.headers["strict-transport-security"].startswith("max-age=")

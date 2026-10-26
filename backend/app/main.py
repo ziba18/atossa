@@ -33,6 +33,7 @@ async def security_headers(request, call_next):
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("Referrer-Policy", "no-referrer")
     response.headers.setdefault("Cache-Control", "no-store")
+    response.headers.setdefault("Strict-Transport-Security", "max-age=31536000")
     return response
 
 
