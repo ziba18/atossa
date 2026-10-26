@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import {
   Button, Card, Chip, FactLine, InlineError, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
-import { colors, layout, space } from '../../../constants/atossaUI';
+import { colors, layout, radii, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
@@ -167,6 +167,22 @@ export function latestNote(symptoms: Rec<SymptomData>[]): Rec<SymptomData> | und
   return [...symptoms].sort(compareNotesNewestFirst)[0];
 }
 
+/** First run: what a saved note will look like here, clearly marked as an example. */
+export function GhostNoteCard() {
+  return (
+    <View style={styles.ghost} accessible accessibilityLabel="Example of a saved note. Sharp low belly pain since Tuesday, worse in the evening. 7 out of 10 at worst. Your notes will appear here.">
+      <Txt variant="caption">Example · your notes will appear here</Txt>
+      <View style={{ opacity: 0.85 }} aria-hidden>
+        <Quote numberOfLines={2}>Sharp low belly pain since Tuesday, worse in the evening.</Quote>
+        <View style={[styles.factRow, { marginTop: space.sm }]}>
+          <SeverityTag value={7} suffix="/10 at worst" />
+          <Txt variant="secondary">Lower belly</Txt>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
   const router = useRouter();
   const s = note.data;
@@ -310,6 +326,7 @@ const styles = StyleSheet.create({
   qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
+  ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
   wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
