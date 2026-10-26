@@ -3,6 +3,8 @@
 // The two patterns are copied from backend/app/services/output_guard.py (_EMERGENCY, _SELF_HARM_RX);
 // scripts/urgent-wording.test.mjs checks they still agree on a shared phrase list.
 
+import * as P from './urgentPatterns.generated';
+
 const QUOTES: Record<string, string> = { '\u2018': "'", '\u2019': "'", '\u02bc': "'", '\u2032': "'" };
 
 export const URGENT_SIGNPOST =
@@ -18,16 +20,22 @@ function normalise(text: string): string {
   return t.replace(/[\u2018\u2019\u02bc\u2032]/g, (c) => QUOTES[c] ?? c);
 }
 
-// "No fainting", "I haven't fainted", "not struggling to breathe": the person is saying it did NOT happen.
-const NEGATED_BEFORE = /\b(?:no|not|never|without|haven't|hasn't|hadn't|didn't|wasn't|isn't|nor)\b(?:\s+(?:\w+,?)){0,3}\s*$/i;
+// Same decision as the backend `_hits`: a match counts unless its clause is negated, in the past, about someone else or resolved.
+const mk = (src: string) => new RegExp(src, 'i');
+const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SELF2 = mk(P.SELF2_SRC);
+const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES = mk(P.RES_SRC);
+const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi');
 
 function hit(pattern: RegExp, text: string): boolean {
   const re = new RegExp(pattern.source, 'gi');
-  for (const sentence of text.split(/(?<=[.!?;])\s+|\n+/)) {
+  for (const clause of text.split(CLAUSE)) {
+    if (!clause) continue;
     re.lastIndex = 0;
     let m: RegExpExecArray | null;
-    while ((m = re.exec(sentence)) !== null) {
-      if (!NEGATED_BEFORE.test(sentence.slice(0, m.index))) return true;
+    while ((m = re.exec(clause)) !== null) {
+      const before = clause.slice(0, m.index);
+      const after = clause.slice(m.index + m[0].length);
+      if (!(NEG.test(before.slice(-40)) || PAST.test(clause) || OTHER.test(before) || RES.test(after))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }
   }
@@ -36,8 +44,8 @@ function hit(pattern: RegExp, text: string): boolean {
 
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
-  const t = normalise(text);
-  if (hit(SELF_HARM_PATTERN, t)) return SELF_HARM_SIGNPOST;
-  if (hit(EMERGENCY_PATTERN, t)) return URGENT_SIGNPOST;
+  const t = normalise(text).replace(IDIOM, ' ');
+  if (hit(SELF, t) || hit(SELF2, t)) return SELF_HARM_SIGNPOST;
+  if (hit(BODY, t) || hit(EMERG, t)) return URGENT_SIGNPOST;
   return null;
 }
