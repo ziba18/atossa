@@ -52,3 +52,4 @@ google-play-service-account.json
 
 # Supabase CLI local state
 supabase/.temp
+dist-web/
