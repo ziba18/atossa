@@ -2,7 +2,7 @@
 // document model as For my doctor (buildDoctorSummary), so the numbers always match the summary
 // for the same dates. Descriptive only: no trends, verdicts, comparisons or predictions.
 import { addDays } from './dates';
-import { noteCount } from './format';
+import { bleedingStatus, noteCount } from './format';
 import { buildDoctorSummary, type CountItem, type DocQuote, type FreqBar, type HeatDay, type SummaryInput } from './summary';
 
 export type PatternsRange = '4w' | '12w';
@@ -72,8 +72,8 @@ export function buildPatterns(input: SummaryInput, today: string, range: Pattern
     weeks,
     days,
     zones: bars.filter((b) => b.label !== 'Days with a note'),
-    bleedingDays: days.filter((d) => d.bleeding).length,
-    spottingDays: days.filter((d) => d.spotting).length,
+    // From the period records themselves, not the strip: the doctor strip can start at the first note.
+    ...bleedingCounts(input, from, today),
     impacts: impacts && impacts.id === 'impacts' ? impacts.items : [],
     latest: words && words.id === 'words' ? words.quotes[0] ?? null : null,
     tooEarly: recent < MIN_NOTE_DAYS,
@@ -86,3 +86,11 @@ export const weeksText = (m: PatternsModel) =>
   `By week, days with a note: ${m.weeks.map((w, i) => `week ${i + 1}, ${w.noteDays}`).join('; ')}.`;
 export const bleedingText = (m: PatternsModel) =>
   `Bleeding logged on ${plural(m.bleedingDays, 'day')}` + (m.spottingDays ? `; spotting on ${plural(m.spottingDays, 'day')}` : '') + '.';
+
+/** Days with bleeding / spotting-only logged in the range (spotting on a bleeding day counts once, as bleeding). */
+function bleedingCounts(input: SummaryInput, from: string, to: string): { bleedingDays: number; spottingDays: number } {
+  const mine = input.periodDays.map((r) => r.data).filter((d) => d.date >= from && d.date <= to);
+  const bleed = new Set(mine.filter((d) => bleedingStatus(d) !== 'spotting').map((d) => d.date));
+  const spot = new Set(mine.filter((d) => bleedingStatus(d) === 'spotting' && !bleed.has(d.date)).map((d) => d.date));
+  return { bleedingDays: bleed.size, spottingDays: spot.size };
+}
