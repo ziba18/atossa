@@ -9,3 +9,17 @@ const tags = [
 ].join('\n    ');
 const html = fs.readFileSync(file, 'utf8');
 if (!html.includes('name="robots"')) fs.writeFileSync(file, html.replace('<title>', `${tags}\n    <title>`));
+
+// Static hosts (Vercel's CLI, Netlify) never upload folders named node_modules, and Expo puts the
+// fonts in dist-web/assets/node_modules/. A missing font keeps the app on a blank screen, so move
+// them to assets/vendor/ and point the bundle there.
+const nm = 'dist-web/assets/node_modules';
+if (fs.existsSync(nm)) {
+  fs.renameSync(nm, 'dist-web/assets/vendor');
+  const js = 'dist-web/_expo/static/js/web';
+  for (const f of fs.readdirSync(js)) {
+    const p = `${js}/${f}`;
+    const src = fs.readFileSync(p, 'utf8');
+    if (src.includes('/assets/node_modules/')) fs.writeFileSync(p, src.split('/assets/node_modules/').join('/assets/vendor/'));
+  }
+}
