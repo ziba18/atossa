@@ -10,3 +10,4 @@ export const OTHER_SRC = String.raw`\b(?:my (?:sister|mum|mom|friend|mother|dad|
 export const RES_SRC = String.raw`(?<!n't )(?<!not )(?<!never )\b(?:stopped|settled|eased|resolved|subsided|passed|went away|has gone|have gone)\b`;
 export const CLAUSE_SRC = String.raw`[.;!?\n]+|,\s*|\bbut\b|\band\b(?=\s+(?:i|it|the|my|now)\b)`;
 export const IDIOM_SRC = String.raw`\b(?:pain|cramps?|period|backache|headache)\b[^.,;!?]{0,15}\bkill(?:ing|s|ed)? me\b`;
+export const WHOLE_SRC = String.raw`\b(?:stabbing|agony|agonising|screaming)\b.{0,60}\b(?:curled up|on the floor|can'?t move)\b|\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b`;
