@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { colors, space } from '../../../constants/atossaUI';
+import { colors, layout, space } from '../../../constants/atossaUI';
 import { Button, Card, InlineError, SwitchRow, Txt } from '../../../components/atossa/kit';
-import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { openLegal } from '../../../components/auth/LegalLinks';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
@@ -34,7 +34,9 @@ export default function OnboardingConsentScreen() {
   };
 
   return (
-    <OnboardingScreen step={0} title="Before you start">
+    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
+      <Txt variant="largeTitle" accessibilityRole="header" style={styles.title}>Before you start</Txt>
       <Card>
         <Txt variant="body">Atossa saves what you tell it so you can show your doctor a clear summary.</Txt>
         <Txt variant="body" style={{ marginTop: space.md }}>What you save is health information. It is stored on our server and linked to your account.</Txt>
@@ -51,6 +53,14 @@ export default function OnboardingConsentScreen() {
         <InlineError message={error} />
         <Button label={loading ? 'Saving…' : 'Continue'} loading={loading} disabled={!agreed} onPress={handleContinue} />
       </View>
-    </OnboardingScreen>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+// Same column as the onboarding screens, without their step strip (this is not a numbered step).
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.canvas },
+  column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter, paddingBottom: space.xxxl },
+  title: { paddingTop: 44 + space.sm, marginBottom: space.xxl },
+});
