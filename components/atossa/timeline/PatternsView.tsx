@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, space } from '../../../constants/atossaUI';
+import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
 import {
   MIN_NOTE_DAYS, PATTERNS_RANGES, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsRange,
@@ -59,7 +60,8 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
       <View style={{ marginTop: space.lg }}>
         <EmptyState
           icon="calendar-days"
-          message={`Patterns appear after a week of notes. So far: notes on ${plural(recent, 'day')}.`}
+          message={`Patterns appear after a week of notes. ${recent === 0 ? 'No notes yet.' : `So far: notes on ${plural(recent, 'day')}.`}`}
+          action={{ label: 'Add a note', onPress: () => openCapture() }}
           style={{ marginTop: space.xxl }}
         />
       </View>
