@@ -107,7 +107,8 @@ function triedFrom(words: string): string | undefined {
 }
 
 export function prefillFrom(words: string): Prefill {
-  const lower = words.toLowerCase();
+  // iPhone keyboards type curly apostrophes (can’t); the patterns below use the straight one.
+  const lower = words.toLowerCase().replace(/[\u2018\u2019\u02bc]/g, "'");
   // Negated phrases are dropped first, so "No back pain today, only my tummy" doesn't fill Lower back.
   const zones = zonesFrom(lower.replace(/\b(?:no|not|without|never)\b(?! able)[^,.;!?]*/g, ' '));
   const impacts = impactsFrom(lower);
