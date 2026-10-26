@@ -39,12 +39,15 @@ export function TextField({
   style?: StyleProp<ViewStyle>;
 } & Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'autoCorrect' | 'autoFocus' | 'returnKeyType' | 'onSubmitEditing' | 'textContentType'>) {
   const [shown, setShown] = React.useState(false);
+  const [focused, setFocused] = React.useState(false);
   return (
     <View style={style}>
       <FieldLabel label={label} optional={optional} hint={hint} style={{ marginBottom: 0 }} />
       <View style={secret ? styles.secretRow : null}>
         <TextInput
           {...inputProps}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
@@ -55,7 +58,7 @@ export function TextField({
           accessibilityLabel={label}
           accessibilityHint={error || undefined}
           textAlignVertical={multiline ? 'top' : 'center'}
-          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1 }, error ? { borderColor: colors.error, borderWidth: 2 } : null]}
+          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1 }, error ? { borderColor: colors.error, borderWidth: 2 } : focused ? styles.inputFocused : null]}
         />
         {secret ? (
           <Pressable
@@ -361,6 +364,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.xs,
   },
   back: { flexDirection: 'row', alignItems: 'center', minHeight: 44, alignSelf: 'flex-start', marginLeft: -6, paddingRight: space.xs },
+  // Plum 2px focus ring on every platform (RN-web's default is a near-black browser outline; iOS had none).
+  inputFocused: { borderColor: colors.plum, borderWidth: 2, paddingHorizontal: space.md - 1, paddingVertical: space.sm - 1, ...({ outlineStyle: 'none' } as object) },
   input: {
     marginTop: space.sm, minHeight: heights.primary, borderRadius: radii.input, borderWidth: 1, borderColor: colors.borderStrong,
     backgroundColor: colors.surface, paddingHorizontal: space.md, paddingVertical: space.sm,
