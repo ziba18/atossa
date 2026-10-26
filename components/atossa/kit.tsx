@@ -12,6 +12,7 @@ export {
 export { SeverityRow, SeverityTag } from './kit-parts/severity';
 export { DayChooser } from './kit-parts/DayChooser';
 export { Sheet, useReduceMotion, type SheetProps } from './kit-parts/Sheet';
+export { FadeIn } from './kit-parts/FadeIn';
 export { SkeletonCards } from './kit-parts/Skeleton';
 export { ToastHost, showToast, dismissToast } from './kit-parts/toast';
 export {

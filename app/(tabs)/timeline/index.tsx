@@ -3,7 +3,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, ChipGroup, EmptyState, HeaderAvatar, ScreenLarge, SegmentedControl, Txt,
+  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
@@ -165,7 +165,11 @@ function ListView({
               <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
             </View>
             <View style={{ gap: space.sm }}>
-              {g.items.map((item) => <EntryCard key={item.key} item={item} onPress={() => onOpen(item)} />)}
+              {g.items.map((item, j) => (
+                <FadeIn key={item.key} index={i === 0 ? j : 0}>
+                  <EntryCard item={item} onPress={() => onOpen(item)} />
+                </FadeIn>
+              ))}
             </View>
           </View>
         ))
