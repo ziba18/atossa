@@ -97,12 +97,15 @@ export const Composer = forwardRef<ComposerHandle, {
             style={[styles.input, Platform.OS === 'web' && ({ outlineStyle: 'none' } as object)]}
             accessibilityLabel="Your message"
           />
-          <RoundIcon
-            icon={recording ? 'square' : 'mic'}
-            label={recording ? 'Stop dictating' : 'Dictate'}
-            onPress={toggleMic}
-            active={recording}
-          />
+          {/* Browsers can't dictate here: the web pilot hides the mic rather than showing a dead button. */}
+          {Platform.OS === 'web' && !dictation.supported ? null : (
+            <RoundIcon
+              icon={recording ? 'square' : 'mic'}
+              label={recording ? 'Stop dictating' : 'Dictate'}
+              onPress={toggleMic}
+              active={recording}
+            />
+          )}
           <Pressable
             onPress={send}
             disabled={!canSend}
