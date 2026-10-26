@@ -6,6 +6,7 @@ not enough, so every model-written string goes through check() and, on a hit, is
 by a fixed fallback. The user's own words are not checked here: echoing them back is fine.
 """
 import re
+import unicodedata
 from dataclasses import dataclass
 
 FALLBACK = "I can't assess that, but your GP can. Want to add anything else to your note?"
@@ -71,6 +72,17 @@ _EMERGENCY = re.compile(
 )
 
 
+_QUOTES = str.maketrans({"\u2018": "'", "\u2019": "'", "\u02bc": "'", "\u2032": "'", "\u201c": '"', "\u201d": '"'})
+
+
+def _norm(text: str) -> str:
+    """Make typed text match the patterns: phone keyboards type curly apostrophes (can’t),
+    and model output can carry full-width letters or invisible characters inside a word."""
+    text = unicodedata.normalize("NFKC", text)
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Cf")
+    return text.translate(_QUOTES)
+
+
 @dataclass
 class GuardResult:
     ok: bool
@@ -80,6 +92,7 @@ class GuardResult:
 
 def is_emergency(user_text: str) -> bool:
     """Run on the USER's text; a hit means show URGENT instead of any model output."""
+    user_text = _norm(user_text)
     return bool(_EMERGENCY.search(user_text) or _SELF_HARM_RX.search(user_text))
 
 
@@ -96,7 +109,8 @@ def check(model_text: str, user_text: str = "") -> GuardResult:
     """
     if user_text and is_emergency(user_text):
         return GuardResult(False, emergency_message(user_text), ["emergency_input"])
-    user_low = user_text.lower()
+    model_text = _norm(model_text)
+    user_low = _norm(user_text).lower()
     reasons = []
     for name, rx in _COMPILED.items():
         for m in rx.finditer(model_text):
