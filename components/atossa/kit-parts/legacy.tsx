@@ -101,7 +101,6 @@ export function Toggle({
       disabled={disabled}
       accessibilityLabel={label}
       accessibilityState={{ checked: value, disabled }}
-      aria-checked={value}
       trackColor={{ true: colors.plum, false: colors.borderStrong }}
       thumbColor={colors.surface}
       ios_backgroundColor={colors.borderStrong}

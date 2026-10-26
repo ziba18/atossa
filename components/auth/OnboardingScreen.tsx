@@ -33,7 +33,7 @@ export function OnboardingScreen({
       >
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
-          <View style={styles.segments} accessible accessibilityLabel={`Step ${step} of ${ONBOARDING_STEPS}`}>
+          <View style={styles.segments} aria-hidden>
             {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
               <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
             ))}

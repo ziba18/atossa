@@ -60,7 +60,7 @@ export default function LoginScreen() {
             secret
             value={password}
             onChangeText={(v) => { setPassword(v); setPasswordError(''); }}
-            autoComplete="password"
+            autoComplete="current-password"
             textContentType="password"
             returnKeyType="go"
             onSubmitEditing={handleLogin}
