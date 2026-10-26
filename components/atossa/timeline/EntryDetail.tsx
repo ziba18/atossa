@@ -287,7 +287,7 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
             ]}
           />
         ) : (
-          <Button variant="destructive" icon="trash-2" align="start" label="Delete entry" onPress={() => { cancel(); setConfirming(true); revealConfirm(scrollRef); }} />
+          <Button variant="destructive" icon="trash-2" align="start" label="Delete note" onPress={() => { cancel(); setConfirming(true); revealConfirm(scrollRef); }} />
         )}
       </View>
     </ScreenLarge>

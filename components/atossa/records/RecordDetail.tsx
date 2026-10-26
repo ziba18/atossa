@@ -238,7 +238,7 @@ export function RecordDetail({
       {discardAsk ? (
         <ConfirmCard
           title="Discard changes?"
-          message="Your changes to this entry haven't been saved."
+          message="Your changes to this entry haven’t been saved."
           style={{ marginBottom: space.xl }}
           actions={[
             { label: 'Discard', variant: 'destructive', onPress: discard },

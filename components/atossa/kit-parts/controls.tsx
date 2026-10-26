@@ -15,7 +15,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'destructive' | '
  * primary — 56, plum, white text. One per screen/sheet.
  * secondary — 48, outline borderStrong, ink text.
  * text — 44, plum text, no fill (links such as "Type instead", "Add more").
- * destructive — 44 text-style button in error red ("Delete entry"). Confirm with ConfirmCard.
+ * destructive — 44 text-style button in error red ("Delete note" on a note, "Delete entry" on other records). Confirm with ConfirmCard.
  * destructiveOutline — 48 outline in error red; ConfirmCard's confirm action (N21).
  * Disabled primary = sunken fill + ink2 text (still readable, clearly inactive).
  */
