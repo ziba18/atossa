@@ -58,7 +58,7 @@ export function HeroCard() {
       </View>
       <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
       <View style={styles.next} accessible accessibilityLabel="After you speak, Atossa asks only for what’s missing: when, how strong, and where.">
-        <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.sm }}>Next:</Txt>
+        <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.xs }}>Next:</Txt>
         {NEXT_STEPS.map((label, i) => (
           <View key={label} style={styles.nextItem}>
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{label}</Txt>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     marginTop: space.md, paddingTop: space.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.hairline,
   },
   nextItem: { flexDirection: 'row', alignItems: 'center' },
-  nextDot: { width: 3, height: 3, borderRadius: 2, backgroundColor: colors.ink3, marginHorizontal: space.sm },
+  nextDot: { width: 3, height: 3, borderRadius: 2, backgroundColor: colors.ink3, marginHorizontal: 5 },
   chipsWrap: { marginHorizontal: -layout.gutter },
   chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
   fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },
