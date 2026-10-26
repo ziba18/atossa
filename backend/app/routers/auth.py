@@ -10,7 +10,7 @@ from app.schemas.auth import (
 )
 from app.services.auth import (
     create_access_token, create_refresh_token, create_user, hash_password,
-    decode_token, get_or_create_social_user, get_user_by_email, verify_password,
+    decode_token, get_or_create_social_user, get_user_by_email, verify_password, verify_password_or_dummy,
 )
 from app.services.password_policy import password_problem
 from app.services.rate_limit import FailureThrottle, limit
@@ -54,7 +54,7 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     email_key = body.email.strip().lower()
     _login_failures.check(email_key)
     user = get_user_by_email(db, body.email)
-    if not user or not user.hashed_password or not verify_password(body.password, user.hashed_password):
+    if not verify_password_or_dummy(body.password, user.hashed_password if user else None):
         _login_failures.fail(email_key)
         raise HTTPException(status_code=401, detail="Invalid email or password")
     _login_failures.clear(email_key)
