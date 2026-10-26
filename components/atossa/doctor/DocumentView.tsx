@@ -91,6 +91,31 @@ function QuoteBlock({ q, st }: { q: DocQuote; st: St }) {
   );
 }
 
+/** A4 page only: the same table the PDF prints (date · where · how strong · how long · my words). */
+const WORD_COLS = [86, 78, 74, 64] as const;
+function WordsTable({ quotes, st }: { quotes: DocQuote[]; st: St }) {
+  const dash = (t?: string) => t || '–';
+  const head = ['Date', 'Where', 'How strong', 'How long'];
+  const cellStyle = (i: number) => ({ width: WORD_COLS[i], paddingRight: 6 });
+  return (
+    <View accessible accessibilityRole="summary" accessibilityLabel={quotes.map((q) => joinFacts(q.dateLabel, q.facts, `“${curly(q.text)}”`)).join('. ')}>
+      <View style={{ flexDirection: 'row', borderBottomWidth: 0.75, borderBottomColor: C.borderStrong, paddingBottom: 3 }}>
+        {head.map((h, i) => <Txt key={h} style={[st.meta, { fontFamily: fonts.semibold }, cellStyle(i)]}>{h}</Txt>)}
+        <Txt style={[st.meta, { fontFamily: fonts.semibold, flex: 1 }]}>In my words</Txt>
+      </View>
+      {quotes.map((q) => (
+        <View key={q.date + q.text} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: C.borderStrong }}>
+          <Txt style={[st.meta, { color: C.ink }, cellStyle(0)]}>{q.dateLabel}</Txt>
+          <Txt style={[st.meta, { color: C.ink }, cellStyle(1)]}>{dash(q.parts?.where)}</Txt>
+          <Txt style={[st.meta, { color: C.ink }, cellStyle(2)]}>{dash(q.parts?.strength)}</Txt>
+          <Txt style={[st.meta, { color: C.ink }, cellStyle(3)]}>{dash(q.parts?.timing)}</Txt>
+          <Txt style={[st.body, { flex: 1, fontFamily: fonts.serif }]}>{`“${curly(q.text)}”`}</Txt>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function Bars({ bars, st }: { bars: FreqBar[]; st: St }) {
   return (
     <View style={{ gap: st.s.gap * 3, marginTop: st.s.gap * 2 }}>
@@ -168,7 +193,9 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
     case 'words':
       return (
         <>
-          {section.quotes.map((q) => <QuoteBlock key={q.date + q.text} q={q} st={st} />)}
+          {variant === 'page' && section.quotes.some((q) => q.parts && q.facts)
+            ? <WordsTable quotes={section.quotes} st={st} />
+            : section.quotes.map((q) => <QuoteBlock key={q.date + q.text} q={q} st={st} />)}
           {section.more ? <Txt style={st.meta}>{section.more}</Txt> : null}
         </>
       );
