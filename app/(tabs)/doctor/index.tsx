@@ -5,7 +5,7 @@ import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/atossaUI';
 import {
-  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, Txt, showToast,
+  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, SkeletonCards, Txt, showToast,
 } from '../../../components/atossa/kit';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
@@ -133,7 +133,7 @@ export default function DoctorScreen() {
         {loadError ? (
           <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} />
         ) : (
-          <Txt variant="body" color={colors.ink2}>Loading your information…</Txt>
+          <SkeletonCards count={3} label="Loading your information" />
         )}
       </ScreenLarge>
     );
