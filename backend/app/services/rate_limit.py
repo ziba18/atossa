@@ -1,3 +1,4 @@
+import os
 import time
 from collections import defaultdict, deque
 from threading import Lock
@@ -7,13 +8,23 @@ from fastapi import HTTPException, Request, status
 _hits: dict[str, deque] = defaultdict(deque)
 _lock = Lock()
 
+# Number of proxies in front of the app that append to X-Forwarded-For (Render's edge + load balancer).
+# The client IP is the entry that many places from the right; anything further left is client-supplied.
+_PROXY_HOPS = max(1, int(os.getenv("TRUSTED_PROXY_HOPS", "2")))
+
+
+def client_ip(request: Request) -> str:
+    parts = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+    if parts:
+        return parts[max(0, len(parts) - _PROXY_HOPS)]
+    return request.client.host if request.client else "unknown"
+
 
 def limit(name: str, max_calls: int, per_seconds: int):
     """Per-client sliding-window limiter (in-process; fine for a single instance)."""
 
     def dependency(request: Request) -> None:
-        fwd = request.headers.get("x-forwarded-for", "")
-        client = fwd.split(",")[0].strip() or (request.client.host if request.client else "unknown")
+        client = client_ip(request)
         key = f"{name}:{client}"
         now = time.monotonic()
         with _lock:
