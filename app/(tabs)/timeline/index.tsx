@@ -81,7 +81,9 @@ export default function TimelineScreen() {
   // A quiet plum glyph, not a filled disc (V16). Hidden while the empty List shows its own
   // "Add a note" button, so there is only one primary for one action.
   const waiting = loading && !loadedFor;
-  const emptyList = (mode === 'list' || mode === 'patterns') && feed.length === 0 && !waiting;
+  // A failed first load must not fall through to the empty states ("Add a note"): the record may be fine.
+  const failed = !!loadError && !loadedFor && !waiting;
+  const emptyList = (mode === 'list' || mode === 'patterns') && feed.length === 0 && !waiting && !failed;
   const header = (
     <>
       {emptyList ? null : <AddButton label="Add a note" onPress={() => openCapture()} />}
@@ -97,7 +99,7 @@ export default function TimelineScreen() {
       <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
-      ) : mode === 'list' ? (
+      ) : failed ? null : mode === 'list' ? (
         <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
       ) : mode === 'patterns' ? (
         <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} />
