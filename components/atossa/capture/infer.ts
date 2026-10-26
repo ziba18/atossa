@@ -32,7 +32,7 @@ function zonesFrom(lower: string): string[] {
     if (tummy && /\b(centre|center|middle)\b/.test(c)) zones.add('Lower tummy centre');
     if (tummy && /\bright\b/.test(c)) zones.add('Lower tummy right');
     if (tummy && /\bboth sides\b/.test(c)) zones.add('Lower tummy left').add('Lower tummy right');
-    if (/\b(lower back|my back|back pain|back ache|backache|in my back|(?:sore|aching|achy|painful|tender|stiff) back)\b/.test(c)) zones.add('Lower back');
+    if (/\b(lower back|my back|me back|back pain|back ache|backache|in my back|(?:sore|aching|achy|painful|tender|stiff) back)\b/.test(c)) zones.add('Lower back');
     if (/\bdeep inside\b|\bdeep\b[^.,;]{0,20}\binside\b/.test(c)) zones.add('Deep inside');
     if (/\blegs?\b/.test(c)) zones.add('Legs');
     if (/\b(my bottom|in my bottom|bum)\b/.test(c)) zones.add('Bottom');
@@ -67,7 +67,7 @@ const clausesOf = (lower: string) => lower.split(/[.,;!?]|\bbut\b|\bthough\b|\bw
 const LOST = /\b(skipped|(?:didn'?t|did not) (?:go|make it|manage)|couldn'?t|can'?t|cannot|unable|not able|wasn'?t able|missed|bail(?:ed)?|had to (?:leave|stop|cancel|miss)|(?:went|go|gone|came|come|sent) home|left early|was a no)\b/;
 const CLEAR = /\b(no|not|nothing|never|without|fine|ok|okay|good|alright|normal|great|brilliant|lovely|enjoyed|well|still|went|even|didn'?t|did not|doesn'?t|does not|don'?t|wasn'?t|wouldn'?t)\b|hardly|barely|n['’]t\b/;
 // Sleep is the reverse: "didn't sleep", "wasn't able to sleep" ARE the impact; "slept fine" is not.
-const SLEEP_LOST = /\b(didn'?t|did not|couldn'?t|can'?t|cannot|wasn'?t able to|unable to|barely|hardly|not much|no)\b.*\b(sleep|slept)\b(?! (?:problems?|issues?|trouble))|\b(woke|awake|up all night)\b/;
+const SLEEP_LOST = /\b(didn'?t|did not|couldn'?t|can'?t|cannot|wasn'?t able to|unable to|barely|hardly|not much|no)\b.*\b(sleep|slept)\b(?! (?:problems?|issues?|trouble))|\b(woke|awake|up all night|kept me up)\b/;
 const SLEEP_OK = /\b(slept|sleeping|sleep)\b.*\b(fine|well|ok|okay|good|great|brilliant)\b|\bslept (?:like a (?:log|baby)|through|soundly)\b|\bno (?:sleep )?(?:problems?|issues?|trouble)\b/;
 
 function impactsFrom(lower: string): string[] {
@@ -75,7 +75,7 @@ function impactsFrom(lower: string): string[] {
   for (const c of clausesOf(lower)) {
     const cleared = CLEAR.test(c) && !LOST.test(c);
     if (/\b(work|study|studying|school|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
-    if (/\b(sleep|slept|sleeping|woke|awake)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
+    if (/\b(sleep|slept|sleeping|woke|awake|kept me up)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
     if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga)\b/.test(c) && !cleared) out.add('Exercise');
     if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in)\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
     if (/\bsex\b/.test(c) && !cleared) out.add('Sex');
