@@ -42,8 +42,9 @@ export default function TodayScreen() {
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      <HeroNumberCard />
-      <View style={{ marginTop: space.md }}><HeroCard /></View>
+      {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
+      {loadedFor ? <View style={{ marginBottom: space.md }}><HeroNumberCard /></View> : null}
+      <HeroCard />
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
