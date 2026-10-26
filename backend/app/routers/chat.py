@@ -10,6 +10,14 @@ from app.services.llm import LLMUnavailable, chat_completion
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 log = logging.getLogger(__name__)
+# uvicorn only configures its own loggers, so without a handler these INFO lines (guard reasons, reply
+# shape: counts only, never message text) would be dropped before reaching the host's log viewer.
+if not log.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s:     %(message)s"))
+    log.addHandler(_handler)
+    log.setLevel(logging.INFO)
+    log.propagate = False
 
 
 @router.post("", response_model=ChatResponse, dependencies=[Depends(limit("chat", 30, 60))])
