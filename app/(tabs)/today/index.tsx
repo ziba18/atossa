@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button, HeaderAvatar, ScreenLarge, Txt } from '../../../components/atossa/kit';
+import { Button, HeaderAvatar, InlineError, ScreenLarge, Txt } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
@@ -26,11 +26,18 @@ export default function TodayScreen() {
   const router = useRouter();
   const name = useAuthStore((s) => s.profile?.display_name);
   const symptoms = useRecordsStore((s) => s.records.symptom);
+  const userId = useAuthStore((s) => s.user?.id);
+  const loadError = useRecordsStore((s) => s.error);
+  const loadedFor = useRecordsStore((s) => s.loadedFor);
+  const load = useRecordsStore((s) => s.load);
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
 
   return (
     <ScreenLarge title="Today" subtitle={greeting(name)} right={<HeaderAvatar />}>
+      {loadError && !loadedFor ? (
+        <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
+      ) : null}
       <HeroCard />
       <View style={{ marginTop: space.md }}>
         <StarterChips onPeriod={() => setBleeding(true)} />

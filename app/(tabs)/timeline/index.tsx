@@ -3,7 +3,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, ScreenLarge, SegmentedControl, Txt,
+  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
@@ -22,6 +22,7 @@ import { colors, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { parseKey, todayKey } from '../../../lib/records/dates';
 import { bleedingStatus, noteCount } from '../../../lib/records/format';
+import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 
 const MODES: { value: TimelineMode; label: string }[] = [
@@ -35,6 +36,10 @@ export default function TimelineScreen() {
   const router = useRouter();
   const { mode, setMode, filter, setFilter } = useTimelineSession();
   const symptom = useRecordsStore((s) => s.records.symptom);
+  const loadError = useRecordsStore((s) => s.error);
+  const loadedFor = useRecordsStore((s) => s.loadedFor);
+  const load = useRecordsStore((s) => s.load);
+  const userId = useAuthStore((s) => s.user?.id);
   const periodDay = useRecordsStore((s) => s.records.period_day);
   const appointment = useRecordsStore((s) => s.records.appointment);
   const medicine = useRecordsStore((s) => s.records.medicine);
@@ -80,6 +85,9 @@ export default function TimelineScreen() {
 
   return (
     <ScreenLarge title="Timeline" right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
+      {loadError && !loadedFor ? (
+        <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
+      ) : null}
       <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
       {mode === 'list' ? (
         <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
