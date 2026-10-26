@@ -788,7 +788,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(doc.title)}</title>
 <style>
-  @page { size: A4; margin: 12mm 14mm 10mm; }
+  @page { size: A4; margin: 12mm 14mm 10mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8pt; color: ${C.ink2}; } }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: ${C.white}; }
   body { font-family: ${SANS}; color: ${C.ink}; ${pt(T.body)} }
