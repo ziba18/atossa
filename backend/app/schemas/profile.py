@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ProfileResponse(BaseModel):
@@ -16,6 +16,8 @@ class ProfileResponse(BaseModel):
     notifications_enabled: bool
     daily_log_reminder_enabled: bool
     daily_log_reminder_time: str
+    consent_version: int | None = None
+    consented_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -36,3 +38,4 @@ class ProfileUpdate(BaseModel):
     notifications_enabled: bool | None = None
     daily_log_reminder_enabled: bool | None = None
     daily_log_reminder_time: str | None = None
+    consent_version: int | None = Field(default=None, ge=1, le=1000)

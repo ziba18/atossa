@@ -41,6 +41,9 @@ class Profile(Base):
     notifications_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     daily_log_reminder_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     daily_log_reminder_time: Mapped[str] = mapped_column(String, default="20:00")
+    # Which version of the consent text the person agreed to, and when (set by the server).
+    consent_version: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    consented_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
