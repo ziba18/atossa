@@ -126,7 +126,11 @@ export function docRange(a: string, ap: DatePrecision, b: string, bp: DatePrecis
 
 // ---- the model ------------------------------------------------------------------------------
 
-export interface DocQuote { date: string; dateLabel: string; text: string; facts: string }
+export interface DocQuote {
+  date: string; dateLabel: string; text: string; facts: string;
+  /** The same facts split by question, for the printed table; '' where Sam gave no answer. */
+  parts?: { where: string; strength: string; timing: string };
+}
 /** One definition row on the page: "Why I went" | Sam's text. */
 export interface DocLine { label: string; text: string }
 
@@ -300,6 +304,7 @@ function quoteOf(s: SymptomData, text: string, withFacts = true): DocQuote {
     dateLabel: formatDay(s.date, 'always'),
     text,
     facts: withFacts ? joinFacts(whereFacts(s), strengthFacts(s), timingFacts(s)) : '',
+    parts: withFacts ? { where: whereFacts(s), strength: strengthFacts(s), timing: timingFacts(s) } : undefined,
   };
 }
 
@@ -695,6 +700,13 @@ function quoteHtml(q: DocQuote): string {
   return `<div class="q"><p class="serif">“${esc(curly(q.text))}”</p><p class="meta">${esc(joinFacts(q.dateLabel, q.facts))}</p></div>`;
 }
 
+/** Notes as a table. Empty cells print an en dash, so "not answered" is visible, never read as "none". */
+function wordsTableHtml(quotes: DocQuote[]): string {
+  const cell = (t?: string) => (t ? esc(t) : '<span class="sep">–</span>');
+  const rows = quotes.map((q) => `<tr><td class="nw">${esc(q.dateLabel)}</td><td>${cell(q.parts?.where)}</td><td>${cell(q.parts?.strength)}</td><td>${cell(q.parts?.timing)}</td><td class="serif">“${esc(curly(q.text))}”</td></tr>`).join('');
+  return `<table class="notes"><thead><tr><th>Date</th><th>Where</th><th>How strong</th><th>How long</th><th>In my words</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
 /** One visit / history item: a bold heading line, then one labelled fact per row. */
 function datedItemHtml(a: DatedItem): string {
   const rows = a.lines.map((l) => `<tr><th>${esc(l.label)}</th><td>${esc(l.text)}</td></tr>`).join('');
@@ -712,6 +724,8 @@ function sectionInner(s: DocSection): string {
   const head = `<h2>${esc(s.title)}</h2>`;
   switch (s.id) {
     case 'words':
+      // Printed as a table (date · where · how strong · how long · my words): a GP can scan down a column.
+      if (s.quotes.some((q) => q.parts && q.facts)) return `<section>${head}${wordsTableHtml(s.quotes)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
       return `<section>${head}${s.quotes.map(quoteHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
     case 'frequency': {
       const bars = s.bars.map((b) => {
@@ -783,6 +797,12 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dl { border-collapse: collapse; margin-top: 1pt; width: 100%; }
   table.dl th { width: 112pt; padding: 0 8pt 1pt 0; text-align: left; vertical-align: baseline; font-weight: 400; color: ${C.ink2}; ${pt(T.label)} }
   table.dl td { padding: 0 0 1pt; vertical-align: baseline; }
+  table.notes { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  table.notes th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
+  table.notes td { padding: 4pt 6pt 4pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
+  table.notes td.serif { ${pt(T.body)} }
+  table.notes td.nw { white-space: nowrap; }
+  table.notes th:nth-child(1) { width: 86pt; } table.notes th:nth-child(2) { width: 78pt; } table.notes th:nth-child(3) { width: 74pt; } table.notes th:nth-child(4) { width: 64pt; }
   .bar { margin: 3pt 0 6pt; }
   .track { height: 5pt; background: ${C.track}; border: 0.5pt solid ${C.borderStrong}; margin-top: 2pt; }
   .fill { height: 100%; background: ${C.ink}; }
