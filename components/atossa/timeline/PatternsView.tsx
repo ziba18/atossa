@@ -16,6 +16,8 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 import type { TimelineFilter } from './session';
 
 const BAR_AREA = 72;
+/** Narrowest a week column may be before its digit is dropped (digits would run together; the text above and the spoken label still give the counts). */
+const MIN_DIGIT_COL = 18;
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
 /** One horizontal bar per label: fill = days / total, count always written. */
@@ -39,6 +41,7 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
 
 export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => void }) {
   const [range, setRange] = useState<PatternsRange>('4w');
+  const [chartW, setChartW] = useState(0);
   const symptom = useRecordsStore((s) => s.records.symptom);
   const periodDay = useRecordsStore((s) => s.records.period_day);
   const medicine = useRecordsStore((s) => s.records.medicine);
@@ -86,14 +89,17 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
             <Txt variant="numeral">{m.noteDays}</Txt>
             <Txt variant="secondary" style={{ flexShrink: 1 }}>of {m.totalDays} days</Txt>
           </View>
-          <View style={styles.chart} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
               <View key={w.from} style={styles.weekCol}>
-                <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt>
+                {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
                 <View style={[styles.weekBar, { height: Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18)) }]} />
               </View>
             ))}
           </View>
+          {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
+            <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
+          ) : null}
           <Txt variant="caption" style={{ marginTop: space.xs }}>Days with a note in each week, {formatShortDate(m.from, 'always')} to {formatShortDate(m.to, 'always')}.</Txt>
         </PressableCard>
       </FadeIn>
