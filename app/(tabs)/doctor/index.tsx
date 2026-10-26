@@ -1,7 +1,7 @@
 // For my doctor — the summary builder. Everything on this tab only repeats what Sam entered.
 // One model (lib/records/summary.ts) feeds the preview, Show on screen and the PDF.
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/atossaUI';
 import {
@@ -62,6 +62,7 @@ function Step({ title, children }: { title: string; children: React.ReactNode })
 }
 
 export default function DoctorScreen() {
+  const winWidth = useWindowDimensions().width;
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
   const loading = useRecordsStore((s) => s.loading);
@@ -147,6 +148,8 @@ export default function DoctorScreen() {
   ];
   const agendaTitle = agendaTitleFor(upcoming?.data.date === today);
   // No data at all for this summary: a calm empty state instead of an empty page.
+  // Web at desktop width: preview (the document) on the right, controls always open on the left.
+  const desk = Platform.OS === 'web' && winWidth >= 1024;
   const nothingYet = doc.empty && doc.available.length === 0;
   // With nothing to share, the builder steps are noise — only the range stays, and only when a
   // longer range would find something.
@@ -177,7 +180,7 @@ export default function DoctorScreen() {
   );
 
   return (
-    <ScreenLarge title="For my doctor" right={<HeaderAvatar />} footer={footer}>
+    <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
       <Txt variant="body" color={colors.ink2}>
         Your notes, in your words, ready to share.
       </Txt>
@@ -199,6 +202,51 @@ export default function DoctorScreen() {
         </Card>
       ) : null}
 
+      {desk ? (
+        <View style={{ flexDirection: 'row', gap: space.xxl, alignItems: 'flex-start' }}>
+          <View style={{ width: 340 }}>
+      {nothingYet ? null : (
+        <Step title="What’s this appointment for?">
+          <ChipGroup
+            mode="single"
+            options={[...VISIT_TYPES]}
+            value={visitType}
+            onChange={(v) => setVisitType(v as VisitType | null)}
+            allowDeselect
+            accessibilityLabel="What’s this appointment for?"
+          />
+        </Step>
+      )}
+
+      {nothingYet && !olderData ? null : (
+        <Step title="How far back?">
+          <ChipGroup
+            mode="single"
+            options={rangeOptions}
+            value={range}
+            onChange={(v) => { if (v) setRange(v as RangeChoice); }}
+            accessibilityLabel="How far back?"
+          />
+          {rangeNote ? <Txt variant="secondary">{rangeNote}</Txt> : null}
+          <Txt variant="secondary">{joinFacts(doc.rangeLabel, notesLabel(doc.entries))}</Txt>
+        </Step>
+      )}
+
+      {nothingYet ? null : (
+        <View style={{ marginTop: space.xxl }}>
+          <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
+          <InlineError message={noteError} style={{ marginTop: space.xs }} />
+        </View>
+      )}
+
+      {doc.available.length ? (
+        <Step title="Sections">
+          <SectionToggles sections={doc.available} include={include} onChange={setInclude} />
+        </Step>
+      ) : null}
+
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
       <Step title={nothingYet ? 'Your summary' : 'Preview'}>
         {nothingYet ? (
           <Card>
@@ -214,7 +262,30 @@ export default function DoctorScreen() {
             <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
           </Card>
         ) : (
-          <DocumentPreview doc={doc} />
+          <DocumentPreview doc={doc} tall={desk} />
+        )}
+      </Step>
+
+          </View>
+        </View>
+      ) : (
+        <>
+      <Step title={nothingYet ? 'Your summary' : 'Preview'}>
+        {nothingYet ? (
+          <Card>
+            <EmptyState
+              message={olderData
+                ? 'Nothing logged in this time. Choose a longer range above, or add a note.'
+                : 'Nothing to share yet. Notes you add will appear here, in your words.'}
+              action={{ label: 'Add a note', onPress: () => openCapture() }}
+              style={{ paddingVertical: space.xl }} />
+          </Card>
+        ) : doc.empty ? (
+          <Card>
+            <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
+          </Card>
+        ) : (
+          <DocumentPreview doc={doc} tall={desk} />
         )}
       </Step>
 
@@ -281,6 +352,8 @@ export default function DoctorScreen() {
 
         </View>
       ) : null}
+        </>
+      )}
 
       <SafetyLine style={{ marginTop: space.xxl }} />
     </ScreenLarge>

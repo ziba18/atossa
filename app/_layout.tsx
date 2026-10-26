@@ -1,6 +1,6 @@
 // The handler itself is installed from index.ts, before anything else loads.
 import { clearFatalError, getFatalError, subscribeFatalError } from '../lib/crashGuard';
-import { Stack, useRouter, type ErrorBoundaryProps } from 'expo-router';
+import { Stack, useRouter, usePathname, type ErrorBoundaryProps } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -71,6 +71,9 @@ function AppShell() {
   if (fatalError) return <ErrorScreen error={fatalError} onRetry={clearFatalError} />;
 
   const isTablet = width >= UI.maxContentWidth;
+  // Desktop web: the doctor view gets a wider column so the summary reads as a document beside its controls.
+  const pathname = usePathname();
+  const colWidth = Platform.OS === 'web' && width >= 1024 && pathname.startsWith('/doctor') ? 1040 : UI.maxContentWidth;
 
   return (
     <>
@@ -78,7 +81,7 @@ function AppShell() {
       {isTablet ? (
         <View style={{ flex: 1, alignItems: 'center', backgroundColor: colors.sunken }}>
           {/* Wide screens (web, iPad): the app is one canvas column on a quieter surround, so the tab bar reads as part of it. */}
-          <View style={{ flex: 1, width: UI.maxContentWidth, backgroundColor: colors.canvas, borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.hairline }}>
+          <View style={{ flex: 1, width: colWidth, backgroundColor: colors.canvas, borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.hairline }}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="(auth)" />

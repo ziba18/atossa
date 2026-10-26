@@ -17,7 +17,7 @@ import { Quote, Txt } from './Txt';
  * content capped at 600 wide. Pass `back` for pushed screens to show a BackChevron above the title.
  */
 export function ScreenLarge({
-  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer,
+  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide,
 }: {
   title: string;
   subtitle?: React.ReactNode;
@@ -29,6 +29,8 @@ export function ScreenLarge({
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
   /** Pinned under the scroll area (rare — e.g. a share bar). */
   footer?: React.ReactNode;
+  /** Desktop web only: lets the content run to the shell's wider column (two-column screens). */
+  wide?: boolean;
 }) {
   const head = (
     <View style={styles.head}>
@@ -49,7 +51,7 @@ export function ScreenLarge({
       {scroll ? (
         <ScrollView
           ref={scrollRef as React.RefObject<ScrollViewInstance>}
-          contentContainerStyle={[styles.column, styles.scrollContent, contentStyle]}
+          contentContainerStyle={[styles.column, wide && { maxWidth: 1040 }, styles.scrollContent, contentStyle]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
           automaticallyAdjustKeyboardInsets

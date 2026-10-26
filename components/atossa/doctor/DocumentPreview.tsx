@@ -41,14 +41,14 @@ function PageCrop({ doc, width, height, onHeight }: { doc: DoctorDoc; width: num
   );
 }
 
-export function DocumentPreview({ doc }: { doc: DoctorDoc }) {
+export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean }) {
   const [width, setWidth] = useState(0);
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
   const { width: screenW } = useWindowDimensions();
   const pages = Math.max(1, Math.ceil((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY));
   const inner = Math.max(0, width - 2); // inside the 1 px border
-  const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), THUMB_MAX_H);
+  const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : THUMB_MAX_H);
   const readerWidth = Math.min(screenW, layout.maxContentWidth) - layout.gutter * 2; // the Sheet's content gutter
 
   return (
