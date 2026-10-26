@@ -55,7 +55,7 @@ export function MonthCalendar({
         </Txt>
         <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
       </View>
-      <View style={styles.row} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+      <View style={styles.row} aria-hidden>
         {WEEKDAY_LETTERS.map((w, i) => (
           <View key={i} style={styles.weekday}><Txt variant="caption">{w}</Txt></View>
         ))}

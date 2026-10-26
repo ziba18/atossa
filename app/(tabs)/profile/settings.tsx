@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { space } from '../../../constants/atossaUI';
-import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow } from '../../../components/atossa/kit';
+import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
@@ -56,6 +56,9 @@ export default function SettingsScreen() {
                 syncDailyLogReminder(true, v).catch(() => {});
               }}
             />
+            <Txt variant="caption" style={{ marginTop: space.sm }}>
+              {'The reminder says: “If today’s worth noting, I’m here. Two minutes is plenty.”'}
+            </Txt>
           </View>
         ) : null}
       </Card>

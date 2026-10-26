@@ -1,6 +1,6 @@
 // The Today chat composer: one pill — "+" (attach) · her words · mic · send.
 // Mic dictates INTO the box (on-device, same hook as the capture sheet); she sends when ready.
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, type TextInputInstance } from 'react-native';
 import { InlineError, Txt } from '../kit';
 import { colors, fonts, radii, space } from '../../../constants/atossaUI';
@@ -25,6 +25,7 @@ export const Composer = forwardRef<ComposerHandle, {
   ref,
 ) {
   const input = useRef<TextInputInstance>(null);
+  const [focused, setFocused] = useState(false);
   useImperativeHandle(ref, () => ({ focus: () => input.current?.focus() }), []);
 
   // Dictation appends to whatever was already typed when recording started.
@@ -58,7 +59,7 @@ export const Composer = forwardRef<ComposerHandle, {
   return (
     <View style={{ gap: space.xs }}>
       <InlineError message={dictation.error} />
-      <View style={styles.pill}>
+      <View style={[styles.pill, focused && styles.pillFocused]}>
         {attachments.length ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.attachRow}>
             {attachments.map((a) => (
@@ -91,7 +92,9 @@ export const Composer = forwardRef<ComposerHandle, {
             multiline
             // RN-web renders a 2-row textarea by default; start at one line like native.
             {...(Platform.OS === 'web' ? { rows: 1 } : {})}
-            style={styles.input}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            style={[styles.input, Platform.OS === 'web' && ({ outlineStyle: 'none' } as object)]}
             accessibilityLabel="Your message"
           />
           <RoundIcon
@@ -146,6 +149,8 @@ const styles = StyleSheet.create({
     borderRadius: radii.sheet,
     padding: space.xxs,
   },
+  /** Plum 2px ring on focus (replaces the browser's near-black outline); padding keeps the content still. */
+  pillFocused: { borderWidth: 2, borderColor: colors.plum, padding: space.xxs - 1 },
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.xxs, paddingBottom: space.xxs / 2 },
   round: { width: 44, height: 44, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   input: {
