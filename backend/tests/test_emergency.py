@@ -3,7 +3,7 @@ import pytest
 from app.services import output_guard as g
 
 D = pathlib.Path(__file__).parent
-SETS = [json.load(open(D / f"emergency_set_v{i}.json")) for i in (1, 2, 3)]
+SETS = [json.load(open(D / f"emergency_set_v{i}.json")) for i in (1, 2, 3, 6)]
 
 
 def test_self_harm_gets_support_text():
