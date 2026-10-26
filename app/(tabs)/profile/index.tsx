@@ -36,6 +36,7 @@ export default function ProfileScreen() {
   const signOut = useAuthStore((s) => s.signOut);
   const deleteAccount = useAuthStore((s) => s.deleteAccount);
   const records = useRecordsStore((s) => s.records);
+  const recordsLoaded = useRecordsStore((s) => s.loadedFor !== null);
   const clearSampleData = useRecordsStore((s) => s.clearSampleData);
   const restoreSampleData = useRecordsStore((s) => s.restoreSampleData);
 
@@ -114,9 +115,9 @@ export default function ProfileScreen() {
             key={kind}
             icon={RECORD_ICONS[kind]}
             label={KIND_INFO[kind].listTitle}
-            value={counts[kind] ? String(counts[kind]) : 'None'}
+            value={!recordsLoaded ? '–' : counts[kind] ? String(counts[kind]) : 'None'}
             onPress={() => openList(kind)}
-            accessibilityLabel={`${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}`}
+            accessibilityLabel={recordsLoaded ? `${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}` : `${KIND_INFO[kind].listTitle}. Loading`}
           />
         ))}
       </Group>
