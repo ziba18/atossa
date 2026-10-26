@@ -91,7 +91,7 @@ const toNum = (t: string) => (t in NUM_WORDS ? NUM_WORDS[t] : Number(t));
 function scoreFrom(lower: string): number | undefined {
   const found: number[] = [];
   for (const m of lower.matchAll(new RegExp(`\\b(${NUM})\\s*(?:/|out of)\\s*(?:10|ten)\\b`, 'g'))) found.push(toNum(m[1]));
-  for (const m of lower.matchAll(new RegExp(`\\b(?:rated(?: it)?|was|scored|then)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
+  for (const m of lower.matchAll(new RegExp(`\\b(?:rated(?: it)?|was|is|scored|then)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s+(?:of|sided|thing|more|time|other|off|day|way|side|that|who|which|to|too|for)\\b)(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "it's a four but it spikes to an eight": a peak is the worst, whatever else was said.
   for (const m of lower.matchAll(new RegExp(`\\b(?:spikes?|goes up|goes|rises?|peaks?|climbs?|gets?|up)\\s+to\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "it hit a nine for twenty minutes": reaching a score is a peak too.

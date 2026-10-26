@@ -1,0 +1,207 @@
+[
+ {
+  "id": "v9-01",
+  "strata": "b9",
+  "text": "Had a temperature of 38 degrees and my tummy hurts.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-02",
+  "strata": "b9",
+  "text": "Changed my pad 3 times in an hour, pain around 6.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-03",
+  "strata": "b9",
+  "text": "It lasted 5 minutes then eased off.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-04",
+  "strata": "b9",
+  "text": "I'm 29 and it's been like this for 10 years.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "For 10 years",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-05",
+  "strata": "b9",
+  "text": "Took 2 paracetamol at 8, pain is a 7.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": "Took 2 paracetamol at 8, pain is a 7"
+  }
+ },
+ {
+  "id": "v9-06",
+  "strata": "b9",
+  "text": "It was 2am when it woke me up, about 8 out of 10.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-07",
+  "strata": "b9",
+  "text": "Pain is worse at night.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-08",
+  "strata": "b9",
+  "text": "Hurts after sex, maybe a 4.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": 4,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-09",
+  "strata": "b9",
+  "text": "Hurts during sex and I've been avoiding it.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-10",
+  "strata": "b9",
+  "text": "Worse after eating, tummy swells up.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-11",
+  "strata": "b9",
+  "text": "My period is 5 days late and I have cramps.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-12",
+  "strata": "b9",
+  "text": "Cycle is 28 days, pain on day 2 is a 9.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 9,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-13",
+  "strata": "b9",
+  "text": "Flat day, around 3 out of 10 on the left side of my tummy.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 3,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-14",
+  "strata": "b9",
+  "text": "Room 7 of the clinic, waiting, my back hurts.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v9-15",
+  "strata": "b9",
+  "text": "I rated it ten out of ten at 3am.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 10,
+   "tried": null
+  }
+ }
+]
