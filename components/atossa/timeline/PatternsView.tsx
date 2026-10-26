@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },
   weekCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
   weekNum: { fontSize: 11 },
-  weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.borderStrong },
+  weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.ink2 },
   barHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.sunken, overflow: 'hidden' },
-  fill: { height: 8, borderRadius: 4, backgroundColor: colors.borderStrong },
+  fill: { height: 8, borderRadius: 4, backgroundColor: colors.ink2 },
 });
