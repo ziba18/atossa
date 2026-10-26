@@ -17,7 +17,7 @@ import { Quote, Txt } from './Txt';
  * content capped at 600 wide. Pass `back` for pushed screens to show a BackChevron above the title.
  */
 export function ScreenLarge({
-  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide,
+  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide, brand,
 }: {
   title: string;
   subtitle?: React.ReactNode;
@@ -31,10 +31,13 @@ export function ScreenLarge({
   footer?: React.ReactNode;
   /** Desktop web only: lets the content run to the shell's wider column (two-column screens). */
   wide?: boolean;
+  /** Small ATOSSA wordmark above the title (sign in / register), so the auth screens carry the brand. */
+  brand?: boolean;
 }) {
   const head = (
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
+      {brand ? <Txt variant="caption" color={colors.plum} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ATOSSA</Txt> : null}
       <View style={styles.titleRow}>
         <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}

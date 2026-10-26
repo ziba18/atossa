@@ -48,7 +48,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScreenLarge title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
+    <ScreenLarge brand title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
       <View style={{ gap: space.xl }}>
         <TextField
           label="Email"

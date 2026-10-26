@@ -61,7 +61,7 @@ export default function WelcomeScreen() {
 
         <View style={styles.actions}>
           <Button label="Create an account" onPress={() => router.push('/(auth)/register')} />
-          <Button label="I already have an account" variant="text" onPress={() => router.push('/(auth)/login')} />
+          <Button label="I already have an account" variant="secondary" onPress={() => router.push('/(auth)/login')} />
           <SocialAuthButtons mode="signup" />
         </View>
       </ScrollView>
