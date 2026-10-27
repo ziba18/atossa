@@ -93,7 +93,7 @@ function ChatScreen() {
   const hasHerWords = messages.some((m) => m.role === 'user' && m.text.trim());
 
   return (
-    <SafeAreaView edges={['top']} style={styles.screen}>
+    <SafeAreaView role="main" edges={['top']} style={styles.screen}>
       <View style={[styles.column, styles.header]}>
         <IconButton icon="chevron-left" label="Back to Today" color={colors.plum} onPress={() => router.back()} />
         <Txt variant="headline" accessibilityRole="header" style={styles.headerTitle}>Talk it through</Txt>

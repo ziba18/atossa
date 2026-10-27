@@ -30,7 +30,7 @@ const Tag = () => (
 
 function Consent() {
   return (
-    <ScrollView style={{ backgroundColor: colors.canvas }} contentContainerStyle={{ padding: space.lg, gap: space.md }}>
+    <View role="main" style={{ flex: 1 }}><ScrollView style={{ backgroundColor: colors.canvas }} contentContainerStyle={{ padding: space.lg, gap: space.md }}>
       <Tag />
       <Txt variant="hero">Share activity with Example Clinic?</Txt>
       <Card>
@@ -48,7 +48,7 @@ function Consent() {
       <Txt variant="secondary">You can stop sharing at any time from Profile. Atossa never diagnoses.</Txt>
       <Button label="Agree and share" onPress={() => {}} />
       <Button label="Not now" variant="text" onPress={() => {}} />
-    </ScrollView>
+    </ScrollView></View>
   );
 }
 
@@ -59,7 +59,7 @@ export default function ClinicMock() {
   if (view === 'consent') return <Consent />;
   const wide = width >= 900;
   return (
-    <ScrollView style={{ backgroundColor: colors.canvas }} contentContainerStyle={{ padding: wide ? space.xxl : space.lg, gap: space.lg, maxWidth: 1240, width: '100%', alignSelf: 'center' }}>
+    <View role="main" style={{ flex: 1 }}><ScrollView style={{ backgroundColor: colors.canvas }} contentContainerStyle={{ padding: wide ? space.xxl : space.lg, gap: space.lg, maxWidth: 1240, width: '100%', alignSelf: 'center' }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: space.sm }}>
         <View style={{ gap: space.xs }}>
           <Txt variant="hero">Atossa · Pilot: Example Clinic</Txt>
@@ -78,13 +78,13 @@ export default function ClinicMock() {
       <Txt variant="secondary">Ready = a summary made in the last 14 days before a booked appointment. Median notes per patient per week: 3.</Txt>
       <Card>
         <Txt variant="groupLabel">Patients by invite week</Txt>
-        <View accessibilityRole={'table' as any} style={{ marginTop: space.sm }}>
-          <View style={{ flexDirection: 'row', paddingVertical: space.xs, borderBottomWidth: 1, borderColor: colors.hairline }}>
-            {COLS.map((c) => <Txt key={c} variant="secondary" style={{ flex: 1 }}>{c}</Txt>)}
+        <View role="table" style={{ marginTop: space.sm }}>
+          <View role="row" style={{ flexDirection: 'row', paddingVertical: space.xs, borderBottomWidth: 1, borderColor: colors.hairline }}>
+            {COLS.map((c) => <Txt key={c} role="columnheader" variant="secondary" style={{ flex: 1 }}>{c}</Txt>)}
           </View>
           {ROWS.map((r) => (
-            <View key={r[0]} style={{ flexDirection: 'row', paddingVertical: space.sm, borderBottomWidth: 1, borderColor: colors.hairline }}>
-              {r.map((c, i) => <Txt key={i} style={{ flex: 1, fontVariant: ['tabular-nums'] }}>{c}</Txt>)}
+            <View key={r[0]} role="row" style={{ flexDirection: 'row', paddingVertical: space.sm, borderBottomWidth: 1, borderColor: colors.hairline }}>
+              {r.map((c, i) => <Txt key={i} role="cell" style={{ flex: 1, fontVariant: ['tabular-nums'] }}>{c}</Txt>)}
             </View>
           ))}
         </View>
@@ -94,6 +94,6 @@ export default function ClinicMock() {
         <Button label="Pilot report" variant="secondary" onPress={() => {}} />
       </View>
       <Txt variant="secondary">Patient-recorded data · not a clinical assessment · access to shared summaries is logged. Counts only: the clinic sees no note content.</Txt>
-    </ScrollView>
+    </ScrollView></View>
   );
 }
