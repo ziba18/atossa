@@ -21,7 +21,7 @@ import type { Rec, SymptomData } from '../../../types/records';
 import { MicButton } from './MicButton';
 import { nextAppointment } from './AppointmentCard';
 import { type IconName } from '../../ui/Icon';
-import { addDays, diffDays } from '../../../lib/records/dates';
+import { MONTH_NAMES, addDays, diffDays, parseKey } from '../../../lib/records/dates';
 
 // Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
 // then white — the hero is never cooler than the paper around it. Top 40% only.
@@ -246,11 +246,12 @@ export function HeroNumberCard() {
   const today = todayKey();
   const next = nextAppointment(appts);
   const daysAway = next ? Math.max(0, diffDays(today, next.data.date)) : 0;
-  // Past two months a day count reads as noise; weeks are what a person plans by.
+  // Past two months a count reads as noise: the date itself ("14 April") is what a person plans by.
   const inWeeks = daysAway > 60;
+  const apptDate = next ? parseKey(next.data.date) : null;
   const total = noteCount(symptoms);
   // On the day itself the numeral is the notes ready for the visit, not a "0 days".
-  const count = useCountUp(next ? (daysAway === 0 ? total : inWeeks ? Math.round(daysAway / 7) : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
+  const count = useCountUp(next ? (daysAway === 0 ? total : inWeeks && apptDate ? apptDate.d : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
   let big: string; let line: string; let sub: string; let target: string;
   if (next) {
     const days = diffDays(today, next.data.date);
@@ -262,7 +263,7 @@ export function HeroNumberCard() {
       sub = who ? `${who} · ${tail}` : tail;
     } else {
       big = String(count);
-      line = inWeeks ? 'weeks until your appointment' : days === 1 ? 'day until your appointment' : 'days until your appointment';
+      line = inWeeks && apptDate ? `${MONTH_NAMES[apptDate.m0]}${apptDate.y !== parseKey(today).y ? ` ${apptDate.y}` : ''} · your appointment` : days === 1 ? 'day until your appointment' : 'days until your appointment';
       const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
       sub = who ? `${who} · ${notes}` : notes;
     }
@@ -300,7 +301,7 @@ export function HeroChip() {
   const days = next ? diffDays(today, next.data.date) : -1;
   let label = ''; let target = '/(tabs)/timeline';
   if (next && days === 0 && total > 0) { label = `${notesLabel(total)} ready · today`; target = '/(tabs)/doctor'; }
-  else if (next && days > 0) { label = days > 60 ? `${Math.round(days / 7)} weeks to your appointment` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
+  else if (next && days > 0) { label = days > 60 ? `Appointment on ${parseKey(next.data.date).d} ${MONTH_NAMES[parseKey(next.data.date).m0]}` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
   else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
   if (!label) return null;
   return (
