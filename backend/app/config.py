@@ -1,12 +1,18 @@
 from pydantic_settings import BaseSettings
 
+from app.services.secret_check import check_secret
+
 
 class Settings(BaseSettings):
     database_url: str
     secret_key: str
+    # Set REQUIRE_STRONG_SECRET=1 once the live SECRET_KEY is known to pass; until then a weak one only logs a warning.
+    require_strong_secret: bool = False
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 30
+    # Comma-separated allowed CORS origins; "*" keeps the previous behaviour.
+    cors_origins: str = "*"
     # Expected audiences for verifying social sign-in identity tokens.
     apple_bundle_id: str = "com.attosa.app"
     google_web_client_id: str = ""
@@ -39,3 +45,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+check_secret(settings.secret_key, strict=settings.require_strong_secret)

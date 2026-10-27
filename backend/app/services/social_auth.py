@@ -1,6 +1,9 @@
+import base64
+import hashlib
 import time
 import httpx
-from jose import JWTError, jwt
+import jwt
+from jwt import PyJWTError as JWTError
 
 APPLE_JWKS_URL = "https://appleid.apple.com/auth/keys"
 GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs"
@@ -44,11 +47,35 @@ def _verified_email(claims: dict, provider: str) -> str:
     return email.strip().lower()
 
 
+def _signing_key(id_token: str, jwks: dict):
+    """The JWKS key whose `kid` matches the token header."""
+    kid = jwt.get_unverified_header(id_token).get("kid")
+    for k in jwks.get("keys", []):
+        if k.get("kid") == kid:
+            return jwt.PyJWK(k).key
+    raise JWTError("Signing key not found")
+
+
+def _check_at_hash(claims: dict, access_token: str | None) -> None:
+    """OIDC at_hash: left half of SHA-256(access_token), base64url without padding."""
+    expected = claims.get("at_hash")
+    if not expected:
+        return
+    if not access_token:
+        raise JWTError("Missing access token for at_hash")
+    digest = hashlib.sha256(access_token.encode("ascii")).digest()[:16]
+    if base64.urlsafe_b64encode(digest).rstrip(b"=").decode() != expected:
+        raise JWTError("Invalid at_hash")
+
+
 def verify_apple_identity_token(id_token: str, bundle_id: str) -> dict:
     """Verify an Apple `identityToken` from expo-apple-authentication. Returns {sub, email}."""
     jwks = _get_jwks(APPLE_JWKS_URL)
     try:
-        claims = jwt.decode(id_token, jwks, algorithms=["RS256"], audience=bundle_id, issuer=APPLE_ISSUER)
+        claims = jwt.decode(
+            id_token, _signing_key(id_token, jwks), algorithms=["RS256"],
+            audience=bundle_id, issuer=APPLE_ISSUER,
+        )
     except JWTError as e:
         raise SocialAuthError(f"Invalid Apple identity token: {e}")
     return {"sub": claims["sub"], "email": _verified_email(claims, "Apple")}
@@ -59,24 +86,20 @@ def verify_google_id_token(
 ) -> dict:
     """Verify a Google `idToken` from @react-native-google-signin. Returns {sub, email, name}.
 
-    Google's iOS ID tokens carry an `at_hash` claim, which python-jose rejects unless it
-    gets the matching access token to check it against — so the app sends that too.
-    `client_id` may be a list of accepted audiences (python-jose only takes one, so the
-    audience is then checked here instead).
+    Google's iOS ID tokens carry an `at_hash` claim, which is checked against the access
+    token the app sends along.
+    `client_id` may be a list of accepted audiences.
     """
     jwks = _get_jwks(GOOGLE_JWKS_URL)
     audiences = [client_id] if isinstance(client_id, str) else [c for c in client_id if c]
     try:
         claims = jwt.decode(
-            id_token, jwks, algorithms=["RS256"], issuer=GOOGLE_ISSUERS, access_token=access_token,
-            audience=audiences[0] if len(audiences) == 1 else None,
-            options={"verify_aud": len(audiences) == 1},
+            id_token, _signing_key(id_token, jwks), algorithms=["RS256"], audience=audiences,
+            options={"require": ["exp", "iss", "aud"]},
         )
+        if claims.get("iss") not in GOOGLE_ISSUERS:
+            raise JWTError("Invalid issuer")
+        _check_at_hash(claims, access_token)
     except JWTError as e:
         raise SocialAuthError(f"Invalid Google identity token: {e}")
-    if len(audiences) > 1:
-        token_aud = claims.get("aud")
-        token_auds = token_aud if isinstance(token_aud, list) else [token_aud]
-        if not any(a in audiences for a in token_auds):
-            raise SocialAuthError("Invalid Google identity token: Invalid audience")
     return {"sub": claims["sub"], "email": _verified_email(claims, "Google"), "name": claims.get("name")}

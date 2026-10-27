@@ -9,6 +9,7 @@ import {
   showToast,
 } from '../kit';
 import { space } from '../../../constants/atossaUI';
+import { urgentSignpost } from '../../../lib/urgentWording';
 import { haptics } from '../../../lib/haptics';
 import { bleedingFacts, bleedingStatus, formatDay } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -163,6 +164,11 @@ export function BleedingDetail({ date: routeDate, from }: { date: string; from: 
           </View>
         )}
 
+        {urgentSignpost(note) ? (
+          <Card tone="sunken">
+            <Txt accessibilityRole="alert">{urgentSignpost(note)}</Txt>
+          </Card>
+        ) : null}
         <TextField
           label="Anything to note?"
           optional

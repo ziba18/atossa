@@ -1,11 +1,12 @@
 // Today chat: conversations with Sage (POST /chat), kept ON THIS PHONE only (AsyncStorage, one
 // key per signed-in user). Attachments are copied into the app's document folder and never
-// uploaded — the AI only sees "[Attached a photo: name]". Preview mode keeps chats in memory and
+// uploaded — the AI only sees "[Attached a photo]" (no filename). Preview mode keeps chats in memory and
 // answers with fixed follow-up questions (no network).
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { create } from 'zustand';
 import { ApiError, api } from '../lib/api';
+import { contentOf } from '../lib/chatPayload';
 import { IS_PREVIEW } from '../lib/preview/flag';
 
 export interface ChatAttachment {
@@ -48,7 +49,6 @@ interface ChatState {
 }
 
 const MAX_HISTORY = 20; // matches the backend's MAX_MESSAGES
-const MAX_CONTENT = 2000;
 const keyFor = (userId: string) => `atossa.chats.v1.${userId}`;
 const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
@@ -65,13 +65,6 @@ function titleFrom(text: string, attachments?: ChatAttachment[]): string {
   if (t) return t.length > 48 ? `${t.slice(0, 47).trimEnd()}…` : t;
   const a = attachments?.[0];
   return a ? (a.kind === 'image' ? 'A photo' : a.name) : 'New chat';
-}
-
-/** What the AI sees for one message: her words, plus a note of anything attached (never the file). */
-function contentOf(m: ChatMessage): string {
-  const notes = (m.attachments ?? []).map((a) =>
-    a.kind === 'image' ? `[Attached a photo: ${a.name}]` : `[Attached a file: ${a.name}]`);
-  return [m.text.trim(), ...notes].filter(Boolean).join('\n').slice(0, MAX_CONTENT);
 }
 
 function persist(userId: string | null, chats: Chat[]) {
@@ -206,7 +199,7 @@ export async function keepAttachment(a: Omit<ChatAttachment, 'id'>): Promise<Cha
   }
 }
 
-/** Account deletion: remove this user's chats and attachments from the phone too. */
+/** Sign-out and account deletion: remove this user's chats and attachments from the phone too. */
 export async function clearLocalChats(userId: string): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(keyFor(userId));

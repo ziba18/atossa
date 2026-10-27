@@ -29,6 +29,22 @@ function printHtmlOnWeb(html: string): boolean {
   return true;
 }
 
+// The PDF holds the user's health notes. It is not deleted right after the share sheet closes (an
+// AirDrop or "Save to Files" may still be reading it), so the previous one is removed the next time
+// a PDF is made, and by `deleteLastSharedPdf` at sign-out.
+let lastPdfUri: string | null = null;
+
+export async function deleteLastSharedPdf(): Promise<void> {
+  const uri = lastPdfUri;
+  lastPdfUri = null;
+  if (!uri || Platform.OS === 'web') return;
+  try {
+    const { File } = await import('expo-file-system');
+    const f = new File(uri);
+    if (f.exists) f.delete();
+  } catch {}
+}
+
 /**
  * Make the PDF and open the share sheet. `onReady` fires once the file exists (success haptic +
  * toast), before the share sheet opens. Throws on failure (caller shows InlineError).
@@ -39,7 +55,9 @@ export async function shareSummaryPdf(html: string, title: string, onReady: () =
     onReady();
     return;
   }
+  await deleteLastSharedPdf();
   const { uri } = await Print.printToFileAsync({ html, ...A4_PT, margins: IOS_MARGINS });
+  lastPdfUri = uri;
   onReady();
   if (!(await Sharing.isAvailableAsync())) throw new Error('sharing unavailable');
   await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf', dialogTitle: title });

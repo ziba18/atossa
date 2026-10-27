@@ -1,0 +1,138 @@
+[
+ {
+  "id": "v17-01",
+  "strata": "b17-clock-cause",
+  "text": "woke up at about 5 with cramps",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-02",
+  "strata": "b17-clock-cause",
+  "text": "it's about 5 in the morning and it hurts",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-03",
+  "strata": "b17-clock-cause",
+  "text": "think I overdid it at the gym",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-04",
+  "strata": "b17-clock-cause",
+  "text": "overdid it at the gym and then couldn't go to my yoga class",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-05",
+  "strata": "b17-clock-cause",
+  "text": "tired all the time and my skin is bad",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-06",
+  "strata": "b17-clock-cause",
+  "text": "tired all the time and the pain is constant",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-07",
+  "strata": "b17-clock-cause",
+  "text": "I couldn't do the school run",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-08",
+  "strata": "b17-clock-cause",
+  "text": "about a 3 most days and 8 on Friday",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-09",
+  "strata": "b17-clock-cause",
+  "text": "kept me up until about 3",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v17-10",
+  "strata": "b17-clock-cause",
+  "text": "spotting between periods again, no pain",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]

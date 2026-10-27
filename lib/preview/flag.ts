@@ -3,9 +3,10 @@
 //
 // Turned on with EXPO_PUBLIC_DESIGN_PREVIEW=1 at bundle time, e.g.
 //   EXPO_PUBLIC_DESIGN_PREVIEW=1 npx expo start --web --port 8081   (npm run preview:web)
-// Never set it in EAS / production envs.
+// Never set it in EAS / production envs. As a second guard it is ignored outside dev bundles
+// (`__DEV__` is false in release builds), so a stray env var cannot ship a login-free app.
 
-export const IS_PREVIEW = process.env.EXPO_PUBLIC_DESIGN_PREVIEW === '1';
+export const IS_PREVIEW = process.env.EXPO_PUBLIC_DESIGN_PREVIEW === '1' && __DEV__;
 
 /** "Today" for the seeded Sam persona, so seed dates read naturally ("This week", "Today"). */
 export const PREVIEW_TODAY = '2026-09-24';

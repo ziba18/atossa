@@ -1,0 +1,565 @@
+[
+ {
+  "id": "v16-01",
+  "strata": "b16-uk",
+  "text": "Period pain from hell today, honestly an 8.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-02",
+  "strata": "b16-uk",
+  "text": "Absolutely knackered and my lower back is killing me.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-03",
+  "strata": "b16-uk",
+  "text": "Cramps were proper bad on the bus, had to get off a stop early.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-04",
+  "strata": "b16-uk",
+  "text": "Couldn't face going into the office, rang in sick.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-05",
+  "strata": "b16-uk",
+  "text": "Bit of a dull ache down below, nothing major, maybe a 3.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 3,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-06",
+  "strata": "b16-uk",
+  "text": "Missed my netball match because of the pain.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-07",
+  "strata": "b16-uk",
+  "text": "Had to cancel on the girls for Friday drinks again.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-08",
+  "strata": "b16-uk",
+  "text": "Up half the night with it, got about three hours kip.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-09",
+  "strata": "b16-uk",
+  "text": "Popped a couple of paracetamol, took the edge off.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Popped a couple of paracetamol, took the edge off"
+  }
+ },
+ {
+  "id": "v16-10",
+  "strata": "b16-uk",
+  "text": "Hot water bottle glued to my tummy all evening.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Hot water bottle glued to my tummy all evening"
+  }
+ },
+ {
+  "id": "v16-11",
+  "strata": "b16-uk",
+  "text": "Pain shooting down the backs of my legs, about a 6.",
+  "gold": {
+   "zones": [
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-12",
+  "strata": "b16-uk",
+  "text": "Left side low down, like a stitch that won't go.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-13",
+  "strata": "b16-uk",
+  "text": "Right hand side twinges, on and off since Tuesday.",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": "Since Tuesday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-14",
+  "strata": "b16-uk",
+  "text": "Not too bad today, no pain to speak of.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-15",
+  "strata": "b16-uk",
+  "text": "Sex was off the cards, too sore.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sex"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-16",
+  "strata": "b16-uk",
+  "text": "Feels like it's deep inside, really heavy.",
+  "gold": {
+   "zones": [
+    "Deep inside"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-17",
+  "strata": "b16-uk",
+  "text": "Been like this for donkey's years, only when I'm on.",
+  "gold": {
+   "zones": [],
+   "when": "Only around my period",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-18",
+  "strata": "b16-uk",
+  "text": "It's there all the time now, not just on my period.",
+  "gold": {
+   "zones": [],
+   "when": "All the time",
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-19",
+  "strata": "b16-uk",
+  "text": "Gave the gym a miss, couldn't even think about it.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-20",
+  "strata": "b16-uk",
+  "text": "Pain's a solid seven, left me in bits.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 7,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-21",
+  "strata": "b16-uk",
+  "text": "Ten out of ten, worst it's ever been, couldn't stand up straight.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 10,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-22",
+  "strata": "b16-uk",
+  "text": "Didn't sleep a wink, cramps all night.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-23",
+  "strata": "b16-uk",
+  "text": "My bum hurts when I go to the loo, sorry TMI.",
+  "gold": {
+   "zones": [
+    "Bottom"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-24",
+  "strata": "b16-uk",
+  "text": "Struggled through my shift at Tesco, nearly went home.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-25",
+  "strata": "b16-uk",
+  "text": "Uni lecture was a write-off, couldn't concentrate.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-26",
+  "strata": "b16-uk",
+  "text": "Been grim since the weekend, lower back mainly.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": "Since the weekend",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-27",
+  "strata": "b16-uk",
+  "text": "No back pain this time thankfully, just the tummy in the middle.",
+  "gold": {
+   "zones": [
+    "Lower tummy centre"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-28",
+  "strata": "b16-uk",
+  "text": "Mum's had it worse than me, her pain was a 9 back in the day; mine's a 5.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-29",
+  "strata": "b16-uk",
+  "text": "Didn't bother with ibuprofen, it never does anything.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-30",
+  "strata": "b16-uk",
+  "text": "Bloated like a balloon and ratty with everyone.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-31",
+  "strata": "b16-uk",
+  "text": "Telly and duvet day, couldn't leave the house.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-32",
+  "strata": "b16-uk",
+  "text": "Pain flared up about half four, peaked at an 8 then eased.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-33",
+  "strata": "b16-uk",
+  "text": "Went to bed early but still woke at 3am in agony.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-34",
+  "strata": "b16-uk",
+  "text": "Cramps in my lower tummy, both sides, about a 6.",
+  "gold": {
+   "zones": [
+    "Lower tummy left",
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-35",
+  "strata": "b16-uk",
+  "text": "Not been able to walk the dog, legs feel heavy.",
+  "gold": {
+   "zones": [
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-36",
+  "strata": "b16-uk",
+  "text": "Had a bath, helped a bit.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": "Had a bath, helped a bit"
+  }
+ },
+ {
+  "id": "v16-37",
+  "strata": "b16-uk",
+  "text": "It's a four today, manageable.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 4,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-38",
+  "strata": "b16-uk",
+  "text": "Nothing affected today, went to work as normal.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-39",
+  "strata": "b16-uk",
+  "text": "Last couple of weeks it's been on and off.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": "Last couple of weeks",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v16-40",
+  "strata": "b16-uk",
+  "text": "Pain's eased off loads, it's not stopping me sleeping any more.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ }
+]
