@@ -198,11 +198,17 @@ function helpedFrom(lower: string): Pick<Holistic, 'helped'> {
 const SEX = /\b(sex|intercourse|penetration|having sex|making love)\b/;
 const SEX_PAIN_DENIED = /\b(?:no pain|painless|without pain|(?:didn'?t|did not|doesn'?t|does not|wasn'?t) (?:hurt|painful|sore)|was fine|is fine|fine)\b/;
 
+const SEX_PAIN_NAMED = /\b(?:(?:sex|intercourse) pain|pain (?:with|during|in|after) (?:sex|intercourse))\b/;
+
 function sexPainFrom(lower: string): Pick<Holistic, 'sexPain' | 'sexPainWords'> {
   const ps = parts(lower);
   for (const [i, c] of ps.entries()) {
     if (!SEX.test(c)) continue;
     if (SEX_PAIN_DENIED.test(c)) return { sexPain: false, sexPainWords: c };
+    // "the sex pain" / "pain during sex" names the pain itself: a negation elsewhere in the clause ("I don't want to tell
+    // the dr about the sex pain") is about something else; only "no sex pain" / "without pain during sex" denies it
+    const named = c.match(SEX_PAIN_NAMED);
+    if (named) return { sexPain: !/\b(?:no|not any|without|never any)\s+$/.test(c.slice(0, named.index)), sexPainWords: c };
     const p = c.match(PAIN);
     if (p && !negated(c, p)) return { sexPain: true, sexPainWords: c };
     // "Bleeding after sex, and it was sore deep inside afterwards": the pain sits in the next part and points back

@@ -1,31 +1,167 @@
 {
-  "about": "Holistic v3: pain with sex (sexPain true/false) and plans for pregnancy (fertility: one of FERTILITY_OPTIONS minus 'Prefer not to say', never inferred from anything but her words). Gold written 2026-10-27 16:1x UTC BEFORE the sexPain/fertility rules existed. src: data-seed-v3 = Data's seed v3 proposal notes (agents/data/seed-v3-proposal.md), ai-brain-own = written by AI Brain (same author as the rules: treat as a dev set, not independent). Absent key = not said.",
-  "items": [
-    { "id": "S01", "src": "data-seed-v3", "text": "Deep pain inside during sex, so we had to stop. The ache stayed into the next morning.", "sexPain": true },
-    { "id": "S02", "src": "data-seed-v3", "text": "I noticed some bleeding after sex, and it was sore deep inside afterwards.", "sexPain": true },
-    { "id": "S03", "src": "data-seed-v3", "text": "A mild ache low down, easy to ignore today." },
-    { "id": "S04", "src": "ai-brain-own", "text": "It hurts when we have sex, a sharp pain right at the top." , "sexPain": true },
-    { "id": "S05", "src": "ai-brain-own", "text": "Sex was fine this week, no pain at all.", "sexPain": false },
-    { "id": "S06", "src": "ai-brain-own", "text": "No pain during sex but my back has been killing me.", "sexPain": false },
-    { "id": "S07", "src": "ai-brain-own", "text": "Drove back from Essex, cramps the whole way." },
-    { "id": "S08", "src": "ai-brain-own", "text": "Went to the sexual health clinic for a smear, it was fine." },
-    { "id": "S09", "src": "ai-brain-own", "text": "Intercourse is painful most of the time now, I've started avoiding it.", "sexPain": true },
-    { "id": "S10", "src": "ai-brain-own", "text": "Sore for hours after sex, a deep ache on the left.", "sexPain": true },
-    { "id": "S11", "src": "ai-brain-own", "text": "We've been trying for a baby for two years now.", "fertility": "Trying to get pregnant" },
-    { "id": "S12", "src": "ai-brain-own", "text": "Not trying for a baby at the moment, just want the pain sorted.", "fertility": "Not now" },
-    { "id": "S13", "src": "ai-brain-own", "text": "I don't know if I want kids, honestly.", "fertility": "Not sure" },
-    { "id": "S14", "src": "ai-brain-own", "text": "My sister is pregnant and I felt sick all day." },
-    { "id": "S15", "src": "ai-brain-own", "text": "Did a pregnancy test because my period is late, it was negative." },
-    { "id": "S16", "src": "ai-brain-own", "text": "We're trying to conceive and every month the cramps get worse.", "fertility": "Trying to get pregnant" },
-    { "id": "S17", "src": "ai-brain-own", "text": "We want to start a family but not for a few years.", "fertility": "Not now" },
-    { "id": "S18", "src": "ai-brain-own", "text": "Not sure whether we'll try for a baby, we keep going back and forth.", "fertility": "Not sure" },
-    { "id": "S19", "src": "ai-brain-own", "text": "Pain during sex again and we've been trying to get pregnant since March.", "sexPain": true, "fertility": "Trying to get pregnant" },
-    { "id": "S20", "src": "ai-brain-own", "text": "Trying to get through the week without painkillers." },
-    { "id": "S21", "src": "ai-brain-own", "text": "Sex didn't hurt this time, first time in ages.", "sexPain": false },
-    { "id": "S22", "src": "ai-brain-own", "text": "I don't want to get pregnant right now, that's why I'm on the pill.", "fertility": "Not now" },
-    { "id": "S23", "src": "ai-brain-own", "text": "We had to stop halfway because it was so painful.", "sexPain": true },
-    { "id": "S24", "src": "ai-brain-own", "text": "Bloated and tired, nothing else to say." },
-    { "id": "S25", "src": "ai-brain-own", "text": "Penetration hurts, like something is hitting a bruise.", "sexPain": true },
-    { "id": "S26", "src": "ai-brain-own", "text": "My partner and I would love a baby one day, just not yet.", "fertility": "Not now" }
-  ]
+ "about": "Holistic v3: pain with sex (sexPain true/false) and plans for pregnancy (fertility: one of FERTILITY_OPTIONS minus 'Prefer not to say', never inferred from anything but her words). Gold written 2026-10-27 16:1x UTC BEFORE the sexPain/fertility rules existed. src: data-seed-v3 = Data's seed v3 proposal notes (agents/data/seed-v3-proposal.md), ai-brain-own = written by AI Brain (same author as the rules: treat as a dev set, not independent). Absent key = not said.",
+ "items": [
+  {
+   "id": "S01",
+   "src": "data-seed-v3",
+   "text": "Deep pain inside during sex, so we had to stop. The ache stayed into the next morning.",
+   "sexPain": true
+  },
+  {
+   "id": "S02",
+   "src": "data-seed-v3",
+   "text": "I noticed some bleeding after sex, and it was sore deep inside afterwards.",
+   "sexPain": true
+  },
+  {
+   "id": "S03",
+   "src": "data-seed-v3",
+   "text": "A mild ache low down, easy to ignore today."
+  },
+  {
+   "id": "S04",
+   "src": "ai-brain-own",
+   "text": "It hurts when we have sex, a sharp pain right at the top.",
+   "sexPain": true
+  },
+  {
+   "id": "S05",
+   "src": "ai-brain-own",
+   "text": "Sex was fine this week, no pain at all.",
+   "sexPain": false
+  },
+  {
+   "id": "S06",
+   "src": "ai-brain-own",
+   "text": "No pain during sex but my back has been killing me.",
+   "sexPain": false
+  },
+  {
+   "id": "S07",
+   "src": "ai-brain-own",
+   "text": "Drove back from Essex, cramps the whole way."
+  },
+  {
+   "id": "S08",
+   "src": "ai-brain-own",
+   "text": "Went to the sexual health clinic for a smear, it was fine."
+  },
+  {
+   "id": "S09",
+   "src": "ai-brain-own",
+   "text": "Intercourse is painful most of the time now, I've started avoiding it.",
+   "sexPain": true
+  },
+  {
+   "id": "S10",
+   "src": "ai-brain-own",
+   "text": "Sore for hours after sex, a deep ache on the left.",
+   "sexPain": true
+  },
+  {
+   "id": "S11",
+   "src": "ai-brain-own",
+   "text": "We've been trying for a baby for two years now.",
+   "fertility": "Trying to get pregnant"
+  },
+  {
+   "id": "S12",
+   "src": "ai-brain-own",
+   "text": "Not trying for a baby at the moment, just want the pain sorted.",
+   "fertility": "Not now"
+  },
+  {
+   "id": "S13",
+   "src": "ai-brain-own",
+   "text": "I don't know if I want kids, honestly.",
+   "fertility": "Not sure"
+  },
+  {
+   "id": "S14",
+   "src": "ai-brain-own",
+   "text": "My sister is pregnant and I felt sick all day."
+  },
+  {
+   "id": "S15",
+   "src": "ai-brain-own",
+   "text": "Did a pregnancy test because my period is late, it was negative."
+  },
+  {
+   "id": "S16",
+   "src": "ai-brain-own",
+   "text": "We're trying to conceive and every month the cramps get worse.",
+   "fertility": "Trying to get pregnant"
+  },
+  {
+   "id": "S17",
+   "src": "ai-brain-own",
+   "text": "We want to start a family but not for a few years.",
+   "fertility": "Not now"
+  },
+  {
+   "id": "S18",
+   "src": "ai-brain-own",
+   "text": "Not sure whether we'll try for a baby, we keep going back and forth.",
+   "fertility": "Not sure"
+  },
+  {
+   "id": "S19",
+   "src": "ai-brain-own",
+   "text": "Pain during sex again and we've been trying to get pregnant since March.",
+   "sexPain": true,
+   "fertility": "Trying to get pregnant"
+  },
+  {
+   "id": "S20",
+   "src": "ai-brain-own",
+   "text": "Trying to get through the week without painkillers."
+  },
+  {
+   "id": "S21",
+   "src": "ai-brain-own",
+   "text": "Sex didn't hurt this time, first time in ages.",
+   "sexPain": false
+  },
+  {
+   "id": "S22",
+   "src": "ai-brain-own",
+   "text": "I don't want to get pregnant right now, that's why I'm on the pill.",
+   "fertility": "Not now"
+  },
+  {
+   "id": "S23",
+   "src": "ai-brain-own",
+   "text": "We had to stop halfway because it was so painful.",
+   "sexPain": true
+  },
+  {
+   "id": "S24",
+   "src": "ai-brain-own",
+   "text": "Bloated and tired, nothing else to say."
+  },
+  {
+   "id": "S25",
+   "src": "ai-brain-own",
+   "text": "Penetration hurts, like something is hitting a bruise.",
+   "sexPain": true
+  },
+  {
+   "id": "S26",
+   "src": "ai-brain-own",
+   "text": "My partner and I would love a baby one day, just not yet.",
+   "fertility": "Not now"
+  },
+  {
+   "id": "S27",
+   "src": "ai-brain-own",
+   "text": "No sex pain this week, just tired.",
+   "sexPain": false
+  },
+  {
+   "id": "S28",
+   "src": "ai-brain-own",
+   "text": "I don't want to mention the pain during sex to my GP, it's embarrassing.",
+   "sexPain": true
+  }
+ ]
 }
