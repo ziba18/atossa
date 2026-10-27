@@ -58,7 +58,7 @@ export function HeroCard() {
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
       <WaveMotif />
-      <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
+      <Txt variant="hero" style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT_BALANCED}
       </Txt>
       {Platform.OS === 'web' ? (
@@ -152,7 +152,7 @@ export function RoughDayCard() {
   return (
     <Card style={{ gap: space.md }}>
       <View style={{ gap: space.xxs }}>
-        <Txt variant="headline" accessibilityRole="header">Rough day?</Txt>
+        <Txt variant="headline" accessibilityRole="header" aria-level={2}>Rough day?</Txt>
         <Txt variant="secondary">Just the number is enough.</Txt>
       </View>
       <SeverityRow value={value} onChange={setValue} label="How rough, from 0 to 10" showLabel={false} />

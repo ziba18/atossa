@@ -15,7 +15,7 @@ const DIVIDER_INSET = ROW_PAD + GLYPH + space.md;
 export function GroupHeading({ title, style }: { title: string; style?: StyleProp<ViewStyle> }) {
   return (
     <View style={[{ marginBottom: space.xs, paddingHorizontal: space.xxs }, style]}>
-      <Txt variant="groupLabel" accessibilityRole="header">{title}</Txt>
+      <Txt variant="groupLabel" accessibilityRole="header" aria-level={2}>{title}</Txt>
     </View>
   );
 }

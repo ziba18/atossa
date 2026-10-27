@@ -48,7 +48,7 @@ export default function TodayScreen() {
   const lowScreen = useWindowDimensions().height < 640;
   // On the day of an appointment the hero card is tall; the slim chip keeps "Type a note" on the first screen.
   const apptToday = nextAppointment(useRecordsStore((s) => s.records.appointment))?.data.date === todayKey();
-  const short = lowScreen || apptToday;
+  const short = lowScreen || apptToday || noteCount(symptoms) >= 7;
 
   const capture = (
     <>

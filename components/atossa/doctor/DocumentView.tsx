@@ -329,7 +329,7 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
         borderTopWidth: first ? 0 : 0.75, borderTopColor: C.borderStrong,
       }}
     >
-      <Txt style={[st.head, { marginBottom: st.s.gap * 2 }]} accessibilityRole="header">{title}</Txt>
+      <Txt style={[st.head, { marginBottom: st.s.gap * 2 }]} accessibilityRole="header" aria-level={2}>{title}</Txt>
       {children}
     </View>
   );

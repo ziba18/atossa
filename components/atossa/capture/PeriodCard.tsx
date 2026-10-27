@@ -73,7 +73,7 @@ export function PeriodCard() {
 
   return (
     <Card>
-      <Txt variant="headline" accessibilityRole="header">My period</Txt>
+      <Txt variant="headline" accessibilityRole="header" aria-level={2}>My period</Txt>
       {lastStart && !picking ? (
         <>
           <Txt variant="body" style={{ marginTop: space.xs }}>{`Last period started ${formatDay(lastStart, 'always')}`}</Txt>

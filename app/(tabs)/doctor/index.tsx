@@ -59,7 +59,7 @@ function BarIconButton({
 function Step({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={{ marginTop: space.xxl, gap: space.sm }}>
-      <Txt variant="headline" accessibilityRole="header">{title}</Txt>
+      <Txt variant="headline" accessibilityRole="header" aria-level={2}>{title}</Txt>
       {children}
     </View>
   );
