@@ -225,3 +225,12 @@ the BackChevron names the screen it came from.
 - **Welcome illustration:** the brand waveform at 48 pt resting on a 148 pt white pill outlined in plum (a voice becoming a line of text). Hidden on phones under 700 pt high.
 - **Hero for an appointment more than 60 days away:** the date, not a week count (numeral = day of month, line = "April 2027 · your appointment"; 320 chip "Appointment on 14 April").
 - **Onboarding is 3 steps** (name, basics, reminders); `ONBOARDING_STEPS = 3`.
+
+## Additions (run 34-35)
+- **HeroNumber on Profile**: numeral tile (plum tint) + "notes in your record" + span "8 Jul to 24 Sep"; whole card opens Timeline; 0 notes = "notes so far" and not pressable. Counts and dates only, never a derived statistic.
+- **GroupRow detail + value**: detail is the one-line preview ("Latest: X · date", "Next: date · who"), value is the count; titles over 24 characters are clipped with an ellipsis in previews, never in the list itself.
+- **Grouped record lists**: Health history = one GroupHeading per type; Appointments = Upcoming / Past (only when both exist); Medicines = Current / Stopped (patch d407, only when both exist). Row icon is the kind icon; no type repeated under its own header.
+- **Empty record list**: icon, "No X yet." + one purpose sentence, one primary button.
+- **Web honesty rule**: where the web build cannot do something (reminders, social sign-in, voice), the control is hidden or replaced by one plain sentence; never a switch that does nothing.
+- **Narrow widths (under 260 pt, about 200% text):** ScreenLarge titles drop to 21 pt so long titles ('Appointments') never break mid-word; ConfirmCard's destructive row wraps rather than squeezing Delete; Welcome tightens spacing on phones under 700 pt high so both buttons sit above the fold at 320x568.
+- **On-screen strip key (reader/large):** two parts: the number/dot sentence, then a row of the line marks. The printed page keeps the single-sentence key.
