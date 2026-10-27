@@ -33,6 +33,13 @@ const MODES: { value: TimelineMode; label: string }[] = [
   { value: 'patterns', label: 'Patterns' },
 ];
 
+/** "3 notes · worst 9/10" (worst only when a note gave a number). */
+function weekSummary(items: ListItem[]): string {
+  const notes = items.filter((x): x is Extract<ListItem, { kind: 'symptom' }> => x.kind === 'symptom');
+  const worsts = notes.map((x) => worstOf(x.rec.data)).filter((n): n is number => n != null);
+  return [notesLabel(notes.length), worsts.length ? `worst ${Math.max(...worsts)}/10` : ''].filter(Boolean).join(' · ');
+}
+
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 
 export default function TimelineScreen() {
@@ -217,7 +224,7 @@ function ListView({
               <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
               {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (
                 <Txt variant="caption" maxFontSizeMultiplier={1.4}>
-                  {notesLabel(g.items.filter((x) => x.kind === 'symptom').length)}
+                  {weekSummary(g.items)}
                 </Txt>
               ) : null}
             </View>
