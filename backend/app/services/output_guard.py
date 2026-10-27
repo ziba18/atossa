@@ -259,6 +259,9 @@ _SELF = [
     # run 01 probe 2 (4/10 missed): UK/teen distress wording; also covers the not-exist item of set v23 (S-140)
     r"(?:can'?t|cannot) do this (?:any ?more|anymore)\b", r"(?:want|wanna|wants) (?:to )?(?:just )?(?:be gone|not exist)\b|(?:thinking|think|thought) about not existing|what'?s the point (?:of|in) (?:going on|living|carrying on|anything)",
     r"(?:too many|a load of|loads of) (?:painkillers|tablets|pills)\b.{0,25}on purpose|on purpose.{0,25}(?:tablets|pills|painkillers)",
+    # run 01 (S-154, probe 13: 3/8 missed): thoughts of harming a child, of crashing a car, hearing voices
+    r"(?:might|going to|want to|thoughts? of|thinking (?:of|about)) (?:hurt|harm|hurting|harming) (?:my|the) (?:baby|child|kids?|son|daughter)\b", r"\b(?:driving|crashing|steering) (?:my |the )?car (?:into|off)\b",
+    r"\bhearing voices\b.{0,40}\b(?:hurt|harm|kill)\b",
     # run 01 (S-142): self-injury without the word 'harm', and doubt about carrying on
     r"\bcut myself(?! (?:shaving|on|while|with|opening|chopping|cooking|slicing|badly on)\b)", r"(?:not sure|don'?t know|unsure) (?:if |whether )?i want to (?:carry on|keep going|go on|keep living|live)\b",
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
@@ -437,6 +440,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:pale|clammy)\b,? (?:and |,)?(?:sweaty|clammy)\b|\bpale\b.{0,30}\bheart (?:is )?racing\b|"
                     r"\bcan'?t keep even (?:water|fluids)\b.{0,30}\bdown\b|\bsick all day\b.{0,60}\b(?:dizzy|faint|can'?t keep)\b|"
                     r"\blump\b.{0,20}\bgroin\b.{0,50}\b(?:painful|vomit\w*)\b|"
+                    r"\bseeing things that aren'?t there\b|\bhearing voices\b|\bhaven'?t slept\b.{0,30}\b(?:days|nights)\b.{0,60}\b(?:seeing things|hearing voices)\b|"
                     # run 01 probe 5 (NHS allergic reaction page; 6/12 missed): swelling, wheeze with hives, can't swallow, floppy after an injection
                     r"\b(?:having|think i'?m having|think i have|got|got an?) an? allergic reaction\b|\bcan'?t swallow\b|"
                     r"\bhives\b.{0,40}\bwheez\w*|\bwheez\w*.{0,40}\bhives\b|"
