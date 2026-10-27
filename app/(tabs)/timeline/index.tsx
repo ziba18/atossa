@@ -155,7 +155,9 @@ function ListView({
   onOpen: (item: ListItem) => void;
 }) {
   // Short phones (320x568): Today already shows the strip; here the first note card must be on screen.
-  const short = useWindowDimensions().height < 640;
+  const win = useWindowDimensions();
+  const short = win.height < 640;
+  const tiny = win.width < 280; // 200% text on a small phone: the week summary drops under the label
   const [filterOpen, setFilterOpen] = useState(false);
   const options = useMemo(
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
@@ -227,10 +229,10 @@ function ListView({
           // Week header: 15/600 ink2 (groupLabel) — quieter than the card titles it groups.
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
           <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? space.xl : space.xxl }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm }}>
+            <View style={{ flexDirection: 'row', flexWrap: tiny ? 'wrap' : 'nowrap', alignItems: 'center', columnGap: space.sm, rowGap: 0, marginBottom: space.sm }}>
               <Txt variant="groupLabel" accessibilityRole="header" style={{ fontFamily: fonts.serif, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
-              <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
+              {tiny ? null : <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />}
               {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (
                 <Txt variant="caption" maxFontSizeMultiplier={1.4}>
                   {weekSummary(g.items)}
