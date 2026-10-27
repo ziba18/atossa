@@ -1,7 +1,7 @@
 // iOS-style inset-grouped list for Profile: one white card per section, 56 pt rows, hairline
 // dividers inset past the leading glyph. Used instead of a stack of one-row cards.
 import React from 'react';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import { colors, heights, radii, space } from '../../../constants/atossaUI';
 import { Icon, type IconName } from '../../ui/Icon';
 import { Quote, Txt } from '../kit';
@@ -67,14 +67,16 @@ export function GroupRow({
   chevron?: boolean;
   accessibilityLabel?: string;
 }) {
+  // Under ~280 px (200% zoom) the decorative icon goes and the gap closes, so words are not broken mid-word.
+  const tight = useWindowDimensions().width < 280;
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join('. ')}
-      style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.canvas }]}
+      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, pressed && { backgroundColor: colors.canvas }]}
     >
-      {icon ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
+      {icon && !tight ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
       <View style={styles.text}>
         <Txt variant="body">{label}</Txt>
         {detail ? <Txt variant="secondary">{detail}</Txt> : null}
