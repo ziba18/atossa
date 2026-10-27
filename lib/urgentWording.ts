@@ -69,7 +69,7 @@ function hitWhole(text: string): boolean {
 }
 
 const PREG = /\bpregnan\w+\b/i;
-const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided)\b/i;
+const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b/i;
 
 function hit(pattern: RegExp, text: string): boolean {
   const re = new RegExp(pattern.source, 'gi');

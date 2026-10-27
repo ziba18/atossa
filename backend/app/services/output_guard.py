@@ -354,7 +354,7 @@ def _hits(rx, text: str) -> bool:
 
 
 _PREG_WHOLE = re.compile(r"\bpregnan\w+\b", re.I)
-_PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided)\b", re.I)
+_PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b", re.I)
 
 
 # "the pain was killing me" describes pain, it is not a statement about self-harm.
@@ -404,6 +404,14 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:tight|pain|pressure|band|crush\w*|squeez\w+)\b.{0,25}\bchest\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left )?(?:jaw|arm)\b|"
                     r"\b(?:stabbing|agony|agonising|screaming)\b.{0,60}\b(?:curled up|on the floor|can'?t move)\b|"
                     r"\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b|"
+                    # run 01 probe 4 (8/12 missed): NHS pelvic-pain page 111/999 criteria told in everyday words
+                    r"\bshoulder\b.{0,60}\b(?:pregnan\w+|(?:think|might|may) (?:i'?m|i am|be) pregnant)|\bpregnan\w+\b.{0,60}\btip of (?:my |the )?shoulder\b|"
+                    r"\b(?:2\d|3\d|4[0-2]) weeks\b.{0,60}\b(?:regular|contractions?|tightenings?)\b|"
+                    r"\bpositive (?:pregnancy )?test\b.{0,60}\b(?:cramp\w*|spotting|bleed\w*|pain\w*)\b|"
+                    r"\b(?:pelvi\w+|tummy|belly|abdom\w+)\b.{0,40}\b(?:pain|ache)\b.{0,60}\b(?:temperature of (?:3[89]|4\d)|shivering|very high temperature)\b|"
+                    r"\b(?:temperature of (?:3[89]|4\d)|shivering)\b.{0,60}\bpelvi\w+ pain\b|"
+                    r"\b(?:touch|press)\w*\b.{0,40}\bgetting worse\b|\bgetting worse\b.{0,40}\b(?:touch|press)\w*\b|"
+                    r"\bpelvi\w+ pain\b.{0,40}\b(?:confused|disorientated)\b|\b(?:confused|disorientated)\b.{0,40}\bpelvi\w+ pain\b|"
                     # NHS pelvic-pain 999 list: pain in the tip of the shoulder together with pelvic/tummy pain (any clause)
                     r"\btip of (?:my |the )?shoulder\b.{0,60}\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b|"
                     r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,60}\btip of (?:my |the )?shoulder\b|"
