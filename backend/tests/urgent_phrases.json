@@ -126,5 +126,45 @@
  [
   "tight jeans made my belly sore",
   false
+ ],
+ [
+  "I suddenly feel confused",
+  true
+ ],
+ [
+  "suddenly became disorientated at work",
+  true
+ ],
+ [
+  "pain in the tip of my shoulder and my tummy hurts",
+  true
+ ],
+ [
+  "sharp pain and feeling very lightheaded",
+  true
+ ],
+ [
+  "looking very pale and feeling sick",
+  true
+ ],
+ [
+  "I felt a bit dizzy when I stood up",
+  false
+ ],
+ [
+  "period pain 4 out of 10 today",
+  false
+ ],
+ [
+  "a little confused about my appointment date",
+  false
+ ],
+ [
+  "my shoulder is sore from the gym",
+  false
+ ],
+ [
+  "pale and tired this week",
+  false
  ]
 ]
