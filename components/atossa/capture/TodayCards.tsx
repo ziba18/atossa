@@ -255,13 +255,14 @@ export function HeroNumberCard() {
   if (next) {
     const days = diffDays(today, next.data.date);
     const who = next.data.who.trim();
-    if (days === 0 && total > 0) {
+    if (days === 0) {
       big = String(count);
       line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
-      sub = who ? `${who} · Opens your summary` : 'Opens your summary';
+      const tail = total > 0 ? 'Opens your summary' : 'Add a note and it appears in your summary';
+      sub = who ? `${who} · ${tail}` : tail;
     } else {
-      big = days === 0 ? '' : String(count);
-      line = inWeeks ? 'weeks until your appointment' : days === 0 ? 'Your appointment is today' : days === 1 ? 'day until your appointment' : 'days until your appointment';
+      big = String(count);
+      line = inWeeks ? 'weeks until your appointment' : days === 1 ? 'day until your appointment' : 'days until your appointment';
       const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
       sub = who ? `${who} · ${notes}` : notes;
     }
