@@ -17,13 +17,14 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Show the one app toast ("Saved. 13 notes ready for your GP."). A new toast replaces the
- * previous one. Auto-dismisses after 3 s. System status only — never health content.
+ * previous one. Auto-dismisses after 3 s (longer for long messages). System status only — never health content.
  */
 export function showToast(message: string): void {
   if (timer) clearTimeout(timer);
   useToastStore.setState((s) => ({ message, seq: s.seq + 1 }));
   AccessibilityInfo.announceForAccessibility?.(message);
-  timer = setTimeout(dismissToast, motion.toastMs);
+  // 3 s for the short "Saved." lines; longer messages stay ~70 ms per character so they can be read.
+  timer = setTimeout(dismissToast, Math.max(motion.toastMs, message.length * 70));
 }
 
 /** Hide the toast now. Sheets call this when they open so it never sits over them. */

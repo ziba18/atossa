@@ -1,7 +1,8 @@
 // For my doctor — the summary builder. Everything on this tab only repeats what Sam entered.
 // One model (lib/records/summary.ts) feeds the preview, Show on screen and the PDF.
+import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/atossaUI';
 import {
@@ -62,6 +63,8 @@ function Step({ title, children }: { title: string; children: React.ReactNode })
 }
 
 export default function DoctorScreen() {
+  const winWidth = useWindowDimensions().width;
+  usePageTitle('For my doctor');
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
   const loading = useRecordsStore((s) => s.loading);
@@ -96,7 +99,7 @@ export default function DoctorScreen() {
       await saveDoctorNote(text);
       lastSaved.current = text;
     } catch {
-      setNoteError("Your words couldn't be saved just now. They're still in this summary.");
+      setNoteError("Your words couldn’t be saved just now. They’re still in this summary.");
     }
   };
 
@@ -106,10 +109,11 @@ export default function DoctorScreen() {
     try {
       await shareSummaryPdf(summaryToHtml(doc), 'Share your summary', () => {
         haptics.success();
-        showToast('Summary ready to share.');
+        // On web the browser's print window is the confirmation; a toast would outlive a cancelled dialog.
+        if (Platform.OS !== 'web') showToast('Summary ready to share.');
       });
     } catch (e) {
-      if (!isCancel(e)) setActionError("The summary couldn't be made into a PDF. Please try again.");
+      if (!isCancel(e)) setActionError("The summary couldn’t be made into a PDF. Please try again.");
     } finally {
       setBusy(null);
     }
@@ -121,7 +125,7 @@ export default function DoctorScreen() {
     try {
       await printSummary(summaryToHtml(doc));
     } catch (e) {
-      if (!isCancel(e)) setActionError("The summary couldn't be sent to a printer. Please try again.");
+      if (!isCancel(e)) setActionError("The summary couldn’t be sent to a printer. Please try again.");
     } finally {
       setBusy(null);
     }
@@ -147,6 +151,8 @@ export default function DoctorScreen() {
   ];
   const agendaTitle = agendaTitleFor(upcoming?.data.date === today);
   // No data at all for this summary: a calm empty state instead of an empty page.
+  // Web at desktop width: preview (the document) on the right, controls always open on the left.
+  const desk = Platform.OS === 'web' && winWidth >= 1024;
   const nothingYet = doc.empty && doc.available.length === 0;
   // With nothing to share, the builder steps are noise — only the range stays, and only when a
   // longer range would find something.
@@ -157,15 +163,15 @@ export default function DoctorScreen() {
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs }}>
         <Button
-          label="Share PDF"
+          label={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
           icon="share-2"
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
-          style={{ flex: 1 }}
-          accessibilityHint={doc.empty ? 'Nothing to share yet' : 'Makes a PDF and opens the share sheet'}
+          style={{ flex: 1, minWidth: 120, maxWidth: desk ? 420 : undefined }}
+          accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
         <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
         <BarIconButton
@@ -173,32 +179,83 @@ export default function DoctorScreen() {
           onPress={() => router.push('/(tabs)/doctor/show' as any)}
         />
       </View>
+      {Platform.OS === 'web' && !doc.empty ? (
+        <Txt variant="caption">Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
+      ) : null}
     </View>
   );
 
   return (
-    <ScreenLarge title="For my doctor" right={<HeaderAvatar />} footer={footer}>
+    <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
       <Txt variant="body" color={colors.ink2}>
         Your notes, in your words, ready to share.
       </Txt>
 
       {upcoming ? (
         <Card style={{ marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-          <View style={{
+          {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
+          {winWidth < 240 ? null : (
+          <View aria-hidden style={{
             width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
             alignItems: 'center', justifyContent: 'center',
           }}>
             <Icon name="calendar" size={22} color={colors.ink} />
           </View>
+          )}
           <View style={{ flex: 1 }}>
             <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
             <Txt variant="headline">
-              {joinFacts(upcoming.data.who.trim(), formatDay(upcoming.data.date))}
+              {joinFacts(upcoming.data.who.trim(), formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
             </Txt>
           </View>
         </Card>
       ) : null}
 
+      {desk ? (
+        <View style={{ flexDirection: 'row', gap: space.xxl, alignItems: 'flex-start' }}>
+          <View style={{ width: 340 }}>
+      {nothingYet ? null : (
+        <Step title="What’s this appointment for?">
+          <ChipGroup
+            mode="single"
+            options={[...VISIT_TYPES]}
+            value={visitType}
+            onChange={(v) => setVisitType(v as VisitType | null)}
+            allowDeselect
+            accessibilityLabel="What’s this appointment for?"
+          />
+        </Step>
+      )}
+
+      {nothingYet && !olderData ? null : (
+        <Step title="How far back?">
+          <ChipGroup
+            mode="single"
+            options={rangeOptions}
+            value={range}
+            onChange={(v) => { if (v) setRange(v as RangeChoice); }}
+            accessibilityLabel="How far back?"
+          />
+          {rangeNote ? <Txt variant="secondary">{rangeNote}</Txt> : null}
+          <Txt variant="secondary">{joinFacts(doc.rangeLabel, notesLabel(doc.entries))}</Txt>
+        </Step>
+      )}
+
+      {nothingYet ? null : (
+        <View style={{ marginTop: space.xxl }}>
+          <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
+          <InlineError message={noteError} style={{ marginTop: space.xs }} />
+        </View>
+      )}
+
+      {doc.available.length ? (
+        <Step title="Sections">
+          <SectionToggles sections={doc.available} include={include} onChange={setInclude} />
+        </Step>
+      ) : null}
+
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
       <Step title={nothingYet ? 'Your summary' : 'Preview'}>
         {nothingYet ? (
           <Card>
@@ -214,7 +271,30 @@ export default function DoctorScreen() {
             <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
           </Card>
         ) : (
-          <DocumentPreview doc={doc} />
+          <DocumentPreview doc={doc} tall={desk} />
+        )}
+      </Step>
+
+          </View>
+        </View>
+      ) : (
+        <>
+      <Step title={nothingYet ? 'Your summary' : 'Preview'}>
+        {nothingYet ? (
+          <Card>
+            <EmptyState
+              message={olderData
+                ? 'Nothing logged in this time. Choose a longer range above, or add a note.'
+                : 'Nothing to share yet. Notes you add will appear here, in your words.'}
+              action={{ label: 'Add a note', onPress: () => openCapture() }}
+              style={{ paddingVertical: space.xl }} />
+          </Card>
+        ) : doc.empty ? (
+          <Card>
+            <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
+          </Card>
+        ) : (
+          <DocumentPreview doc={doc} tall={desk} />
         )}
       </Step>
 
@@ -281,6 +361,8 @@ export default function DoctorScreen() {
 
         </View>
       ) : null}
+        </>
+      )}
 
       <SafetyLine style={{ marginTop: space.xxl }} />
     </ScreenLarge>

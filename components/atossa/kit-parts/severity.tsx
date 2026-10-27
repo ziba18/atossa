@@ -43,14 +43,16 @@ export function SeverityRow({
   };
 
   const oneRow = width >= ONE_ROW_MIN;
-  const perRow = oneRow ? 11 : 6;
+  // 6 per row needs 6 x MIN_CELL; under that (200% text on a small phone) use 4 (rows 4, 4, 3).
+  const perRow = oneRow ? 11 : width && width < 6 * MIN_CELL ? 4 : 6;
   // Until measured, fall back to equal flex cells (no flash of overflow).
   const cell = width ? Math.max(MIN_CELL, Math.min(56, Math.floor(width / perRow))) : 0;
   const dot = cell ? Math.min(DOT, cell - 2) : DOT - 4;
   const gap = cell ? Math.max(0, (width - perRow * cell) / (perRow - 1)) : 0;
   const slop = cell && cell < heights.minHit ? Math.ceil((heights.minHit - cell) / 2) : 0;
-  const rows = oneRow ? [ALL] : [ALL.slice(0, 6), ALL.slice(6)];
-  // Row 2 (5 discs) is centred: its last disc (10) is inset by half a cell + half a gap.
+  const rows: number[][] = [];
+  for (let i = 0; i < ALL.length; i += perRow) rows.push(ALL.slice(i, i + perRow));
+  // The last row (5 of 6, or 3 of 4) is centred: its last disc (10) is inset by half a cell + half a gap.
   const lastInset = oneRow || !cell ? 0 : (cell + gap) / 2;
   const captionPad = cell ? (cell - dot) / 2 : 0;
 

@@ -8,7 +8,8 @@ import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import type { DoctorDoc } from '../../../lib/records/summary';
-import { Sheet, Txt } from '../kit';
+import { Icon } from '../../ui/Icon';
+import { Button, Sheet, Txt } from '../kit';
 import { A4, DocumentView } from './DocumentView';
 
 // Printable height per A4 page: 842 pt minus the PDF's 40/34 pt margins and the repeated footer.
@@ -41,14 +42,15 @@ function PageCrop({ doc, width, height, onHeight }: { doc: DoctorDoc; width: num
   );
 }
 
-export function DocumentPreview({ doc }: { doc: DoctorDoc }) {
+export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean }) {
   const [width, setWidth] = useState(0);
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
   const { width: screenW } = useWindowDimensions();
-  const pages = Math.max(1, Math.ceil((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY));
+  // 0.15 page of slack: a document that is within a few lines of a page boundary measured 2 pages in the real PDF but 3 here.
+  const pages = Math.max(1, Math.ceil((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY - 0.15));
   const inner = Math.max(0, width - 2); // inside the 1 px border
-  const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), THUMB_MAX_H);
+  const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : THUMB_MAX_H);
   const readerWidth = Math.min(screenW, layout.maxContentWidth) - layout.gutter * 2; // the Sheet's content gutter
 
   return (
@@ -66,9 +68,23 @@ export function DocumentPreview({ doc }: { doc: DoctorDoc }) {
       >
         {inner > 0 ? <PageCrop doc={doc} width={inner} height={thumbH} onHeight={setDocHeight} /> : <View style={{ height: THUMB_MAX_H }} />}
       </Pressable>
-      <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>
-        {pages === 1 ? 'One page · tap to read it' : `About ${pages} pages · tap to read it`}
+      <Txt variant="secondary" style={{ marginTop: space.sm, textAlign: 'center' }}>
+        {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
       </Txt>
+      <Button label="Read it at full size" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" />
+      {doc.sections.length ? (
+        <View style={{ marginTop: space.md, gap: space.xs }}>
+          <Txt variant="groupLabel">In this summary</Txt>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md, rowGap: space.xs }}>
+            {doc.sections.map((sec) => (
+              <View key={sec.id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.xs, flexBasis: '100%' }}>
+                <View aria-hidden style={{ marginTop: 2 }}><Icon name="check" size={16} color={colors.ink3} /></View>
+                <Txt variant="secondary" style={{ flex: 1 }}>{sec.title}</Txt>
+              </View>
+            ))}
+          </View>
+        </View>
+      ) : null}
 
       <Sheet visible={open} onClose={() => setOpen(false)} title="Your summary" full scroll={false} closeLabel="Close summary">
         <ScrollView

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import { haptics } from '../../../lib/haptics';
@@ -15,7 +15,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'destructive' | '
  * primary — 56, plum, white text. One per screen/sheet.
  * secondary — 48, outline borderStrong, ink text.
  * text — 44, plum text, no fill (links such as "Type instead", "Add more").
- * destructive — 44 text-style button in error red ("Delete entry"). Confirm with ConfirmCard.
+ * destructive — 44 text-style button in error red ("Delete note" on a note, "Delete entry" on other records). Confirm with ConfirmCard.
  * destructiveOutline — 48 outline in error red; ConfirmCard's confirm action (N21).
  * Disabled primary = sunken fill + ink2 text (still readable, clearly inactive).
  */
@@ -53,6 +53,8 @@ export function Button({
       accessibilityState={{ disabled: !!inactive, busy: !!loading }}
       style={({ pressed }) => [
         styles.btnBase,
+        // A 2% press-in on the filled and outlined buttons: the colour change alone is only ~1.2:1.
+        pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.98 }] },
         variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.plumPressed : colors.plum }],
         variant === 'secondary' && [styles.secondary, { borderColor: inactive ? colors.hairline : colors.borderStrong, backgroundColor: pressed ? colors.sunken : 'transparent' }],
         variant === 'destructiveOutline' && [styles.secondary, { borderColor: colors.error, backgroundColor: pressed ? colors.errorTint : 'transparent', opacity: inactive ? 0.5 : 1 }],
@@ -304,6 +306,8 @@ export function SegmentedControl<T extends string>({
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }) {
+  // Below ~240 pt (200% text on a small phone) three labels no longer fit at 15 pt.
+  const narrow = useWindowDimensions().width < 240;
   return (
     <View style={[styles.segTrack, style]} accessibilityRole="tablist" accessibilityLabel={accessibilityLabel}>
       {options.map((o) => {
@@ -321,7 +325,7 @@ export function SegmentedControl<T extends string>({
             hitSlop={{ top: 4, bottom: 4 }}
             style={[styles.seg, selected && styles.segSelected]}
           >
-            <Txt maxFontSizeMultiplier={1.6} style={[styles.segText, selected && { color: colors.ink }]}>
+            <Txt maxFontSizeMultiplier={1.6} numberOfLines={1} style={[styles.segText, narrow && { fontSize: 11 }, selected && { color: colors.ink }]}>
               {label}
             </Txt>
           </Pressable>
@@ -387,7 +391,7 @@ const styles = StyleSheet.create({
 
   // Pill like every other control (V9); the white thumb gets a hairline + the one micro-shadow.
   segTrack: { flexDirection: 'row', height: heights.segmented, borderRadius: radii.pill, backgroundColor: colors.sunken, padding: 3 },
-  seg: { flex: 1, alignItems: 'center', justifyContent: 'center', borderRadius: radii.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent' },
+  seg: { flex: 1, minWidth: 0, paddingHorizontal: 1, alignItems: 'center', justifyContent: 'center', borderRadius: radii.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent' },
   segSelected: { backgroundColor: colors.surface, borderColor: colors.hairline, ...shadows.thumb },
   segText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.ink2 },
 

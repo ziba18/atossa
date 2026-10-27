@@ -77,6 +77,13 @@ export function Sheet({
     Animated.timing(edge, { toValue: s ? 1 : 0, duration: 160, useNativeDriver: Platform.OS !== 'web' }).start();
   };
 
+  // Web: remember what had focus when the sheet opened and give it back on close (keyboard users keep their place).
+  // Read during render: by the time effects run, the sheet's own autofocus has already moved focus.
+  const opener = useRef<HTMLElement | null>(null);
+  const wasVisible = useRef(false);
+  if (visible && !wasVisible.current && Platform.OS === 'web' && typeof document !== 'undefined') opener.current = document.activeElement as HTMLElement | null;
+  wasVisible.current = visible;
+
   useEffect(() => {
     if (visible) {
       dismissToast();
@@ -99,6 +106,9 @@ export function Sheet({
     if (Platform.OS === 'web') {
       progress.setValue(0);
       setMounted(false);
+      const back = opener.current;
+      opener.current = null;
+      if (back && typeof document !== 'undefined' && back !== document.body && document.contains(back)) setTimeout(() => back.focus?.(), 0);
       return undefined;
     }
     let done = false;
@@ -155,7 +165,12 @@ export function Sheet({
       {/* While closing (native fade), nothing inside takes touches. */}
       <View style={[StyleSheet.absoluteFill, { pointerEvents: visible ? 'auto' : 'none' }]}>
       <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, { opacity: progress }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={closeLabel} accessibilityRole="button" />
+        {Platform.OS === 'web' ? (
+          // A plain responder view, not a button: the X is the keyboard/screen-reader way out, so the scrim is not a second "Close" Tab stop.
+          <View style={StyleSheet.absoluteFill} onStartShouldSetResponder={() => true} onResponderRelease={onClose} />
+        ) : (
+          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={closeLabel} accessibilityRole="button" />
+        )}
       </Animated.View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
