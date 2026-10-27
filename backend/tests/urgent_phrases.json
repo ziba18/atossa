@@ -1110,5 +1110,29 @@ false
 [
 "what's the point of the food diary if nobody reads it",
 false
+],
+[
+"blood is soaking thru my jeans and i feel so dizzy",
+true
+],
+[
+"left arm is numb and my jaw hurts and im sweating",
+true
+],
+[
+"im so done w everything i just wanna not exist",
+true
+],
+[
+"wheezing a bit after sports, used my inhaler, ok",
+false
+],
+[
+"wheezing and my inhaler isn't helping",
+true
+],
+[
+"my arm went numb from sleeping on it",
+false
 ]
 ]

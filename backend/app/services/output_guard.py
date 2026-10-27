@@ -233,6 +233,9 @@ _BODY = [
     r"(?:so intense|too much).{0,40}(?:can'?t move|crying on the)", r"crying on the (?:bathroom )?floor",
     r"out of nowhere.{0,40}severe|severe.{0,40}(?:sick|sweaty|sweating)", r"worst (?:\w+ )?of my life", r"screaming",
     r"drenched in sweat", r"vision (?:went|goes|has gone) (?:grey|gray|black|dark)",
+    # run 01 (S-140, set v23 teen register): blood through clothes, and arm/jaw numbness with sweating
+    r"(?:soak\w*|drench\w*|bleed\w*|blood) (?:is )?(?:thru|through) (?:my )?(?:jeans|trousers|pants|leggings|skirt|dress)",
+    r"\b(?:left |right )?arm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b.{0,50}\b(?:jaw|sweat\w*)\b|\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*)\b.{0,50}\b(?:sweat\w*|(?:left |right )?arm)\b",
     r"soaking (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour)?",
     r"(?:pad|tampon)s? (?:every|each|an) hour", r"(?:changed|changing) (?:my )?(?:pad|tampon)s? (?:\w+ times )?(?:in|every|each) (?:an|one|half an) hour",
     r"blood everywhere", r"(?:very |really |so |extremely )?heav(?:y|ily) bleeding", r"bleeding (?:really |very |so )?heav(?:y|ily)",
@@ -432,7 +435,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:can'?t|couldn'?t|cannot|unable to) (?:move around|stand|walk|get up)\b.{0,20}\bwithout (?:help|support|holding)\b|"
                     r"\b(?:extreme|horrific|massive)\b.{0,10}\bpain\b.{0,60}\b(?:being sick|vomit\w*|throwing up|can'?t (?:pee|wee))\b|\b(?:extreme|horrific|massive)\b.{0,10}\bpain\b.{0,40}\bnothing helps\b|"
                     # asthma, stroke, headache and low blood sugar wording from the NHS pages (any clause)
-                    r"\bwheez\w+\b.{0,40}\b(?:inhaler|not (?:helping|working)|isn'?t (?:helping|touching|working))|\binhaler (?:isn'?t|is not|not|doesn'?t|won'?t) (?:helping|working|touching|do anything)|"
+                    r"\bwheez\w+\b.{0,40}\b(?:not (?:helping|working)|isn'?t (?:helping|touching|working))|\binhaler (?:isn'?t|is not|not|doesn'?t|won'?t) (?:helping|working|touching|do anything)|"
                     r"\b(?:numb\w*|pins and needles|weak\w*|tingl\w*)\b.{0,30}\b(?:one side)\b|\b(?:one side)\b.{0,30}\b(?:face|speech)\b|"
                     r"\bthunderclap\b|\bworst headache (?:ever|of my life)\b|"
                     r"\b(?:double|blurr\w*) vision\b.{0,40}\b(?:speak|speech|talk\w*|words)\b|\b(?:can'?t|couldn'?t|cannot) speak (?:right|properly)\b(?!.{0,30}\b(?:nose|cold|throat)\b)|"
