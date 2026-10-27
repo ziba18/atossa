@@ -430,6 +430,11 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set v22 (voice-style notes; first contact 4/12 missed)
+                    r"\btook (?:a lot|loads|lots)\b.{0,15}\b(?:tablets|pills)\b.{0,40}\b(?:strange|drowsy|sleepy|sick|weird)\b|"
+                    r"\bwon'?t wake up\b|\bcan'?t wake\b.{0,20}\b(?:up|her|him|them)\b|"
+                    r"\b(?:don'?t|do not|dont) think i can (?:keep going|go on|carry on)\b|"
+                    r"\b(?:can'?t|cannot|cant|no) (?:control|feel)\b.{0,15}\b(?:bladder|bowel)\b|\bno feeling in my (?:(?:right|left) )?(?:legs?|feet)\b|"
                     # set v21 (long notes with the emergency in the middle; first contact 4/12 missed)
                     r"\b(?:filling|soaking|changing)\b.{0,12}\b(?:a |my )?(?:pad|tampon)s?\b.{0,15}\bevery (?:\d+|few|ten|twenty|fifteen|thirty) (?:min\w*)\b|"
                     r"\bstruggling to get (?:a )?(?:full )?breath\b|"
