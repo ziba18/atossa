@@ -76,10 +76,10 @@ def compose():
     sub_font = load_font(28, "regular")
     tiny_font = load_font(22, "regular")
 
-    line1 = "Period &"
-    line2 = "Cycle Tracker"
-    sub = "Log periods, see patterns,"
-    sub2 = "predict your next cycle."
+    line1 = "Your symptoms,"
+    line2 = "in your words"
+    sub = "Note what you feel, then show"
+    sub2 = "your doctor a clear summary."
 
     # Manual line heights (avoid bbox baseline issues)
     tagline_lh = 72
