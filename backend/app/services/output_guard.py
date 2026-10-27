@@ -377,6 +377,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"^(?=.*\b(?:laparoscop\w*|operation|surgery|wound)\b)(?=.*\b(?:fever|high temperature|leaking|pus|oozing)\b)(?=.*\b(?:worse|unwell|vomit\w*|swollen)\b)|"
                     r"\b(?:vomit\w*|being sick|throwing up)\b.{0,15}\b(?:non[- ]?stop|constantly|all night)\b.{0,60}\b(?:swollen|bloated|tender|hard)\b|"
                     r"^(?=.*\b(?:period (?:is |was )?(?:\w+ ){0,3}late|late period|missed (?:a |my )?period|overdue)\b)(?=.*\b(?:one[- ]sided|one side|sharp|stabbing)\b)(?=.*\b(?:dizz\w*|faint\w*))|"
+                    # sharp / severe pain together with dizzy or light-headed, and not managing without help (NHS 999 signs); any clause
+                    r"^(?=.*\b(?:sharp|stabbing|severe|intense|terrible)\b.{0,20}\bpain\b|.*\bpain\b.{0,20}\b(?:was|is|so) (?:very |really |so )?(?:sharp|stabbing|severe|intense)\b)(?=.*\b(?:dizz\w*|light[- ]?headed)\b)|"
+                    r"\b(?:can'?t|couldn'?t|cannot|unable to) (?:move around|stand|walk|get up)\b.{0,20}\bwithout (?:help|support|holding)\b|"
                     r"\b(?:extreme|horrific|massive)\b.{0,10}\bpain\b.{0,60}\b(?:being sick|vomit\w*|throwing up|can'?t (?:pee|wee))\b|\b(?:extreme|horrific|massive)\b.{0,10}\bpain\b.{0,40}\bnothing helps\b|"
                     # asthma, stroke, headache and low blood sugar wording from the NHS pages (any clause)
                     r"\bwheez\w+\b.{0,40}\b(?:inhaler|not (?:helping|working)|isn'?t (?:helping|touching|working))|\binhaler (?:isn'?t|is not|not|doesn'?t|won'?t) (?:helping|working|touching|do anything)|"

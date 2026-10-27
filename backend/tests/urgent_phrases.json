@@ -166,5 +166,37 @@
  [
   "pale and tired this week",
   false
+ ],
+ [
+  "Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.",
+  true
+ ],
+ [
+  "The pain was sharp and went down my legs. I also felt dizzy and lightheaded.",
+  true
+ ],
+ [
+  "I feel very dizzy and sharp pain in my tummy",
+  true
+ ],
+ [
+  "Very sharp pain across my lower belly. I couldn't move around or stand without help.",
+  true
+ ],
+ [
+  "Mild cramps on day two and I felt a bit dizzy when I stood up fast",
+  false
+ ],
+ [
+  "Dull ache in my back, no dizziness, slept fine",
+  false
+ ],
+ [
+  "Sharp pain in my knee after running, no other symptoms",
+  false
+ ],
+ [
+  "Felt lightheaded after skipping lunch, cramps were a 3 out of 10",
+  false
  ]
 ]
