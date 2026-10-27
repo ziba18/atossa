@@ -201,12 +201,15 @@ export function HeroNumber({
   accessibilityHint?: string;
 }) {
   // Under ~240 pt wide (200% text) 17 pt "appointment" no longer fits the column and breaks mid-word.
-  const narrow = useWindowDimensions().width < 240;
+  const winW = useWindowDimensions().width;
+  const narrow = winW < 240;
+  // 320-wide phones: a smaller numeral tile lets the text sit beside it instead of dropping underneath.
+  const compact = winW < 360 && winW >= 240;
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? (
-        <View style={{ minWidth: 76, height: 76, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
-          <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt>
+        <View style={{ minWidth: compact ? 60 : 76, height: compact ? 60 : 76, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
+          <Txt variant="numeral" style={compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
         </View>
       ) : null}
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
