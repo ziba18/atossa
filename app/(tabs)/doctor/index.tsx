@@ -328,7 +328,7 @@ export default function DoctorScreen() {
           <Step title="Your summary page">
             <DocumentPreview doc={doc} tall={desk} />
           </Step>
-          <View style={{ marginTop: space.sm, alignItems: 'flex-start' }}>
+          <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>
             <Button
               label="See the patterns behind this"
               variant="text"

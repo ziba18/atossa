@@ -77,7 +77,7 @@ export function PeriodCard() {
       {lastStart && !picking ? (
         <>
           <Txt variant="body" style={{ marginTop: space.xs }}>{`Last period started ${formatDay(lastStart, 'always')}`}</Txt>
-          <View style={{ marginTop: space.sm, flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md }}>
+          <View style={{ marginTop: space.sm, marginLeft: -space.xs, flexDirection: 'row', flexWrap: 'wrap', columnGap: space.xs }}>
             <Button label="Log a new start" variant="text" small onPress={() => setPicking(true)} />
             <Button
               label="See it on the Month view"

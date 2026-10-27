@@ -68,7 +68,7 @@ export default function TodayScreen() {
       {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
       {/* Patterns need a few notes to say anything; from 7 on, one tap from here (Timeline > Patterns). */}
       {loadedFor && noteCount(symptoms) >= 7 ? (
-        <View style={{ marginBottom: space.md, alignItems: 'flex-start' }}>
+        <View style={{ marginBottom: space.md, marginLeft: -space.xs, alignItems: 'flex-start' }}>
           <Button
             label="See your patterns"
             variant="text"
