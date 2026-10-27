@@ -154,6 +154,8 @@ export default function DoctorScreen() {
   // Web at desktop width: preview (the document) on the right, controls always open on the left.
   const desk = Platform.OS === 'web' && winWidth >= 1024;
   const nothingYet = doc.empty && doc.available.length === 0;
+  // An appointment today: the note field sits above the Customise fold (phone layout) so it is hard to miss.
+  const agendaUp = !desk && !nothingYet && upcoming?.data.date === today;
   // With nothing to share, the builder steps are noise — only the range stays, and only when a
   // longer range would find something.
   const olderData = symptomRecs.some((r) => r.data.date < doc.from) || periodRecs.some((r) => r.data.date < doc.from);
@@ -298,6 +300,13 @@ export default function DoctorScreen() {
         )}
       </Step>
 
+      {agendaUp ? (
+        <View style={{ marginTop: space.xl }}>
+          <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
+          <InlineError message={noteError} style={{ marginTop: space.xs }} />
+        </View>
+      ) : null}
+
       {nothingYet && !olderData ? null : (
         <Pressable
           onPress={() => setCustomise((v) => !v)}
@@ -346,7 +355,7 @@ export default function DoctorScreen() {
         </Step>
       )}
 
-      {nothingYet ? null : (
+      {nothingYet || agendaUp ? null : (
         <View style={{ marginTop: space.xxl }}>
           <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
