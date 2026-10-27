@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime, timedelta, timezone
 import jwt
 from jwt import PyJWTError as JWTError
@@ -32,12 +33,12 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def create_access_token(user_id: str, version: int = 0) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
-    return jwt.encode({"sub": user_id, "exp": expire, "type": "access", "ver": version}, settings.secret_key, algorithm=settings.algorithm)
+    return jwt.encode({"sub": user_id, "exp": expire, "type": "access", "ver": version, "jti": secrets.token_urlsafe(16)}, settings.secret_key, algorithm=settings.algorithm)
 
 
 def create_refresh_token(user_id: str, version: int = 0) -> str:
     expire = datetime.now(timezone.utc) + timedelta(days=settings.refresh_token_expire_days)
-    return jwt.encode({"sub": user_id, "exp": expire, "type": "refresh", "ver": version}, settings.secret_key, algorithm=settings.algorithm)
+    return jwt.encode({"sub": user_id, "exp": expire, "type": "refresh", "ver": version, "jti": secrets.token_urlsafe(16)}, settings.secret_key, algorithm=settings.algorithm)
 
 
 def decode_claims(token: str, expected_type: str = "access") -> tuple[str, int]:
