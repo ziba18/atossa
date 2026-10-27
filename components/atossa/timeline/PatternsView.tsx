@@ -41,11 +41,13 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
 }
 
 /** One number with a label under it; the row of three sits above the charts. */
-function StatTile({ value, label, onPress, hint }: { value: number; label: string; onPress: () => void; hint: string }) {
+function StatTile({ value, label, onPress, hint, wide }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean }) {
   return (
-    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={`${value} ${label}. ${hint}`} style={styles.tile}>
-      <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>
-      <Txt variant="caption" style={{ marginTop: 2 }}>{label}</Txt>
+    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={`${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
+      <View style={wide ? styles.tileRow : undefined}>
+        <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>
+        <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>
+      </View>
     </PressableCard>
   );
 }
@@ -64,6 +66,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
   const router = useRouter();
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
+  const [stack, setStack] = useState(false);
   const symptom = useRecordsStore((s) => s.records.symptom);
   const periodDay = useRecordsStore((s) => s.records.period_day);
   const medicine = useRecordsStore((s) => s.records.medicine);
@@ -102,10 +105,11 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
       <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
 
       <FadeIn index={0}>
-        <View style={styles.tiles}>
-          <StatTile value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
-          <StatTile value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
-          <StatTile value={m.bleedingDays} label="days of bleeding" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
+        {/* Under ~300 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
+        <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
+          <StatTile wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
+          <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
+          <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
         </View>
       </FadeIn>
 
@@ -197,6 +201,8 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
 const styles = StyleSheet.create({
   tiles: { flexDirection: 'row', gap: space.sm },
   tile: { flex: 1, minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
+  tileWide: { paddingHorizontal: space.md, paddingVertical: space.sm },
+  tileRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   tileNum: { fontSize: 32, lineHeight: 38 },
   numRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs, marginTop: space.xxs },
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },

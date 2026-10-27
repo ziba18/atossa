@@ -22,7 +22,9 @@ const STEPS = [
 export default function WelcomeScreen() {
   const router = useRouter();
   // Short phones (iPhone SE class): keep the buttons on the first screen, drop the step strip.
-  const short = useWindowDimensions().height < 700;
+  const win = useWindowDimensions();
+  const short = win.height < 700;
+  const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
   useEffect(() => track('Welcome Viewed'), []);
 
   return (
@@ -62,7 +64,7 @@ export default function WelcomeScreen() {
           </Card>
         </View>
 
-        {short ? null : <View style={styles.steps} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
+        {short || narrow ? null : <View style={styles.steps} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
           {STEPS.map((st, i) => (
             <View key={st.word} style={styles.step}>
               <View style={styles.stepNum}><Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt></View>
