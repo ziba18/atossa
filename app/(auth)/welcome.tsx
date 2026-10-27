@@ -28,7 +28,7 @@ export default function WelcomeScreen() {
   useEffect(() => track('Welcome Viewed'), []);
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+    <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
         <View style={styles.band}>
           <LinearGradient
