@@ -352,7 +352,7 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
   const hasAfter = !!(d.told.trim() || d.tests.trim() || d.next.trim());
   return (
     <>
-      <UrgentNote text={textOf(d)} />
+      <UrgentNote text={textOf(d)} date={d.date} precision={d.datePrecision} />
       <TextField label="Who or where" value={d.who} onChangeText={(who) => set({ who })} autoCapitalize="sentences" />
       <RecordDateField
         label="Date"
@@ -384,7 +384,7 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
 function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
   return (
     <>
-      <UrgentNote text={textOf(d)} />
+      <UrgentNote text={textOf(d)} date={d.date} precision={d.datePrecision} />
       <View>
         <FieldLabel label="What it was" />
         <ChipGroup

@@ -3,9 +3,13 @@
 import React from 'react';
 import { Card, Txt } from './kit';
 import { urgentSignpost } from '../../lib/urgentWording';
+import { isHistoryDate } from '../../lib/records/dates';
 
-/** `text` may be one string or every text value of a record; empty or ordinary text renders nothing. */
-export function UrgentNote({ text }: { text: string }) {
+/** `text` may be one string or every text value of a record; empty or ordinary text renders nothing.
+ *  `date` is the day the record is about: older than yesterday it is history, not how she is now, so no line
+ *  (same rule as the Timeline card). No date, a future date or a month-only date still checks the words. */
+export function UrgentNote({ text, date, precision }: { text: string; date?: string; precision?: string }) {
+  if (date && /^\d{4}-\d{2}-\d{2}$/.test(date) && isHistoryDate(date, precision)) return null;
   const line = urgentSignpost(text);
   if (!line) return null;
   return (
