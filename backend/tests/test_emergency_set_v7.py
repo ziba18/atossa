@@ -91,3 +91,13 @@ def test_blind_nhs_pages_wording_v15():
 def test_stretched_letters_and_doubled_spaces_do_not_hide_an_emergency():
     for t in ("chest  pain", "bleeding sooo heavily", "I CANT BREATHE"):
         assert is_emergency(t), t
+
+
+SET16 = json.loads((Path(__file__).parent / "emergency_set_v16_blind_everyday_style.json").read_text())
+
+
+def test_blind_everyday_style_v16():
+    assert [t for t in SET16["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET16["harmless"] if is_emergency(t)] == []
+    for t in ("I'm 5 weeks into my course and my back aches", "the duvet is soaked from the rain, annoying", "I can get up and walk fine"):
+        assert not is_emergency(t), t

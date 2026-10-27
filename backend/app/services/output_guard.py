@@ -239,6 +239,7 @@ SELF_HARM = (
 _SELF_HARM_RX = re.compile(
     r"\b(?:suicid\w+|kill(?:ing)? myself|end(?:ing)? my (?:own )?life|self[- ]harm\w*|want(?:ed)? to die|"
     r"don'?t want to (?:be here|live|wake up)|end it all|hurt(?:ing)? myself|overdos\w+|"
+    r"(?:took|taken|swallowed|had) (?:all|every one|the whole lot) (?:of )?(?:my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
     r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds)|"
     r"(?:don'?t|do not|can'?t|cannot) see (?:the |any )?point (?:in |of )?(?:being alive|living|going on|carrying on|life)|no point (?:in )?(?:living|going on|being alive)|"
     r"(?:everyone|everybody|they|family|friends) (?:would|will|'d) be better off without me|wish i (?:was|were) dead|wish i (?:would|could) (?:just )?not wake up|"
@@ -246,7 +247,9 @@ _SELF_HARM_RX = re.compile(
     re.I,
 )
 _EMERGENCY = re.compile(
-    r"\b(?:can'?t keep (?:any )?(?:water|fluids?|anything) down|(?:trouble|difficulty|problems?) (?:getting|catching) (?:my )?breath|(?:trouble|difficulty|problems?) breathing|lips? (?:look|looks|are|is|have gone) (?:blue|grey|gray)|"
+    r"\b(?:can'?t (?:get|stand) up|(?:pain|cramps?) (?:is |are )?making me (?:throw up|vomit|be sick|faint|pass out)|puddle of blood|soaked (?:in|with) blood|blood[- ]soaked|"
+    r"something (?:has |just )?(?:burst|popped|ripped|torn|tore)|feels? like (?:something|it) (?:has )?(?:burst|popped|ripped|torn|tore)|"
+    r"can'?t keep (?:any )?(?:water|fluids?|anything) down|(?:trouble|difficulty|problems?) (?:getting|catching) (?:my )?breath|(?:trouble|difficulty|problems?) breathing|lips? (?:look|looks|are|is|have gone) (?:blue|grey|gray)|"
     r"passing (?:fresh |bright red |lots of |loads of |a lot of )?blood\b(?! clots?)|blood in (?:my )?(?:vomit|poo|stool)|"
     r"(?:my )?face (?:has |had |is |just )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
     r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
@@ -322,6 +325,8 @@ _WHOLE = re.compile(r"\b(?:tight|pain|pressure|band|crush\w*|squeez\w+)\b.{0,25}
                     r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,60}\btip of (?:my |the )?shoulder\b|"
                     # NHS toxic shock page: tampon or cup in use together with a high temperature and another sign (any clause)
                     r"\bpain\b.{0,25}\bright (?:ribs?|rib cage|side of (?:my )?ribs)\b.{0,60}\bright shoulder\b|"
+                    # early pregnancy told as weeks ("im 7 weeks and ... blood/cramps")
+                    r"\b(?:i'?m|im|i am) \d{1,2} weeks?\b(?! (?:post|since|late|overdue|into))(?!\s*(?:on|of) (?:my|the))[^.]{0,80}\b(?:blood|bleed\w*|cramp\w*|pain\w*)\b|"
                     # NHS PID page: a measured temperature of 38+ with shivering and tummy/pelvic pain (any order)
                     r"\btemperature of (?:3[89]|4\d)\b.{0,60}\b(?:chills|shivering|shivery)\b.{0,60}\bpain\b.{0,30}\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b|"
                     # NHS PID page 999 list: very high temperature with chills/shivering together with pelvic or tummy pain
