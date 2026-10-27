@@ -58,6 +58,7 @@ export default function ClinicMock() {
   if (!IS_PREVIEW) return <Redirect href={'/' as any} />;
   if (view === 'consent') return <Consent />;
   const wide = width >= 900;
+  const empty = view === 'empty';
   return (
     <View role="main" style={{ flex: 1 }}><ScrollView style={{ backgroundColor: colors.canvas }} contentContainerStyle={{ padding: wide ? space.xxl : space.lg, gap: space.lg, maxWidth: 1240, width: '100%', alignSelf: 'center' }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: space.sm }}>
@@ -68,16 +69,19 @@ export default function ClinicMock() {
         <Txt variant="secondary">Staff: J. Smith</Txt>
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
-        {TILES.map((t) => (
+        {TILES.map((t0) => { const t = empty ? { ...t0, n: t0.label === 'Summaries ready' ? '0 / 0' : '0' } : t0; return (
           <Card key={t.label} style={{ flexGrow: 1, flexBasis: wide ? 0 : '45%' }}>
             <Txt variant="hero" style={{ fontVariant: ['tabular-nums'] }}>{t.n}</Txt>
             <Txt variant="secondary">{t.label}</Txt>
           </Card>
-        ))}
+        ); })}
       </View>
-      <Txt variant="secondary">Ready = a summary made in the last 14 days before a booked appointment. Median notes per patient per week: 3.</Txt>
+      <Txt variant="secondary">Ready = a summary made in the last 14 days before a booked appointment.{empty ? "" : " Median notes per patient per week: 3."}</Txt>
       <Card>
         <Txt variant="groupLabel">Patients by invite week</Txt>
+        {empty ? (
+          <Txt style={{ marginTop: space.sm }}>No patients have joined yet. Invite patients and they appear here once they agree to share activity counts. You will never see their notes.</Txt>
+        ) : (
         <View role="table" style={{ marginTop: space.sm }}>
           <View role="row" style={{ flexDirection: 'row', paddingVertical: space.xs, borderBottomWidth: 1, borderColor: colors.hairline }}>
             {COLS.map((c) => <Txt key={c} role="columnheader" variant="secondary" style={{ flex: 1 }}>{c}</Txt>)}
@@ -88,6 +92,7 @@ export default function ClinicMock() {
             </View>
           ))}
         </View>
+        )}
       </Card>
       <View style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' }}>
         <Button label="Invite patients" onPress={() => {}} />
