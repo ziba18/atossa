@@ -119,7 +119,9 @@ def _norm(text: str) -> str:
     t = "".join(c for c in unicodedata.normalize("NFD", t) if unicodedata.category(c) not in ("Cf", "Mn"))
     t = t.translate(_HOMOGLYPHS).translate(_QUOTES)
     t = re.sub(r"(?<=[A-Za-z])[0134@$](?=[A-Za-z])", lambda m: _LEET[m.group(0)], t)
-    return re.sub(r"\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b", lambda m: re.sub(r"[ .\-]", "", m.group(0)), t)
+    t = re.sub(r"\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b", lambda m: re.sub(r"[ .\-]", "", m.group(0)), t)
+    # stretched letters ("sooo heavily") and doubled spaces ("chest  pain")
+    return re.sub(r"[ \t]{2,}", " ", re.sub(r"([A-Za-z])\1{2,}", r"\1", t))
 
 
 def _sentences(text: str) -> list[str]:

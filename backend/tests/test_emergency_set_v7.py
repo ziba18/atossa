@@ -86,3 +86,8 @@ SET15 = json.loads((Path(__file__).parent / "emergency_set_v15_blind_nhs_pages.j
 def test_blind_nhs_pages_wording_v15():
     assert [t for t in SET15["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET15["harmless"] if is_emergency(t)] == []
+
+
+def test_stretched_letters_and_doubled_spaces_do_not_hide_an_emergency():
+    for t in ("chest  pain", "bleeding sooo heavily", "I CANT BREATHE"):
+        assert is_emergency(t), t

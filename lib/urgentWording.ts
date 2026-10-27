@@ -25,7 +25,9 @@ function normalise(text: string): string {
   t = t.replace(/[\u2018\u2019\u02bc\u2032]/g, (c) => QUOTES[c] ?? c).replace(/[\u201c\u201d]/g, '"');
   t = t.replace(/[^\x00-\x7f]/g, (c) => HOMOGLYPHS[c] ?? c);
   t = t.replace(/(?<=[A-Za-z])[0134@$](?=[A-Za-z])/g, (c) => LEET[c]);
-  return t.replace(/\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b/g, (m) => m.replace(/[ .\-]/g, ''));
+  t = t.replace(/\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b/g, (m) => m.replace(/[ .\-]/g, ''));
+  // stretched letters ("sooo heavily") and doubled spaces ("chest  pain"); mirrors backend `_norm`
+  return t.replace(/([A-Za-z])\1{2,}/g, '$1').replace(/[ \t]{2,}/g, ' ');
 }
 
 // Same decision as the backend `_hits`: a match counts unless its clause is negated, in the past, about someone else or resolved.
