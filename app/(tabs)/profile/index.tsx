@@ -4,12 +4,16 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { DATA_LINES } from '../../../constants/dataLocation';
 import {
-  Button, Card, ConfirmCard, SafetyLine, ScreenLarge, Txt, showToast,
+  Button, Card, ConfirmCard, HeroNumber, SafetyLine, ScreenLarge, Txt, showToast,
 } from '../../../components/atossa/kit';
 import type { IconName } from '../../../components/ui/Icon';
 import { Group, GroupHeading, GroupRow } from '../../../components/atossa/records/GroupedRows';
 import { savedLabel } from '../../../components/atossa/records/RecordsList';
-import { KIND_INFO, firstParam, type RecordDataKind } from '../../../components/atossa/records/recordKinds';
+import {
+  KIND_INFO, firstParam, recordTitle, sortRecords, type RecordDataKind,
+} from '../../../components/atossa/records/recordKinds';
+import { nextAppointment } from '../../../components/atossa/capture/AppointmentCard';
+import { formatRecordDateInline, formatShortDate, noteCount, notesLabel } from '../../../lib/records/format';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
@@ -22,6 +26,20 @@ const TAB_ROUTES: Record<string, string> = { Today: 'today', Timeline: 'timeline
 
 const RECORD_KINDS: RecordDataKind[] = ['medicine', 'appointment', 'history'];
 const RECORD_ICONS: Record<RecordDataKind, IconName> = { medicine: 'pill', appointment: 'calendar', history: 'file-text' };
+
+/** One line under a Records row: the newest item (or the next appointment), so the row says something before it is opened. */
+function previewLine(kind: RecordDataKind, records: ReturnType<typeof useRecordsStore.getState>['records']): string | undefined {
+  if (kind === 'appointment') {
+    const next = nextAppointment(records.appointment);
+    if (next) return `Next: ${formatShortDate(next.data.date)}${next.data.who.trim() ? ` · ${next.data.who.trim()}` : ''}`;
+  }
+  const newest = sortRecords(kind, records[kind] as any[])[0];
+  if (!newest) return undefined;
+  const d = newest.data as any;
+  const date = formatRecordDateInline(kind === 'medicine' ? d.started : d.date, kind === 'medicine' ? d.startedPrecision : d.datePrecision);
+  const title = recordTitle(kind, d);
+  return `Latest: ${title.length > 24 ? `${title.slice(0, 23).trimEnd()}…` : title}${date ? ` · ${date}` : ''}`;
+}
 
 /** Preview mode only: whether Sam's sample data has been cleared this session. */
 let previewCleared = false;
@@ -51,6 +69,14 @@ export default function ProfileScreen() {
     appointment: records.appointment.length,
     history: records.history.length,
   };
+  // The "your record" summary: how many notes, and the span they cover.
+  const noteDates = records.symptom.map((n) => n.data.date).filter(Boolean).sort();
+  const total = noteCount(records.symptom);
+  const span = noteDates.length
+    ? noteDates[0] === noteDates[noteDates.length - 1]
+      ? `On ${formatShortDate(noteDates[0])}`
+      : `${formatShortDate(noteDates[0])} to ${formatShortDate(noteDates[noteDates.length - 1])}`
+    : '';
   // Preview only: Restore follows an explicit "cleared" flag (module-level so it survives the
   // screen remounting), not "are there any records" — adding one after clearing must not hide it.
   const [sampleCleared, setSampleClearedState] = useState(previewCleared);
@@ -98,7 +124,15 @@ export default function ProfileScreen() {
 
   return (
     <ScreenLarge title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
-      <Group>
+      <HeroNumber
+        big={String(total)}
+        line={total === 0 ? 'notes so far' : `${total === 1 ? 'note' : 'notes'} in your record`}
+        sub={total === 0 ? 'Your first note starts your record' : span}
+        onPress={total === 0 ? undefined : () => router.push('/(tabs)/timeline' as any)}
+        accessibilityHint="Opens Timeline"
+      />
+
+      <Group style={{ marginTop: space.md }}>
         <GroupRow
           icon="user"
           label={name || 'Your details'}
@@ -115,9 +149,10 @@ export default function ProfileScreen() {
             key={kind}
             icon={RECORD_ICONS[kind]}
             label={KIND_INFO[kind].listTitle}
-            value={counts[kind] ? String(counts[kind]) : 'None'}
+            detail={previewLine(kind, records) ?? 'Nothing added yet'}
+            value={counts[kind] ? String(counts[kind]) : undefined}
             onPress={() => openList(kind)}
-            accessibilityLabel={`${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}`}
+            accessibilityLabel={`${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}. ${previewLine(kind, records) ?? ''}`}
           />
         ))}
       </Group>
