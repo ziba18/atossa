@@ -1,6 +1,6 @@
 // The handler itself is installed from index.ts, before anything else loads.
 import { clearFatalError, getFatalError, subscribeFatalError } from '../lib/crashGuard';
-import { Stack, useRouter, type ErrorBoundaryProps } from 'expo-router';
+import { Stack, usePathname, useRouter, type ErrorBoundaryProps } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -9,6 +9,7 @@ import { Platform, View, useWindowDimensions } from 'react-native';
 import '../hooks/useAuth';
 import { cancelPredictedCycleReminders } from '../lib/notifications';
 import { UI } from '../constants/atossaUI';
+import { IS_PREVIEW } from '../lib/preview/flag';
 import { ErrorScreen, ToastHost } from '../components/atossa/kit';
 import { PrivacyCover } from '../components/atossa/PrivacyCover';
 import { useFonts } from 'expo-font';
@@ -34,6 +35,7 @@ if (Platform.OS !== 'web') cancelPredictedCycleReminders().catch(() => {});
 function AppShell() {
   const { width } = useWindowDimensions();
   const router = useRouter();
+  const wideMock = IS_PREVIEW && usePathname() === '/clinic-mock'; // preview-only desktop mock
   const fatalError = useSyncExternalStore(subscribeFatalError, getFatalError);
 
   // Route taps on the daily log reminder straight to Today (where capture starts),
@@ -71,7 +73,7 @@ function AppShell() {
   if (!fontsLoaded) return null;
   if (fatalError) return <ErrorScreen error={fatalError} onRetry={clearFatalError} />;
 
-  const isTablet = width >= UI.maxContentWidth;
+  const isTablet = width >= UI.maxContentWidth && !wideMock;
 
   return (
     <>
@@ -83,6 +85,7 @@ function AppShell() {
               <Stack.Screen name="index" />
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="clinic-mock" />
               <Stack.Screen name="+not-found" />
             </Stack>
           </View>
@@ -92,6 +95,7 @@ function AppShell() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="clinic-mock" />
           <Stack.Screen name="+not-found" />
         </Stack>
       )}

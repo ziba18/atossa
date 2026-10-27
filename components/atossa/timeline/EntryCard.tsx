@@ -6,7 +6,9 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FactLine, GlyphLine, PressableCard, Quote, SeverityTag, Txt } from '../kit';
 import type { IconName } from '../../ui/Icon';
-import { space } from '../../../constants/atossaUI';
+import { colors, radii, space } from '../../../constants/atossaUI';
+import { urgentSignpost } from '../../../lib/urgentWording';
+import { textOf } from '../UrgentNote';
 import { toKey, todayKey } from '../../../lib/records/dates';
 import {
   BLEEDING_STATUS_LABEL, bleedingFacts, bleedingStatus, firstLine, formatDay, formatRange, formatRecordDate,
@@ -111,6 +113,7 @@ export function EntryCard({
       const s = item.rec.data;
       const words = firstLine(s);
       const { tag, tagWord, facts } = symptomCardFacts(s);
+      const urgent = urgentSignpost(textOf(s));
       const kindWord = s.source === 'voice' ? 'Voice note' : s.source === 'quick' ? 'Rough day' : 'Note';
       const time = timeOf(item.rec, s.date);
       const top = hideDate ? (time || kindWord) : [formatDay(s.date), time].filter(Boolean).join(' · ');
@@ -118,7 +121,7 @@ export function EntryCard({
       return (
         <PressableCard
           onPress={onPress}
-          accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will send when you are online' : '', words, strengthA11y, facts].filter(Boolean).join('. ')}
+          accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will send when you are online' : '', words, strengthA11y, facts, urgent ?? ''].filter(Boolean).join('. ')}
           accessibilityHint="Opens the note"
         >
           <View style={styles.stack}>
@@ -132,6 +135,11 @@ export function EntryCard({
                 {facts ? (
                   <Txt variant="secondary" numberOfLines={3} style={styles.factText}>{facts}</Txt>
                 ) : null}
+              </View>
+            ) : null}
+            {urgent ? (
+              <View style={styles.urgent}>
+                <Txt variant="secondary" accessibilityRole="alert" style={{ color: colors.ink }}>{urgent}</Txt>
               </View>
             ) : null}
           </View>
@@ -216,6 +224,7 @@ export function EntryCard({
 
 const styles = StyleSheet.create({
   stack: { gap: space.xs },
+  urgent: { backgroundColor: colors.sunken, borderRadius: radii.input - 4, paddingHorizontal: space.sm, paddingVertical: space.xs },
   facts: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.xs, rowGap: space.xs },
   factText: { flexShrink: 1, minWidth: 0 },
   // N11: the 4 pt clay edge sits inside the card's own padding, so bleeding content lines up

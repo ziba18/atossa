@@ -141,7 +141,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         >
           <Txt variant="groupLabel">Days with a note, by week</Txt>
           <Txt variant="secondary" style={{ marginTop: space.sm }}>
-            {noteDaysText(m)}. Bar height is the days with a note that week; shade is the highest number given that week.
+            {noteDaysText(m)}.
           </Txt>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
@@ -163,6 +163,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
           </View> : null}
+          <Txt variant="caption" style={{ marginTop: space.xs }}>Height = days with a note · shade = highest number that week</Txt>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}

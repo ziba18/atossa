@@ -288,6 +288,33 @@ export function HeroNumberCard() {
   );
 }
 
+/** Short phones (320x568): the same number as HeroNumberCard as one line above the prompt, so the appointment signal is not pushed off the first screen. */
+export function HeroChip() {
+  const router = useRouter();
+  const symptoms = useRecordsStore((s) => s.records.symptom);
+  const appts = useRecordsStore((s) => s.records.appointment);
+  const today = todayKey();
+  const next = nextAppointment(appts);
+  const total = noteCount(symptoms);
+  const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
+  const days = next ? diffDays(today, next.data.date) : -1;
+  let label = ''; let target = '/(tabs)/timeline';
+  if (next && days === 0 && total > 0) { label = `${notesLabel(total)} ready · today`; target = '/(tabs)/doctor'; }
+  else if (next && days > 0) { label = days > 60 ? `${Math.round(days / 7)} weeks to your appointment` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
+  else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
+  if (!label) return null;
+  return (
+    <PressableCard
+      onPress={() => router.push(target as any)}
+      accessibilityLabel={label}
+      accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Timeline'}
+      style={styles.chip}
+    >
+      <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
+    </PressableCard>
+  );
+}
+
 const QUICK_ROWS: { label: string; icon: IconName; tag?: string }[] = [
   { label: 'Pain', icon: 'zap', tag: 'Pain today' },
   { label: 'Bleeding', icon: 'droplet' },
@@ -315,6 +342,7 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 }
 
 const styles = StyleSheet.create({
+  chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: 'center', marginBottom: space.sm },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },

@@ -93,7 +93,7 @@ function ChatScreen() {
   const hasHerWords = messages.some((m) => m.role === 'user' && m.text.trim());
 
   return (
-    <SafeAreaView edges={['top']} style={styles.screen}>
+    <SafeAreaView role="main" edges={['top']} style={styles.screen}>
       <View style={[styles.column, styles.header]}>
         <IconButton icon="chevron-left" label="Back to Today" color={colors.plum} onPress={() => router.back()} />
         <Txt variant="headline" accessibilityRole="header" style={styles.headerTitle}>Talk it through</Txt>
@@ -175,6 +175,9 @@ function ChatScreen() {
             placeholder={placeholder}
           />
           <Txt variant="caption" style={[styles.center, { marginTop: space.xs }]}>
+            Messages you type into the chat are processed by Groq in the United States. Notes you save stay in Atossa.
+          </Txt>
+          <Txt variant="caption" style={[styles.center, { marginTop: space.xxs }]}>
             Replies are written by an AI and can contain mistakes. Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
           </Txt>
         </View>

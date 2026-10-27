@@ -4,7 +4,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { space } from '../../../constants/atossaUI';
-import { barText, curly, type DoctorDoc } from '../../../lib/records/summary';
+import { curly, type DoctorDoc } from '../../../lib/records/summary';
 import { Card, Txt } from '../kit';
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
@@ -30,16 +30,34 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
   }
 
   if (freq && freq.id === 'frequency') {
+    // The first bar is "Days with a note": it becomes the card subtitle; the rest are area rows with
+    // the count on the left and one right-aligned "Worst" column (no "worst 9/10" repeated in text).
+    const [all, ...areas] = freq.bars;
+    const worstOf = (t: string) => /worst (\d+)\/10/.exec(t)?.[1];
+    const usual = (t: string) => t.replace(/,?\s*worst \d+\/10/, '').replace(/^,\s*/, '');
     cards.push(
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
+        {all ? <Txt variant="secondary" style={{ marginTop: space.xxs }}>{`${all.days} of ${plural(all.total, 'day')} with a note`}</Txt> : null}
         <View style={{ gap: space.sm, marginTop: space.sm }}>
-          {freq.bars.slice(0, 4).map((b) => (
-            <View key={b.label}>
-              <Txt variant="body">{barText(b)}</Txt>
-              {b.strength ? <Txt variant="secondary">{b.strength}</Txt> : null}
-            </View>
-          ))}
+          {areas.slice(0, 3).map((b) => {
+            const w = worstOf(b.strength ?? '');
+            const u = usual(b.strength ?? '');
+            return (
+              <View key={b.label} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.sm }}>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Txt variant="body">{b.label}</Txt>
+                  <Txt variant="secondary">{`${b.days} of ${plural(b.total, 'day')}${u ? ` · ${u}` : ''}`}</Txt>
+                </View>
+                {w ? (
+                  <View style={{ alignItems: 'flex-end' }} accessible accessibilityLabel={`Worst ${w} out of 10`}>
+                    <Txt variant="secondary">Worst</Txt>
+                    <Txt variant="body" style={{ fontVariant: ['tabular-nums'] }}>{`${w}/10`}</Txt>
+                  </View>
+                ) : null}
+              </View>
+            );
+          })}
         </View>
       </Card>,
     );
