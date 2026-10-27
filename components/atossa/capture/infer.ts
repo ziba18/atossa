@@ -70,6 +70,7 @@ function whenFrom(lower: string): string | undefined {
     && (/\bother times (?:too|as well)\b|\b(?:not just|not only|more than just)\b[^.,;]{0,25}\bperiods?\b/.test(lower))) return 'At other times too';
   if (/\b(?:never|not|n['’]t|no) (?:\w+ )?only\b/.test(lower)) return undefined; // "never only on my period", "not only around my period"
   if (/\bonly (?:\w+ )?(?:(?:hurts?|happens?|get|gets) )?(?:during|on|around|before|with) my period\b/.test(lower)) return 'Only around my period';
+  if (/\b(?:during|on|around|with) my periods? only\b/.test(lower)) return 'Only around my period';
   return undefined;
 }
 
@@ -91,10 +92,10 @@ function impactsFrom(lowerRaw: string): string[] {
   for (const c of clausesOf(lower)) {
     if (/^(?:i(?:'ve| have)? )?(?:tried|took|used|been taking|been using|trying)\b/.test(c) && !LOST.test(c)) continue; // a remedy, not an impact ("tried yoga")
     const cleared = CLEAR.test(c) && !LOST.test(c);
-    if (/\b(work|study|studying|school(?! run)|uni|college|job|office|shift|lectures?|lessons?|exam)\b/.test(c) && !cleared) out.add('Work or study');
+    if (/\b(work|study|studying|school(?! run)|uni|college|job|office|shift|lectures?|lessons?|exam|at my desk|called in sick|off sick|sick day)\b/.test(c) && !cleared) out.add('Work or study');
     if (/\b(sleep|slept|sleeping|woke|awake|kept me up|kip|up half the night)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
-    if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga|pilates|netball|football|hockey|rugby|jogging|(?:go|went|going) (?:for a )?run(?:ning)?)\b/.test(c) && !cleared) out.add('Exercise');
-    if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in|(?:couldn'?t|could not|didn'?t) leave the house)\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
+    if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga|pilates|netball|football|hockey|rugby|jogging|spin class|spinning|zumba|dance class|(?:go|went|going) (?:for a )?run(?:ning)?)\b/.test(c) && !cleared) out.add('Exercise');
+    if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in|(?:couldn'?t|could not|didn'?t) leave the house|missed (?:my |a )?(?:\w+['’]s )?(?:birthday|party|wedding|night out))\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
     if (/\bsex\b/.test(c) && !cleared) out.add('Sex');
   }
   return [...out];
@@ -115,6 +116,10 @@ function scoreFrom(lower: string): number | undefined {
   for (const m of lower.matchAll(new RegExp(`\\b(?:hit|hits|reached|reaches|touched)\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "about a 4 most days, 7 on Tuesday": a score tied to a day is a score too (the highest wins below).
   for (const m of lower.matchAll(new RegExp(`(?:^|[,;]\\s*|\\band\\s+)(${NUM})\\s+on\\s+(?:mon|tues|wednes|thurs|fri|satur|sun)day\\b`, 'g'))) found.push(toNum(m[1]));
+  // "5 or 6", "9 maybe 10" standing alone as the score (end of clause): the higher one is the worst. Not "2 or 3 days".
+  for (const m of lower.matchAll(new RegExp(`(?:^|[,;:]\\s*|\\b(?:was|is|about|around|prob(?:ably)?|like)\\s+)(${NUM})\\s*(?:or|maybe|to|-|–)\\s*(${NUM})(?=\\s*(?:$|[.,;!?]|it was|out of|\\/))`, 'g'))) {
+    found.push(Math.max(toNum(m[1]), toNum(m[2])));
+  }
   if (!found.length || /\b(?:about|around|maybe|like)\s+(?:a\s+)?\d/.test(lower)) {
     for (const m of lower.matchAll(new RegExp(`\\b(?:it['’]?s|its|about|around|maybe|like)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) {
       // "keep waking me up around 4": a clock time after waking/bed, not a score.
