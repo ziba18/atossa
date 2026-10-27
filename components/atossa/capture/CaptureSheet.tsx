@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
 import {
-  Button, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
+  Button, Card, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
 } from '../kit';
 import { colors, fonts, radii, space } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
@@ -13,6 +13,7 @@ import { closeCapture, useCaptureStore, type CaptureOptions } from '../../../lib
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
 import { formatDay, noteCount, notesLabel } from '../../../lib/records/format';
+import { urgentSignpost } from '../../../lib/urgentWording';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { type Draft, answeredOf, emptyDraft, hasContent, toSymptom } from './draft';
 import { FollowUp } from './FollowUp';
@@ -282,6 +283,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     );
   }
 
+  const signpost = urgentSignpost([draft.words, draft.whereText, draft.tried, draft.when, draft.duration, draft.stoppedWords, other].join('. '));
+
   // ---- body ---------------------------------------------------------------------------------
   // Nothing said yet: sit the mic lower so the step does not read as an empty sheet.
   const idleSpeak = mode === 'speak' && !draft.words && !recording;
@@ -402,6 +405,12 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       closeLabel={confirmClose ? 'Keep editing' : 'Close'}
     >
       {confirmClose && saveError ? <InlineError message={saveError} style={{ marginBottom: space.md }} /> : null}
+      {signpost && !confirmClose ? (
+        // Fixed line only (H4): no label, no score, nothing stored; the note saves as usual.
+        <Card tone="sunken" style={{ marginBottom: space.md }}>
+          <Txt accessibilityRole="alert">{signpost}</Txt>
+        </Card>
+      ) : null}
       {body}
     </Sheet>
   );
