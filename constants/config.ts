@@ -1,5 +1,14 @@
+import { Platform } from 'react-native';
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
+// A phone build must talk to the API over https: a missing or http:// address in a release build is a
+// packaging mistake, and sending health notes in clear text is worse than a build that refuses to start.
+if (!__DEV__ && Platform.OS !== 'web' && !API_URL.startsWith('https://')) {
+  throw new Error('EXPO_PUBLIC_API_URL must be an https:// address in release builds');
+}
+
 export const Config = {
-  apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000',
+  apiUrl: API_URL,
   // Google Sign-In OAuth client IDs from Google Cloud Console.
   // - webClientId is the Web OAuth client; the backend verifies ID tokens
   //   against this audience, so GoogleSignin must request it as the
