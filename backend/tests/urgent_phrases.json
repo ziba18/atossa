@@ -1186,5 +1186,45 @@ false
 [
 "my sister is pregnant and has been sick, i went to see her",
 false
+],
+[
+"took my first dose of the new tablets and my face is puffing up and my throat feels tight",
+true
+],
+[
+"hives all over and wheezy after the antibiotic",
+true
+],
+[
+"my tongue feels huge since I took the capsule",
+true
+],
+[
+"I think I'm having an allergic reaction, can't swallow properly",
+true
+],
+[
+"feel really floppy and my lips are tingling after the injection",
+true
+],
+[
+"I took double my dose by mistake and now I'm very sleepy and sick",
+true
+],
+[
+"allergic to penicillin, rash as a child",
+false
+],
+[
+"allergies: nuts, latex (told by my GP)",
+false
+],
+[
+"mild hay fever today, sneezing, took a tablet",
+false
+],
+[
+"itchy rash on my arm from the new soap, faded by tea time",
+false
 ]
 ]
