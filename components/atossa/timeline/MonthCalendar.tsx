@@ -8,7 +8,7 @@
 //   today     = 1.5 ink ring
 // Empty days are plain. No streaks, no "missed" states, no animation.
 import React from 'react';
-import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions, Dimensions } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path } from 'react-native-svg';
 import { IconButton, Txt } from '../kit';
 import { colors, fonts, radii, severityColor, space } from '../../../constants/atossaUI';
@@ -29,7 +29,8 @@ export interface DayMark {
   hasEntries: boolean;
 }
 
-const DISC = 36;
+// Seven columns must stay clear of each other: at the 200% browser zoom widths (under ~280 px) the discs shrink.
+const DISC = Dimensions.get('window').width < 280 ? 28 : 36;
 const RING = 1.5;
 
 export function MonthCalendar({
