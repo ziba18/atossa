@@ -29,7 +29,14 @@ export interface Holistic {
   skin?: { kind: SkinKind; words: string }[];
   /** "Did it help?" as she put it, one entry per clause that says so, with her own words. */
   helped?: { verdict: HelpVerdict; words: string }[];
+  /** Pain with sex named (true) or denied (false); `sexPainWords` keeps her clause. Never a label. */
+  sexPain?: boolean;
+  sexPainWords?: string;
+  /** Plans for pregnancy as she said them, mapped to the For my doctor chip she confirms; never 'Prefer not to say'. */
+  fertility?: { wish: FertilityChip; words: string };
 }
+
+export type FertilityChip = 'Trying to get pregnant' | 'Not now' | 'Not sure';
 
 export type SkinKind = 'acne' | 'extraHair' | 'hairLoss' | 'darkPatches';
 export type HelpVerdict = 'yes' | 'a bit' | 'no';
@@ -149,6 +156,8 @@ export function holisticFrom(allWords: string): Holistic {
     ...tiredFrom(lower),
     ...skinFrom(lower),
     ...helpedFrom(lower),
+    ...sexPainFrom(lower),
+    ...fertilityFrom(lower),
   };
 }
 
@@ -183,4 +192,40 @@ function helpedFrom(lower: string): Pick<Holistic, 'helped'> {
     out.push({ verdict: HELP_NO.test(c) ? 'no' : HELP_BIT.test(c) ? 'a bit' : 'yes', words: c });
   }
   return out.length ? { helped: out } : {};
+}
+
+// "Essex" / "sexual health clinic" are not sex; "bleeding after sex" alone is afterSex, not pain.
+const SEX = /\b(sex|intercourse|penetration|having sex|making love)\b/;
+const SEX_PAIN_DENIED = /\b(?:no pain|painless|without pain|(?:didn'?t|did not|doesn'?t|does not|wasn'?t) (?:hurt|painful|sore)|was fine|is fine|fine)\b/;
+
+function sexPainFrom(lower: string): Pick<Holistic, 'sexPain' | 'sexPainWords'> {
+  const ps = parts(lower);
+  for (const [i, c] of ps.entries()) {
+    if (!SEX.test(c)) continue;
+    if (SEX_PAIN_DENIED.test(c)) return { sexPain: false, sexPainWords: c };
+    const p = c.match(PAIN);
+    if (p && !negated(c, p)) return { sexPain: true, sexPainWords: c };
+    // "Bleeding after sex, and it was sore deep inside afterwards": the pain sits in the next part and points back
+    const next = ps[i + 1] ?? '';
+    const q = next.match(PAIN);
+    if (q && !negated(next, q) && /\b(?:afterwards|after|during|it)\b/.test(next)) return { sexPain: true, sexPainWords: `${c}, ${next}` };
+  }
+  return {};
+}
+
+const BABY = '(?:a baby|for a baby|pregnant|pregnancy|to conceive|conceiving|kids|children|a family)';
+const FERT_TRYING = new RegExp(`\\b(?:trying|try|ttc|been trying|we're trying|started trying)\\b[^.;]*\\b${BABY}|\\btrying to conceive\\b|\\bttc\\b`);
+const FERT_UNSURE = new RegExp(`\\b(?:not sure|don'?t know|unsure|undecided|back and forth)\\b[^.;]*\\b${BABY}|\\b${BABY}\\b[^.;]*\\b(?:not sure|don'?t know|unsure)\\b`);
+const FERT_LATER = new RegExp(`\\b(?:not trying|don'?t want to get pregnant|not (?:for|until) a few years|one day|not yet|not right now|not at the moment|in a few years|later on)\\b`);
+const FERT_TOPIC = new RegExp(`\\b(?:baby|pregnant|conceive|kids|children|start(?:ing)? a family|ttc)\\b`);
+
+function fertilityFrom(lower: string): Pick<Holistic, 'fertility'> {
+  for (const s of lower.split(/[.!?;]/).map((x) => x.trim()).filter(Boolean)) {
+    if (!FERT_TOPIC.test(s) || /\bpregnancy test\b/.test(s)) continue;
+    if (/\b(?:sister|friend|mum|cousin|colleague)\b[^.;]*\bpregnant\b/.test(s)) continue;
+    if (FERT_UNSURE.test(s)) return { fertility: { wish: 'Not sure', words: s } };
+    if (FERT_LATER.test(s)) return { fertility: { wish: 'Not now', words: s } };
+    if (FERT_TRYING.test(s)) return { fertility: { wish: 'Trying to get pregnant', words: s } };
+  }
+  return {};
 }
