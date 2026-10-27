@@ -9,6 +9,7 @@ import { PREVIEW_USER_ID } from './flag';
 
 const symptom = (
   date: string, words: string, where: string, worst: number, duration: string, stopped: boolean, stoppedWords: string,
+  extra: Partial<SymptomData> = {},
 ): SymptomData => ({
   date, words, where, worst, score: worst, duration, stopped, stoppedWords, source: 'typed',
   zones: [
@@ -16,14 +17,17 @@ const symptom = (
     ...(/legs/i.test(where) ? ['Legs'] : []),
     ...(/back/i.test(where) ? ['Lower back'] : []),
   ],
+  ...extra,
 });
 
 const SYMPTOMS: SymptomData[] = [
   symptom('2026-07-08', 'Dull ache low down that would not settle.', 'Lower belly', 4, 'Most of the evening', false, ''),
   symptom('2026-07-19', 'Sharp pain across my lower belly and my back felt tight.', 'Lower belly and lower back', 6, 'About three hours', true, 'I had to cancel plans.'),
+  symptom('2026-07-25', 'Stinging, dragging pain low down when I passed urine, and I needed to go much more often. It felt sore all day.', 'Lower belly, just above the pubic bone', 5, 'All day, worse each time I went', true, 'I could not concentrate at work.', { urinePain: true }),
   symptom('2026-07-31', 'Tired all day and a heavy feeling low down.', 'Lower belly', 5, 'All day', false, ''),
   symptom('2026-08-09', 'Squeezing pain that came in waves.', 'Across my lower belly', 7, 'On and off all day', true, 'I left work early.'),
   symptom('2026-08-16', 'Pain down both legs and I felt very worn out.', 'Lower belly and legs', 7, 'From lunchtime until bedtime', true, 'I could not cook.'),
+  symptom('2026-08-22', 'It hurt low down when I opened my bowels, a sharp stabbing pain deep inside. It only happens around my period.', 'Lower belly and deep inside', 7, 'A few minutes each time, then an ache for about an hour', true, 'I was late for work because I could not leave the toilet.', { bowelPain: true, zones: ['Lower tummy centre', 'Deep inside', 'Bottom'] }),
   symptom('2026-08-24', 'A dull, heavy pain low down.', 'Lower belly', 5, 'A few hours', false, ''),
   symptom('2026-09-02', 'Sharp pain across my lower belly.', 'Across my lower belly', 8, 'Most of the morning', true, 'I was too sore to get out of bed.'),
   symptom('2026-09-07', 'Squeezing pain and I felt dizzy.', 'Lower belly', 6, 'About four hours', false, ''),
@@ -45,6 +49,7 @@ const period = (dates: [string, Flow, string?][]): PeriodDayData[] =>
   });
 
 const PERIOD_DAYS: PeriodDayData[] = [
+  ...period([['2026-09-18', 'Medium'], ['2026-09-19', 'Heavy'], ['2026-09-20', 'Heavy'], ['2026-09-21', 'Medium'], ['2026-09-22', 'Medium'], ['2026-09-23', 'Medium']]),
   ...period([['2026-08-21', 'Medium'], ['2026-08-22', 'Heavy', 'Had to change every hour'], ['2026-08-23', 'Heavy'], ['2026-08-24', 'Medium'], ['2026-08-25', 'Medium'], ['2026-08-26', 'Medium']]),
   ...period([['2026-07-24', 'Medium'], ['2026-07-25', 'Heavy'], ['2026-07-26', 'Heavy'], ['2026-07-27', 'Medium'], ['2026-07-28', 'Medium'], ['2026-07-29', 'Medium']]),
   ...period([['2026-06-26', 'Medium'], ['2026-06-27', 'Heavy'], ['2026-06-28', 'Heavy'], ['2026-06-29', 'Heavy'], ['2026-06-30', 'Medium'], ['2026-07-01', 'Medium'], ['2026-07-02', 'Medium']]),
