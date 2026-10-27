@@ -7,7 +7,7 @@ from app.database import Base, get_db
 from app.dependencies import get_current_user
 from app.models import (
     AlertLog, ConnectedAccount, CycleLog, CyclePrediction, EmergencyContact, HealthMetric,
-    HealthRecord, Profile, SocialIdentity, SymptomCapture, SymptomLog, User,
+    HealthRecord, Profile, SocialIdentity, SymptomCapture, SymptomLog, UsedRefreshToken, User,
 )
 from app.schemas.profile import ProfileResponse, ProfileUpdate
 from app.services.rate_limit import limit
@@ -120,6 +120,7 @@ def delete_account(current_user: User = Depends(get_current_user), db: Session =
         )
     ).delete(synchronize_session=False)
     db.query(SocialIdentity).filter(SocialIdentity.user_id == uid).delete(synchronize_session=False)
+    db.query(UsedRefreshToken).filter(UsedRefreshToken.user_id == uid).delete(synchronize_session=False)
     db.query(Profile).filter(Profile.id == uid).delete(synchronize_session=False)
     db.query(User).filter(User.id == uid).delete(synchronize_session=False)
     db.commit()

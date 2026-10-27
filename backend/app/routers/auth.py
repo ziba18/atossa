@@ -1,16 +1,18 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from jwt import PyJWTError as JWTError
 from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.models.user import User, Profile
+from app.models.user import User, Profile, UsedRefreshToken
 from app.schemas.auth import (
     ChangePasswordRequest, LoginRequest, RegisterRequest, RefreshRequest, SocialAuthRequest, TokenResponse, UserResponse,
 )
 from app.services.auth import (
     create_access_token, create_refresh_token, create_user, hash_password,
-    decode_claims, decode_token, upgrade_hash_if_needed, get_or_create_social_user, get_user_by_email, verify_password, verify_password_or_dummy,
+    decode_claims, decode_token, refresh_token_claims, upgrade_hash_if_needed, get_or_create_social_user, get_user_by_email, verify_password, verify_password_or_dummy,
 )
 from app.services.password_policy import password_problem
 from app.services.rate_limit import FailureThrottle, limit
@@ -23,6 +25,8 @@ def _social_detail(e: SocialAuthError, provider: str) -> str:
     """Token-library wording stays out of the response; messages that tell the person what to do (e.g. an unconfirmed email) pass through."""
     text = str(e)
     return f"{provider} sign-in failed" if text.startswith("Invalid") else text
+# An app retry after a dropped connection re-sends the same token; within this window it is not theft.
+REFRESH_REUSE_GRACE_SECONDS = 10
 _auth_limit = Depends(limit("auth", 20, 60))
 # 8 wrong passwords for one email in 15 minutes locks that email for the rest of the window.
 _login_failures = FailureThrottle(8, 900)
@@ -105,6 +109,21 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user or not user.is_active or user.token_version != version:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+    jti, expires_at = refresh_token_claims(body.refresh_token)
+    if jti and expires_at:
+        now = datetime.now(timezone.utc)
+        db.query(UsedRefreshToken).filter(UsedRefreshToken.expires_at < now).delete(synchronize_session=False)
+        seen = db.query(UsedRefreshToken).filter(UsedRefreshToken.jti == jti).first()
+        if seen:
+            used_at = seen.used_at if seen.used_at.tzinfo else seen.used_at.replace(tzinfo=timezone.utc)
+            if (now - used_at).total_seconds() > REFRESH_REUSE_GRACE_SECONDS:
+                # Exchanged before and presented again later: a copy exists. End every session.
+                user.token_version += 1
+                db.commit()
+                raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+        else:
+            db.add(UsedRefreshToken(jti=jti, user_id=user_id, used_at=now, expires_at=expires_at))
+        db.commit()
     return TokenResponse(
         access_token=create_access_token(user_id, user.token_version),
         refresh_token=create_refresh_token(user_id, user.token_version),

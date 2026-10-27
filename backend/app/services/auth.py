@@ -50,6 +50,13 @@ def create_refresh_token(user_id: str, version: int = 0) -> str:
     return jwt.encode({"sub": user_id, "exp": expire, "type": "refresh", "ver": version, "jti": secrets.token_urlsafe(16)}, settings.secret_key, algorithm=settings.algorithm)
 
 
+def refresh_token_claims(token: str) -> tuple[str | None, datetime | None]:
+    """(jti, expiry) of an already-validated refresh token; jti is None for tokens issued before ids existed."""
+    payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+    exp = payload.get("exp")
+    return payload.get("jti"), datetime.fromtimestamp(exp, tz=timezone.utc) if exp else None
+
+
 def decode_claims(token: str, expected_type: str = "access") -> tuple[str, int]:
     """Returns (user_id, token_version) from a valid token of the expected type, raises JWTError if invalid."""
     payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
