@@ -1,6 +1,7 @@
 import json
+from typing import Annotated
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import get_current_user
@@ -46,6 +47,8 @@ def _get_owned(db: Session, user: User, record_id: str) -> HealthRecord:
 
 @router.get("", response_model=RecordListResponse)
 def list_records(
+    limit: Annotated[int, Query(ge=1, le=MAX_RECORDS_PER_USER)] = MAX_RECORDS_PER_USER,
+    offset: Annotated[int, Query(ge=0)] = 0,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -53,7 +56,8 @@ def list_records(
         db.query(HealthRecord)
         .filter(HealthRecord.user_id == current_user.id)
         .order_by(HealthRecord.created_at.asc())
-        .limit(MAX_RECORDS_PER_USER)
+        .offset(offset)
+        .limit(limit)
         .all()
     )
     return RecordListResponse(records=[_to_response(r) for r in rows])
