@@ -12,7 +12,7 @@ import { fonts } from '../../../constants/atossaUI';
 import { joinFacts } from '../../../lib/records/format';
 import {
   APPT_AHEAD, APPT_PAST, DOC_COLORS, PAGE_TYPE, SPOT_DASH, SPOT_STROKE, STRIP_BLEED_KEY, STRIP_KEY, STRIP_SPOT_KEY,
-  barText, countText, curly, daysText,
+  FAMILY_HISTORY_LABEL, barText, countText, curly, daysText,
   type DatedItem, type DocQuote, type DocSection, type DoctorDoc, type FreqBar,
 } from '../../../lib/records/summary';
 import { Txt } from '../kit';
@@ -294,6 +294,11 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
         <>
           {section.items.map((a, i) => <DatedItemBlock key={`${a.date}-${i}`} item={a} st={st} />)}
           {section.more ? <Txt style={st.meta}>{section.more}</Txt> : null}
+          {section.family ? (
+            <Txt style={st.label}>
+              {`${FAMILY_HISTORY_LABEL}: `}<Txt style={st.quote}>{`“${curly(section.family)}”`}</Txt>
+            </Txt>
+          ) : null}
         </>
       );
   }
