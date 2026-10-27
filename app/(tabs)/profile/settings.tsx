@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { space } from '../../../constants/atossaUI';
 import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
@@ -23,6 +23,18 @@ export default function SettingsScreen() {
 
   const reminderOn = profile?.daily_log_reminder_enabled ?? true;
   const reminderTime = profile?.daily_log_reminder_time ?? '20:00';
+
+  // The web build can't schedule notifications, so no switches that would look like they work.
+  if (Platform.OS === 'web') {
+    return (
+      <ScreenLarge title="Reminders" back={{ label: 'Profile' }}>
+        <Card style={{ gap: space.xs }}>
+          <Txt variant="headline">Reminders come with the iPhone app</Txt>
+          <Txt variant="secondary">On the web, Atossa can’t remind you yet. You can still add a note any time you open it.</Txt>
+        </Card>
+      </ScreenLarge>
+    );
+  }
 
   return (
     <ScreenLarge title="Reminders" back={{ label: 'Profile' }}>

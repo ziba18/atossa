@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { space } from '../../../constants/atossaUI';
 import { formatRecordDate } from '../../../lib/records/format';
+import { todayKey } from '../../../lib/records/dates';
 import type { AppointmentData, HistoryData, MedicineData, Rec } from '../../../types/records';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { AddButton, EmptyState, InlineError, ScreenLarge } from '../kit';
@@ -88,6 +89,21 @@ export function RecordsList({
               <Group>{items.map((r) => renderRow(r))}</Group>
             </View>
           ))
+        ) : kind === 'appointment' ? (
+          // Upcoming first (soonest at the top), then past, once there is a visit in each.
+          (() => {
+            const today = todayKey();
+            const isUpcoming = (r: Rec<AnyData>) => (r.data as AppointmentData).date >= today;
+            const upcoming = sorted.filter(isUpcoming).reverse();
+            const past = sorted.filter((r) => !isUpcoming(r));
+            if (!upcoming.length || !past.length) return <Group>{sorted.map((r) => renderRow(r))}</Group>;
+            return [['Upcoming', upcoming], ['Past', past]].map(([title, items], i) => (
+              <View key={title as string} style={{ marginTop: i ? space.xl : 0 }}>
+                <GroupHeading title={title as string} />
+                <Group>{(items as Rec<AnyData>[]).map((r) => renderRow(r))}</Group>
+              </View>
+            ));
+          })()
         ) : (
           <Group>{sorted.map((r) => renderRow(r))}</Group>
         )
