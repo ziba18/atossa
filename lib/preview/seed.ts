@@ -21,24 +21,32 @@ const symptom = (
 });
 
 const SYMPTOMS: SymptomData[] = [
+  // Seed v3 (data agent): pain with sex, skin and hair, eating, low-pain days, fatigue scores.
   symptom('2026-07-08', 'Dull ache low down that would not settle.', 'Lower belly', 4, 'Most of the evening', false, ''),
+  symptom('2026-07-12', 'A mild ache low down, easy to ignore today.', 'Lower belly', 2, 'An hour or so', false, '', { fatigue: 3 }),
+  symptom('2026-07-16', 'Deep pain inside during sex, so we had to stop. The ache stayed into the next morning.', 'Deep inside', 6, 'Into the next morning', true, 'We had to stop.', { impacts: ['Sex'], zones: ['Deep inside'] }),
   symptom('2026-07-19', 'Sharp pain across my lower belly and my back felt tight.', 'Lower belly and lower back', 6, 'About three hours', true, 'I had to cancel plans.'),
   symptom('2026-07-25', 'Stinging, dragging pain low down when I passed urine, and I needed to go much more often. It felt sore all day.', 'Lower belly, just above the pubic bone', 5, 'All day, worse each time I went', true, 'I could not concentrate at work.', { urinePain: true }),
-  symptom('2026-07-31', 'Tired all day and a heavy feeling low down.', 'Lower belly', 5, 'All day', false, ''),
+  symptom('2026-07-31', 'Tired all day and a heavy feeling low down.', 'Lower belly', 5, 'All day', false, '', { fatigue: 7 }),
+  symptom('2026-08-03', 'My skin has broken out on my chin and jaw again, and I keep finding more hair on my chin.', 'Chin and jaw', 2, 'For about two weeks', false, '', { skinHair: ['Spots or acne', 'Extra hair'], zones: [], whereText: 'Chin and jaw' }),
   symptom('2026-08-09', 'Squeezing pain that came in waves.', 'Across my lower belly', 7, 'On and off all day', true, 'I left work early.', { mood: 'Low and flat all day, and I cried on the way home.' }),
-  symptom('2026-08-16', 'Pain down both legs and I felt very worn out.', 'Lower belly and legs', 7, 'From lunchtime until bedtime', true, 'I could not cook.'),
+  symptom('2026-08-12', 'Hardly any pain today, just tired.', 'Lower belly', 1, 'On and off', false, '', { fatigue: 6, eating: 'Not hungry, I only managed toast.' }),
+  symptom('2026-08-16', 'Pain down both legs and I felt very worn out.', 'Lower belly and legs', 7, 'From lunchtime until bedtime', true, 'I could not cook.', { fatigue: 7 }),
   symptom('2026-08-22', 'It hurt low down when I opened my bowels, a sharp stabbing pain deep inside. It only happens around my period.', 'Lower belly and deep inside', 7, 'A few minutes each time, then an ache for about an hour', true, 'I was late for work because I could not leave the toilet.', { bowelPain: true, zones: ['Lower tummy centre', 'Deep inside', 'Bottom'] }),
   symptom('2026-08-24', 'A dull, heavy pain low down.', 'Lower belly', 5, 'A few hours', false, ''),
+  symptom('2026-08-29', 'I noticed some bleeding after sex, and it was sore deep inside afterwards.', 'Deep inside', 4, 'About an hour', true, 'I did not want to try again.', { impacts: ['Sex'], bleedingAfterSex: true, zones: ['Deep inside'] }),
   symptom('2026-09-02', 'Sharp pain across my lower belly.', 'Across my lower belly', 8, 'Most of the morning', true, 'I was too sore to get out of bed.', { mood: 'Irritable and worn down, I snapped at people.' }),
+  symptom('2026-09-05', 'A light ache, I could get on with my day.', 'Lower belly', 3, 'Most of the afternoon', false, '', { fatigue: 4 }),
   symptom('2026-09-07', 'Squeezing pain and I felt dizzy.', 'Lower belly', 6, 'About four hours', false, ''),
+  symptom('2026-09-09', 'More hair coming out in the shower than usual, and my clothes feel tighter even though I am eating less.', 'Scalp', 1, 'For a few weeks', false, '', { skinHair: ['Hair loss'], eating: 'Eating less but my clothes feel tighter.', zones: [], whereText: 'Scalp' }),
   symptom('2026-09-11', 'Squeezing pain across my lower belly. I have had pain like this for about 12 years.', 'Across my lower belly', 6, 'On and off all day', false, ''),
   symptom('2026-09-13', 'Sharp pain across my lower belly and down both legs.', 'Lower belly and both legs', 8, 'Most of the morning', true, 'I was too sore to go to work.'),
-  symptom('2026-09-15', 'I felt very tired and had a heavy, squeezing pain low down.', 'Lower belly', 6, 'From lunchtime until bedtime', false, ''),
+  symptom('2026-09-15', 'I felt very tired and had a heavy, squeezing pain low down.', 'Lower belly', 6, 'From lunchtime until bedtime', false, '', { fatigue: 7 }),
   symptom('2026-09-17', 'The pain was sharp and went down my legs. I also felt dizzy and lightheaded.', 'Lower belly and legs', 9, 'About five hours', true, "I couldn't stand up without help."),
-  symptom('2026-09-19', 'Squeezing pain across my lower belly and I felt very tired.', 'Across my lower belly', 7, 'On and off all day', true, 'I had to lie down for the afternoon.'),
+  symptom('2026-09-19', 'Squeezing pain across my lower belly and I felt very tired.', 'Across my lower belly', 7, 'On and off all day', true, 'I had to lie down for the afternoon.', { fatigue: 7 }),
   symptom('2026-09-21', 'Sharp pain low down that was worse during my period.', 'Lower belly', 8, 'From early morning until evening', true, 'I could not do the shopping or cook.'),
   symptom('2026-09-23', 'Strong squeezing pain across my lower belly, sometimes running down my legs.', 'Lower belly and legs', 8, 'About six hours', true, 'I had to leave work and go home.'),
-  symptom('2026-09-24', 'Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.', 'Across my lower belly and down my legs', 9, 'Since early this morning', true, "I couldn't move around or stand without help."),
+  symptom('2026-09-24', 'Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.', 'Across my lower belly and down my legs', 9, 'Since early this morning', true, "I couldn't move around or stand without help.", { fatigue: 7 }),
 ];
 
 type Flow = NonNullable<PeriodDayData['flow']>;
