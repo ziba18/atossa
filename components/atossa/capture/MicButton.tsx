@@ -8,9 +8,11 @@ import { colors, radii } from '../../../constants/atossaUI';
 import { Icon } from '../../ui/Icon';
 
 export function MicButton({
-  recording = false, onPress, accessibilityLabel, accessibilityHint, size = 72, disabled,
+  recording = false, onPress, accessibilityLabel, accessibilityHint, size = 72, disabled, invite = false,
 }: {
   recording?: boolean;
+  /** Idle: the ring breathes out three times on arrival to say "tap me", then rests (not at all under Reduce Motion). */
+  invite?: boolean;
   onPress: () => void;
   accessibilityLabel: string;
   accessibilityHint?: string;
@@ -20,14 +22,14 @@ export function MicButton({
   const big = size === 72;
   const reduceMotion = useReduceMotion();
   const pulse = useRef(new Animated.Value(0)).current;
-  const pulsing = big && recording && !reduceMotion;
+  const pulsing = big && (recording || invite) && !reduceMotion;
   // A soft ring breathes out from the button while recording (static ring under Reduce Motion).
   useEffect(() => {
     if (!pulsing) { pulse.setValue(0); return; }
-    const loop = Animated.loop(Animated.timing(pulse, { toValue: 1, duration: 1400, easing: Easing.out(Easing.quad), useNativeDriver: Platform.OS !== 'web' }));
+    const loop = Animated.loop(Animated.timing(pulse, { toValue: 1, duration: recording ? 1400 : 1200, easing: Easing.out(Easing.quad), useNativeDriver: Platform.OS !== 'web' }), recording ? undefined : { iterations: 3 });
     loop.start();
     return () => loop.stop();
-  }, [pulsing, pulse]);
+  }, [pulsing, pulse, recording]);
   const button = (
     <Pressable
       onPress={onPress}
@@ -56,7 +58,7 @@ export function MicButton({
   if (!big) return button;
   return (
     <View style={styles.wrap}>
-      {recording ? <Animated.View
+      {recording || (invite && !reduceMotion) ? <Animated.View
         pointerEvents="none"
         aria-hidden
         style={[

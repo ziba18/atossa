@@ -68,6 +68,7 @@ export function HeroCard() {
         <>
           <View style={styles.heroMic}>
             <MicButton
+              invite
               onPress={() => openCapture({ mode: 'speak', startRecording: true })}
               accessibilityLabel="Tap to talk"
               accessibilityHint="Opens a new note and starts recording"
