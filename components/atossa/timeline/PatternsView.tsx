@@ -105,7 +105,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <View style={{ marginTop: space.lg }}>
         <EmptyState
           icon="calendar-days"
-          message={`Patterns appear after a week of notes. ${recent === 0 ? 'No notes yet.' : `So far: notes on ${plural(recent, 'day')}.`}`}
+          message={`Patterns appear after a week of notes. ${recent === 0 ? 'No notes in this time range.' : `So far: notes on ${plural(recent, 'day')}.`}`}
           action={{ label: 'Add a note', onPress: () => openCapture() }}
           style={{ marginTop: space.xxl }}
         />
