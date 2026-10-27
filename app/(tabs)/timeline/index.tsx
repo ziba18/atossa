@@ -1,7 +1,7 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
 import { usePageTitle } from '../../../lib/usePageTitle';
-import React, { useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
@@ -22,7 +22,7 @@ import {
 import { TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type TimelineMode } from '../../../components/atossa/timeline/session';
 import { colors, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
-import { parseKey, todayKey } from '../../../lib/records/dates';
+import { mondayOf, parseKey, todayKey } from '../../../lib/records/dates';
 import { bleedingStatus, noteCount, notesLabel, worstOf } from '../../../lib/records/format';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -38,7 +38,8 @@ const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 export default function TimelineScreen() {
   const router = useRouter();
   usePageTitle('Timeline');
-  const { mode, setMode, filter, setFilter } = useTimelineSession();
+  const { mode, setMode, filter, setFilter, focusDay, setFocusDay } = useTimelineSession();
+  const scrollRef = useRef<ScrollViewInstance | null>(null);
   const symptom = useRecordsStore((s) => s.records.symptom);
   const loadError = useRecordsStore((s) => s.error);
   const loadedFor = useRecordsStore((s) => s.loadedFor);
@@ -92,7 +93,7 @@ export default function TimelineScreen() {
   );
 
   return (
-    <ScreenLarge title="Timeline" right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
+    <ScreenLarge title="Timeline" scrollRef={scrollRef} right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
@@ -100,9 +101,9 @@ export default function TimelineScreen() {
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : failed ? null : mode === 'list' ? (
-        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
+        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} focusDay={focusDay} onFocused={() => setFocusDay(null)} scrollRef={scrollRef} />
       ) : mode === 'patterns' ? (
-        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} />
+        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(day) => { setFilter('Symptoms'); setFocusDay(day); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}
@@ -135,8 +136,11 @@ export default function TimelineScreen() {
 // ---- List -----------------------------------------------------------------------------------
 
 function ListView({
-  feed, symptoms, filter, setFilter, onOpen,
+  feed, symptoms, filter, setFilter, onOpen, focusDay, onFocused, scrollRef,
 }: {
+  focusDay: string | null;
+  onFocused: () => void;
+  scrollRef: React.RefObject<ScrollViewInstance | null>;
   feed: FeedItem[];
   symptoms: ReturnType<typeof useRecordsStore.getState>['records']['symptom'];
   filter: (typeof TIMELINE_FILTERS)[number];
@@ -144,6 +148,16 @@ function ListView({
   onOpen: (item: ListItem) => void;
 }) {
   const groups = useMemo(() => groupFeed(mergeBleedingRuns(filterFeed(feed, filter))), [feed, filter]);
+  // Patterns week bar -> scroll to that week's group (y = this view's offset + the group's offset).
+  const rootY = useRef(0);
+  const groupY = useRef<Record<string, number>>({});
+  const targetKey = focusDay ? `w:${mondayOf(focusDay)}` : null;
+  const jump = () => {
+    if (!targetKey || groupY.current[targetKey] == null) return;
+    scrollRef.current?.scrollTo({ y: Math.max(0, rootY.current + groupY.current[targetKey] - space.md), animated: false });
+    onFocused();
+  };
+  useEffect(() => { if (targetKey && groupY.current[targetKey] != null) jump(); });
 
   if (feed.length === 0) {
     return (
@@ -158,7 +172,7 @@ function ListView({
   }
 
   return (
-    <View>
+    <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
       <View style={{ marginTop: space.lg }}>
         <ChipGroup
@@ -182,7 +196,7 @@ function ListView({
         groups.map((g, i) => (
           // Week header: 15/600 ink2 (groupLabel) — quieter than the card titles it groups.
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
-          <View key={g.key} style={{ marginTop: i === 0 ? space.xl : space.xxl }}>
+          <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? space.xl : space.xxl }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm }}>
               <Txt variant="groupLabel" accessibilityRole="header">{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
