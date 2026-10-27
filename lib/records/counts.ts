@@ -67,7 +67,7 @@ export function zoneDays(notes: SymptomData[]): DayCount[] {
       days.get(z)!.add(s.date);
     }
   }
-  return [...days.entries()].map(([label, set]) => ({ label, days: set.size })).sort((a, b) => b.days - a.days);
+  return [...days.entries()].map(([label, set]) => ({ label, days: set.size })).sort((a, b) => b.days - a.days || a.label.localeCompare(b.label)); // ties by name, so every screen lists them the same way
 }
 
 /** Lowest and highest number given in the notes (null when no number was given). Not an average. */
