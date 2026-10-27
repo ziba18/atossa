@@ -50,7 +50,7 @@ export function ScreenLarge({
     </View>
   );
   return (
-    <SafeAreaView edges={['top']} style={styles.screen}>
+    <SafeAreaView edges={["top"]} role="main" style={styles.screen}>
       {scroll ? (
         <ScrollView
           ref={scrollRef as React.RefObject<ScrollViewInstance>}

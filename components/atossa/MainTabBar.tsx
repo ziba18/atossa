@@ -63,6 +63,7 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
   };
 
   return (
+    <View role="navigation" aria-label="Main">
     <View style={[styles.bar, { paddingBottom: insets.bottom }]} accessibilityRole="tablist">
       {routes.map((route) => {
         const focused = activeName === route.name;
@@ -102,6 +103,7 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
           </Pressable>
         );
       })}
+    </View>
     </View>
   );
 }
