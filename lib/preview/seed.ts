@@ -14,6 +14,14 @@ const symptom = (
 });
 
 const SYMPTOMS: SymptomData[] = [
+  symptom('2026-07-08', 'Dull ache low down that would not settle.', 'Lower belly', 4, 'Most of the evening', false, ''),
+  symptom('2026-07-19', 'Sharp pain across my lower belly and my back felt tight.', 'Lower belly and lower back', 6, 'About three hours', true, 'I had to cancel plans.'),
+  symptom('2026-07-31', 'Tired all day and a heavy feeling low down.', 'Lower belly', 5, 'All day', false, ''),
+  symptom('2026-08-09', 'Squeezing pain that came in waves.', 'Across my lower belly', 7, 'On and off all day', true, 'I left work early.'),
+  symptom('2026-08-16', 'Pain down both legs and I felt very worn out.', 'Lower belly and legs', 7, 'From lunchtime until bedtime', true, 'I could not cook.'),
+  symptom('2026-08-24', 'A dull, heavy pain low down.', 'Lower belly', 5, 'A few hours', false, ''),
+  symptom('2026-09-02', 'Sharp pain across my lower belly.', 'Across my lower belly', 8, 'Most of the morning', true, 'I was too sore to get out of bed.'),
+  symptom('2026-09-07', 'Squeezing pain and I felt dizzy.', 'Lower belly', 6, 'About four hours', false, ''),
   symptom('2026-09-11', 'Squeezing pain across my lower belly. I have had pain like this for about 12 years.', 'Across my lower belly', 6, 'On and off all day', false, ''),
   symptom('2026-09-13', 'Sharp pain across my lower belly and down both legs.', 'Lower belly and both legs', 8, 'Most of the morning', true, 'I was too sore to go to work.'),
   symptom('2026-09-15', 'I felt very tired and had a heavy, squeezing pain low down.', 'Lower belly', 6, 'From lunchtime until bedtime', false, ''),

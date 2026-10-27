@@ -126,7 +126,11 @@ export function docRange(a: string, ap: DatePrecision, b: string, bp: DatePrecis
 
 // ---- the model ------------------------------------------------------------------------------
 
-export interface DocQuote { date: string; dateLabel: string; text: string; facts: string }
+export interface DocQuote {
+  date: string; dateLabel: string; text: string; facts: string;
+  /** The same facts split by question, for the printed table; '' where Sam gave no answer. */
+  parts?: { where: string; strength: string; timing: string };
+}
 /** One definition row on the page: "Why I went" | Sam's text. */
 export interface DocLine { label: string; text: string }
 
@@ -300,6 +304,7 @@ function quoteOf(s: SymptomData, text: string, withFacts = true): DocQuote {
     dateLabel: formatDay(s.date, 'always'),
     text,
     facts: withFacts ? joinFacts(whereFacts(s), strengthFacts(s), timingFacts(s)) : '',
+    parts: withFacts ? { where: whereFacts(s), strength: strengthFacts(s), timing: timingFacts(s) } : undefined,
   };
 }
 
@@ -392,7 +397,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
 
   // 2. How often and how strong — over the strip window (the range, or its last 93 days).
   if (notes.length) {
-    const stripFrom = inclusiveDays(from, to) > STRIP_MAX_DAYS ? addDays(to, -(STRIP_MAX_DAYS - 1)) : from;
+    const cappedFrom = inclusiveDays(from, to) > STRIP_MAX_DAYS ? addDays(to, -(STRIP_MAX_DAYS - 1)) : from;
+    // Days before the first entry were never recorded, so they are not shown as days with no note: the
+    // window starts at the first entry (at least 14 days wide, so a new user's strip is not one cell).
+    const firstEntry = [...notes.map((s) => s.date), ...bleedDays.map((d) => d.date)].sort()[0];
+    const startAt = firstEntry && firstEntry < addDays(to, -13) ? firstEntry : addDays(to, -13);
+    const stripFrom = firstEntry && startAt > cappedFrom ? startAt : cappedFrom;
     const windowNotes = notes.filter((s) => s.date >= stripFrom);
     const total = inclusiveDays(stripFrom, to);
     const bleedSet = new Set(bleedDays.filter((d) => bleedingStatus(d) !== 'spotting').map((d) => d.date));
@@ -431,7 +441,9 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         bars,
         strip: {
           from: stripFrom, to, label: windowLabel, days,
-          windowNote: stripFrom !== from ? `Shows the last ${total} days of the range.` : '',
+          windowNote: stripFrom === from ? ''
+            : stripFrom > cappedFrom ? 'Starts near your first entry; earlier days were not recorded.'
+            : `Shows the last ${total} days of the range.`,
         },
         caption:
           `Notes were logged on ${noteDays} of ${total} days` +
@@ -695,10 +707,24 @@ function quoteHtml(q: DocQuote): string {
   return `<div class="q"><p class="serif">“${esc(curly(q.text))}”</p><p class="meta">${esc(joinFacts(q.dateLabel, q.facts))}</p></div>`;
 }
 
-/** One visit / history item: a bold heading line, then one labelled fact per row. */
-function datedItemHtml(a: DatedItem): string {
-  const rows = a.lines.map((l) => `<tr><th>${esc(l.label)}</th><td>${esc(l.text)}</td></tr>`).join('');
-  return `<div class="item"><p class="strong">${esc(joinFacts(a.date, a.title))}</p>${rows ? `<table class="dl">${rows}</table>` : ''}</div>`;
+/** Notes as a table. Empty cells print an en dash, so "not answered" is visible, never read as "none". */
+function wordsTableHtml(quotes: DocQuote[]): string {
+  const cell = (t?: string) => (t ? esc(t) : '<span class="sep">–</span>');
+  const rows = quotes.map((q) => `<tr><td class="nw">${esc(q.dateLabel)}</td><td>${cell(q.parts?.where)}</td><td>${cell(q.parts?.strength)}</td><td>${cell(q.parts?.timing)}</td><td class="serif">“${esc(curly(q.text))}”</td></tr>`).join('');
+  return `<table class="notes"><thead><tr><th>Date</th><th>Where</th><th>How strong</th><th>How long</th><th>In my words</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/**
+ * Visits and history as a compact table on the page (date · what · details), so a typical
+ * summary stays on one A4 page. Each detail keeps its label ("I was told: ...") so nothing is
+ * read as the app's own words. The on-screen document uses its own layout.
+ */
+function datedTableHtml(items: DatedItem[]): string {
+  const rows = items.map((a) => {
+    const details = a.lines.map((l) => `<div><span class="muted">${esc(l.label)}:</span> ${esc(l.text)}</div>`).join('');
+    return `<tr><td>${esc(a.date)}</td><td class="strong">${esc(a.title)}</td><td>${details || '<span class="sep">–</span>'}</td></tr>`;
+  }).join('');
+  return `<table class="notes dated"><tbody>${rows}</tbody></table>`;
 }
 
 function sectionHtml(s: DocSection): string {
@@ -712,6 +738,8 @@ function sectionInner(s: DocSection): string {
   const head = `<h2>${esc(s.title)}</h2>`;
   switch (s.id) {
     case 'words':
+      // Printed as a table (date · where · how strong · how long · my words): a GP can scan down a column.
+      if (s.quotes.some((q) => q.parts && q.facts)) return `<section>${head}${wordsTableHtml(s.quotes)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
       return `<section>${head}${s.quotes.map(quoteHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
     case 'frequency': {
       const bars = s.bars.map((b) => {
@@ -731,12 +759,15 @@ function sectionInner(s: DocSection): string {
       return `<section>${head}${s.runs.map((r) => `<div class="item"><p><span class="strong">${esc(r.range)}</span> · ${esc(daysText(r.days))}${r.flows ? ` · ${esc(r.flows)}` : ''}</p>${r.notes.map(quoteHtml).join('')}</div>`).join('')}${s.spotting ? `<p>${esc(s.spotting)}</p>` : ''}</section>`;
     case 'impacts': case 'sex': case 'mood': case 'eating':
       return `<section>${head}${s.items.length ? `<p class="item">${s.items.map((c) => esc(countText(c))).join('<span class="sep"> · </span>')}</p>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
-    case 'tried':
-      return `<section>${head}${s.items.map((t) => `<div class="item"><p><span class="strong">${esc(t.title)}</span>${t.dates ? ` · ${esc(t.dates)}` : ''}</p>${t.noticed ? `<p><span class="muted">What I noticed:</span> <span class="serif">“${esc(curly(t.noticed))}”</span></p>` : ''}</div>`).join('')}${s.quotes.map(quoteHtml).join('')}</section>`;
+    case 'tried': {
+      // One row per treatment: name · dates · what she noticed (her words, serif).
+      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}</td></tr>`).join('');
+      return `<section>${head}${s.items.length ? `<table class="notes dated tried"><tbody>${rows}</tbody></table>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
+    }
     case 'appointments':
-      return `<section>${head}${s.upcoming.length ? `<p class="sub">${esc(APPT_AHEAD)}</p>${s.upcoming.map(datedItemHtml).join('')}${s.items.length ? `<p class="sub">${esc(APPT_PAST)}</p>` : ''}` : ''}${s.items.map(datedItemHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
+      return `<section>${head}${s.upcoming.length ? `<p class="sub">${esc(APPT_AHEAD)}</p>${datedTableHtml(s.upcoming)}${s.items.length ? `<p class="sub">${esc(APPT_PAST)}</p>` : ''}` : ''}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
     case 'history':
-      return `<section>${head}${s.items.map(datedItemHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
+      return `<section>${head}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
   }
 }
 
@@ -757,7 +788,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(doc.title)}</title>
 <style>
-  @page { size: A4; margin: 14mm 14mm 12mm; }
+  @page { size: A4; margin: 12mm 14mm 10mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8pt; color: ${C.ink2}; } }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: ${C.white}; }
   body { font-family: ${SANS}; color: ${C.ink}; ${pt(T.body)} }
@@ -766,7 +797,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   h1 { font-family: ${SERIF}; font-style: italic; font-weight: 400; ${pt(T.title)} margin: 0; }
   .metahead { color: ${C.ink2}; ${pt(T.meta)} margin: 3pt 0 0; padding-bottom: 8pt; border-bottom: 1pt solid ${C.ink}; }
   h2 { ${pt(T.head)} font-weight: 600; margin: 0 0 5pt; }
-  section { padding: ${T.section}pt 0 ${T.section - 4}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
+  section { padding: ${T.section - 5}pt 0 ${T.section - 9}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
   h2 { break-after: avoid; page-break-after: avoid; }
   .keep { break-inside: avoid; page-break-inside: avoid; }
   section:last-child { border-bottom: 0; }
@@ -783,10 +814,20 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dl { border-collapse: collapse; margin-top: 1pt; width: 100%; }
   table.dl th { width: 112pt; padding: 0 8pt 1pt 0; text-align: left; vertical-align: baseline; font-weight: 400; color: ${C.ink2}; ${pt(T.label)} }
   table.dl td { padding: 0 0 1pt; vertical-align: baseline; }
+  table.notes { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  table.notes th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
+  table.notes td { padding: 4pt 6pt 4pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
+  table.notes td.serif { ${pt(T.body)} }
+  table.notes td.nw { white-space: nowrap; }
+  table.dated td { padding: 3pt 6pt 3pt 0; }
+  table.dated td:nth-child(1) { width: 66pt; } table.dated td:nth-child(2) { width: 96pt; }
+  table.dated.tried td:nth-child(1) { width: 120pt; } table.dated.tried td:nth-child(2) { width: 110pt; }
+  table.dated tr:last-child td { border-bottom: 0; }
+  table.notes th:nth-child(1) { width: 86pt; } table.notes th:nth-child(2) { width: 78pt; } table.notes th:nth-child(3) { width: 74pt; } table.notes th:nth-child(4) { width: 64pt; }
   .bar { margin: 3pt 0 6pt; }
   .track { height: 5pt; background: ${C.track}; border: 0.5pt solid ${C.borderStrong}; margin-top: 2pt; }
   .fill { height: 100%; background: ${C.ink}; }
-  .strip { margin: 8pt 0 4pt; }
+  .strip { margin: 5pt 0 3pt; }
   .key { display: inline-block; width: 12pt; height: 3pt; background: ${C.clay}; vertical-align: middle; }
   .key.spot { height: 0; background: none; border-top: ${SPOT_STROKE}pt dashed ${C.clay}; }
   tfoot td { padding-top: 8pt !important; color: ${C.ink2}; ${pt(T.footer)} }

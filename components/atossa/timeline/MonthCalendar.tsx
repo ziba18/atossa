@@ -4,14 +4,14 @@
 //               reads as one span, not six events
 //   spotting  = 36 clay hatched outline (1.5), clay numeral on a clear disc (hatch never crosses it)
 //   future    = ink3 numeral, no press state (unless something is logged there)
-//   any note  = 4 plum dot under the day
+//   any note  = 5 plum dot under the day
 //   today     = 1.5 ink ring
 // Empty days are plain. No streaks, no "missed" states, no animation.
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path } from 'react-native-svg';
 import { IconButton, Txt } from '../kit';
-import { colors, fonts, radii, space } from '../../../constants/atossaUI';
+import { colors, fonts, radii, severityColor, space } from '../../../constants/atossaUI';
 import {
   MONTH_NAMES, WEEKDAY_LETTERS, daysInMonth, firstWeekdayOffset, toKey, todayKey,
 } from '../../../lib/records/dates';
@@ -23,6 +23,8 @@ export interface DayMark {
   bleeding?: DayBleeding;
   /** Symptom notes that day (from noteCount). */
   notes: number;
+  /** Highest 0-10 strength noted that day: tints the day's disc on the plum ramp (the number is also in the spoken label). */
+  worst?: number;
   /** Anything at all on the day (incl. appointments) — future days are only tappable if true. */
   hasEntries: boolean;
 }
@@ -41,6 +43,8 @@ export function MonthCalendar({
   onDayPress: (key: string) => void;
 }) {
   const today = todayKey();
+  // Narrow phones (320): "September 2026" at title size wraps to two lines between the arrows.
+  const narrow = useWindowDimensions().width < 360;
   const offset = firstWeekdayOffset(year, month0);
   const days = daysInMonth(year, month0);
   const cells: (number | null)[] = [...Array(offset).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
@@ -50,7 +54,7 @@ export function MonthCalendar({
     <View>
       <View style={styles.head}>
         <IconButton icon="chevron-left" color={colors.plum} label="Previous month" onPress={onPrev} />
-        <Txt variant="title" accessibilityRole="header" style={{ textAlign: 'center', flex: 1 }}>
+        <Txt variant="title" accessibilityRole="header" style={[{ textAlign: 'center', flex: 1 }, narrow && { fontSize: 20, lineHeight: 26 }]}>
           {`${MONTH_NAMES[month0]} ${year}`}
         </Txt>
         <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
@@ -98,6 +102,7 @@ function a11yLabel(key: string, mark: DayMark | undefined, isToday: boolean): st
   else if (mark?.bleeding === 'spotting') parts.push('spotting logged');
   else if (mark?.bleeding === 'none-flow') parts.push('period logged, no flow');
   if (mark?.notes) parts.push(notesLabel(mark.notes));
+  if (mark?.worst != null) parts.push(`at worst ${mark.worst} out of 10`);
   return parts.join(', ');
 }
 
@@ -111,6 +116,7 @@ function DayCell({
 }) {
   const solid = mark?.bleeding === 'bleeding';
   const spotting = mark?.bleeding === 'spotting';
+  const tint = !solid && !spotting && mark?.worst != null ? severityColor(mark.worst) : null;
   return (
     <Pressable
       onPress={onPress}
@@ -131,12 +137,13 @@ function DayCell({
           ) : null}
           <View style={styles.discWrap}>
             {/* Today ring sits outside a filled/hatched disc so both read. */}
-            {isToday ? <View style={[styles.todayRing, (solid || spotting) && styles.todayRingOuter]} /> : null}
+            {isToday ? <View style={[styles.todayRing, (solid || spotting || tint) && styles.todayRingOuter]} /> : null}
             {spotting ? <SpottingHatch /> : null}
             {spotting ? <View pointerEvents="none" style={styles.spotClear} /> : null}
             <View
               style={[
                 styles.disc,
+                tint && { backgroundColor: tint.bg },
                 solid && { backgroundColor: colors.clay },
                 pressed && !solid && !disabled && { backgroundColor: colors.sunken },
               ]}
@@ -147,6 +154,7 @@ function DayCell({
                   styles.num,
                   future && !solid && !spotting && { color: colors.ink3 },
                   solid && styles.numOnClay,
+                  tint && { color: tint.fg },
                   spotting && { color: colors.clay },
                 ]}
               >
@@ -203,5 +211,5 @@ const styles = StyleSheet.create({
   todayRingOuter: { width: DISC + 6, height: DISC + 6, top: -3, left: -3 },
   num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
   numOnClay: { fontFamily: fonts.semibold, color: colors.white },
-  dot: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.plum, marginTop: space.xxs },
+  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.plum, marginTop: space.xxs },
 });

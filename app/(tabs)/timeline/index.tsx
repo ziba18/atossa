@@ -1,13 +1,15 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
+import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, ScreenLarge, SegmentedControl, Txt,
+  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
 import { GhostEntry } from '../../../components/atossa/timeline/GhostEntry';
+import { PatternsView } from '../../../components/atossa/timeline/PatternsView';
 import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
@@ -21,20 +23,28 @@ import { TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type Timelin
 import { colors, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { parseKey, todayKey } from '../../../lib/records/dates';
-import { bleedingStatus, noteCount } from '../../../lib/records/format';
+import { bleedingStatus, noteCount, notesLabel, worstOf } from '../../../lib/records/format';
+import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 
 const MODES: { value: TimelineMode; label: string }[] = [
   { value: 'list', label: 'List' },
   { value: 'month', label: 'Month' },
+  { value: 'patterns', label: 'Patterns' },
 ];
 
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 
 export default function TimelineScreen() {
   const router = useRouter();
+  usePageTitle('Timeline');
   const { mode, setMode, filter, setFilter } = useTimelineSession();
   const symptom = useRecordsStore((s) => s.records.symptom);
+  const loadError = useRecordsStore((s) => s.error);
+  const loadedFor = useRecordsStore((s) => s.loadedFor);
+  const load = useRecordsStore((s) => s.load);
+  const loading = useRecordsStore((s) => s.loading);
+  const userId = useAuthStore((s) => s.user?.id);
   const periodDay = useRecordsStore((s) => s.records.period_day);
   const appointment = useRecordsStore((s) => s.records.appointment);
   const medicine = useRecordsStore((s) => s.records.medicine);
@@ -70,7 +80,10 @@ export default function TimelineScreen() {
 
   // A quiet plum glyph, not a filled disc (V16). Hidden while the empty List shows its own
   // "Add a note" button, so there is only one primary for one action.
-  const emptyList = mode === 'list' && feed.length === 0;
+  const waiting = loading && !loadedFor;
+  // A failed first load must not fall through to the empty states ("Add a note"): the record may be fine.
+  const failed = !!loadError && !loadedFor && !waiting;
+  const emptyList = (mode === 'list' || mode === 'patterns') && feed.length === 0 && !waiting && !failed;
   const header = (
     <>
       {emptyList ? null : <AddButton label="Add a note" onPress={() => openCapture()} />}
@@ -80,9 +93,16 @@ export default function TimelineScreen() {
 
   return (
     <ScreenLarge title="Timeline" right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
+      {loadError && !loadedFor ? (
+        <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
+      ) : null}
       <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
-      {mode === 'list' ? (
+      {waiting ? (
+        <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
+      ) : failed ? null : mode === 'list' ? (
         <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} />
+      ) : mode === 'patterns' ? (
+        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}
@@ -167,6 +187,11 @@ function ListView({
               <Txt variant="groupLabel" accessibilityRole="header">{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
               <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
+              {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (
+                <Txt variant="caption" maxFontSizeMultiplier={1.4}>
+                  {notesLabel(g.items.filter((x) => x.kind === 'symptom').length)}
+                </Txt>
+              ) : null}
             </View>
             <View style={{ gap: space.sm }}>
               {g.items.map((item, j) => (
@@ -205,7 +230,11 @@ function MonthView({
       list.push(s);
       byDay.set(s.data.date, list);
     }
-    for (const [k, list] of byDay) get(k).notes = noteCount(list);
+    for (const [k, list] of byDay) {
+      get(k).notes = noteCount(list);
+      const worsts = list.map((r) => worstOf(r.data)).filter((n): n is number => n != null);
+      if (worsts.length) get(k).worst = Math.max(...worsts);
+    }
     for (const p of periodDays) {
       const d = p.data;
       get(d.date).bleeding = bleedingStatus(d) === 'spotting' ? 'spotting' : d.flow === 'None' ? 'none-flow' : 'bleeding';

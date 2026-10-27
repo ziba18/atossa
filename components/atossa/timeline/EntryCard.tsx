@@ -123,7 +123,7 @@ export function EntryCard({
         >
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
-            {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
+            {words ? <Quote numberOfLines={3}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
               // The severity words sit INSIDE the pill ("9/10 at worst", N7); long facts wrap below it
               <View style={styles.facts}>
