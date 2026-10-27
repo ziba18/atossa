@@ -126,5 +126,6 @@ SET17 = json.loads((Path(__file__).parent / "emergency_set_v17_blind_texting_sty
 def test_blind_texting_style_v17():
     assert [t for t in SET17["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET17["harmless"] if is_emergency(t)] == []
-    for t in ("I take my pills every day", "the baby kicks are strong today"):
+    for t in ("I take my pills every day", "the baby kicks are strong today",
+              "Strong squeezing pain across my lower belly, sometimes running down my legs."):
         assert not is_emergency(t), t
