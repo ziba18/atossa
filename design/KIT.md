@@ -221,7 +221,7 @@ the BackChevron names the screen it came from.
 - **Appointment card on the Timeline list:** one line on a `plumTint` card ("Specialist clinic · Thu 24 Sep", date kept together with non-breaking spaces), calendar glyph, no headline. Notes stay white cards, so an appointment never reads as one more note.
 - **Week header summary:** "3 notes · worst 9/10" (caption, right of the hairline). Worst only when a note gave a number.
 - **Text link rows ("See your patterns", "See the patterns behind this"):** `Button variant="text" small`, wrapped with `marginLeft: -space.xs` so the label lines up with the card edge. They open Timeline on Patterns (`useTimelineSession.setMode('patterns')`).
-- **My period card (Today):** white card, headline "My period"; states empty (Choose the day + "I'm not sure" = 14-day snooze), picking (DayChooser + Save), filled ("Last period started Fri 18 Sep 2026", Log a new start, See it on the Month view). No prediction, no cycle day, no phase.
+- **My period card (Today):** white card, headline "My period"; states empty (Choose the day + "I'm not sure" = 14-day snooze), picking (DayChooser + Save), filled ("Last period started Fri 18 Sep 2026", Log a new start, Month view). No prediction, no cycle day, no phase.
 - **Welcome illustration:** the brand waveform at 48 pt resting on a 148 pt white pill outlined in plum (a voice becoming a line of text). Hidden on phones under 700 pt high.
 - **Hero for an appointment more than 60 days away:** the date, not a week count (numeral = day of month, line = "April 2027 · your appointment"; 320 chip "Appointment on 14 April").
 - **Onboarding is 3 steps** (name, basics, reminders); `ONBOARDING_STEPS = 3`.

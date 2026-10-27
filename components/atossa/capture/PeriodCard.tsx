@@ -80,7 +80,7 @@ export function PeriodCard() {
           <View style={{ marginTop: space.sm, marginLeft: -space.xs, flexDirection: 'row', flexWrap: 'wrap', columnGap: space.xs }}>
             <Button label="Log a new start" variant="text" small onPress={() => setPicking(true)} />
             <Button
-              label="See it on the Month view"
+              label="Month view" accessibilityHint="Opens the Month view on the Timeline tab"
               variant="text"
               small
               onPress={() => { useTimelineSession.getState().setMode('month'); router.push('/(tabs)/timeline' as any); }}
