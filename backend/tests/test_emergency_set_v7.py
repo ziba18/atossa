@@ -137,3 +137,15 @@ def test_dictation_fillers_do_not_hide_an_emergency_and_ordinary_like_stays_quie
         assert is_emergency(t), t
     for t in ("I would like to track my period", "I wanna track my sleep", "i am like so tired today, um, bit of a headache"):
         assert not is_emergency(t), t
+
+
+SET18 = json.loads((Path(__file__).parent / "emergency_set_v18_blind_midlife.json").read_text())
+
+
+def test_midlife_plain_words_v18():
+    # first contact: 14/20 raised; the six misses (heart-attack wording, sepsis wording, rigid tummy) were fixed afterwards
+    assert [t for t in SET18["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET18["harmless"] if is_emergency(t)] == []
+    for t in ("My dad had a heart attack years ago", "I get a heavy feeling in my legs after running",
+              "my stomach is rigid with tension from work stress", "I had a fever last week and felt confused by the forms"):
+        assert not is_emergency(t), t
