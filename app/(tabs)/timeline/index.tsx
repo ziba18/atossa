@@ -275,6 +275,7 @@ function MonthView({
         onDayPress={onDayPress}
       />
       {summary ? <Txt variant="secondary" color={colors.ink2}>{summary}</Txt> : null}
+      {noteDays ? <Txt variant="caption">A darker day had a higher number. A dot under a day means a note. Tap a day to open it.</Txt> : null}
     </View>
   );
 }
