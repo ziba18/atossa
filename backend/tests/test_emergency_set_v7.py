@@ -58,3 +58,12 @@ SET12 = json.loads((Path(__file__).parent / "emergency_set_v12_harmless_everyday
 
 def test_everyday_notes_with_faint_clot_breath_words_stay_quiet():
     assert [t for t in SET12["harmless"] if is_emergency(t)] == []
+
+
+SET13 = json.loads((Path(__file__).parent / "emergency_set_v13_harmless_selfharm_words.json").read_text())
+
+
+def test_everyday_uses_of_self_harm_words_stay_quiet_but_real_statements_do_not():
+    assert [t for t in SET13["harmless"] if is_emergency(t)] == []
+    for t in ("i hurt myself on purpose last night", "i want to disappear forever"):
+        assert is_emergency(t), t

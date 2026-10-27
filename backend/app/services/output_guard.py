@@ -295,7 +295,12 @@ _IDIOM = re.compile(
     r"|\bcollaps\w+ (?:on|onto|into) (?:the |my )?(?:sofa|couch|bed|settee|chair)\b"
     r"|\bfell over (?:at|in|during|while) (?:the )?(?:gym|running|jogging|skating|netball|football|dance|class)\b"
     r"|\b(?:short(?:ness)? of breath|can'?t (?:get|catch) my breath|out of breath)\b[^.;!?]{0,30}\b(?:after|when|while|during)\b[^.;!?]{0,25}\b(?:run\w*|climb\w*|stairs|exercis\w*|walk\w*|gym|workout|jog\w*|sprint\w*)\b"
-    r"|\bagony (?:waiting|of waiting)\b",
+    r"|\bagony (?:waiting|of waiting)\b"
+    r"|\bhurt(?:ing)? myself on (?:the |my |a )"
+    r"|\boverdos\w* on (?:caffeine|coffee|sugar|chocolate|tea|netflix|screens?|social media)\b"
+    r"|\bdisappear (?:into|under) (?:my |the )?(?:bed|duvet|covers|blanket|sofa)\b"
+    r"|\b(?:tablets|pills) out of (?:the |my )?(?:blister|packet|box|bottle|pack)\b"
+    r"|\bsuicide squad\b|\b(?:die|dying) laughing\b",
     re.I)
 
 
