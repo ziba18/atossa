@@ -90,8 +90,10 @@ export function sampleBuckets(): Buckets {
     return { symptom: [], period_day: [], appointment: [], medicine: [], history: [], doctor_note: [] };
   }
   const copy = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
+  // Design preview only: ?seed=few keeps the six oldest notes (below the 7 that unlock "See your patterns").
+  const few = typeof window !== 'undefined' && /[?&]seed=few\b/.test(window.location?.search ?? '');
   return {
-    symptom: recs('symptom', copy(SYMPTOMS), (d) => d.date),
+    symptom: recs('symptom', copy(few ? [...SYMPTOMS].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6) : SYMPTOMS), (d) => d.date),
     period_day: recs('period', copy(PERIOD_DAYS), (d) => d.date),
     appointment: recs('appointment', copy(APPOINTMENTS), (d) => d.date),
     medicine: recs('medicine', copy(MEDICINES), (d) => d.started),
