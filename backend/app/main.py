@@ -1,3 +1,5 @@
+import os
+
 from fastapi import Depends, FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -10,7 +12,14 @@ from app.routers import auth, profiles, connections, chat, records, legal, baske
 
 MAX_BODY_BYTES = 256 * 1024
 
-app = FastAPI(title="Atossa API", version="1.0.0")
+# The interactive docs list every route to anyone; they are off unless ENABLE_API_DOCS=1 (local work).
+_DOCS = os.environ.get("ENABLE_API_DOCS") == "1"
+app = FastAPI(
+    title="Atossa API", version="1.0.0",
+    docs_url="/docs" if _DOCS else None,
+    redoc_url="/redoc" if _DOCS else None,
+    openapi_url="/openapi.json" if _DOCS else None,
+)
 
 
 @app.exception_handler(RequestValidationError)
