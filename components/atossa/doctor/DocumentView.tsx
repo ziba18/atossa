@@ -177,7 +177,22 @@ function KeyMark({ kind, st }: { kind: 'bleeding' | 'spotting'; st: St }) {
   );
 }
 
-function StripKey({ bleeding, spotting, ghost, st }: { bleeding: boolean; spotting: boolean; ghost: boolean; st: St }) {
+function StripKey({ bleeding, spotting, ghost, st, compact }: { bleeding: boolean; spotting: boolean; ghost: boolean; st: St; compact?: boolean }) {
+  // Phone reader: the number/dot sentence, then the line marks on their own row — same words, shorter (the printed page keeps the full key).
+  if (compact) {
+    return (
+      <View>
+        <Txt style={st.meta}>{STRIP_KEY}</Txt>
+        {bleeding || spotting || ghost ? (
+          <Txt style={st.meta}>
+            {bleeding ? <><KeyMark kind="bleeding" st={st} />{` ${STRIP_BLEED_KEY}.`}</> : null}
+            {spotting ? <>{bleeding ? '  ' : ''}<KeyMark kind="spotting" st={st} />{` ${STRIP_SPOT_KEY}.`}</> : null}
+            {ghost ? `${bleeding || spotting ? '  ' : ''}Faint box = no note on a bleeding or spotting day.` : null}
+          </Txt>
+        ) : null}
+      </View>
+    );
+  }
   return (
     <Txt style={st.meta}>
       {STRIP_KEY}
@@ -211,6 +226,7 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
                 bleeding={section.strip.days.some((d) => d.bleeding)}
                 spotting={section.strip.days.some((d) => d.spotting)}
                 // The large 'weeks' view outlines bleeding/spotting days that have no note (HeatStrip ghost cells).
+                compact={variant !== 'page'}
                 ghost={variant !== 'page' && section.strip.days.some((d) => !d.logged && (d.bleeding || d.spotting))}
                 st={st}
               />
