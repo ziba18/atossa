@@ -42,8 +42,7 @@ export type AnalyticsEvent =
   | 'Welcome Viewed'
   | 'Signup Completed'
   | 'Onboarding Step Completed'
-  | 'Onboarding Completed'
-  | 'Period Start Logged';
+  | 'Onboarding Completed';
 
 export function track(event: AnalyticsEvent, props?: Record<string, string | number | boolean>): void {
   try {
