@@ -101,3 +101,20 @@ def test_blind_everyday_style_v16():
     assert [t for t in SET16["harmless"] if is_emergency(t)] == []
     for t in ("I'm 5 weeks into my course and my back aches", "the duvet is soaked from the rain, annoying", "I can get up and walk fine"):
         assert not is_emergency(t), t
+
+
+import pytest  # noqa: E402
+
+KNOWN_GAPS = [
+    "cantbreathe",
+    "i want 2 die",
+    "Nie mogę oddychać",
+    "Ni allaf anadlu",
+    "Me quiero morir",
+]
+
+
+@pytest.mark.xfail(reason="known gaps: no-space/number spellings and non-English notes (S-108); the fixed 999/111 line is the backstop", strict=False)
+@pytest.mark.parametrize("text", KNOWN_GAPS)
+def test_known_gaps_are_listed_so_a_fix_shows_up(text):
+    assert is_emergency(text)
