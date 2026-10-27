@@ -255,7 +255,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         accessibilityLabel="Make my summary for my doctor. Opens For my doctor."
       >
         <Txt variant="headline">Make my summary for my doctor</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xxs }}>One clear page from your notes, in your words.</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>A clear summary from your notes, in your words.</Txt>
       </PressableCard>
 
       <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
