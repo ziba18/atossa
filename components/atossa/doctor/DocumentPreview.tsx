@@ -60,29 +60,61 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
 
   return (
     <View>
-      <Pressable
-        onPress={() => setOpen(true)}
-        onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-        accessibilityRole="button"
-        accessibilityLabel={`Preview of your summary, ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
-        accessibilityHint="Opens the summary at a size you can read"
-        style={({ pressed }) => [{
-          borderRadius: radii.input, borderWidth: 1, borderColor: colors.hairline, backgroundColor: colors.surface,
-          overflow: 'hidden', opacity: pressed ? 0.85 : 1,
-        }, shadows.hero]}
-      >
-        {inner > 0 ? <PageCrop doc={doc} width={inner} height={thumbH} onHeight={setDocHeight} /> : <View style={{ height: THUMB_MAX_H }} />}
-      </Pressable>
-      <Txt variant="secondary" style={{ marginTop: space.sm, textAlign: 'center' }}>
-        {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
-      </Txt>
+      {tall ? (
+        <>
+          <Pressable
+            onPress={() => setOpen(true)}
+            onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+            accessibilityRole="button"
+            accessibilityLabel={`Preview of your summary, ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
+            accessibilityHint="Opens the summary at a size you can read"
+            style={({ pressed }) => [{
+              borderRadius: radii.input, borderWidth: 1, borderColor: colors.hairline, backgroundColor: colors.surface,
+              overflow: 'hidden', opacity: pressed ? 0.85 : 1,
+            }, shadows.hero]}
+          >
+            {inner > 0 ? <PageCrop doc={doc} width={inner} height={thumbH} onHeight={setDocHeight} /> : <View style={{ height: THUMB_MAX_H }} />}
+          </Pressable>
+          <Txt variant="secondary" style={{ marginTop: space.sm, textAlign: 'center' }}>
+            {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
+          </Txt>
+        </>
+      ) : (
+        // Phones: the page itself is far too small to read as a thumbnail, so it is a labelled card that opens the
+        // readable version. The page is still laid out, unseen, so the page count stays measured.
+        <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+          <View style={{ height: 0, overflow: 'hidden' }} aria-hidden>
+            {inner > 0 ? <PageCrop doc={doc} width={inner} height={0} onHeight={setDocHeight} /> : null}
+          </View>
+          <Pressable
+            onPress={() => setOpen(true)}
+            accessibilityRole="button"
+            accessibilityLabel={`Your summary page, ${pages === 1 ? 'one page' : `about ${pages} pages`}, ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'}, ${doc.rangeLabel}`}
+            accessibilityHint="Opens the summary at a size you can read"
+            style={({ pressed }) => [{
+              flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, minHeight: 72,
+              borderRadius: radii.input, borderWidth: 1, borderColor: colors.hairline, backgroundColor: colors.surface,
+              opacity: pressed ? 0.85 : 1,
+            }, shadows.hero]}
+          >
+            <View aria-hidden style={{ width: 44, height: 56, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="file-text" size={22} color={colors.plum} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Txt variant="headline">See the full page</Txt>
+              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel}`}</Txt>
+            </View>
+            <View aria-hidden><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
+          </Pressable>
+        </View>
+      )}
       {words ? (
         <View style={{ marginTop: space.md, gap: space.xxs }}>
           <Txt variant="caption">{`In your words · ${words.dateLabel}`}</Txt>
           <Quote numberOfLines={3}>{words.text}</Quote>
         </View>
       ) : null}
-      <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" />
+      {tall ? <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" /> : null}
       {Platform.OS === 'web' ? (
         <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
       ) : null}
