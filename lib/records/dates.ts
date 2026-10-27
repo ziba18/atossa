@@ -90,3 +90,11 @@ export function headerDate(): string {
   const { m0, d } = parseKey(todayKey());
   return `${d} ${MONTH_NAMES[m0].slice(0, 3)}`;
 }
+
+/** True when the whole day, month or year the date stands for ended before yesterday. */
+export function isHistoryDate(date: string, precision?: string): boolean {
+  const today = todayKey();
+  if (precision === 'year') return date.slice(0, 4) < today.slice(0, 4);
+  if (precision === 'month') return date.slice(0, 7) < today.slice(0, 7);
+  return date < addDays(today, -1);
+}

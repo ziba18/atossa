@@ -164,7 +164,7 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
           ) : null}
         </View>
 
-        <UrgentNote text={textOf(draft ?? d)} />
+        <UrgentNote text={textOf(draft ?? d)} date={(draft ?? d).date} />
 
         <Card style={{ paddingVertical: space.xs }}>
           {/* What it felt like — Sam's own words only (never for a quick log without words). */}
