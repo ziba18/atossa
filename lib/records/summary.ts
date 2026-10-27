@@ -19,7 +19,7 @@ import {
   labelEscape, noteCount, noteSortTime, peakOf,
   realImpacts, typicalOf, worstOf,
 } from './format';
-import { daysWith, impactDays, inRange as inRangeOf, nOfN, strengthRange, zoneDays } from './counts';
+import { daysWith, impactDays, inRange as inRangeOf, MAX_ZONE_ROWS, nOfN, strengthRange, zoneDays } from './counts';
 
 // ---- cycles (kept for other callers) --------------------------------------------------------
 
@@ -587,10 +587,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     if (noteDays) {
       bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes) });
       zoneDays(windowNotes)
+        .slice(0, MAX_ZONE_ROWS)
         .map(({ label, days: n }) => ({ label, days: n, total, strength: groupStrength(windowNotes.filter((s) => (s.zones ?? []).includes(label))) }))
         .forEach((b) => bars.push(b));
     }
 
+    const moreZones = Math.max(0, zoneDays(windowNotes).length - MAX_ZONE_ROWS);
     const bleedOverlap = [...byDay.keys()].filter((d) => bleedSet.has(d)).length;
     const bleedInWindow = days.some((d) => d.bleeding);
     const spotDays = days.filter((d) => d.spotting).length;
@@ -612,7 +614,8 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
           (bleedInWindow
             ? bleedOverlap ? `; ${bleedOverlap} of those ${bleedOverlap === 1 ? 'was a bleeding day' : 'were bleeding days'}.` : '; none of those were bleeding days.'
             : '.') +
-          (spotDays ? ` Spotting logged on ${plural(spotDays, 'day')}.` : ''),
+          (spotDays ? ` Spotting logged on ${plural(spotDays, 'day')}.` : '') +
+          (moreZones ? ` ${moreZones} more ${moreZones === 1 ? 'area was' : 'areas were'} marked on fewer days.` : ''),
       });
     }
   }

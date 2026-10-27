@@ -55,6 +55,9 @@ export function impactDays(notes: SymptomData[], keep: (item: string) => boolean
   return [...days.entries()].map(([label, set]) => ({ label, days: set.size })).sort((a, b) => b.days - a.days);
 }
 
+/** Body-zone rows shown in the summary and in Patterns (same cap in both, so the numbers match). */
+export const MAX_ZONE_ROWS = 3;
+
 /** Distinct days per body zone the patient picked, most days first. */
 export function zoneDays(notes: SymptomData[]): DayCount[] {
   const days = new Map<string, Set<string>>();

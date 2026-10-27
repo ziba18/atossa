@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import {
   buildDoctorSummary, DOMAINS, NOT_RECORDED, NOT_INCLUDED, SECTION_META, summaryToText, onsetText,
 } from '../../lib/records/summary.ts';
-import { daysWith, impactDays, nOfN, weeklyDays, zoneDays } from '../../lib/records/counts.ts';
+import { MAX_ZONE_ROWS, daysWith, impactDays, nOfN, weeklyDays, zoneDays } from '../../lib/records/counts.ts';
 import { sampleBuckets } from '../../lib/preview/seed.ts';
 
 const HEADINGS = [
@@ -70,7 +70,7 @@ test('parity: summary numbers == shared helper numbers for the same range (Sam s
   assert.equal(freq.bars[0].days, daysWith(notes, stripFrom, RANGE.to));
   assert.equal(freq.bars[0].total, nOfN(notes, stripFrom, RANGE.to).total);
   const zones = zoneDays(notes.filter((s) => s.date >= stripFrom));
-  assert.deepEqual(freq.bars.slice(1).map((b) => [b.label, b.days]), zones.map((z) => [z.label, z.days]));
+  assert.deepEqual(freq.bars.slice(1).map((b) => [b.label, b.days]), zones.slice(0, MAX_ZONE_ROWS).map((z) => [z.label, z.days]));
   const impacts = doc.sections.find((s) => s.id === 'impacts');
   if (impacts) {
     const helper = impactDays(notes, (i) => i !== 'Sex');
