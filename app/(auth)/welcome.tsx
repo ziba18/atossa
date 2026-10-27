@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, layout, space } from '../../constants/atossaUI';
-import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
+import { Button, Card, Quote, Txt, useReduceMotion } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
 
@@ -26,6 +26,13 @@ export default function WelcomeScreen() {
   const short = win.height < 700;
   const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
   useEffect(() => track('Welcome Viewed'), []);
+  // One 400 ms rise of the waveform on first paint; nothing moves under Reduce Motion.
+  const reduceMotion = useReduceMotion();
+  const rise = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (reduceMotion) { rise.setValue(1); return; }
+    Animated.timing(rise, { toValue: 1, duration: 400, easing: Easing.out(Easing.cubic), useNativeDriver: Platform.OS !== 'web' }).start();
+  }, [reduceMotion, rise]);
 
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
@@ -40,11 +47,11 @@ export default function WelcomeScreen() {
           <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
           {/* Illustration B: the brand waveform grown large, resting on a line of text (a voice becoming a note). */}
           {short ? null : <View aria-hidden style={styles.art}>
-            <View style={styles.wave}>
+            <Animated.View style={[styles.wave, { opacity: rise, transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) }] }]}>
               {WAVE.map((h, i) => (
                 <View key={i} style={{ width: 4, height: Math.round(8 + h * 40), borderRadius: 2, backgroundColor: i % 3 === 0 ? colors.plum : `${colors.plum}80` }} />
               ))}
-            </View>
+            </Animated.View>
             <View style={styles.textLine} />
           </View>}
         </View>
