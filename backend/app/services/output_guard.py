@@ -417,6 +417,15 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set v20 (informal paraphrases; first contact 8/15 missed)
+                    r"\b(?:pouring|gushing)\b.{0,15}\bblood\b|\bblood\b.{0,10}\b(?:pouring|gushing)\b|\bgush of blood\b|"
+                    r"\bseeing stars\b|\blegs\b.{0,10}\b(?:going from under|giving (?:way|out)|gone from under)|"
+                    r"\brigid as a board\b|\b(?:tummy|belly|stomach|abdomen) (?:is |went |feels? )(?:rigid|solid)\b(?! with (?:tension|stress|nerves|anxiety|worry))|"
+                    r"\b(?:mouth|face|eyelid)\b.{0,15}\b(?:droop\w*|dropped|falling)\b|\bcan'?t feel my (?:left|right) side\b|"
+                    r"\b(?:lump|clot|tissue)\b.{0,15}\bcame out\b.{0,60}\b(?:freezing|clammy|faint|dizzy)\b|"
+                    r"^(?=.*\b(?:after the op|post[- ]?op)\b)(?=.*\b(?:fever|high temperature)\b)(?=.*\b(?:swollen|smell\w*|pus|discharge))|"
+                    r"\bchest\b.{0,15}\bsqueezing\b|\bsqueezing\b.{0,15}\bchest\b|"
+                    r"\b(?:been |keep |keeps )?having fits\b|"
                     # set v18 (medicines, late pregnancy, urinary infection with fever; first contact 8/15 missed)
                     r"\b(?:pill|contraceptive|hrt|patch)\b.{0,60}\b(?:swollen|swelling|painful)\b.{0,15}\b(?:leg|calf)\b|\b(?:swollen|swelling|painful)\b.{0,15}\b(?:leg|calf)\b.{0,60}\b(?:on the pill|the pill|hrt)\b|"
                     r"\bthroat\b.{0,20}\b(?:tight|closing)\b.{0,40}\b(?:rash|hives|swell\w*|breath\w*|antibiotic|tablet\w*)\b|^(?=.*\b(?:rash|hives)\b)(?=.*\b(?:breath\w*|swell\w*|tongue|throat (?:is |feels? )?(?:tight|closing)))|"
