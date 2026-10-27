@@ -45,7 +45,7 @@ export default function OnboardingReminders() {
 
   return (
     <OnboardingScreen
-      step={4}
+      step={3}
       back={{ label: 'Back' }}
       title="Would a daily reminder help?"
       helper="If today’s worth noting, I’m here. Two minutes is plenty. You can change this later in Settings."

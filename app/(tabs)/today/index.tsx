@@ -8,6 +8,7 @@ import { View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
+import { PeriodCard } from '../../../components/atossa/capture/PeriodCard';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
   GhostNoteCard, HeroCard, HeroChip, HeroNumberCard, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
@@ -50,6 +51,7 @@ export default function TodayScreen() {
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
+      {loadedFor ? <View style={{ marginTop: space.md }}><PeriodCard /></View> : null}
     </>
   );
 
