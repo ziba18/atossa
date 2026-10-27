@@ -243,6 +243,8 @@ export interface DoctorDoc {
   agenda: string;
   /** "What I’d like from today" when the appointment is today, else "… from this appointment". */
   agendaTitle: string;
+  /** The agenda split for page 1 (rendered FIRST): her main-priority sentence, then her questions. Null when empty. */
+  agendaBlock: AgendaBlock | null;
   /** Included sections with data, in document order. */
   sections: DocSection[];
   /** Every section that HAS data (included or not) — drives the Sections switches. */
@@ -281,6 +283,27 @@ export interface SummaryOptions {
   /** True when the next appointment is today (changes the agenda heading). */
   appointmentToday?: boolean;
   include?: Partial<Record<SectionId, boolean>>;
+}
+
+export interface AgendaBlock {
+  title: string;
+  /** "My main priority is pain." exactly as the chip wrote it (or as she edited it); '' when no chip sentence. */
+  priority: string;
+  /** The rest of her note, one item per line or sentence, her words unchanged. */
+  questions: string[];
+}
+
+const PRIORITY_RE = /^(My main priority is [^.?!\n]*[.?!]?)\s*/i;
+
+/** Split the appointment note into the main-priority line and her questions. No rewording, no inference. */
+export function agendaBlockOf(note: string | undefined | null, title: string): AgendaBlock | null {
+  let rest = clean(note);
+  if (!rest) return null;
+  const m = rest.match(PRIORITY_RE);
+  const priority = m ? m[1].trim() : '';
+  if (m) rest = rest.slice(m[0].length);
+  const questions = rest.split(/\n+|(?<=[?!.])\s+(?=\S)/).map((q) => q.trim()).filter(Boolean);
+  return { title, priority, questions };
 }
 
 export const agendaTitleFor = (appointmentToday?: boolean) =>
@@ -519,7 +542,13 @@ function domainLines(
 /** Plain-text export of the same model (copy/paste into a portal or an email to oneself). */
 export function summaryToText(doc: DoctorDoc): string {
   const lines = [doc.title, doc.meta, ''];
-  if (doc.agenda) lines.push(doc.agendaTitle.toUpperCase(), doc.agenda, '');
+  // Agenda first (blueprint §3.7a): priority line, then her questions; omitted entirely when empty.
+  if (doc.agendaBlock) {
+    lines.push(doc.agendaBlock.title.toUpperCase());
+    if (doc.agendaBlock.priority) lines.push(doc.agendaBlock.priority);
+    for (const q of doc.agendaBlock.questions) lines.push(`- ${q}`);
+    lines.push('');
+  }
   lines.push(`AREAS (${doc.completeness})`);
   for (const d of doc.domains) {
     lines.push(`${d.heading}: ${d.text}`);
@@ -628,7 +657,8 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     return {
       range: formatRange(start, end, 'always'),
       days: inclusiveDays(start, end),
-      flows: flows.length ? `Flow logged: ${flows.join(', ')}` : '',
+      // Safety flow-wording-rule.md: the word is hers (picked from the Flow list), never our label.
+      flows: flows.length ? `Flow (your choice): ${flows.join(', ')}` : '',
       notes: run.filter((d) => clean(d.note)).map((d) => ({ date: d.date, dateLabel: formatDay(d.date), text: clean(d.note), facts: '' })),
     };
   });
@@ -735,7 +765,8 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   return {
     title: name ? `Symptom summary — ${name}` : 'Symptom summary',
     meta: joinFacts(rangeLabel, options.visitType ?? '', `Made ${formatShortDate(today, 'always')}`),
-    from, to, rangeLabel, agenda, agendaTitle: agendaTitleFor(options.appointmentToday), sections, available, entries,
+    from, to, rangeLabel, agenda, agendaTitle: agendaTitleFor(options.appointmentToday),
+    agendaBlock: agendaBlockOf(agenda, agendaTitleFor(options.appointmentToday)), sections, available, entries,
     domains, completeness: `${recorded} of ${plural(DOMAINS.length, 'area')} recorded`,
     footer: `Patient-reported via Atossa · not clinically verified · ${rangeLabel} · ${plural(entries, 'entry', 'entries')}`,
     // An agenda on its own isn't a summary: nothing to share until a section has data.
@@ -954,7 +985,10 @@ export function summaryToHtml(doc: DoctorDoc): string {
   const T = PAGE_TYPE;
   const pt = (v: readonly [number, number]) => `font-size: ${v[0]}pt; line-height: ${v[1]}pt;`;
   const body = [
-    doc.agenda ? `<section>${`<h2>${esc(doc.agendaTitle)}</h2>`}<p class="serif lead">“${esc(curly(doc.agenda))}”</p></section>` : '',
+    doc.agendaBlock
+      ? `<section><h2>${esc(doc.agendaBlock.title)}</h2>${doc.agendaBlock.priority ? `<p class="serif lead">“${esc(curly(doc.agendaBlock.priority))}”</p>` : ''}${
+        doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`
+      : '',
     ...doc.sections.map(sectionHtml),
   ].join('');
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>

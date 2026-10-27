@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  buildDoctorSummary, DOMAINS, NOT_RECORDED, NOT_INCLUDED, SECTION_META, summaryToText, onsetText,
+  buildDoctorSummary, DOMAINS, NOT_RECORDED, NOT_INCLUDED, SECTION_META, summaryToText, summaryToHtml, onsetText,
 } from '../../lib/records/summary.ts';
 import { MAX_ZONE_ROWS, daysWith, impactDays, nOfN, weeklyDays, zoneDays } from '../../lib/records/counts.ts';
 import { sampleBuckets } from '../../lib/preview/seed.ts';
@@ -131,4 +131,41 @@ test('AC6: treatments newest start first, "still taking", did it help + side eff
   assert.equal(tried.items[0].helped, 'Did it help? A little');
   assert.equal(tried.items[0].sideEffects, 'felt sick');
   assert.equal(tried.items[1].helped, '');
+});
+
+test('agenda block: main priority first, then her questions, rendered FIRST; omitted (not "Not recorded") when empty', () => {
+  const note = 'My main priority is pain. Can we talk about the pain on period days?\nWhat can I do about missing work?';
+  const doc = buildDoctorSummary(sam(), { ...RANGE, agenda: note, appointmentToday: true });
+  assert.deepEqual(doc.agendaBlock, {
+    title: 'What I’d like from today',
+    priority: 'My main priority is pain.',
+    questions: ['Can we talk about the pain on period days?', 'What can I do about missing work?'],
+  });
+  const text = summaryToText(doc);
+  const lines = text.split('\n');
+  // Title, meta, blank, then the agenda before anything else.
+  assert.equal(lines[3], 'WHAT I’D LIKE FROM TODAY');
+  assert.equal(lines[4], 'My main priority is pain.');
+  assert.equal(lines[5], '- Can we talk about the pain on period days?');
+  assert.ok(text.indexOf('My main priority') < text.indexOf('AREAS ('));
+  const html = summaryToHtml(doc);
+  assert.ok(html.indexOf('My main priority') < html.indexOf('Pain'), 'agenda is the first section in the A4');
+  // Her words only, no chip: no priority line, questions kept verbatim.
+  assert.deepEqual(buildDoctorSummary(sam(), { ...RANGE, agenda: '  ask about scans ' }).agendaBlock?.questions, ['ask about scans']);
+  for (const agenda of [undefined, '', '   ']) {
+    const empty = buildDoctorSummary(sam(), { ...RANGE, agenda });
+    assert.equal(empty.agendaBlock, null);
+    const t = summaryToText(empty);
+    assert.doesNotMatch(t, /WHAT I’D LIKE/);
+    assert.ok(t.split('\n')[3].startsWith('AREAS ('), 'no agenda heading, no "Not recorded" placeholder');
+  }
+});
+
+test('flow wording (Safety flow-wording-rule.md): "Flow (your choice): …", never "Flow logged"', () => {
+  const doc = buildDoctorSummary(sam(), RANGE);
+  const periods = doc.sections.find((s) => s.id === 'periods');
+  const flows = periods.runs.map((r) => r.flows).filter(Boolean);
+  assert.ok(flows.length > 0);
+  for (const f of flows) assert.match(f, /^Flow \(your choice\): /);
+  assert.doesNotMatch(summaryToHtml(doc), /Flow logged/);
 });
