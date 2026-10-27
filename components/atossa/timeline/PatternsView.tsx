@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import Svg, { Circle } from 'react-native-svg';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
+import { untaggedLine } from '../../../lib/records/counts';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
 import {
@@ -59,12 +60,14 @@ function Ring({ part, total }: { part: number; total: number }) {
 }
 
 /** One number with a label under it; the row of three sits above the charts. */
-function StatTile({ value, label, onPress, hint, wide }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean }) {
+function StatTile({ value, label, onPress, hint, wide, zeroLabel }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean; zeroLabel?: string }) {
+  // A zero that means "nothing logged" reads as a sentence, not a big 0.
+  const none = value === 0 && !!zeroLabel;
   return (
-    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={`${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
+    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
       <View style={wide ? styles.tileRow : undefined}>
-        <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>
-        <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>
+        {none ? <Txt variant="body" style={{ fontWeight: '600' }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>}
+        {none ? null : <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>}
       </View>
     </PressableCard>
   );
@@ -114,6 +117,8 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
     );
   }
 
+  const inRange = symptom.filter((r) => r.data.date >= m.from && r.data.date <= m.to).map((r) => r.data);
+  const sleepLine = untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
   const maxWeek = Math.max(1, ...m.weeks.map((w) => w.noteDays));
   const rangeText = `${formatShortDate(m.from, 'always')} – ${formatShortDate(m.to, 'always')}`;
 
@@ -127,7 +132,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
         <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
           <StatTile wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
           <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
-          <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
+          <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
         </View>
       </FadeIn>
 
@@ -149,11 +154,18 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
               </View>
             ))}
           </View>
+          {m.weeks.length <= 5 ? (
+            <View style={styles.chartLabels} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              {m.weeks.map((w) => (
+                <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>{formatShortDate(w.from)}</Txt>
+              ))}
+            </View>
+          ) : null}
           {/* First and last day under the bars so 12 bars are not anonymous (spoken text already gives the range). */}
-          <View style={styles.axis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          {m.weeks.length > 5 ? <View style={styles.axis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
-          </View>
+          </View> : null}
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
@@ -226,7 +238,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
         </FadeIn>
       ) : null}
 
-      <EmptyLine title="Sleep and mood" line="Not recorded yet. You can mention them in any note." />
+      <EmptyLine title="Sleep and mood" line={sleepLine} />
 
       {m.latest ? (
         <FadeIn index={4}>
@@ -253,6 +265,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
 }
 
 const styles = StyleSheet.create({
+  chartLabels: { flexDirection: 'row', gap: 4, marginTop: 4 },
   ringRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, marginTop: space.sm },
   bleedChart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 44, marginTop: space.sm },
   tiles: { flexDirection: 'row', gap: space.sm },
