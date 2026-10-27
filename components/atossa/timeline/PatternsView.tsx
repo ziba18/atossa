@@ -5,11 +5,11 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, space } from '../../../constants/atossaUI';
+import { colors, severityColor, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
 import {
-  MIN_NOTE_DAYS, PATTERNS_RANGES, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsRange,
+  MIN_NOTE_DAYS, PATTERNS_RANGES, STRONG_FROM, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsRange,
 } from '../../../lib/records/patterns';
 import { formatShortDate } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -36,6 +36,16 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
         </View>
       ))}
     </View>
+  );
+}
+
+/** One number with a label under it; the row of three sits above the charts. */
+function StatTile({ value, label, onPress, hint }: { value: number; label: string; onPress: () => void; hint: string }) {
+  return (
+    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={`${value} ${label}. ${hint}`} style={styles.tile}>
+      <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>
+      <Txt variant="caption" style={{ marginTop: 2 }}>{label}</Txt>
+    </PressableCard>
   );
 }
 
@@ -90,20 +100,25 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
       <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
 
       <FadeIn index={0}>
+        <View style={styles.tiles}>
+          <StatTile value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
+          <StatTile value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
+          <StatTile value={m.bleedingDays} label="days of bleeding" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
+        </View>
+      </FadeIn>
+
+      <FadeIn index={1}>
         <PressableCard
           onPress={() => onOpen('Symptoms')}
           accessibilityLabel={`${noteDaysText(m)}. ${weeksText(m)} Opens your notes.`}
         >
-          <Txt variant="groupLabel">Days with a note</Txt>
-          <View style={styles.numRow}>
-            <Txt variant="numeral">{m.noteDays}</Txt>
-            <Txt variant="secondary" style={{ flexShrink: 1 }}>of {m.totalDays} days</Txt>
-          </View>
+          <Txt variant="groupLabel">Days with a note, by week</Txt>
+          <Txt variant="secondary" style={{ marginTop: space.xxs }}>{noteDaysText(m)}. Darker weeks had a higher number.</Txt>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
               <View key={w.from} style={styles.weekCol}>
                 {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
-                <View style={[styles.weekBar, { height: Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18)) }]} />
+                <View style={[styles.weekBar, { height: Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18)), backgroundColor: w.peak == null ? colors.ink2 : severityColor(w.peak).bg }]} />
               </View>
             ))}
           </View>
@@ -115,12 +130,11 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
-          <Txt variant="caption" style={{ marginTop: space.xs }}>Days with a note in each week, {formatShortDate(m.from, 'always')} to {formatShortDate(m.to, 'always')}.</Txt>
         </PressableCard>
       </FadeIn>
 
       {m.zones.length ? (
-        <FadeIn index={1}>
+        <FadeIn index={2}>
           <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${plural(z.days, 'day')}`).join('; ')}. Opens your notes.`}>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>Where you felt it</Txt>
             <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} />
@@ -171,6 +185,9 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
 }
 
 const styles = StyleSheet.create({
+  tiles: { flexDirection: 'row', gap: space.sm },
+  tile: { flex: 1, minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
+  tileNum: { fontSize: 32, lineHeight: 38 },
   numRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs, marginTop: space.xxs },
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },
   axis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs, paddingRight: 10 },

@@ -12,8 +12,10 @@ export const PATTERNS_RANGES: { value: PatternsRange; label: string; days: numbe
 ];
 /** Fewer notes than this and the screen waits ("Patterns appear after a week of notes"). */
 export const MIN_NOTE_DAYS = 7;
+/** "Strong" days in the tile: highest number given that day was this or more (out of 10). */
+export const STRONG_FROM = 7;
 
-export interface WeekBucket { from: string; to: string; label: string; noteDays: number }
+export interface WeekBucket { from: string; to: string; label: string; noteDays: number; /** Highest number given that week (null = none given). */ peak: number | null }
 
 export interface PatternsModel {
   from: string;
@@ -29,6 +31,8 @@ export interface PatternsModel {
   days: HeatDay[];
   /** Where, from the body areas she picked. */
   zones: FreqBar[];
+  /** Days whose highest number given was 7 or more (out of 10). */
+  strongDays: number;
   bleedingDays: number;
   spottingDays: number;
   /** What it got in the way of. */
@@ -60,6 +64,7 @@ export function buildPatterns(input: SummaryInput, today: string, range: Pattern
       to: wTo,
       label: String(w + 1),
       noteDays: days.filter((d) => d.logged && d.date >= wFrom && d.date <= wTo).length,
+      peak: days.reduce<number | null>((hi, d) => (d.date >= wFrom && d.date <= wTo && d.value != null && (hi == null || d.value > hi) ? d.value : hi), null),
     });
   }
   const noteDays = days.filter((d) => d.logged).length;
@@ -71,6 +76,7 @@ export function buildPatterns(input: SummaryInput, today: string, range: Pattern
     noteDays,
     weeks,
     days,
+    strongDays: days.filter((d) => d.value != null && d.value >= STRONG_FROM).length,
     zones: bars.filter((b) => b.label !== 'Days with a note'),
     // From the period records themselves, not the strip: the doctor strip can start at the first note.
     ...bleedingCounts(input, from, today),
@@ -84,6 +90,7 @@ export function buildPatterns(input: SummaryInput, today: string, range: Pattern
 export const noteDaysText = (m: PatternsModel) => `Notes on ${m.noteDays} of ${plural(m.totalDays, 'day')}`;
 export const weeksText = (m: PatternsModel) =>
   `By week, days with a note: ${m.weeks.map((w, i) => `week ${i + 1}, ${w.noteDays}`).join('; ')}.`;
+export const strongText = (m: PatternsModel) => `${plural(m.strongDays, 'day')} with a number of ${STRONG_FROM} or more out of 10`;
 export const bleedingText = (m: PatternsModel) =>
   `Bleeding logged on ${plural(m.bleedingDays, 'day')}` + (m.spottingDays ? `; spotting on ${plural(m.spottingDays, 'day')}` : '') + '.';
 
