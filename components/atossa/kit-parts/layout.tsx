@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: heights.toastClearance },
   head: { paddingTop: space.sm, marginBottom: space.xl },
   titleRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs, minHeight: 44 },
-  right: { flexDirection: 'row', alignItems: 'center', gap: space.xs, flexShrink: 0 },
+  right: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: space.xs, flexShrink: 0 },
   footer: { paddingVertical: space.sm, borderTopWidth: 1, borderTopColor: colors.hairline, backgroundColor: colors.canvas },
   // Sunken + ink2 (V31): plum is for actions/selection, so the header's only plum is "+".
   avatar: {
