@@ -23,6 +23,13 @@ import type { ListItem } from './feed';
  * by the capture lane), then the record's server `createdAt`. A note about today that was created
  * today counts too, which also covers the design preview's pinned "today".
  */
+function isRecentDay(date: string): boolean {
+  const d = new Date();
+  const today = toKey(d.getFullYear(), d.getMonth(), d.getDate());
+  d.setDate(d.getDate() - 1);
+  return date === today || date === toKey(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
 function timeOf(rec: { createdAt?: string; data: object }, date: string): string {
   const own = rec.data as { time?: unknown; createdAt?: unknown };
   if (typeof own.time === 'string' && /^\d{1,2}:\d{2}$/.test(own.time)) return own.time.padStart(5, '0');
@@ -113,7 +120,8 @@ export function EntryCard({
       const s = item.rec.data;
       const words = firstLine(s);
       const { tag, tagWord, facts } = symptomCardFacts(s);
-      const urgent = urgentSignpost(textOf(s));
+      // Only for notes from today or yesterday (Safety ruling): a 999 line on an older entry is noise.
+      const urgent = isRecentDay(s.date) ? urgentSignpost(textOf(s)) : null;
       const kindWord = s.source === 'voice' ? 'Voice note' : s.source === 'quick' ? 'Rough day' : 'Note';
       const time = timeOf(item.rec, s.date);
       const top = hideDate ? (time || kindWord) : [formatDay(s.date), time].filter(Boolean).join(' · ');
