@@ -17,7 +17,7 @@ URGENT = (
 )
 
 _CONDITIONS = [
-    r"pcos", r"poly?-?cystic", r"poly?kyst\w*", r"poliquist\w*", r"polikist\w*", r"policyst\w*", r"policist\w*", r"endo(?:metrio\w*)?", r"adenomyosis", r"fibroids?", r"pid",
+    r"pcos", r"pmos", r"poly-?endocrine metabolic ovarian syndrome", r"poly?-?cystic", r"poly?kyst\w*", r"poliquist\w*", r"polikist\w*", r"policyst\w*", r"policist\w*", r"endo(?:metrio\w*)?", r"adenomyosis", r"fibroids?", r"pid",
     r"pelvic inflammatory", r"ovarian cysts?", r"cancer", r"ibs", r"irritable bowel",
     r"pmdd", r"pms", r"(?:interstitial )?cystitis", r"bladder pain syndrome", r"dysmenorrh\w*", r"vulvodynia", r"pelvic congestion", r"hypothyroid\w*", r"insulin resistance", r"diabetes", r"anaemia",
     r"anemia", r"ectopic", r"miscarriage", r"infertility", r"menopause", r"perimenopause",

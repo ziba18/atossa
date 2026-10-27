@@ -51,3 +51,11 @@ def test_bleeding_that_will_not_stop_is_urgent(text):
 ])
 def test_ordinary_bleeding_words_are_not_urgent(text):
     assert not is_emergency(text)
+
+
+def test_new_nhs_name_for_pcos_is_blocked_as_a_condition_name():
+    from app.services.output_guard import check
+
+    for text in ["Many people with PMOS find tracking useful.",
+                 "Many people with polyendocrine metabolic ovarian syndrome find tracking useful."]:
+        assert not check(text, "I want to track my cycle").ok
