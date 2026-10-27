@@ -71,7 +71,13 @@ const previewOffline = () => {
   try { return globalThis.localStorage?.getItem('atossa.preview.offline') === '1'; } catch { return false; }
 };
 const previewBackend: Backend = {
-  list: async () => sampleBuckets(),
+  // Preview only: ?state=error fails the load, ?state=loading never finishes it (for the Today state renders).
+  list: async () => {
+    const q = typeof window !== 'undefined' ? window.location?.search ?? '' : '';
+    if (/[?&]state=loading\b/.test(q)) return new Promise<never>(() => {});
+    if (/[?&]state=error\b/.test(q)) throw new Error('preview error');
+    return sampleBuckets();
+  },
   create: async (kind, data) => {
     // Preview only: reviewers/screenshots set globalThis.__PREVIEW_OFFLINE__ = true to see the failed-save state.
     if (previewOffline()) throw new Error('offline');
