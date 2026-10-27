@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 // Registered before any app import so extensionless TS imports resolve under the plain command.
 await import('./ts-register.mjs');
 const { holisticFrom } = await import('../../components/atossa/capture/holistic.ts');
-const { items } = JSON.parse(readFileSync(new URL('./items.holistic-v3.json', import.meta.url)));
+const { items } = JSON.parse(readFileSync(new URL(process.argv[2] ?? './items.holistic-v3.json', import.meta.url)));
 const FIELDS = ['sexPain', 'fertility'];
 const val = (got, k) => k === 'fertility' ? got.fertility?.wish : got[k];
 const CONDITION = /\b(endometriosis|endo|pcos|adenomyosis|vaginismus|dyspareunia|infertil\w*|subfertil\w*|diagnos\w*)\b/i;

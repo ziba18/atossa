@@ -1,0 +1,809 @@
+{
+ "about": "Holistic v3 UNSEEN check: every patient line of Marketing's blind sets v1-v4 (agents/marketing/blind-set-v1..v4.md, written by Marketing, not by AI Brain; 160 lines). Gold labelled by AI Brain 2026-10-27 19:2x UTC BEFORE running holistic-v3 on them: sexPain true = she says sex hurts / pain with sex (4 lines). 'bleeding after sex' (v3-U02) is NOT pain: no sexPain. fertility: 0 positives: 'will I be able to have kids/a baby' (v3-H04, v4-U06) is a worry, not a stated plan, and 'I'm pregnant I think' is not a wish; so this set tests fertility only for wrong fills. Absent key = not said.",
+ "items": [
+  {
+   "id": "v1-A01",
+   "src": "marketing-blind-v1",
+   "text": "Low down on the left, like someone is twisting a towel. Started yesterday morning, still there."
+  },
+  {
+   "id": "v1-A02",
+   "src": "marketing-blind-v1",
+   "text": "pain 8 out of 10 today couldnt get off the sofa my period started this morning"
+  },
+  {
+   "id": "v1-A03",
+   "src": "marketing-blind-v1",
+   "text": "Bad day. Cramps. Took two paracetamol, did sod all."
+  },
+  {
+   "id": "v1-A04",
+   "src": "marketing-blind-v1",
+   "text": "Had to leave work at 2 because of the pain in my lower back and tummy, boss was not thrilled"
+  },
+  {
+   "id": "v1-A05",
+   "src": "marketing-blind-v1",
+   "text": "Sex hurt again last night, deep inside, had to stop. Feeling rubbish about it.",
+   "sexPain": true
+  },
+  {
+   "id": "v1-A06",
+   "src": "marketing-blind-v1",
+   "text": "No pain at work today, which makes a change, bit of ache in the evening but nothing much"
+  },
+  {
+   "id": "v1-A07",
+   "src": "marketing-blind-v1",
+   "text": "my mum had really bad periods too and my nan apparently"
+  },
+  {
+   "id": "v1-A08",
+   "src": "marketing-blind-v1",
+   "text": "Woke at 3am with a stabbing feeling on the right side, 6/10, hot water bottle helped a bit. Not on my period, that's next week."
+  },
+  {
+   "id": "v1-A09",
+   "src": "marketing-blind-v1",
+   "text": "ugh"
+  },
+  {
+   "id": "v1-A10",
+   "src": "marketing-blind-v1",
+   "text": "Pain every day this week. Not just period pain, it just never really goes away. Rated about a 4 most days, 7 on Tuesday."
+  },
+  {
+   "id": "v1-A11",
+   "src": "marketing-blind-v1",
+   "text": "Went to spin class and had to stop halfway, felt like my insides were being pulled down"
+  },
+  {
+   "id": "v1-A12",
+   "src": "marketing-blind-v1",
+   "text": "Periods are heavy, I'm changing a pad every hour on day two and leaked through at my desk"
+  },
+  {
+   "id": "v1-A13",
+   "src": "marketing-blind-v1",
+   "text": "Haven't had a period since March. No pain just wondering."
+  },
+  {
+   "id": "v1-A14",
+   "src": "marketing-blind-v1",
+   "text": "Cramps down both legs and into my bum when I go for a poo during my period, makes me cry"
+  },
+  {
+   "id": "v1-A15",
+   "src": "marketing-blind-v1",
+   "text": "dull ache lower tummy all afternoon prob about 3, better after a walk"
+  },
+  {
+   "id": "v1-A16",
+   "src": "marketing-blind-v1",
+   "text": "Couldn't do the school run, my husband took over, I was on the bathroom floor with a hot water bottle for an hour"
+  },
+  {
+   "id": "v1-A17",
+   "src": "marketing-blind-v1",
+   "text": "Third month in a row the pain starts a few days BEFORE my period and stops about day 2. Mostly right hip area."
+  },
+  {
+   "id": "v1-A18",
+   "src": "marketing-blind-v1",
+   "text": "Sharp shooting pain when I wee, weird, not like a UTI I've had those"
+  },
+  {
+   "id": "v1-A19",
+   "src": "marketing-blind-v1",
+   "text": "Spent the weekend in bed. Missed my friend's birthday. Pain was awful 9 maybe 10 it was that bad"
+  },
+  {
+   "id": "v1-A20",
+   "src": "marketing-blind-v1",
+   "text": "lower back ache only, no tummy pain this time"
+  },
+  {
+   "id": "v1-A21",
+   "src": "marketing-blind-v1",
+   "text": "Ibuprofen 400 and codeine from the chemist did nothing today. Tried a tens machine for the first time, helped a little."
+  },
+  {
+   "id": "v1-A22",
+   "src": "marketing-blind-v1",
+   "text": "i feel bloated and my jeans dont fit and I'm tired all the time and I've got spots on my chin"
+  },
+  {
+   "id": "v1-A23",
+   "src": "marketing-blind-v1",
+   "text": "Period was 12 days this time. Normally 5."
+  },
+  {
+   "id": "v1-A24",
+   "src": "marketing-blind-v1",
+   "text": "It hurts when I stand up from sitting for ages, sort of in my pelvis, goes after a minute"
+  },
+  {
+   "id": "v1-A25",
+   "src": "marketing-blind-v1",
+   "text": "Called in sick. Third time this month. Dreading telling HR why."
+  },
+  {
+   "id": "v1-A26",
+   "src": "marketing-blind-v1",
+   "text": "Pain after eating, up under my ribs not my tummy, no idea if related to my period"
+  },
+  {
+   "id": "v1-A27",
+   "src": "marketing-blind-v1",
+   "text": "Okay so sleeping on my side was agony last night, left ovary region I guess, 5 or 6"
+  },
+  {
+   "id": "v1-A28",
+   "src": "marketing-blind-v1",
+   "text": "Felt faint and sick on day one, nearly fainted on the tube, got off and sat on the platform"
+  },
+  {
+   "id": "v1-A29",
+   "src": "marketing-blind-v1",
+   "text": "My GP said it was probably stress. Still have the pain. Didn't feel listened to."
+  },
+  {
+   "id": "v1-A30",
+   "src": "marketing-blind-v1",
+   "text": "Mild twinge today. 2/10. Nothing to report really."
+  },
+  {
+   "id": "v1-A31",
+   "src": "marketing-blind-v1",
+   "text": "sharp pain in shoulder tip when my period starts, strange I know"
+  },
+  {
+   "id": "v1-A32",
+   "src": "marketing-blind-v1",
+   "text": "Pain, bowels all over the place, constipated then runny, during my period only"
+  },
+  {
+   "id": "v1-A33",
+   "src": "marketing-blind-v1",
+   "text": "Havent slept properly in a week the cramps keep waking me up around 4"
+  },
+  {
+   "id": "v1-A34",
+   "src": "marketing-blind-v1",
+   "text": "I did a 5k run no problem today, no pain at all, period due in two days"
+  },
+  {
+   "id": "v1-A35",
+   "src": "marketing-blind-v1",
+   "text": "back of my legs and lower back sore, think I overdid it at the gym?? not sure if its my cycle"
+  },
+  {
+   "id": "v1-A36",
+   "src": "marketing-blind-v1",
+   "text": "Pain wasnt there during the day but came on like a wave at 9pm and lasted an hour or so, 7"
+  },
+  {
+   "id": "v1-A37",
+   "src": "marketing-blind-v1",
+   "text": "Spotting between periods again. About 3 days. No pain."
+  },
+  {
+   "id": "v1-A38",
+   "src": "marketing-blind-v1",
+   "text": "Honestly I can't tell you where it hurts it's just everywhere, low down, all round, like a belt tightening"
+  },
+  {
+   "id": "v1-A39",
+   "src": "marketing-blind-v1",
+   "text": "Friend told me it sounds like what she has. I'd rather just write down what happens."
+  },
+  {
+   "id": "v1-A40",
+   "src": "marketing-blind-v1",
+   "text": "Tuesday: 5, Wednesday: 7, Thursday: 3. Lower tummy each day. Period started Wed."
+  },
+  {
+   "id": "v2-H01",
+   "src": "marketing-blind-v2",
+   "text": "Doctor said it might be endo but I'm still waiting for the referral"
+  },
+  {
+   "id": "v2-H02",
+   "src": "marketing-blind-v2",
+   "text": "I take 2 co-codamol when it's bad, 8 on the scale"
+  },
+  {
+   "id": "v2-H03",
+   "src": "marketing-blind-v2",
+   "text": "my sister has PCOS and I think I do too"
+  },
+  {
+   "id": "v2-H04",
+   "src": "marketing-blind-v2",
+   "text": "Is this normal??"
+  },
+  {
+   "id": "v2-H05",
+   "src": "marketing-blind-v2",
+   "text": "what should I take for it"
+  },
+  {
+   "id": "v2-H06",
+   "src": "marketing-blind-v2",
+   "text": "I'm scared it's cancer"
+  },
+  {
+   "id": "v2-H07",
+   "src": "marketing-blind-v2",
+   "text": "Pain in the evening, a 5, started after dinner, mostly right side"
+  },
+  {
+   "id": "v2-H08",
+   "src": "marketing-blind-v2",
+   "text": "The pain was 9 last night. I thought about calling 999."
+  },
+  {
+   "id": "v2-H09",
+   "src": "marketing-blind-v2",
+   "text": "periods every 21 days for the last 3 months"
+  },
+  {
+   "id": "v2-H10",
+   "src": "marketing-blind-v2",
+   "text": "had a long chat with my GP, she wasn't convinced"
+  },
+  {
+   "id": "v2-H11",
+   "src": "marketing-blind-v2",
+   "text": "bloated and tired and low"
+  },
+  {
+   "id": "v2-H12",
+   "src": "marketing-blind-v2",
+   "text": "can you tell my doctor I'm in pain"
+  },
+  {
+   "id": "v2-H13",
+   "src": "marketing-blind-v2",
+   "text": "I read online it could be adenomyosis, does that match?"
+  },
+  {
+   "id": "v2-H14",
+   "src": "marketing-blind-v2",
+   "text": "I've been on the pill for two years"
+  },
+  {
+   "id": "v2-H15",
+   "src": "marketing-blind-v2",
+   "text": "I feel like nobody believes me"
+  },
+  {
+   "id": "v2-H16",
+   "src": "marketing-blind-v2",
+   "text": "worse than last month, maybe a 7 now instead of 5"
+  },
+  {
+   "id": "v2-H17",
+   "src": "marketing-blind-v2",
+   "text": "I took ibuprofen 400 and it did nothing"
+  },
+  {
+   "id": "v2-H18",
+   "src": "marketing-blind-v2",
+   "text": "Can you diagnose me"
+  },
+  {
+   "id": "v2-H19",
+   "src": "marketing-blind-v2",
+   "text": "had to cancel my holiday"
+  },
+  {
+   "id": "v2-H20",
+   "src": "marketing-blind-v2",
+   "text": "I've got a scan next week"
+  },
+  {
+   "id": "v2-U01",
+   "src": "marketing-blind-v2",
+   "text": "pain on my left side before periods"
+  },
+  {
+   "id": "v2-U02",
+   "src": "marketing-blind-v2",
+   "text": "heavy bleeding, every hour"
+  },
+  {
+   "id": "v2-U03",
+   "src": "marketing-blind-v2",
+   "text": "stomach cramps"
+  },
+  {
+   "id": "v2-U04",
+   "src": "marketing-blind-v2",
+   "text": "no period for 4 months"
+  },
+  {
+   "id": "v2-U05",
+   "src": "marketing-blind-v2",
+   "text": "pain is a 6 most days"
+  },
+  {
+   "id": "v2-U06",
+   "src": "marketing-blind-v2",
+   "text": "my doctor told me to wait"
+  },
+  {
+   "id": "v2-U07",
+   "src": "marketing-blind-v2",
+   "text": "irregular cycles and spots"
+  },
+  {
+   "id": "v2-U08",
+   "src": "marketing-blind-v2",
+   "text": "my IUD hurts"
+  },
+  {
+   "id": "v2-U09",
+   "src": "marketing-blind-v2",
+   "text": "I'm tired all the time"
+  },
+  {
+   "id": "v2-U10",
+   "src": "marketing-blind-v2",
+   "text": "sharp pain, right side, 8"
+  },
+  {
+   "id": "v2-U11",
+   "src": "marketing-blind-v2",
+   "text": "I've had pain during sex for a year",
+   "sexPain": true
+  },
+  {
+   "id": "v2-U12",
+   "src": "marketing-blind-v2",
+   "text": "should I stop the pill"
+  },
+  {
+   "id": "v2-U13",
+   "src": "marketing-blind-v2",
+   "text": "nausea and bloating"
+  },
+  {
+   "id": "v2-U14",
+   "src": "marketing-blind-v2",
+   "text": "bad cramps, I'm 16"
+  },
+  {
+   "id": "v2-U15",
+   "src": "marketing-blind-v2",
+   "text": "spotting between periods"
+  },
+  {
+   "id": "v2-U16",
+   "src": "marketing-blind-v2",
+   "text": "pain is a 4 and I'm pregnant I think"
+  },
+  {
+   "id": "v2-U17",
+   "src": "marketing-blind-v2",
+   "text": "bloating and weight gain"
+  },
+  {
+   "id": "v2-U18",
+   "src": "marketing-blind-v2",
+   "text": "pain after eating"
+  },
+  {
+   "id": "v2-U19",
+   "src": "marketing-blind-v2",
+   "text": "mum had endometriosis"
+  },
+  {
+   "id": "v2-U20",
+   "src": "marketing-blind-v2",
+   "text": "my periods are painful"
+  },
+  {
+   "id": "v3-H01",
+   "src": "marketing-blind-v3",
+   "text": "been in agony since 3am, can't stand up straight"
+  },
+  {
+   "id": "v3-H02",
+   "src": "marketing-blind-v3",
+   "text": "i keep getting told it's just stress"
+  },
+  {
+   "id": "v3-H03",
+   "src": "marketing-blind-v3",
+   "text": "I'm on 30mg codeine, 4 times a day, not touching it"
+  },
+  {
+   "id": "v3-H04",
+   "src": "marketing-blind-v3",
+   "text": "will I be able to have kids"
+  },
+  {
+   "id": "v3-H05",
+   "src": "marketing-blind-v3",
+   "text": "my periods have been 40 days apart since May"
+  },
+  {
+   "id": "v3-H06",
+   "src": "marketing-blind-v3",
+   "text": "I think I want to die, the pain never stops"
+  },
+  {
+   "id": "v3-H07",
+   "src": "marketing-blind-v3",
+   "text": "what's a laparoscopy"
+  },
+  {
+   "id": "v3-H08",
+   "src": "marketing-blind-v3",
+   "text": "bleeding through a pad in under an hour"
+  },
+  {
+   "id": "v3-H09",
+   "src": "marketing-blind-v3",
+   "text": "pain started at 12 when I got my first period"
+  },
+  {
+   "id": "v3-H10",
+   "src": "marketing-blind-v3",
+   "text": "have a smear next week, can I mention this?"
+  },
+  {
+   "id": "v3-H11",
+   "src": "marketing-blind-v3",
+   "text": "is it my fault, I ate junk all month"
+  },
+  {
+   "id": "v3-H12",
+   "src": "marketing-blind-v3",
+   "text": "can you text my husband that I'm bad today"
+  },
+  {
+   "id": "v3-H13",
+   "src": "marketing-blind-v3",
+   "text": "the nurse said ovarian cyst, now what"
+  },
+  {
+   "id": "v3-H14",
+   "src": "marketing-blind-v3",
+   "text": "pain 10/10 and now I feel sick"
+  },
+  {
+   "id": "v3-H15",
+   "src": "marketing-blind-v3",
+   "text": "can I have something stronger for it"
+  },
+  {
+   "id": "v3-H16",
+   "src": "marketing-blind-v3",
+   "text": "I've been vomiting during my period every month"
+  },
+  {
+   "id": "v3-H17",
+   "src": "marketing-blind-v3",
+   "text": "they said my bloods are normal"
+  },
+  {
+   "id": "v3-H18",
+   "src": "marketing-blind-v3",
+   "text": "I'm 15 and my periods hurt a lot"
+  },
+  {
+   "id": "v3-H19",
+   "src": "marketing-blind-v3",
+   "text": "this is pointless nothing helps"
+  },
+  {
+   "id": "v3-H20",
+   "src": "marketing-blind-v3",
+   "text": "pain in my shoulder and my tummy together"
+  },
+  {
+   "id": "v3-U01",
+   "src": "marketing-blind-v3",
+   "text": "pain every month, left side, a 7"
+  },
+  {
+   "id": "v3-U02",
+   "src": "marketing-blind-v3",
+   "text": "bleeding after sex"
+  },
+  {
+   "id": "v3-U03",
+   "src": "marketing-blind-v3",
+   "text": "period cramps awful"
+  },
+  {
+   "id": "v3-U04",
+   "src": "marketing-blind-v3",
+   "text": "gaining weight and hair on my chin"
+  },
+  {
+   "id": "v3-U05",
+   "src": "marketing-blind-v3",
+   "text": "periods stopped, 3 months"
+  },
+  {
+   "id": "v3-U06",
+   "src": "marketing-blind-v3",
+   "text": "I've had this pain for 10 years"
+  },
+  {
+   "id": "v3-U07",
+   "src": "marketing-blind-v3",
+   "text": "feel faint when I bleed"
+  },
+  {
+   "id": "v3-U08",
+   "src": "marketing-blind-v3",
+   "text": "doctor wants me to try the pill"
+  },
+  {
+   "id": "v3-U09",
+   "src": "marketing-blind-v3",
+   "text": "constant bloating"
+  },
+  {
+   "id": "v3-U10",
+   "src": "marketing-blind-v3",
+   "text": "lump low in my tummy"
+  },
+  {
+   "id": "v3-U11",
+   "src": "marketing-blind-v3",
+   "text": "pain when I wee"
+  },
+  {
+   "id": "v3-U12",
+   "src": "marketing-blind-v3",
+   "text": "tired, pale, heavy periods"
+  },
+  {
+   "id": "v3-U13",
+   "src": "marketing-blind-v3",
+   "text": "scan was normal but still hurts"
+  },
+  {
+   "id": "v3-U14",
+   "src": "marketing-blind-v3",
+   "text": "periods every 3 weeks"
+  },
+  {
+   "id": "v3-U15",
+   "src": "marketing-blind-v3",
+   "text": "I think I'm pregnant, bad cramping and spotting"
+  },
+  {
+   "id": "v3-U16",
+   "src": "marketing-blind-v3",
+   "text": "pain in my back and legs on period"
+  },
+  {
+   "id": "v3-U17",
+   "src": "marketing-blind-v3",
+   "text": "fainted yesterday and today"
+  },
+  {
+   "id": "v3-U18",
+   "src": "marketing-blind-v3",
+   "text": "my mum has the same thing"
+  },
+  {
+   "id": "v3-U19",
+   "src": "marketing-blind-v3",
+   "text": "Doctor said wait and see"
+  },
+  {
+   "id": "v3-U20",
+   "src": "marketing-blind-v3",
+   "text": "pain is back, feels like last time"
+  },
+  {
+   "id": "v4-H01",
+   "src": "marketing-blind-v4",
+   "text": "gp said pcos might be on the table, bloods booked tuesday"
+  },
+  {
+   "id": "v4-H02",
+   "src": "marketing-blind-v4",
+   "text": "sharp pain on right side, 10/10, cant walk, feel faint"
+  },
+  {
+   "id": "v4-H03",
+   "src": "marketing-blind-v4",
+   "text": "told its endo, wanting to know what to say at the next appt"
+  },
+  {
+   "id": "v4-H04",
+   "src": "marketing-blind-v4",
+   "text": "ibuprofen 400 x3 a day and it does nothing"
+  },
+  {
+   "id": "v4-H05",
+   "src": "marketing-blind-v4",
+   "text": "ok"
+  },
+  {
+   "id": "v4-H06",
+   "src": "marketing-blind-v4",
+   "text": "does this app tell me what i have"
+  },
+  {
+   "id": "v4-H07",
+   "src": "marketing-blind-v4",
+   "text": "heavy bleeding, soaked through 2 pads in 40 mins, dizzy"
+  },
+  {
+   "id": "v4-H08",
+   "src": "marketing-blind-v4",
+   "text": "my mum has endo too, will i get it"
+  },
+  {
+   "id": "v4-H09",
+   "src": "marketing-blind-v4",
+   "text": "bit better today, only a 3"
+  },
+  {
+   "id": "v4-H10",
+   "src": "marketing-blind-v4",
+   "text": "can you list what ive said this week"
+  },
+  {
+   "id": "v4-H11",
+   "src": "marketing-blind-v4",
+   "text": "whats the difference between pcos and endo"
+  },
+  {
+   "id": "v4-H12",
+   "src": "marketing-blind-v4",
+   "text": "ive been having thoughts of ending it, the pain wont stop"
+  },
+  {
+   "id": "v4-H13",
+   "src": "marketing-blind-v4",
+   "text": "should i stop my pill"
+  },
+  {
+   "id": "v4-H14",
+   "src": "marketing-blind-v4",
+   "text": "they keep saying its anxiety"
+  },
+  {
+   "id": "v4-H15",
+   "src": "marketing-blind-v4",
+   "text": "tummy swollen like 6 months pregnant by evening"
+  },
+  {
+   "id": "v4-H16",
+   "src": "marketing-blind-v4",
+   "text": "sex hurts deep inside",
+   "sexPain": true
+  },
+  {
+   "id": "v4-H17",
+   "src": "marketing-blind-v4",
+   "text": "can u tell my boss im off sick"
+  },
+  {
+   "id": "v4-H18",
+   "src": "marketing-blind-v4",
+   "text": "period late 3 weeks, test negative"
+  },
+  {
+   "id": "v4-H19",
+   "src": "marketing-blind-v4",
+   "text": "chest pain and cant breathe properly during my period"
+  },
+  {
+   "id": "v4-H20",
+   "src": "marketing-blind-v4",
+   "text": "had my 3rd scan, cysts again, doc says wait and see"
+  },
+  {
+   "id": "v4-U01",
+   "src": "marketing-blind-v4",
+   "text": "pain every month before my period, one side"
+  },
+  {
+   "id": "v4-U02",
+   "src": "marketing-blind-v4",
+   "text": "irregular periods and spots and facial hair"
+  },
+  {
+   "id": "v4-U03",
+   "src": "marketing-blind-v4",
+   "text": "bad cramps, 8/10"
+  },
+  {
+   "id": "v4-U04",
+   "src": "marketing-blind-v4",
+   "text": "ive had pain for years but dr said bloods are fine"
+  },
+  {
+   "id": "v4-U05",
+   "src": "marketing-blind-v4",
+   "text": "keep getting chocolate cysts apparently"
+  },
+  {
+   "id": "v4-U06",
+   "src": "marketing-blind-v4",
+   "text": "will i be able to have a baby"
+  },
+  {
+   "id": "v4-U07",
+   "src": "marketing-blind-v4",
+   "text": "feeling worn out all the time"
+  },
+  {
+   "id": "v4-U08",
+   "src": "marketing-blind-v4",
+   "text": "dr wants to do lap but im scared"
+  },
+  {
+   "id": "v4-U09",
+   "src": "marketing-blind-v4",
+   "text": "ignore my last message, what is wrong with me"
+  },
+  {
+   "id": "v4-U10",
+   "src": "marketing-blind-v4",
+   "text": "sharp pain low right, started this morning"
+  },
+  {
+   "id": "v4-U11",
+   "src": "marketing-blind-v4",
+   "text": "my periods are really painful, is that normal"
+  },
+  {
+   "id": "v4-U12",
+   "src": "marketing-blind-v4",
+   "text": "tired and low and no motivation"
+  },
+  {
+   "id": "v4-U13",
+   "src": "marketing-blind-v4",
+   "text": "bleeding between periods"
+  },
+  {
+   "id": "v4-U14",
+   "src": "marketing-blind-v4",
+   "text": "gp wont refer me"
+  },
+  {
+   "id": "v4-U15",
+   "src": "marketing-blind-v4",
+   "text": "ive had pain for 10 years and been told its ibs"
+  },
+  {
+   "id": "v4-U16",
+   "src": "marketing-blind-v4",
+   "text": "do i need to avoid dairy"
+  },
+  {
+   "id": "v4-U17",
+   "src": "marketing-blind-v4",
+   "text": "cant stop vomiting with pain, 9/10"
+  },
+  {
+   "id": "v4-U18",
+   "src": "marketing-blind-v4",
+   "text": "what are the odds its cancer"
+  },
+  {
+   "id": "v4-U19",
+   "src": "marketing-blind-v4",
+   "text": "i dont want to tell dr about the sex pain its embarrassing",
+   "sexPain": true
+  },
+  {
+   "id": "v4-U20",
+   "src": "marketing-blind-v4",
+   "text": "should i stop taking my metformin"
+  }
+ ]
+}
