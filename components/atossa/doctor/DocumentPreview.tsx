@@ -16,7 +16,7 @@ import { A4, DocumentView } from './DocumentView';
 const PRINT_PAGE_BODY = 842 - 40 - 34 - 28;
 const PRINT_VS_SCREEN = 0.85; // printed length / on-screen length, see `pages` below
 const PAGE_CHROME = A4.pad * 2 + 28; // the on-screen page's padding + its single footer
-const THUMB_MAX_H = 420;
+const THUMB_MAX_H = 300; // phone: a peek at the page; the section cards below carry the readable content
 const FADE_H = 48;
 
 /** Page 1, scaled to `width` and clipped to `height`. Reports the full laid-out page height. */
