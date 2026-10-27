@@ -149,3 +149,14 @@ def test_midlife_plain_words_v18():
     for t in ("My dad had a heart attack years ago", "I get a heavy feeling in my legs after running",
               "my stomach is rigid with tension from work stress", "I had a fever last week and felt confused by the forms"):
         assert not is_emergency(t), t
+
+
+SET19 = json.loads((Path(__file__).parent / "emergency_set_v19_blind_young.json").read_text())
+
+
+def test_young_people_plain_words_v19():
+    # first contact: 4/20 missed and 2/20 everyday notes raised; fixed afterwards (not blind any more)
+    assert [t for t in SET19["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET19["harmless"] if is_emergency(t)] == []
+    assert not is_emergency("I haven't been cutting my hair and it's a mess")
+    assert not is_emergency("kms is short for kilometres, I ran 5")
