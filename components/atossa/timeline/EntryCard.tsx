@@ -9,7 +9,7 @@ import type { IconName } from '../../ui/Icon';
 import { colors, radii, space } from '../../../constants/atossaUI';
 import { urgentSignpost } from '../../../lib/urgentWording';
 import { textOf } from '../UrgentNote';
-import { toKey, todayKey } from '../../../lib/records/dates';
+import { addDays, toKey, todayKey } from '../../../lib/records/dates';
 import {
   BLEEDING_STATUS_LABEL, bleedingFacts, bleedingStatus, firstLine, formatDay, formatRange, formatRecordDate,
   formatRecordDateInline, formatWhere, labelEscape, typicalOf, worstOf,
@@ -24,10 +24,8 @@ import type { ListItem } from './feed';
  * today counts too, which also covers the design preview's pinned "today".
  */
 function isRecentDay(date: string): boolean {
-  const d = new Date();
-  const today = toKey(d.getFullYear(), d.getMonth(), d.getDate());
-  d.setDate(d.getDate() - 1);
-  return date === today || date === toKey(d.getFullYear(), d.getMonth(), d.getDate());
+  const today = todayKey();
+  return date === today || date === addDays(today, -1);
 }
 
 function timeOf(rec: { createdAt?: string; data: object }, date: string): string {
