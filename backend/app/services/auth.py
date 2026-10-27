@@ -86,7 +86,15 @@ def get_or_create_social_user(db: Session, email: str, display_name: str | None 
             user = db.query(User).filter(User.id == link.user_id).first()
             if user:
                 return user
-    user = get_user_by_email(db, email) or create_user(db, email, password=None, display_name=display_name)
+    user = get_user_by_email(db, email)
+    if user is None:
+        user = create_user(db, email, password=None, display_name=display_name)
+    elif user.hashed_password and not db.query(SocialIdentity).filter_by(user_id=user.id).first():
+        # A password account whose email was never confirmed: the provider has now confirmed the
+        # email, so whoever typed the password at sign-up loses access (password cleared, sessions ended).
+        user.hashed_password = None
+        user.token_version = (user.token_version or 0) + 1
+        db.commit()
     if provider and subject:
         db.add(SocialIdentity(user_id=user.id, provider=provider, subject=subject))
         db.commit()
