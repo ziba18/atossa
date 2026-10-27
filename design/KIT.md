@@ -74,7 +74,8 @@ No raw hex, font names or magic numbers in screens.
 | `SectionTitle` | `title`, `right?` | title 24/30, 12 below |
 | `Card` | `tone?` (`default`/`sunken`/`selected`/`error`/`hero`), `edge?: 'clay'`, `onLayout?` | White, hairline, r20, p20 |
 | `PressableCard` | `onPress`, `chevron?`, `edge?`, `accessibilityLabel` | Card + chevron-right ink3 20, pressed = canvas |
-| `HeroNumber` | `big?`, `line`, `sub`, `onPress?` | Today's one big number: 48 pt numeral + headline + secondary; a PressableCard when `onPress` is given |
+| `HeroNumber` | `big?`, `line`, `sub`, `onPress?` | Today's one big number: 48 pt numeral in a plum-tint rounded tile (min 76 pt, not aria-hidden: the numeral is the content) + headline + secondary; a PressableCard when `onPress` is given. States follow app-blueprint §3.3: on the appointment day the numeral is the notes ready (0 included), 1–60 days it is days, beyond that weeks |
+| `MicButton` `invite` | `invite?` (72 size) | Idle ring breathes out 3 × 1.2 s on arrival then rests; never under Reduce Motion; recording keeps its own loop |
 | `QuickTile` | `label`, `icon`, `onPress` | Icon in a plum-tint circle + label; two across (flexBasis 48%); Today quick topics |
 | `Button` | `label`, `onPress`, `variant` (`primary` 56 / `secondary` 48 / `text` 44 / `destructive` 44 red text / `destructiveOutline` 48 error outline — ConfirmCard's confirm), `icon?`, `disabled?`, `loading?`, `align?: 'start'`, `small?` (text: 15/500 label) | Disabled primary = sunken + ink2. One primary per screen/sheet. Never stack two full-width secondaries under a primary: use one row of two `text` buttons (V13) |
 | `Chip` | `label`, `selected`, `onPress`, `ghost?` | 44 pill; selected plumTint + 2px plum + plum text (weight stays 500, no reflow). Ghost = same outline, ink2 text. Emits aria-checked/aria-pressed on web |
