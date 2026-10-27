@@ -46,6 +46,7 @@ export default function TodayScreen() {
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
       {loadedFor ? <View style={{ marginBottom: space.md }}><HeroNumberCard /></View>
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
+      {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
       <HeroCard />
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
@@ -55,7 +56,6 @@ export default function TodayScreen() {
       ) : (
       <View style={{ marginTop: space.xl, gap: space.xl }}>
         {latest ? <LatestNoteCard note={latest} /> : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
-        {symptoms.length > 0 ? <RecentStrip symptoms={symptoms} flush /> : null}
         {loadedFor ? <AppointmentCard inviteOnly /> : null}
         <RoughDayCard />
       </View>
