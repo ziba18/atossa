@@ -8,7 +8,7 @@ import * as P from './urgentPatterns.generated';
 const QUOTES: Record<string, string> = { '\u2018': "'", '\u2019': "'", '\u02bc': "'", '\u2032': "'" };
 
 export const URGENT_SIGNPOST =
-  'If you have severe sudden pain, very heavy bleeding or feel faint, call 999 or go to A&E, or call NHS 111.';
+  'If you think this is an emergency, for example chest pain, trouble breathing, a face drooping or slurred speech, very heavy bleeding, fainting, or severe sudden pain, call 999 or go to A&E. If you are not sure, call NHS 111.';
 export const SELF_HARM_SIGNPOST =
   'If you might act on these thoughts, call 999 now. You can also call Samaritans free, any time, on 116 123, or call NHS 111.';
 
