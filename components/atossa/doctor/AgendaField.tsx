@@ -6,7 +6,13 @@ import { TextInput, View } from 'react-native';
 import { colors, heights, radii, space, type as typeScale } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
 import { haptics } from '../../../lib/haptics';
-import { IconButton, InlineError, Txt } from '../kit';
+import { ChipGroup, IconButton, InlineError, Txt } from '../kit';
+
+// Quick starts for the one thing she wants the GP to take away. Tapping one writes a plain sentence into the
+// field (still hers to edit); it isn't a separate record. Symptom areas only: no treatments, no conditions.
+const PRIORITIES = ['Pain', 'Bleeding', 'Tiredness', 'Mood', 'Bowel or bladder'] as const;
+const PRIORITY_PREFIX = 'My main priority is ';
+const prioritySentence = (p: string) => `${PRIORITY_PREFIX}${p.toLowerCase()}.`;
 
 export function AgendaField({
   value, onChange, onBlur, title,
@@ -32,8 +38,22 @@ export function AgendaField({
     <View>
       <Txt variant="headline" nativeID="agendaLabel">{title}</Txt>
       <Txt variant="secondary" style={{ marginTop: space.xxs }}>
-        What’s the one thing you want your GP to take away?
+        What’s the one thing you want your GP to take away? Pick a main priority or write your own.
       </Txt>
+      <View style={{ marginTop: space.sm }}>
+        <ChipGroup
+          mode="single"
+          options={[...PRIORITIES]}
+          value={PRIORITIES.find((p) => value.startsWith(prioritySentence(p))) ?? null}
+          allowDeselect
+          accessibilityLabel="Main priority"
+          onChange={(v) => {
+            const rest = PRIORITIES.reduce((t, p) => (t.startsWith(prioritySentence(p)) ? t.slice(prioritySentence(p).length).trim() : t), value);
+            onChange(v ? [prioritySentence(v), rest].filter(Boolean).join(' ') : rest);
+            onBlur();
+          }}
+        />
+      </View>
       <View
         style={{
           marginTop: space.sm, flexDirection: 'row', alignItems: 'flex-start', gap: space.xs,
