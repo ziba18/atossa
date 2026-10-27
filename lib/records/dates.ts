@@ -23,7 +23,11 @@ export function parseKey(key: string): { y: number; m0: number; d: number } {
  * because design-preview mode pins today to 2026-09-24 to match the seeded persona.
  */
 export function todayKey(): string {
-  if (IS_PREVIEW) return PREVIEW_TODAY;
+  if (IS_PREVIEW) {
+    // Design preview only: /doctor?today=2026-09-18 shows the days-before-the-appointment states.
+    const q = typeof window !== 'undefined' ? /[?&]today=(\d{4}-\d{2}-\d{2})\b/.exec(window.location?.search ?? '') : null;
+    return q ? q[1] : PREVIEW_TODAY;
+  }
   const n = new Date();
   return toKey(n.getFullYear(), n.getMonth(), n.getDate());
 }
