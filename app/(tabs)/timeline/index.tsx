@@ -1,7 +1,7 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, type ScrollViewInstance } from 'react-native';
+import { View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
@@ -154,6 +154,8 @@ function ListView({
   setFilter: (f: (typeof TIMELINE_FILTERS)[number]) => void;
   onOpen: (item: ListItem) => void;
 }) {
+  // Short phones (320x568): Today already shows the strip; here the first note card must be on screen.
+  const short = useWindowDimensions().height < 640;
   const options = useMemo(
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
     [feed],
@@ -206,7 +208,7 @@ function ListView({
         />
       </View>
       {/* The strip counts symptom notes, so it only shows where those are on the list. */}
-      {filter === 'All' || filter === 'Symptoms' ? (
+      {(filter === 'All' || filter === 'Symptoms') && !short ? (
         <RecentStrip symptoms={symptoms} />
       ) : null}
       {groups.length === 0 && filter !== 'All' ? (
