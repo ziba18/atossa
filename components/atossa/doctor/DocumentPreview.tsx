@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import type { DoctorDoc } from '../../../lib/records/summary';
 import { Icon } from '../../ui/Icon';
-import { Button, Sheet, Txt } from '../kit';
+import { Button, Quote, Sheet, Txt } from '../kit';
 import { A4, DocumentView } from './DocumentView';
 
 // Printable height per A4 page: 842 pt minus the PDF's 40/34 pt margins and the repeated footer.
@@ -51,6 +51,8 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
   const pages = Math.max(1, Math.ceil((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY - 0.15));
   const inner = Math.max(0, width - 2); // inside the 1 px border
   const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : THUMB_MAX_H);
+  const wordsSec = doc.sections.find((x) => x.id === 'words');
+  const words = wordsSec && wordsSec.id === 'words' ? wordsSec.quotes[0] : undefined;
   const readerWidth = Math.min(screenW, layout.maxContentWidth) - layout.gutter * 2; // the Sheet's content gutter
 
   return (
@@ -71,6 +73,12 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
       <Txt variant="secondary" style={{ marginTop: space.sm, textAlign: 'center' }}>
         {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
       </Txt>
+      {words ? (
+        <View style={{ marginTop: space.md, gap: space.xxs }}>
+          <Txt variant="caption">{`In your words · ${words.dateLabel}`}</Txt>
+          <Quote numberOfLines={3}>{words.text}</Quote>
+        </View>
+      ) : null}
       <Button label="Read it at full size" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" />
       {doc.sections.length ? (
         <View style={{ marginTop: space.md, gap: space.xs }}>
