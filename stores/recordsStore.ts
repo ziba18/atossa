@@ -64,15 +64,20 @@ const serverBackend: Backend = {
 let localSeq = 0;
 const previewBackend: Backend = {
   list: async () => sampleBuckets(),
-  create: async (kind, data) => ({
-    id: `local-${Date.now()}-${++localSeq}`,
-    kind,
-    data: data as DataMap[RecordKind],
-    created_at: new Date().toISOString(),
-  }),
+  create: async (kind, data) => {
+    // Preview only: reviewers/screenshots set globalThis.__PREVIEW_OFFLINE__ = true to see the failed-save state.
+    if ((globalThis as { __PREVIEW_OFFLINE__?: boolean }).__PREVIEW_OFFLINE__) throw new Error('offline');
+    return previewCreate(kind, data);
+  },
   update: async () => {},
   remove: async () => {},
 };
+const previewCreate = (kind: RecordKind, data: unknown): ServerRecord => ({
+  id: `local-${Date.now()}-${++localSeq}`,
+  kind,
+  data: data as DataMap[RecordKind],
+  created_at: new Date().toISOString(),
+});
 
 const backend = IS_PREVIEW ? previewBackend : serverBackend;
 

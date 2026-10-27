@@ -217,7 +217,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       const n = noteCount(useRecordsStore.getState().records.symptom);
       showToast(`Saved. ${notesLabel(n)} ready for your GP.`);
     } catch {
-      setSaveError("That didn't save. Check your connection and try again.");
+      setSaveError("That didn't save. Your note is still here. Check your connection and try again.");
       setSaving(false);
     }
   };
@@ -268,6 +268,16 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
           <Button label="Fix something" variant="text" onPress={fixSomething} style={{ flex: 1 }} />
           <Button label="Add more" variant="text" onPress={addMore} style={{ flex: 1 }} />
         </View>
+      </View>
+    );
+  }
+
+  // A failed save shows in the sticky footer, next to the button that failed, never somewhere down the scroll.
+  if (footer && !confirmClose && saveError) {
+    footer = (
+      <View>
+        <InlineError message={saveError} style={{ marginBottom: space.sm }} />
+        {footer}
       </View>
     );
   }
@@ -363,7 +373,6 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
           onOtherMic={() => (recording ? dictation.stop() : startRecording('other'))}
         />
         {target.current === 'other' ? <InlineError message={dictation.error} style={{ marginTop: space.md }} /> : null}
-        <InlineError message={saveError} style={{ marginTop: space.md }} />
       </View>
     );
   } else {
@@ -378,7 +387,6 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
           // N9: an opened editor's top sits 16 pt under the sticky header, never below the fold.
           onReveal={(y) => scrollRef.current?.scrollTo({ y: Math.max(0, notedY.current + y - space.md), animated: true })}
         />
-        <InlineError message={saveError} style={{ marginTop: space.md }} />
       </View>
     );
   }
