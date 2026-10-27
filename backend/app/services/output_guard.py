@@ -260,7 +260,7 @@ _SELF = [
     r"(?:can'?t|cannot) do this (?:any ?more|anymore)\b", r"(?:want|wanna|wants) (?:to )?(?:just )?(?:be gone|not exist)\b|(?:thinking|think|thought) about not existing|what'?s the point (?:of|in) (?:going on|living|carrying on|anything)",
     r"(?:too many|a load of|loads of) (?:painkillers|tablets|pills)\b.{0,25}on purpose|on purpose.{0,25}(?:tablets|pills|painkillers)",
     # run 01 (S-154, probe 13: 3/8 missed): thoughts of harming a child, of crashing a car, hearing voices
-    r"(?:might|going to|want to|thoughts? of|thinking (?:of|about)) (?:hurt|harm|hurting|harming) (?:my|the) (?:baby|child|kids?|son|daughter)\b", r"\b(?:driving|crashing|steering) (?:my |the )?car (?:into|off)\b",
+    r"(?:might|going to|want to|thoughts? of|thinking (?:of|about)) (?:hurt|harm|hurting|harming) (?:my|the) (?:baby|child|kids?|son|daughter)\b", r"(?:thoughts?|thinking|urge|want|wanted|imagin\w+|picturing) (?:of |about |to )?(?:driving|drive|crashing|crash|steering|steer) (?:my |the )?car (?:into|off)\b",
     r"\bhearing voices\b.{0,40}\b(?:hurt|harm|kill)\b",
     # run 01 (S-142): self-injury without the word 'harm', and doubt about carrying on
     r"\bcut myself(?! (?:shaving|on|while|with|opening|chopping|cooking|slicing|badly on)\b)", r"(?:not sure|don'?t know|unsure) (?:if |whether )?i want to (?:carry on|keep going|go on|keep living|live)\b",
@@ -420,16 +420,16 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:took|taken|swallowed) (?:a lot|loads|a load|lots|too many) of (?:my |the )?(?:\w+ ){0,2}(?:tablets|pills|painkillers|meds|medication)\b.{0,60}\b(?:strange|weird|odd|drowsy|sick|dizzy|not right)\b|"
                     r"\bpain\b.{0,15}\bso bad\b.{0,30}\b(?:sick|vomit\w*|threw up)\b.{0,30}\bshaking\b|"
                     # run 01 (S-150, probe 10: 5/12 missed): sudden vision change in one eye, cauda equina wording, seizure, confusion with fever, waters breaking
-                    r"\b(?:blurr\w*|lost|loss of|double) vision\b.{0,30}\bsuddenly\b|\bsuddenly\b.{0,30}\b(?:blurr\w*|lost|double) vision\b|\bvision\b.{0,15}\b(?:went|goes|gone)\b.{0,15}\b(?:blurr\w+|black|dark|double)\b.{0,30}\b(?:one eye|suddenly)\b|\bblurr\w+ in one eye\b|"
+                    r"\b(?:blurr\w*|lost|loss of|double) vision\b (?:came on |started |began )?(?:suddenly|all of a sudden)\b|\bsudden(?:ly)? (?:\w+ ){0,2}(?:blurr\w*|lost|double) vision\b|\bvision\b.{0,15}\b(?:went|goes|gone)\b.{0,15}\b(?:blurr\w+|black|dark|double)\b.{0,30}\b(?:one eye|suddenly)\b|\bblurr\w+ in one eye\b|"
                     r"\bcan'?t tell when i need (?:a |to )?(?:wee|pee|poo|go)\b|\bcan'?t (?:control|feel) (?:my )?(?:bladder|bowels?)\b|\bnumb\b.{0,40}\b(?:bladder|bowels?|between my legs)\b|"
-                    r"\b(?:had|having) (?:a )?(?:fit|seizure)\b(?! of)|\bseizures?\b|\bconvuls\w+|\bshaking\b.{0,40}\bbit my tongue\b|\bbit my tongue\b.{0,40}\bshaking\b|"
-                    r"\b(?:confused|forgetting where i am|disorientated)\b.{0,60}\b(?:high temperature|fever)\b|\b(?:high temperature|fever)\b.{0,60}\b(?:confused|forgetting where i am|disorientated)\b|"
+                    r"\b(?:had|having) (?:a )?(?:fit|seizure)\b(?! of)|\bconvuls\w+|\bshaking\b.{0,40}\bbit my tongue\b|\bbit my tongue\b.{0,40}\bshaking\b|"
+                    r"\b(?:confused|forgetting where i am|disorientated)\b(?! about\b).{0,60}\b(?:high temperature|fever)\b(?! has (?:gone|settled|come down))|\b(?:high temperature|fever)\b.{0,60}\b(?:confused|forgetting where i am|disorientated)\b|"
                     r"\bwaters (?:have |just )?broke\b|\bmy waters (?:have )?(?:broken|gone)\b|"
                     # run 01 (S-152, probe 11: 10/10 missed): painkiller overdose by count, stomach bleeding signs after painkillers, opioid mixed with alcohol or doubled, slow breathing, swollen lips
-                    r"\b(?:took|taken|had|swallowed|taking) (?:over |about |around )?(?:9|1\d|[2-9]\d) (?:paracetamol|co-?codamol|ibuprofen|codeine|naproxen|tablets|pills)\b|"
-                    r"\bcoffee grounds\b|\bvomit\w*\b.{0,40}\b(?:blood|bright red)\b|\b(?:blood|bright red)\b.{0,20}\bvomit\w*\b|\b(?:black|tarry)\b.{0,12}\b(?:poo|poos|stools?|motions?)\b|"
+                    r"\b(?:took|taken|swallowed|taking) (?:over |about |around )?(?:9|1\d|[2-9]\d) (?:paracetamol|co-?codamol|ibuprofen|codeine|naproxen|tablets|pills)\b|"
+                    r"\b(?:like|looks like|look like|resembl\w+) coffee grounds\b|\bvomit\w*\b.{0,40}\b(?:blood|bright red)\b|\b(?:blood|bright red)\b.{0,20}\bvomit\w*\b|\bblack,? tarry\b|\btarry (?:poo|poos|stools?)\b|\bblack (?:poo|poos|stools?|motions?)\b(?! bags)|"
                     r"\b(?:doubled|double|extra)\b.{0,30}\b(?:codeine|tramadol|morphine|co-?codamol)\b.{0,60}\b(?:keep my eyes open|can'?t stay awake|drowsy|very sleepy)\b|"
-                    r"\b(?:breathing|breath)\b.{0,20}\b(?:slow|shallow)\b|\bslow(?:ed)? breathing\b|"
+                    r"\bmy breathing\b.{0,15}\b(?:slow|shallow|slowed)\b|\bbreathing (?:is|feels|has gone) (?:very |really )?(?:slow|shallow)\b|\bbreathing (?:slowed|is slowing)\b|"
                     r"\b(?:wine|vodka|alcohol|drank|drinking)\b.{0,50}\b(?:tramadol|codeine|morphine|co-?codamol)\b.{0,60}\b(?:weird|floaty|drowsy|dizzy|sick)\b|\b(?:tramadol|codeine|morphine|co-?codamol)\b.{0,50}\b(?:wine|vodka|alcohol)\b.{0,60}\b(?:weird|floaty|drowsy|dizzy|sick)\b|"
                     r"\b(?:took|taken|swallowed) (?:the )?(?:whole|entire) (?:strip|packet|box|bottle) of (?:\w+ )?(?:tablets|pills)\b|"
                     r"\b(?:shaking|heart (?:is )?(?:pounding|racing))\b.{0,50}\b(?:too many|too much)\b.{0,40}\b(?:painkillers|tablets|pills|energy drinks)\b|\bswollen (?:lips?|tongue|throat)\b|"
