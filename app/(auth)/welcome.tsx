@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, layout, space } from '../../constants/atossaUI';
+import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
@@ -37,7 +37,7 @@ export default function WelcomeScreen() {
             end={{ x: 0.5, y: 1 }}
             style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
           />
-          <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>ATOSSA</Txt>
+          <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
           {short ? null : <View aria-hidden style={styles.wave}>
             {WAVE.map((h, i) => (
               <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
@@ -46,7 +46,7 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.hero}>
-          <Txt variant="hero">Your body, in your words.</Txt>
+          <Txt variant="hero" style={short ? undefined : styles.heroLine}>Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
             Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
           </Txt>
@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
   },
   // Full-bleed band: the column's gutter is cancelled so the wash runs to the screen edges.
   band: { marginHorizontal: -layout.gutter, paddingHorizontal: layout.gutter, paddingTop: space.md, paddingBottom: space.sm, gap: space.xs },
-  wordmark: { fontSize: 15, letterSpacing: 4, fontWeight: '700' },
+  wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
+  heroLine: { fontSize: 36, lineHeight: 42 },
   wave: { flexDirection: 'row', alignItems: 'center', gap: 4, height: 30 },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'center', gap: 4 },
