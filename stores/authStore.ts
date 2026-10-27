@@ -27,7 +27,7 @@ interface AuthState {
   fetchProfile: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, display_name?: string) => Promise<void>;
-  loginWithApple: (idToken: string, displayName?: string | null) => Promise<void>;
+  loginWithApple: (idToken: string, displayName?: string | null, authorizationCode?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
   signOut: () => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
@@ -84,10 +84,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
   },
 
-  loginWithApple: async (idToken, displayName) => {
+  loginWithApple: async (idToken, displayName, authorizationCode) => {
     const tokens = await api.post<{ access_token: string; refresh_token: string }>(
       '/auth/apple',
-      { id_token: idToken, display_name: displayName ?? undefined },
+      { id_token: idToken, display_name: displayName ?? undefined, authorization_code: authorizationCode ?? undefined },
     );
     await saveTokens(tokens.access_token, tokens.refresh_token);
     const [user, profile] = await Promise.all([
