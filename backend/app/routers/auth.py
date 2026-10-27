@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from jwt import PyJWTError as JWTError
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import get_db
@@ -123,7 +124,11 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
                 raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
         else:
             db.add(UsedRefreshToken(jti=jti, user_id=user_id, used_at=now, expires_at=expires_at))
-        db.commit()
+        try:
+            db.commit()
+        except IntegrityError:
+            # Two requests with the same token raced to record it: the other one won, which is the retry case.
+            db.rollback()
     return TokenResponse(
         access_token=create_access_token(user_id, user.token_version),
         refresh_token=create_refresh_token(user_id, user.token_version),

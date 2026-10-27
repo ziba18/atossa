@@ -86,3 +86,38 @@ def test_tokens_without_an_id_still_refresh():
     exp = datetime.now(timezone.utc) + timedelta(days=1)
     legacy = encode({"sub": u.id, "exp": exp, "type": "refresh", "ver": 0}, settings.secret_key, algorithm=settings.algorithm)
     assert _refresh(db, legacy).access_token
+
+
+def test_a_lost_race_to_record_the_same_token_is_a_retry_not_a_server_error():
+    db = _db()
+    u = create_user(db, "a@example.com", "first-password-1")
+    tok = create_refresh_token(u.id, 0)
+    jti, exp = refresh_token_claims(tok)
+    other = sessionmaker(bind=db.get_bind())()
+    other.add(UsedRefreshToken(jti=jti, user_id=u.id, expires_at=exp))
+    other.commit()
+    # the first session looked before the other one wrote: emulate by hiding the row from its lookup
+    real_first = type(db.query(UsedRefreshToken)).first
+    calls = {"n": 0}
+
+    def first_hidden(self):
+        calls["n"] += 1
+        return None if calls["n"] == 1 and self.column_descriptions and self.column_descriptions[0]["entity"] is UsedRefreshToken else real_first(self)
+    type(db.query(UsedRefreshToken)).first = first_hidden
+    try:
+        out = _refresh(db, tok)
+    finally:
+        type(db.query(UsedRefreshToken)).first = real_first
+    assert out.access_token
+
+
+def test_deleted_users_token_gets_401_and_no_row():
+    db = _db()
+    u = create_user(db, "a@example.com", "first-password-1")
+    tok = create_refresh_token(u.id, 0)
+    db.query(User).filter(User.id == u.id).delete()
+    db.commit()
+    with pytest.raises(HTTPException) as e:
+        _refresh(db, tok)
+    assert e.value.status_code == 401
+    assert db.query(UsedRefreshToken).count() == 0
