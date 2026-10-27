@@ -13,6 +13,13 @@ Notifications.setNotificationHandler({
   }),
 });
 
+async function ensureNotificationPermission(): Promise<boolean> {
+  const { status: existing } = await Notifications.getPermissionsAsync();
+  if (existing === 'granted') return true;
+  const { status } = await Notifications.requestPermissionsAsync();
+  return status === 'granted';
+}
+
 export async function registerForPushNotifications(): Promise<string | null> {
   if (!Device.isDevice) return null;
 
@@ -112,11 +119,8 @@ export async function syncDailyLogReminder(enabled: boolean, time: string): Prom
     await cancelDailyLogReminder();
     return;
   }
-  const granted = await registerForPushNotifications();
-  if (granted === null) {
-    const { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') return;
-  }
+  // Local reminders only need the permission; asking Expo for a push token would register the phone with a third party for nothing.
+  if (!(await ensureNotificationPermission())) return;
   await scheduleDailyLogReminder(time);
 }
 
