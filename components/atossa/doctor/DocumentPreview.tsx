@@ -14,6 +14,7 @@ import { A4, DocumentView } from './DocumentView';
 
 // Printable height per A4 page: 842 pt minus the PDF's 40/34 pt margins and the repeated footer.
 const PRINT_PAGE_BODY = 842 - 40 - 34 - 28;
+const PRINT_VS_SCREEN = 0.85; // printed length / on-screen length, see `pages` below
 const PAGE_CHROME = A4.pad * 2 + 28; // the on-screen page's padding + its single footer
 const THUMB_MAX_H = 420;
 const FADE_H = 48;
@@ -47,8 +48,10 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
   const { width: screenW } = useWindowDimensions();
-  // 0.15 page of slack: a document that is within a few lines of a page boundary measured 2 pages in the real PDF but 3 here.
-  const pages = Math.max(1, Math.ceil((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY - 0.15));
+  // The on-screen page runs about 15% longer than the PDF's compact tables. Measured on Sam's seed (real Chromium PDF vs
+  // this height): 2.18 / 1.96 / 1.68 / 1.17 screen pages printed as 2 / 2 / 2 / 1 pages, each at or just under the
+  // estimate (design/a4-gap.md, run 22). Never lower the factor without re-measuring.
+  const pages = Math.max(1, Math.ceil(((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY) * PRINT_VS_SCREEN));
   const inner = Math.max(0, width - 2); // inside the 1 px border
   const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : THUMB_MAX_H);
   const wordsSec = doc.sections.find((x) => x.id === 'words');
