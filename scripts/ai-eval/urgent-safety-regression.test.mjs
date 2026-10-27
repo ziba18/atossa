@@ -1,11 +1,13 @@
 // Safety's unseen urgent-wording sets v11-v13 (S-123 / S-124, written by the Safety agent before any run) as a REGRESSION
 // set for the phone detector (lib/urgentWording.ts). Never tuned on here: the misses below are reported, not fixed, and
 // the test only fails if this branch misses MORE than the recorded baseline or raises an everyday note.
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/urgent-safety-regression.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/urgent-safety-regression.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { urgentSignpost } from '../../lib/urgentWording.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { urgentSignpost } = await import('../../lib/urgentWording.ts');
 
 // Misses recorded on claude/ai-brain-holistic-v3 (= offline-room + design-redesign ddfe4cd), 2026-10-27 16:2x UTC.
 const BASELINE = { v11: 7, v12: 7, v13: 4 };

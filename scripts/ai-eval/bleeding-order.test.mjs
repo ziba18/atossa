@@ -1,9 +1,11 @@
 // A4 "Bleeding and periods" line in NG88 1.1.1 order (PM 13:00 task 2): impact on bleeding days ->
 // between-period dates -> flow as she chose -> what she tried; counts only, never a label.
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/bleeding-order.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/bleeding-order.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDoctorSummary, summaryToText } from '../../lib/records/summary.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary, summaryToText } = await import('../../lib/records/summary.ts');
 
 const rec = (id, data) => ({ id, data, createdAt: `${data.date}T10:00:00.000Z` });
 const day = (date, extra = {}) => rec(`p-${date}`, { date, isStart: false, isEnd: false, note: '', ...extra });

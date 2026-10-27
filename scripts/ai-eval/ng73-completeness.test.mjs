@@ -3,11 +3,13 @@
 // facts vs "Not recorded". This maps NICE's history list to our neutral headings; it never names a condition on the page.
 // "Recorded" means the area has her facts on the page for the GP to read; it never means the NICE criterion is met
 // (e.g. "chronic" or "pelvic" is the GP's judgement from the Pain line, not ours).
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/ng73-completeness.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/ng73-completeness.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDoctorSummary, NOT_RECORDED, NOT_INCLUDED } from '../../lib/records/summary.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary, NOT_RECORDED, NOT_INCLUDED } = await import('../../lib/records/summary.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 // NG73 1.3.1 group -> the summary area(s) that carry it (all must be recorded for the group to count).
 export const NG73_GROUPS = [

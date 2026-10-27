@@ -1,15 +1,17 @@
 // Summary v2: the 13 PRODUCT §4 areas (blueprint §3.7a order) each get a line, "Not recorded" when
 // empty; sections come out in §3.7a order; the shared count helpers give the summary's numbers;
 // completeness is a count; onset lines follow pm/prd/onset-and-treatments.md AC1/AC3/AC6.
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/summary-v2.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/summary-v2.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const {
   buildDoctorSummary, DOMAINS, NOT_RECORDED, NOT_INCLUDED, SECTION_META, summaryToText, summaryToHtml, onsetText,
-} from '../../lib/records/summary.ts';
-import { MAX_ZONE_ROWS, daysWith, impactDays, nOfN, weeklyDays, zoneDays } from '../../lib/records/counts.ts';
-import { BODY_ZONE_LABELS } from '../../lib/records/fields.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+} = await import('../../lib/records/summary.ts');
+const { MAX_ZONE_ROWS, daysWith, impactDays, nOfN, weeklyDays, zoneDays } = await import('../../lib/records/counts.ts');
+const { BODY_ZONE_LABELS } = await import('../../lib/records/fields.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const HEADINGS = [
   'Appointments and what I want from them', 'Pain', 'Tiredness and sleep', 'Bleeding and periods',

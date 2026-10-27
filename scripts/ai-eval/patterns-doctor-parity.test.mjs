@@ -1,14 +1,16 @@
 // "See the patterns behind this" parity (PM 16:00 task 3): for the Patterns 4w and 12w ranges, For my doctor built over
 // the SAME dates shows the same numbers: body-area rows (days + Worst), days with a note, strong days, impacts, tried,
 // note count. Worst/strong are recomputed from the raw notes (highest number she gave, never averaged).
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/patterns-doctor-parity.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/patterns-doctor-parity.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDoctorSummary } from '../../lib/records/summary.ts';
-import { buildPatterns, STRONG_FROM } from '../../lib/records/patterns.ts';
-import { peakOf, noteCount } from '../../lib/records/format.ts';
-import { BODY_ZONE_LABELS } from '../../lib/records/fields.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary } = await import('../../lib/records/summary.ts');
+const { buildPatterns, STRONG_FROM } = await import('../../lib/records/patterns.ts');
+const { peakOf, noteCount } = await import('../../lib/records/format.ts');
+const { BODY_ZONE_LABELS } = await import('../../lib/records/fields.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const TODAY = '2026-09-24';
 const sam = () => {

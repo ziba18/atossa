@@ -1,7 +1,9 @@
 // Property test for the doctor summary: for 300 random mock record sets, every "N/10" in the document
 // is a score the user entered, and no string contains diagnostic / trend / causal wording.
 // Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs scripts/ai-eval/summary-fidelity.test.mjs
-import { buildDoctorSummary } from '../../lib/records/summary.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary } = await import('../../lib/records/summary.ts');
 
 let seed = 12345;
 const rnd = () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296);

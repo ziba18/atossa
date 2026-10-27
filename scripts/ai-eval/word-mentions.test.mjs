@@ -1,10 +1,12 @@
 // PM 2026-10-27 task 6: Sam typed "tired"/"dizzy" but Patterns said "Sleep and mood: Not recorded yet". Decision: no
 // silent tag (Atossa never infers beyond her words); the empty card counts her words instead, "Not tagged yet — …".
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/word-mentions.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/word-mentions.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { untaggedLine, wordMentions } from '../../lib/records/counts.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { untaggedLine, wordMentions } = await import('../../lib/records/counts.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const notes = () => sampleBuckets().symptom.map((r) => r.data);
 const note = (words, source = 'typed') => ({ date: '2026-09-01', words, source });

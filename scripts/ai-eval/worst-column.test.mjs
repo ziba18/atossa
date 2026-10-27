@@ -1,13 +1,15 @@
 // "Worst" column data (PM 13:00 task 3): every How-often row carries days + the highest number she gave
 // (never an average), recomputed here from the raw notes, and Patterns 4w shows the same rows and numbers.
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/worst-column.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/worst-column.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDoctorSummary } from '../../lib/records/summary.ts';
-import { buildPatterns } from '../../lib/records/patterns.ts';
-import { peakOf } from '../../lib/records/format.ts';
-import { BODY_ZONE_LABELS } from '../../lib/records/fields.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary } = await import('../../lib/records/summary.ts');
+const { buildPatterns } = await import('../../lib/records/patterns.ts');
+const { peakOf } = await import('../../lib/records/format.ts');
+const { BODY_ZONE_LABELS } = await import('../../lib/records/fields.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const TODAY = '2026-09-24';
 const sam = () => {

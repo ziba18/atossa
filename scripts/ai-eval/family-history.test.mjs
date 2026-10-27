@@ -1,11 +1,13 @@
 // Family health history (NICE NG73 1.3.2 [2024], https://www.nice.org.uk/guidance/ng73/chapter/Recommendations, read
 // 2026-10-27: "Ask if any first-degree relatives have a history of endometriosis"). Optional free text in her words:
 // shown verbatim under Health history on the A4 and in the text export, omitted entirely when empty.
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/family-history.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/family-history.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDoctorSummary, FAMILY_HISTORY_LABEL, NOT_RECORDED, summaryToHtml, summaryToText } from '../../lib/records/summary.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary, FAMILY_HISTORY_LABEL, NOT_RECORDED, summaryToHtml, summaryToText } = await import('../../lib/records/summary.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const RANGE = { from: '2026-06-25', to: '2026-09-24', today: '2026-09-24' };
 const EMPTY = { symptoms: [], periodDays: [], medicines: [], history: [], appointments: [] };

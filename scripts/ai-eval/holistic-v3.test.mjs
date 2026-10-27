@@ -1,7 +1,9 @@
 // node --experimental-strip-types scripts/ai-eval/holistic-v3.test.mjs  (precision/recall for sexPain + fertility on
 // items.holistic-v3.json; gold committed before the rules in 11ce06d; output never carries a condition word; exits 1 on a wrong fill)
 import { readFileSync } from 'node:fs';
-import { holisticFrom } from '../../components/atossa/capture/holistic.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { holisticFrom } = await import('../../components/atossa/capture/holistic.ts');
 const { items } = JSON.parse(readFileSync(new URL('./items.holistic-v3.json', import.meta.url)));
 const FIELDS = ['sexPain', 'fertility'];
 const val = (got, k) => k === 'fertility' ? got.fertility?.wish : got[k];
