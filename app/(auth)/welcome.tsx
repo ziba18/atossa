@@ -46,7 +46,7 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.hero}>
-          <Txt variant="hero" style={short ? undefined : styles.heroLine}>Your body, in your words.</Txt>
+          <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
             Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
           </Txt>
