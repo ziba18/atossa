@@ -17,7 +17,7 @@ const STEPS = [
 
 /**
  * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
- * from Today), one plain sentence, then the actions anchored low. No imagery.
+ * from Today), one plain sentence, then the actions anchored low. One illustration: the waveform resting on a line of text.
  */
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -38,10 +38,14 @@ export default function WelcomeScreen() {
             style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
           />
           <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
-          {short ? null : <View aria-hidden style={styles.wave}>
-            {WAVE.map((h, i) => (
-              <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-            ))}
+          {/* Illustration B: the brand waveform grown large, resting on a line of text (a voice becoming a note). */}
+          {short ? null : <View aria-hidden style={styles.art}>
+            <View style={styles.wave}>
+              {WAVE.map((h, i) => (
+                <View key={i} style={{ width: 4, height: Math.round(8 + h * 40), borderRadius: 2, backgroundColor: i % 3 === 0 ? colors.plum : `${colors.plum}80` }} />
+              ))}
+            </View>
+            <View style={styles.textLine} />
           </View>}
         </View>
 
@@ -98,7 +102,9 @@ const styles = StyleSheet.create({
   band: { marginHorizontal: -layout.gutter, paddingHorizontal: layout.gutter, paddingTop: space.md, paddingBottom: space.sm, gap: space.xs },
   wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
   heroLine: { fontSize: 36, lineHeight: 42 },
-  wave: { flexDirection: 'row', alignItems: 'center', gap: 4, height: 30 },
+  art: { alignItems: 'center', gap: space.xs, paddingVertical: space.xs },
+  wave: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 48 },
+  textLine: { width: 148, height: 14, borderRadius: 7, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.plum },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'center', gap: 4 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
