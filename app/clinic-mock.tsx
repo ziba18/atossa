@@ -20,6 +20,7 @@ const ROWS = [
   ['P-23', '21 Oct', '4', '6 Nov', 'Ready', 'Yes', 'Today'],
   ['P-31', '24 Oct', '1', '—', '—', 'No', '3 days ago'],
 ];
+const WEEKS: Record<string, string> = { 'P-07': 'Week of 12 Oct', 'P-12': 'Week of 12 Oct', 'P-19': 'Week of 19 Oct', 'P-23': 'Week of 19 Oct', 'P-31': 'Week of 19 Oct' };
 const COLS = ['ID', 'Joined', 'Notes, last 7 days', 'Next appointment', 'Summary', 'Shared with clinic', 'Last active'];
 
 const Tag = () => (
@@ -86,10 +87,13 @@ export default function ClinicMock() {
           <View role="row" style={{ flexDirection: 'row', paddingVertical: space.xs, borderBottomWidth: 1, borderColor: colors.hairline }}>
             {COLS.map((c) => <Txt key={c} role="columnheader" variant="secondary" style={{ flex: 1 }}>{c}</Txt>)}
           </View>
-          {ROWS.map((r) => (
-            <View key={r[0]} role="row" style={{ flexDirection: 'row', paddingVertical: space.sm, borderBottomWidth: 1, borderColor: colors.hairline }}>
+          {ROWS.map((r, ri) => (
+            <React.Fragment key={r[0]}>
+            {WEEKS[r[0]] !== WEEKS[ROWS[ri - 1]?.[0] ?? ''] ? <Txt variant="groupLabel" style={{ marginTop: space.sm }}>{`${WEEKS[r[0]]} · ${ROWS.filter((x) => WEEKS[x[0]] === WEEKS[r[0]]).length} joined`}</Txt> : null}
+            <View role="row" style={{ flexDirection: 'row', paddingVertical: space.sm, borderBottomWidth: 1, borderColor: colors.hairline }}>
               {r.map((c, i) => <Txt key={i} role="cell" style={{ flex: 1, fontVariant: ['tabular-nums'] }}>{c}</Txt>)}
             </View>
+            </React.Fragment>
           ))}
         </View>
         )}
