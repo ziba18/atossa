@@ -1,0 +1,389 @@
+{
+ "note": "Holistic set v2 (PM ai-brain 10:00 task 1), 2026-10-27 10:2x UTC. Gold written BEFORE the tired/skin/helped rules existed. Texts: 40 Marketing blind-v1 notes + 16 Design Sam-seed notes + 2 Data rare-seed notes (58 not written by AI Brain) + 20 AI Brain notes (skin/hair/helped/tired, with traps). Absent key = not stated (filling it is a wrong fill). Marketing v1 was tuned on for pre-fill, NOT for these holistic fields. Gold fix 10:3x (placement only, before any rule change): the 'between' label sat one row off (on 'Pain wasnt there...'); moved to 'Spotting between periods again'.",
+ "items": [
+  {
+   "src": "marketing-blind-v1",
+   "text": "Low down on the left, like someone is twisting a towel. Started yesterday morning, still there."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "pain 8 out of 10 today couldnt get off the sofa my period started this morning"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Bad day. Cramps. Took two paracetamol, did sod all.",
+   "helped": [
+    "no"
+   ]
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Had to leave work at 2 because of the pain in my lower back and tummy, boss was not thrilled"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Sex hurt again last night, deep inside, had to stop. Feeling rubbish about it."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "No pain at work today, which makes a change, bit of ache in the evening but nothing much"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "my mum had really bad periods too and my nan apparently"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Woke at 3am with a stabbing feeling on the right side, 6/10, hot water bottle helped a bit. Not on my period, that's next week.",
+   "helped": [
+    "a bit"
+   ]
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "ugh"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Pain every day this week. Not just period pain, it just never really goes away. Rated about a 4 most days, 7 on Tuesday."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Went to spin class and had to stop halfway, felt like my insides were being pulled down"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Periods are heavy, I'm changing a pad every hour on day two and leaked through at my desk",
+   "products": "6+",
+   "flooding": true
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Haven't had a period since March. No pain just wondering."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Cramps down both legs and into my bum when I go for a poo during my period, makes me cry",
+   "bowelPain": true
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "dull ache lower tummy all afternoon prob about 3, better after a walk",
+   "helped": [
+    "yes"
+   ]
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Couldn't do the school run, my husband took over, I was on the bathroom floor with a hot water bottle for an hour"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Third month in a row the pain starts a few days BEFORE my period and stops about day 2. Mostly right hip area."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Sharp shooting pain when I wee, weird, not like a UTI I've had those",
+   "urinePain": true
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Spent the weekend in bed. Missed my friend's birthday. Pain was awful 9 maybe 10 it was that bad"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "lower back ache only, no tummy pain this time"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Ibuprofen 400 and codeine from the chemist did nothing today. Tried a tens machine for the first time, helped a little.",
+   "helped": [
+    "no",
+    "a bit"
+   ]
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "i feel bloated and my jeans dont fit and I'm tired all the time and I've got spots on my chin",
+   "tired": true,
+   "skin": [
+    "acne"
+   ]
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Period was 12 days this time. Normally 5."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "It hurts when I stand up from sitting for ages, sort of in my pelvis, goes after a minute"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Called in sick. Third time this month. Dreading telling HR why."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Pain after eating, up under my ribs not my tummy, no idea if related to my period"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Okay so sleeping on my side was agony last night, left ovary region I guess, 5 or 6"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Felt faint and sick on day one, nearly fainted on the tube, got off and sat on the platform"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "My GP said it was probably stress. Still have the pain. Didn't feel listened to."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Mild twinge today. 2/10. Nothing to report really."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "sharp pain in shoulder tip when my period starts, strange I know"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Pain, bowels all over the place, constipated then runny, during my period only"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Havent slept properly in a week the cramps keep waking me up around 4"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "I did a 5k run no problem today, no pain at all, period due in two days"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "back of my legs and lower back sore, think I overdid it at the gym?? not sure if its my cycle"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Pain wasnt there during the day but came on like a wave at 9pm and lasted an hour or so, 7"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Spotting between periods again. About 3 days. No pain.",
+   "between": true
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Honestly I can't tell you where it hurts it's just everywhere, low down, all round, like a belt tightening"
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Friend told me it sounds like what she has. I'd rather just write down what happens."
+  },
+  {
+   "src": "marketing-blind-v1",
+   "text": "Tuesday: 5, Wednesday: 7, Thursday: 3. Lower tummy each day. Period started Wed."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Dull ache low down that would not settle."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Sharp pain across my lower belly and my back felt tight."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Tired all day and a heavy feeling low down.",
+   "tired": true
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Squeezing pain that came in waves."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Pain down both legs and I felt very worn out.",
+   "tired": true
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "A dull, heavy pain low down."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Sharp pain across my lower belly."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Squeezing pain and I felt dizzy."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Squeezing pain across my lower belly. I have had pain like this for about 12 years."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Sharp pain across my lower belly and down both legs."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "I felt very tired and had a heavy, squeezing pain low down.",
+   "tired": true
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "The pain was sharp and went down my legs. I also felt dizzy and lightheaded."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Squeezing pain across my lower belly and I felt very tired.",
+   "tired": true
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Sharp pain low down that was worse during my period."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Strong squeezing pain across my lower belly, sometimes running down my legs."
+  },
+  {
+   "src": "design-sam-seed",
+   "text": "Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.",
+   "tired": true
+  },
+  {
+   "src": "data-rare-seed",
+   "text": "Stinging, dragging pain low down when I passed urine, and I needed to go much more often. It felt sore all day.",
+   "urinePain": true
+  },
+  {
+   "src": "data-rare-seed",
+   "text": "It hurt low down when I opened my bowels, a sharp stabbing pain deep inside. It only happens around my period.",
+   "bowelPain": true
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "My hair is falling out in clumps in the shower",
+   "skin": [
+    "hairLoss"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Noticed more hair on my chin and upper lip, I pluck it every morning",
+   "skin": [
+    "extraHair"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Dark patches on the back of my neck that won't wash off",
+   "skin": [
+    "darkPatches"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "No spots this month for once"
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Exhausted. Slept 10 hours and still knackered.",
+   "tired": true
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Not tired at all today, actually had energy",
+   "tired": false
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Heat pad didn't help this time",
+   "helped": [
+    "no"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "The mefenamic acid really helped, pain down to a 3",
+   "helped": [
+    "yes"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Breakouts along my jaw again before my period",
+   "skin": [
+    "acne"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Thinning hair at the front, my parting looks wider",
+   "skin": [
+    "hairLoss"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Hot bath eased it a little",
+   "helped": [
+    "a bit"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Paracetamol made no difference",
+   "helped": [
+    "no"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "So drained I fell asleep at my desk",
+   "tired": true
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Tired of this pain, it's been weeks"
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Hair growing on my tummy and nipples which is new",
+   "skin": [
+    "extraHair"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Acne on my back and chest, and oily skin",
+   "skin": [
+    "acne"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Took codeine, it worked",
+   "helped": [
+    "yes"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Nothing helped today, tried everything",
+   "helped": [
+    "no"
+   ]
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Hair cut today, no symptoms"
+  },
+  {
+   "src": "ai-brain-own",
+   "text": "Fatigue is the worst bit, more than the pain",
+   "tired": true
+  }
+ ]
+}
