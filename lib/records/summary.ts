@@ -225,7 +225,7 @@ export type DocSection =
   | { id: 'periods'; title: string; runs: PeriodRun[]; spotting: string }
   | { id: 'impacts' | 'sex' | 'mood' | 'eating'; title: string; items: CountItem[]; quotes: DocQuote[] }
   | { id: 'tried'; title: string; items: TriedItem[]; quotes: DocQuote[] }
-  | { id: 'history'; title: string; items: DatedItem[]; more: string }
+  | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string }
   /** `upcoming` = today's appointment and later ones — never shown as past. */
   | { id: 'appointments'; title: string; items: DatedItem[]; more: string; upcoming: DatedItem[] };
 
@@ -267,7 +267,12 @@ export interface SummaryInput {
   onset?: Partial<Record<OnsetGroup, Onset>>;
   /** Her answer to the optional pregnancy-plans question. */
   fertility?: FertilityWish | null;
+  /** Optional free text "Family health history, as you were told it" (NICE NG73 1.3.2 [2024]: clinicians ask
+   *  about first-degree relatives). Shown verbatim in her words; omitted when empty. */
+  familyHistory?: string;
 }
+
+export const FAMILY_HISTORY_LABEL = 'Family health history, as I was told it';
 
 export interface SummaryOptions {
   from: string;
@@ -517,7 +522,9 @@ function domainLines(
   facts.eating = { text: eating ? `${plural(eating, 'note')} in my words` : '' };
   facts.impact = { text: joinFacts(...impactItems.map((c) => `${c.label} · ${plural(c.days, 'day')}`)) };
   facts.tried = { text: triedCount ? plural(triedCount, 'thing') + ' listed' : '' };
-  facts.history = { text: input.history.length ? plural(input.history.length, 'item') + ' saved' : '' };
+  const family = clean(input.familyHistory);
+  facts.history = { text: joinFacts(input.history.length ? plural(input.history.length, 'item') + ' saved' : '',
+    family ? 'Family history in my words' : '') };
   facts.fertility = { text: input.fertility ? `${input.fertility} (as chosen)` : '' };
 
   return DOMAINS.map(({ id, heading, section }) => {
@@ -548,6 +555,10 @@ export function summaryToText(doc: DoctorDoc): string {
   for (const d of doc.domains) {
     lines.push(`${d.heading}: ${d.text}`);
     if (d.onset) lines.push(`  ${d.onset}`);
+    if (d.id === 'history' && d.state === 'recorded') {
+      const h = doc.sections.find((x) => x.id === 'history');
+      if (h && h.id === 'history' && h.family) lines.push(`  ${FAMILY_HISTORY_LABEL}: "${h.family}"`);
+    }
   }
   const words = doc.sections.find((s) => s.id === 'words');
   if (words && words.id === 'words') {
@@ -716,7 +727,8 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
 
   // 7. Health history — "Around" dates.
   const hist = [...input.history.map((r) => r.data)].sort((a, b) => b.date.localeCompare(a.date));
-  if (hist.length) {
+  const familyText = clean(input.familyHistory);
+  if (hist.length || familyText) {
     all.push({
       id: 'history',
       title: 'Health history',
@@ -730,6 +742,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         ].filter((l) => l.text),
       })),
       more: hist.length > MAX_LISTED ? `${plural(hist.length - MAX_LISTED, 'earlier item')} saved in Atossa.` : '',
+      family: familyText,
     });
   }
 
@@ -936,7 +949,7 @@ function sectionInner(s: DocSection): string {
     case 'appointments':
       return `<section>${head}${s.upcoming.length ? `<p class="sub">${esc(APPT_AHEAD)}</p>${s.upcoming.map(datedItemHtml).join('')}${s.items.length ? `<p class="sub">${esc(APPT_PAST)}</p>` : ''}` : ''}${s.items.map(datedItemHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
     case 'history':
-      return `<section>${head}${s.items.map(datedItemHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
+      return `<section>${head}${s.items.map(datedItemHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}${s.family ? `<p><span class="muted">${esc(FAMILY_HISTORY_LABEL)}:</span> <span class="serif">“${esc(curly(s.family))}”</span></p>` : ''}</section>`;
   }
 }
 
