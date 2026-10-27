@@ -12,6 +12,7 @@ import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
 import { AgendaField } from '../../../components/atossa/doctor/AgendaField';
 import { DocumentPreview } from '../../../components/atossa/doctor/DocumentPreview';
+import { PageOneCards } from '../../../components/atossa/doctor/PageOneCards';
 import { SectionToggles } from '../../../components/atossa/doctor/SectionToggles';
 import { printSummary, shareSummaryPdf } from '../../../components/atossa/doctor/share';
 import { useDoctorBuilder, useDoctorDoc } from '../../../components/atossa/doctor/useDoctorDoc';
@@ -306,6 +307,8 @@ export default function DoctorScreen() {
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
       ) : null}
+
+      {!nothingYet && !doc.empty ? <PageOneCards doc={doc} /> : null}
 
       {nothingYet && !olderData ? null : (
         <Pressable

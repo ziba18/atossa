@@ -82,7 +82,7 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
           <Quote numberOfLines={3}>{words.text}</Quote>
         </View>
       ) : null}
-      <Button label="Read it at full size" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" />
+      <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" />
       {doc.sections.length ? (
         <View style={{ marginTop: space.md, gap: space.xs }}>
           <Txt variant="groupLabel">In this summary</Txt>
