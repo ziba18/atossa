@@ -46,7 +46,12 @@ const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, '
 const WHOLE = new RegExp(P.WHOLE_SRC, 'is');
 function hitWhole(text: string): boolean {
   const m = WHOLE.exec(text);
-  return !!m && !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index)) || PAST.test(text) || OTHER.test(text.slice(0, m.index)));
+  if (!m) return false;
+  // Past tense counts only in the sentence(s) the match sits in, as in `hit`: "I had this in 2019. Now my belly is rock hard" is current.
+  const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
+  const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
+  const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
+  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index)) || PAST.test(sentence) || OTHER.test(text.slice(0, m.index)));
 }
 
 const PREG = /\bpregnan\w+\b/i;
