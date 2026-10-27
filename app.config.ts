@@ -13,6 +13,11 @@ const googlePlugin: any[] = googleIosUrlScheme
   ? [['@react-native-google-signin/google-signin', { iosUrlScheme: googleIosUrlScheme }]]
   : [];
 
+// The design-preview flag signs everyone in as a demo person with no network; it must never be bundled into a store build.
+if (process.env.EXPO_PUBLIC_DESIGN_PREVIEW === '1' && process.env.EAS_BUILD_PROFILE) {
+  throw new Error('EXPO_PUBLIC_DESIGN_PREVIEW must not be set for EAS builds or updates.');
+}
+
 const config: ExpoConfig = {
   name: 'Atossa',
   slug: 'attosa',
