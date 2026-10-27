@@ -28,3 +28,10 @@ SET8 = json.loads((Path(__file__).parent / "emergency_set_v8.json").read_text())
 def test_set_v8_emergencies_caught_and_harmless_quiet():
     assert [t for t in SET8["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET8["harmless"] if is_emergency(t)] == []
+
+
+SET9 = json.loads((Path(__file__).parent / "emergency_set_v9_harmless.json").read_text())
+
+
+def test_everyday_wording_that_resembles_the_new_phrases_stays_quiet():
+    assert [t for t in SET9["harmless"] if is_emergency(t)] == []
