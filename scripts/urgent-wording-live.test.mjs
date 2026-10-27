@@ -13,6 +13,15 @@ const must = ['I think I might have sepsis', 'a rash that does not fade when I p
 const never = ['I jogged and was breathing fast for a minute', 'I had a fever and chills last week', 'I might be pregnant', 'I use tampons on heavy days', 'there was blood in the toilet', 'The pain was killing me yesterday but is fine now', 'I did not faint', 'my sister fainted last year', 'Cramps were a 5 today, took ibuprofen'];
 const shared = JSON.parse(fs.readFileSync(new URL('../backend/tests/urgent_phrases.json', import.meta.url), 'utf8'));
 const disagree = shared.filter(([t, want]) => Boolean(urgentSignpost(t)) !== want).map(([t]) => t);
-const bad = [...disagree, ...must.filter((t) => !urgentSignpost(t)), ...never.filter((t) => urgentSignpost(t))];
+// The same emergency/harmless sets the backend is scored on: the phone copy must agree with the server on every phrase.
+const testsDir = new URL('../backend/tests/', import.meta.url);
+const setPhrases = [];
+for (const f of fs.readdirSync(testsDir).filter((n) => /^emergency_set_v.*\.json$/.test(n))) {
+  const set = JSON.parse(fs.readFileSync(new URL(f, testsDir), 'utf8'));
+  for (const t of set.emergency) setPhrases.push([t, true]);
+  for (const t of set.harmless) setPhrases.push([t, false]);
+}
+const setDisagree = setPhrases.filter(([t, want]) => Boolean(urgentSignpost(t)) !== want).map(([t]) => t);
+const bad = [...setDisagree, ...disagree, ...must.filter((t) => !urgentSignpost(t)), ...never.filter((t) => urgentSignpost(t))];
 if (bad.length) { console.error('wrong:', bad); process.exit(1); }
-console.log(`ok: ${must.length + never.length + shared.length} phrases`);
+console.log(`ok: ${must.length + never.length + shared.length + setPhrases.length} phrases`);
