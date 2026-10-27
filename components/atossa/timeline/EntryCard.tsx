@@ -200,13 +200,13 @@ export function EntryCard({
       return (
         <PressableCard
           onPress={onPress}
-          accessibilityLabel={[`Medicine, ${name}`, dates].filter(Boolean).join('. ')}
+          accessibilityLabel={[`Medicine, ${name}`, dates, m.helped ? `Did it help? ${m.helped}` : ''].filter(Boolean).join('. ')}
           accessibilityHint="Opens the medicine"
         >
           <View style={styles.stack}>
             <GlyphLine icon="pill" text={hideDate ? 'Medicine' : when} />
             <Txt variant="headline">{name}</Txt>
-            <FactLine parts={[dates]} />
+            <FactLine parts={[dates, m.helped ? `Did it help? ${m.helped}` : '']} />
           </View>
         </PressableCard>
       );
