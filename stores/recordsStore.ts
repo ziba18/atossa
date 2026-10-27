@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { api } from '../lib/api';
 import { PENDING_PREFIX, clearOutbox, dequeue, enqueue, isOfflineError, newClientId, readOutbox } from '../lib/outbox';
 import { IS_PREVIEW } from '../lib/preview/flag';
+import { clearSnapshot, readSnapshot, saveSnapshot } from '../lib/recordsSnapshot';
 import { sampleBuckets } from '../lib/preview/seed';
 import type { DataMap, Rec, RecordKind } from '../types/records';
 
@@ -23,6 +24,8 @@ interface RecordsState {
   loadedFor: string | null; // user id the data belongs to
   loading: boolean;
   error: string;
+  /** ISO time of the saved copy on screen when the last load had no connection; null when the data is live. */
+  offlineCopyFrom: string | null;
   load: (userId: string) => Promise<void>;
   reset: () => void;
   /** Send notes saved while offline; safe to call any time (one run at a time, each note once). */
@@ -76,6 +79,8 @@ const previewBackend: Backend = {
     const q = typeof window !== 'undefined' ? window.location?.search ?? '' : '';
     if (/[?&]state=loading\b/.test(q)) return new Promise<never>(() => {});
     if (/[?&]state=error\b/.test(q)) throw new Error('preview error');
+    // ?state=offline, or the browser offline: fail like a request with no signal (offline consulting room test).
+    if (/[?&]state=offline\b/.test(q) || (typeof navigator !== 'undefined' && navigator.onLine === false)) throw new Error('offline');
     return sampleBuckets();
   },
   create: async (kind, data) => {
@@ -95,6 +100,15 @@ const previewCreate = (kind: RecordKind, data: unknown): ServerRecord => ({
 
 const backend = IS_PREVIEW ? previewBackend : serverBackend;
 
+/** Adds this account's outbox notes (marked pending) to the buckets; returns how many. */
+async function withOutbox(buckets: Buckets, userId: string): Promise<number> {
+  const waiting = (await readOutbox()).filter((i) => i.userId === userId);
+  for (const i of waiting) {
+    buckets.symptom.push({ id: PENDING_PREFIX + i.clientId, data: i.data, createdAt: i.queuedAt, pending: true });
+  }
+  return waiting.length;
+}
+
 let flushing = false;
 
 export const useRecordsStore = create<RecordsState>((set, get) => ({
@@ -102,6 +116,7 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   loadedFor: null,
   loading: false,
   error: '',
+  offlineCopyFrom: null,
 
   load: async (userId) => {
     set({ loading: true, error: '' });
@@ -114,14 +129,20 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
       } else {
         buckets = listed;
       }
+      void saveSnapshot(userId, buckets);
       // Notes still waiting in the outbox stay on screen, marked pending, until they are sent.
-      const waiting = (await readOutbox()).filter((i) => i.userId === userId);
-      for (const i of waiting) {
-        buckets.symptom.push({ id: PENDING_PREFIX + i.clientId, data: i.data, createdAt: i.queuedAt, pending: true });
+      const waiting = await withOutbox(buckets, userId);
+      set({ records: buckets, loadedFor: userId, loading: false, offlineCopyFrom: null });
+      if (waiting) void get().flushOutbox();
+    } catch (e) {
+      // No signal: show the copy saved on this phone at the last good load (For my doctor says when it was made).
+      const copy = isOfflineError(e) ? await readSnapshot(userId) : null;
+      if (copy) {
+        const buckets = { ...emptyBuckets(), ...copy.records } as Buckets;
+        await withOutbox(buckets, userId);
+        set({ records: buckets, loadedFor: userId, loading: false, error: '', offlineCopyFrom: copy.savedAt });
+        return;
       }
-      set({ records: buckets, loadedFor: userId, loading: false });
-      if (waiting.length) void get().flushOutbox();
-    } catch {
       set({ loading: false, error: "We couldn't load your information. Check your connection and try again." });
     }
   },
@@ -129,8 +150,11 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   reset: () => {
     // Sign-out / account switch: queued notes belong to the old account. Not on a cold start (nothing loaded yet),
     // where the tabs layout also calls reset() before the session has restored.
-    if (get().loadedFor) void clearOutbox();
-    set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '' });
+    if (get().loadedFor) {
+      void clearOutbox();
+      void clearSnapshot();
+    }
+    set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '', offlineCopyFrom: null });
   },
 
   flushOutbox: async () => {

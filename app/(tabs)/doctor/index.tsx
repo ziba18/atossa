@@ -18,7 +18,7 @@ import { printSummary, shareSummaryPdf } from '../../../components/atossa/doctor
 import { useDoctorBuilder, useDoctorDoc } from '../../../components/atossa/doctor/useDoctorDoc';
 import { haptics } from '../../../lib/haptics';
 import { formatDay, joinFacts, notesLabel } from '../../../lib/records/format';
-import { todayKey } from '../../../lib/records/dates';
+import { toKey, todayKey } from '../../../lib/records/dates';
 import {
   RANGE_LABEL, VISIT_TYPES, agendaTitleFor, summaryToHtml, type RangeChoice, type VisitType,
 } from '../../../lib/records/summary';
@@ -71,6 +71,8 @@ export default function DoctorScreen() {
   const loading = useRecordsStore((s) => s.loading);
   const loadedFor = useRecordsStore((s) => s.loadedFor);
   const loadError = useRecordsStore((s) => s.error);
+  const offlineCopyFrom = useRecordsStore((s) => s.offlineCopyFrom);
+  const localKey = (iso: string) => { const d = new Date(iso); return toKey(d.getFullYear(), d.getMonth(), d.getDate()); };
   const load = useRecordsStore((s) => s.load);
   const savedNote = useRecordsStore((s) => s.records.doctor_note[0]?.data.text ?? '');
   const saveDoctorNote = useRecordsStore((s) => s.saveDoctorNote);
@@ -195,6 +197,15 @@ export default function DoctorScreen() {
           Your notes, in your words, ready to share.
         </Txt>
       )}
+
+      {offlineCopyFrom ? (
+        <Card tone="sunken" style={{ marginTop: space.md }}>
+          <Txt accessibilityRole="alert" testID="offline-copy">
+            {`No connection. This is the copy saved on this phone. Made on ${formatDay(localKey(offlineCopyFrom), 'always')}.`}
+          </Txt>
+          {userId ? <Button label="Try again" variant="text" small onPress={() => load(userId)} /> : null}
+        </Card>
+      ) : null}
 
       {upcoming ? (
         <Card style={{ marginTop: short ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>

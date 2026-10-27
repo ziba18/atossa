@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { Profile } from '../types/database';
 import { api, clearTokens, saveTokens } from '../lib/api';
 import { clearOutbox } from '../lib/outbox';
+import { clearSnapshot } from '../lib/recordsSnapshot';
 import { clearLocalChats } from './chatStore';
 import { deleteLastSharedPdf } from '../components/atossa/doctor/share';
 
@@ -111,6 +112,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signOut: async () => {
     await clearOutbox(); // notes still waiting to send belong to this account
+    await clearSnapshot(); // the offline copy of her records too
     await deleteLastSharedPdf();
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
@@ -119,6 +121,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   deleteAccount: async () => {
     await api.delete('/me');
     await clearOutbox();
+    await clearSnapshot();
     const id = useAuthStore.getState().user?.id;
     if (id) await clearLocalChats(id);
     await deleteLastSharedPdf();
