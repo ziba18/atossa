@@ -176,6 +176,19 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
           <PressableCard edge="clay" onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
             <Txt variant="groupLabel">Bleeding</Txt>
             <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m)}</Txt>
+            {m.bleedingDays ? (
+              <View style={styles.bleedChart} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                {m.weeks.map((w) => {
+                  const n = m.days.filter((d) => d.bleeding && d.date >= w.from && d.date <= w.to).length;
+                  return (
+                    <View key={w.from} style={styles.weekCol}>
+                      {n > 0 && (chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL) ? <Txt variant="caption" style={styles.weekNum}>{n}</Txt> : null}
+                      <View style={[styles.weekBar, { height: n ? 4 + n * 4 : 3, backgroundColor: n ? colors.clay : colors.clayTint }]} />
+                    </View>
+                  );
+                })}
+              </View>
+            ) : null}
           </PressableCard>
         </FadeIn>
       ) : (
@@ -237,6 +250,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
 
 const styles = StyleSheet.create({
   ringRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, marginTop: space.sm },
+  bleedChart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 44, marginTop: space.sm },
   tiles: { flexDirection: 'row', gap: space.sm },
   tile: { flex: 1, minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
   tileWide: { paddingHorizontal: space.md, paddingVertical: space.sm },
