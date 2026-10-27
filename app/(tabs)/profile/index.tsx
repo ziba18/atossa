@@ -143,7 +143,8 @@ export default function ProfileScreen() {
         <GroupRow
           icon="user"
           label={name || 'Your details'}
-          detail={user?.email || undefined}
+          // Zero-width spaces after @ and . let a long address wrap at those points on a narrow screen (the row's spoken label excludes it).
+          detail={user?.email ? user.email.replace(/([@.])/g, '$1\u200B') : undefined}
           onPress={() => router.push('/(tabs)/profile/edit-profile' as any)}
           accessibilityLabel={`${name || 'Your details'}. Edit your details`}
         />
