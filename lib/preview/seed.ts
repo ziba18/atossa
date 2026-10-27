@@ -63,9 +63,9 @@ const APPOINTMENTS: AppointmentData[] = [
 ];
 
 const MEDICINES: MedicineData[] = [
-  { name: 'Birth control pills', started: '2015-06-01', startedPrecision: 'month', stopped: '2016-06-01', stoppedPrecision: 'month', happened: 'No relief from the pain.' },
-  { name: 'Pain relievers', started: '2015-06-01', startedPrecision: 'month', stopped: '', stoppedPrecision: 'exact', happened: 'Sometimes helps for a short while, often no relief.' },
-  { name: 'Cortisone injections at the emergency department', started: '2019-04-01', startedPrecision: 'month', stopped: '2019-04-01', stoppedPrecision: 'month', happened: 'Gave me a little relief for a few days.' },
+  { name: 'Birth control pills', started: '2015-06-01', startedPrecision: 'month', stopped: '2016-06-01', stoppedPrecision: 'month', happened: 'No relief from the pain.', helped: 'No' },
+  { name: 'Pain relievers', started: '2015-06-01', startedPrecision: 'month', stopped: '', stoppedPrecision: 'exact', happened: 'Sometimes helps for a short while, often no relief.', helped: 'A little' },
+  { name: 'Cortisone injections at the emergency department', started: '2019-04-01', startedPrecision: 'month', stopped: '2019-04-01', stoppedPrecision: 'month', happened: 'Gave me a little relief for a few days.', helped: 'A little' },
 ];
 
 const HISTORY: HistoryData[] = [

@@ -15,6 +15,8 @@ import { useScrollRef } from '../timeline/navigation';
 import { RecordDateField } from './RecordDateField';
 import { HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
 
+const HELPED_OPTIONS = ['Helped', 'A little', 'No', 'Not sure'] as const;
+
 type AnyData = MedicineData | AppointmentData | HistoryData;
 /** History drafts may have no type yet (nothing pre-selected). */
 type HistoryDraft = Omit<HistoryData, 'type'> & { type: HistoryType | '' };
@@ -311,6 +313,17 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
         min={d.started && d.startedPrecision === 'exact' ? d.started : undefined}
         onChange={(stopped, stoppedPrecision) => set({ stopped, stoppedPrecision })}
       />
+      <View>
+        <FieldLabel label="Did it help?" />
+        <ChipGroup
+          mode="single"
+          options={[...HELPED_OPTIONS]}
+          allowDeselect
+          value={d.helped ?? null}
+          onChange={(v) => set({ helped: (v ?? undefined) as MedicineData['helped'] })}
+          accessibilityLabel="Did it help?"
+        />
+      </View>
       <TextField
         label="What I noticed"
         hint="In your own words"
