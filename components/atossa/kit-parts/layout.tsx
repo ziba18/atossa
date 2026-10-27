@@ -404,7 +404,7 @@ export function ConfirmCard({
               label={a.label}
               variant={i === confirmIdx ? 'destructiveOutline' : 'text'}
               onPress={a.onPress}
-              style={i === confirmIdx ? { flex: 1 } : { paddingHorizontal: space.md }}
+              style={i === confirmIdx ? { flexGrow: 1, flexShrink: 0, minWidth: 96 } : { paddingHorizontal: space.md }}
             />
           ))}
         </View>
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderRadius: radii.card, borderWidth: 1, borderColor: colors.hairline,
     padding: space.lg, overflow: 'hidden',
   },
-  confirmRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  confirmRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs },
   pressable: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: heights.minHit },
   edgePad: { paddingLeft: space.lg + 4 },
   clayEdge: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: colors.clay },
