@@ -20,3 +20,11 @@ def test_no_harmless_note_raises_the_alarm():
 
 def test_wanna_die_gets_the_self_harm_wording():
     assert emergency_kind("i wanna die") == "self_harm"
+
+
+SET8 = json.loads((Path(__file__).parent / "emergency_set_v8.json").read_text())
+
+
+def test_set_v8_emergencies_caught_and_harmless_quiet():
+    assert [t for t in SET8["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET8["harmless"] if is_emergency(t)] == []
