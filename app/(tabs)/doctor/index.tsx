@@ -216,7 +216,7 @@ export default function DoctorScreen() {
         </Card>
       ) : null}
 
-      {desk ? (
+      {desk && !nothingYet ? (
         <View style={{ flexDirection: 'row', gap: space.xxl, alignItems: 'flex-start' }}>
           <View style={{ width: 340 }}>
       {nothingYet ? null : (
