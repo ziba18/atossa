@@ -171,6 +171,7 @@ export default function DoctorScreen() {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs }}>
         <Button
           label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
+          accessibilityLabel={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
           icon="share-2"
           onPress={share}
           loading={busy === 'share'}
