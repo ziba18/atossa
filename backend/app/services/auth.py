@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.models.user import User, Profile
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt_sha256 hashes the password with SHA-256 first, so long passphrases and non-ASCII text are not cut at
+# bcrypt's 72 bytes (ASVS 5.0 6.2.9). Old plain-bcrypt hashes still verify and are re-hashed at the next login.
+pwd_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated=["bcrypt"])
 
 
 def hash_password(password: str) -> str:
@@ -22,6 +24,13 @@ _DUMMY_HASH = pwd_context.hash("unused-password-for-timing")
 def verify_password_or_dummy(plain: str, hashed: str | None) -> bool:
     ok = verify_password(plain, hashed or _DUMMY_HASH)
     return bool(hashed) and ok
+
+
+def upgrade_hash_if_needed(db: Session, user: User, plain: str) -> None:
+    """Replace a deprecated (plain bcrypt) hash with the current scheme after a correct password."""
+    if user.hashed_password and pwd_context.needs_update(user.hashed_password):
+        user.hashed_password = hash_password(plain)
+        db.commit()
 
 
 def verify_password(plain: str, hashed: str) -> bool:
