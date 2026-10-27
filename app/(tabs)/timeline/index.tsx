@@ -38,7 +38,7 @@ const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 export default function TimelineScreen() {
   const router = useRouter();
   usePageTitle('Timeline');
-  const { mode, setMode, filter, setFilter, focusDay, setFocusDay } = useTimelineSession();
+  const { mode, setMode, filter, setFilter, focusWeek, setFocusWeek } = useTimelineSession();
   const scrollRef = useRef<ScrollViewInstance | null>(null);
   const symptom = useRecordsStore((s) => s.records.symptom);
   const loadError = useRecordsStore((s) => s.error);
@@ -101,9 +101,9 @@ export default function TimelineScreen() {
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : failed ? null : mode === 'list' ? (
-        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} focusDay={focusDay} onFocused={() => setFocusDay(null)} scrollRef={scrollRef} />
+        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
       ) : mode === 'patterns' ? (
-        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(day) => { setFilter('Symptoms'); setFocusDay(day); setMode('list'); }} />
+        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}
@@ -136,9 +136,9 @@ export default function TimelineScreen() {
 // ---- List -----------------------------------------------------------------------------------
 
 function ListView({
-  feed, symptoms, filter, setFilter, onOpen, focusDay, onFocused, scrollRef,
+  feed, symptoms, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef,
 }: {
-  focusDay: string | null;
+  focusWeek: { from: string; to: string } | null;
   onFocused: () => void;
   scrollRef: React.RefObject<ScrollViewInstance | null>;
   feed: FeedItem[];
@@ -151,13 +151,23 @@ function ListView({
   // Patterns week bar -> scroll to that week's group (y = this view's offset + the group's offset).
   const rootY = useRef(0);
   const groupY = useRef<Record<string, number>>({});
-  const targetKey = focusDay ? `w:${mondayOf(focusDay)}` : null;
+  // The tapped bar is a rolling 7 days; the list groups by calendar week (Monday). Aim at the oldest week group
+  // that starts inside the range, else the group the range's first day falls in. No match: drop the request.
+  const lo = focusWeek ? `w:${focusWeek.from}` : '';
+  const hi = focusWeek ? `w:${focusWeek.to}` : '';
+  const targetKey = focusWeek
+    ? [...groups].reverse().find((g) => g.key >= lo && g.key <= hi)?.key
+      ?? groups.find((g) => g.key === `w:${mondayOf(focusWeek.from)}`)?.key ?? null
+    : null;
   const jump = () => {
     if (!targetKey || groupY.current[targetKey] == null) return;
     scrollRef.current?.scrollTo({ y: Math.max(0, rootY.current + groupY.current[targetKey] - space.md), animated: false });
     onFocused();
   };
-  useEffect(() => { if (targetKey && groupY.current[targetKey] != null) jump(); });
+  useEffect(() => {
+    if (focusWeek && !targetKey) onFocused();
+    else if (targetKey && groupY.current[targetKey] != null) jump();
+  });
 
   if (feed.length === 0) {
     return (

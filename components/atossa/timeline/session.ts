@@ -10,9 +10,9 @@ export const TIMELINE_FILTERS: TimelineFilter[] = ['All', 'Symptoms', 'Bleeding'
 interface TimelineSession {
   mode: TimelineMode;
   filter: TimelineFilter;
-  /** Patterns week bar tapped: the list scrolls to the week group containing this day (consumed once). */
-  focusDay: string | null;
-  setFocusDay: (day: string | null) => void;
+  /** Patterns week bar tapped: the list scrolls to the first week group inside this day range (consumed once). */
+  focusWeek: { from: string; to: string } | null;
+  setFocusWeek: (w: { from: string; to: string } | null) => void;
   setMode: (mode: TimelineMode) => void;
   setFilter: (filter: TimelineFilter) => void;
 }
@@ -20,8 +20,8 @@ interface TimelineSession {
 export const useTimelineSession = create<TimelineSession>((set) => ({
   mode: 'list',
   filter: 'All',
-  focusDay: null,
-  setFocusDay: (focusDay) => set({ focusDay }),
+  focusWeek: null,
+  setFocusWeek: (focusWeek) => set({ focusWeek }),
   setMode: (mode) => set({ mode }),
   setFilter: (filter) => set({ filter }),
 }));

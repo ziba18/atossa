@@ -83,7 +83,7 @@ function EmptyLine({ title, line }: { title: string; line: string }) {
   );
 }
 
-export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: TimelineFilter) => void; onOpenWeek: (day: string) => void }) {
+export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: TimelineFilter) => void; onOpenWeek: (w: { from: string; to: string }) => void }) {
   const router = useRouter();
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
@@ -148,7 +148,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           </View>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
-              <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek(w.from)} style={styles.weekCol} hitSlop={4}>
+              <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
                 {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
                 <View style={[styles.weekBar, { height: Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18)), backgroundColor: w.peak == null ? colors.ink2 : severityColor(w.peak).bg }]} />
               </Pressable>
