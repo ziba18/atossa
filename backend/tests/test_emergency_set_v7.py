@@ -35,3 +35,11 @@ SET9 = json.loads((Path(__file__).parent / "emergency_set_v9_harmless.json").rea
 
 def test_everyday_wording_that_resembles_the_new_phrases_stays_quiet():
     assert [t for t in SET9["harmless"] if is_emergency(t)] == []
+
+
+SET10 = json.loads((Path(__file__).parent / "emergency_set_v10_typos.json").read_text())
+
+
+def test_common_typos_in_emergency_phrasings():
+    assert [t for t in SET10["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET10["harmless"] if is_emergency(t)] == []
