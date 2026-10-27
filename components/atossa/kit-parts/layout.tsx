@@ -205,22 +205,25 @@ export function HeroNumber({
   const narrow = winW < 240;
   // 320-wide phones: a smaller numeral tile lets the text sit beside it instead of dropping underneath.
   const compact = winW < 360 && winW >= 240;
+  // SE-class heights: one row (small numeral + the line), no sub-line, so the capture prompt stays on the first screen.
+  const short = useWindowDimensions().height < 640 && !narrow;
+  const tile = short ? 48 : compact ? 60 : 76;
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? (
-        <View style={{ minWidth: compact ? 60 : 76, height: compact ? 60 : 76, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
-          <Txt variant="numeral" style={compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
+        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
+          <Txt variant="numeral" style={short ? { fontSize: 28, lineHeight: 32 } : compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
         </View>
       ) : null}
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
-      <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, gap: space.xxs }}>
+      <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: short ? 90 : 130, gap: space.xxs }}>
         <Txt variant="headline" style={narrow ? { fontSize: 15, lineHeight: 20 } : undefined}>{line}</Txt>
-        <Txt variant="secondary">{sub}</Txt>
+        {short ? null : <Txt variant="secondary">{sub}</Txt>}
       </View>
     </View>
   );
   if (!onPress) return <Card>{body}</Card>;
-  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint}>{body}</PressableCard>;
+  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
 }
 
 /** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
