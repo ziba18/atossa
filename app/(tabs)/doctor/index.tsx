@@ -311,7 +311,7 @@ export default function DoctorScreen() {
       {!nothingYet && !doc.empty ? (
         <>
           <PageOneCards doc={doc} showAgenda={!agendaUp} />
-          <Step title="See the full page">
+          <Step title="Your summary page">
             <DocumentPreview doc={doc} tall={desk} />
           </Step>
         </>
