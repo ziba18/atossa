@@ -190,3 +190,11 @@ SET22 = json.loads((Path(__file__).parent / "emergency_set_v22_blind_general.jso
 def test_general_emergencies_plain_words_v22():
     assert [t for t in SET22["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET22["harmless"] if is_emergency(t)] == []
+
+
+SET23 = json.loads((Path(__file__).parent / "emergency_set_v23_blind_nhs_general.json").read_text())
+
+
+def test_set_v23_emergencies_caught_and_harmless_quiet():
+    assert [t for t in SET23["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET23["harmless"] if is_emergency(t)] == []
