@@ -114,6 +114,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     await clearOutbox(); // notes still waiting to send belong to this account
     await clearSnapshot(); // the offline copy of her records too
     await deleteLastSharedPdf();
+    const id = useAuthStore.getState().user?.id;
+    if (id) await clearLocalChats(id);
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },

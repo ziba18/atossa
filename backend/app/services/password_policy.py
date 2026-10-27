@@ -17,7 +17,6 @@ welcome1 welcome123 admin123 abc12345 abcd1234 monkey123 dragon123 football1 bas
 princess1 trustno1 changeme changeme1 atossa123 atossa1234 password! passwort1 london123 summer2024
 """.split())
 
-MAX_BYTES = 72  # bcrypt ignores everything after 72 bytes
 
 
 def password_problem(password: str, email: str = "") -> str | None:
@@ -26,8 +25,8 @@ def password_problem(password: str, email: str = "") -> str | None:
         return "Password must be at least 8 characters"
     if "\x00" in password:
         return "Password contains a character that is not allowed"
-    if len(password.encode("utf-8")) > MAX_BYTES:
-        return "Password must be at most 72 bytes"
+    if len(password) > 128:
+        return "Password must be at most 128 characters"
     lowered = password.lower()
     if lowered in COMMON_PASSWORDS or len(set(lowered)) == 1:
         return "That password is too common. Please choose another"

@@ -11,7 +11,7 @@ def test_unknown_email_still_runs_a_password_hash(monkeypatch):
     real = auth_service.verify_password
     monkeypatch.setattr(auth_service, "verify_password", lambda p, h: calls.append(h) or real(p, h))
     assert auth_service.verify_password_or_dummy("whatever-123", None) is False
-    assert calls and calls[0].startswith("$2")
+    assert calls and calls[0].startswith(("$2", "$bcrypt-sha256$"))
 
 
 def test_known_user_still_verifies():

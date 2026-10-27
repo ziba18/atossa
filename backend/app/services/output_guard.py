@@ -12,9 +12,8 @@ from dataclasses import dataclass
 
 FALLBACK = "I can't assess that, but your GP can. Want to add anything else to your note?"
 URGENT = (
-    "This could need urgent help. If you think this is an emergency, for example chest pain, trouble "
-    "breathing, a face drooping or slurred speech, very heavy bleeding, fainting, or severe sudden pain, "
-    "call 999 or go to A&E. If you are not sure, call NHS 111."
+    "This could need urgent help. If you have severe sudden pain, very heavy bleeding or feel faint, "
+    "call 999 or go to A&E, or call NHS 111."
 )
 
 _CONDITIONS = [

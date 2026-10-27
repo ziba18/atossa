@@ -37,3 +37,34 @@ def test_export_contains_own_rows_only_and_no_secrets():
     assert "secret-hash" not in text and "hashed_password" not in text
     assert "invite_token" not in text
     assert out["tables"]["users"][0]["email"] == "me@example.com"
+
+
+def test_export_includes_consent_record():
+    from datetime import datetime, timezone
+    from app.models import Profile
+
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    db = sessionmaker(bind=engine)()
+    me = User(email="me@example.com", hashed_password="$2b$secret-hash")
+    db.add(me)
+    db.commit()
+    db.add(Profile(id=me.id, consent_version=1, consented_at=datetime.now(timezone.utc)))
+    db.commit()
+
+    out = export_my_data(current_user=me, db=db)
+    row = out["tables"]["profiles"][0]
+    assert row["consent_version"] == 1
+    assert row["consented_at"]
+
+
+def test_export_covers_every_table():
+    """A table added later must be added to the export too (right of access)."""
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    db = sessionmaker(bind=engine)()
+    me = User(email="me@example.com", hashed_password="$2b$secret-hash")
+    db.add(me)
+    db.commit()
+    out = export_my_data(current_user=me, db=db)
+    assert {t.name for t in Base.metadata.sorted_tables} <= set(out["tables"])

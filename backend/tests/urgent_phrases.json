@@ -1,202 +1,202 @@
 [
- [
-  "I can’t breathe",
-  true
- ],
- [
-  "I can't breathe",
-  true
- ],
- [
-  "soaking a pad every hour",
-  true
- ],
- [
-  "I’m soaking a pad every hour",
-  true
- ],
- [
-  "I fainted this morning",
-  true
- ],
- [
-  "severe sudden pain on my left side",
-  true
- ],
- [
-  "worst pain I’ve ever had",
-  true
- ],
- [
-  "I’m pregnant and bleeding",
-  true
- ],
- [
-  "I want to end my life",
-  true
- ],
- [
-  "I want to e​nd my life",
-  true
- ],
- [
-  "heavy bleeding all night",
-  true
- ],
- [
-  "pain is a 10/10",
-  true
- ],
- [
-  "ＣＨＥＳＴ ＰＡＩＮ",
-  true
- ],
- [
-  "cramps on day two, about a 4 out of 10",
-  false
- ],
- [
-  "lower back ache after walking",
-  false
- ],
- [
-  "period was late this month",
-  false
- ],
- [
-  "I felt tired and bloated",
-  false
- ],
- [
-  "took ibuprofen and it helped",
-  false
- ],
- [
-  "mild cramps this morning",
-  false
- ],
- [
-  "spotting before my period",
-  false
- ],
- [
-  "I cannot breathe",
-  true
- ],
- [
-  "I can’t stop bleeding",
-  true
- ],
- [
-  "bleeding won’t stop",
-  true
- ],
- [
-  "I get short of breath",
-  true
- ],
- [
-  "hard to breathe",
-  true
- ],
- [
-  "blood everywhere",
-  true
- ],
- [
-  "my chest feels tight",
-  true
- ],
- [
-  "I'm bleeding and 10 weeks pregnant",
-  true
- ],
- [
-  "a bit tired, breathing fine",
-  false
- ],
- [
-  "period stopped bleeding yesterday",
-  false
- ],
- [
-  "bleeding stopped hours ago",
-  false
- ],
- [
-  "tight jeans made my belly sore",
-  false
- ],
- [
-  "I suddenly feel confused",
-  true
- ],
- [
-  "suddenly became disorientated at work",
-  true
- ],
- [
-  "pain in the tip of my shoulder and my tummy hurts",
-  true
- ],
- [
-  "sharp pain and feeling very lightheaded",
-  true
- ],
- [
-  "looking very pale and feeling sick",
-  true
- ],
- [
-  "I felt a bit dizzy when I stood up",
-  false
- ],
- [
-  "period pain 4 out of 10 today",
-  false
- ],
- [
-  "a little confused about my appointment date",
-  false
- ],
- [
-  "my shoulder is sore from the gym",
-  false
- ],
- [
-  "pale and tired this week",
-  false
- ],
- [
-  "Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.",
-  true
- ],
- [
-  "The pain was sharp and went down my legs. I also felt dizzy and lightheaded.",
-  true
- ],
- [
-  "I feel very dizzy and sharp pain in my tummy",
-  true
- ],
- [
-  "Very sharp pain across my lower belly. I couldn't move around or stand without help.",
-  true
- ],
- [
-  "Mild cramps on day two and I felt a bit dizzy when I stood up fast",
-  false
- ],
- [
-  "Dull ache in my back, no dizziness, slept fine",
-  false
- ],
- [
-  "Sharp pain in my knee after running, no other symptoms",
-  false
- ],
- [
-  "Felt lightheaded after skipping lunch, cramps were a 3 out of 10",
-  false
- ]
+[
+"I can’t breathe",
+true
+],
+[
+"I can't breathe",
+true
+],
+[
+"soaking a pad every hour",
+true
+],
+[
+"I’m soaking a pad every hour",
+true
+],
+[
+"I fainted this morning",
+true
+],
+[
+"severe sudden pain on my left side",
+true
+],
+[
+"worst pain I’ve ever had",
+true
+],
+[
+"I’m pregnant and bleeding",
+true
+],
+[
+"I want to end my life",
+true
+],
+[
+"I want to e​nd my life",
+true
+],
+[
+"heavy bleeding all night",
+true
+],
+[
+"pain is a 10/10",
+true
+],
+[
+"ＣＨＥＳＴ ＰＡＩＮ",
+true
+],
+[
+"cramps on day two, about a 4 out of 10",
+false
+],
+[
+"lower back ache after walking",
+false
+],
+[
+"period was late this month",
+false
+],
+[
+"I felt tired and bloated",
+false
+],
+[
+"took ibuprofen and it helped",
+false
+],
+[
+"mild cramps this morning",
+false
+],
+[
+"spotting before my period",
+false
+],
+[
+"I cannot breathe",
+true
+],
+[
+"I can’t stop bleeding",
+true
+],
+[
+"bleeding won’t stop",
+true
+],
+[
+"I get short of breath",
+true
+],
+[
+"hard to breathe",
+true
+],
+[
+"blood everywhere",
+true
+],
+[
+"my chest feels tight",
+true
+],
+[
+"I'm bleeding and 10 weeks pregnant",
+true
+],
+[
+"a bit tired, breathing fine",
+false
+],
+[
+"period stopped bleeding yesterday",
+false
+],
+[
+"bleeding stopped hours ago",
+false
+],
+[
+"tight jeans made my belly sore",
+false
+],
+[
+"I suddenly feel confused",
+true
+],
+[
+"suddenly became disorientated at work",
+true
+],
+[
+"pain in the tip of my shoulder and my tummy hurts",
+true
+],
+[
+"sharp pain and feeling very lightheaded",
+true
+],
+[
+"looking very pale and feeling sick",
+true
+],
+[
+"I felt a bit dizzy when I stood up",
+false
+],
+[
+"period pain 4 out of 10 today",
+false
+],
+[
+"a little confused about my appointment date",
+false
+],
+[
+"my shoulder is sore from the gym",
+false
+],
+[
+"pale and tired this week",
+false
+],
+[
+"Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.",
+true
+],
+[
+"The pain was sharp and went down my legs. I also felt dizzy and lightheaded.",
+true
+],
+[
+"I feel very dizzy and sharp pain in my tummy",
+true
+],
+[
+"Very sharp pain across my lower belly. I couldn't move around or stand without help.",
+true
+],
+[
+"Mild cramps on day two and I felt a bit dizzy when I stood up fast",
+false
+],
+[
+"Dull ache in my back, no dizziness, slept fine",
+false
+],
+[
+"Sharp pain in my knee after running, no other symptoms",
+false
+],
+[
+"Felt lightheaded after skipping lunch, cramps were a 3 out of 10",
+false
+]
 ]

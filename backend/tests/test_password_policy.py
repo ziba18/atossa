@@ -12,9 +12,10 @@ def test_rejects_short_common_repeated_and_email_name():
     assert password_problem("jessica99", "jessica99@example.com") is not None
 
 
-def test_rejects_over_bcrypt_limit():
-    assert password_problem("x1" * 40) is not None
-    assert password_problem("é" * 40) is not None
+def test_long_passwords_are_accepted_up_to_128_characters():
+    assert password_problem("x1y2" * 20) is None  # 80 characters: used to be refused at 72 bytes
+    assert password_problem("éa" * 32) is None  # 64 characters, 96 bytes
+    assert password_problem("x1y2" * 33) is not None  # 132 characters
 
 
 def test_list_file_is_loaded_and_blocks_listed_entries():

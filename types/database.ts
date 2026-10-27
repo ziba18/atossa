@@ -10,6 +10,9 @@ export interface Profile {
   average_period_length: number;
   cycle_regularity: CycleRegularity;
   onboarding_complete: boolean;
+  /** null until the person agrees to the consent text; absent from an older backend. */
+  consent_version?: number | null;
+  consented_at?: string | null;
   timezone: string;
   dark_mode: boolean;
   notifications_enabled: boolean;
