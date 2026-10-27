@@ -3,7 +3,7 @@
 // for the same dates. Descriptive only: no trends, verdicts, comparisons or predictions.
 import { addDays } from './dates';
 import { bleedingStatus, noteCount } from './format';
-import { buildDoctorSummary, type CountItem, type DocQuote, type FreqBar, type HeatDay, type SummaryInput } from './summary';
+import { buildDoctorSummary, type TriedItem, type CountItem, type DocQuote, type FreqBar, type HeatDay, type SummaryInput } from './summary';
 
 export type PatternsRange = '4w' | '12w';
 export const PATTERNS_RANGES: { value: PatternsRange; label: string; days: number }[] = [
@@ -37,6 +37,8 @@ export interface PatternsModel {
   spottingDays: number;
   /** What it got in the way of. */
   impacts: CountItem[];
+  /** What she tried, with her own "did it help" answer (blank when not answered). */
+  tried: TriedItem[];
   latest: DocQuote | null;
   /** Fewer than MIN_NOTE_DAYS days with a note in the last 28 days. */
   tooEarly: boolean;
@@ -51,6 +53,7 @@ export function buildPatterns(input: SummaryInput, today: string, range: Pattern
   const freq = doc.sections.find((s) => s.id === 'frequency');
   const words = doc.sections.find((s) => s.id === 'words');
   const impacts = doc.sections.find((s) => s.id === 'impacts');
+  const tried = doc.sections.find((s) => s.id === 'tried');
   const days = freq && freq.id === 'frequency' ? freq.strip.days : [];
   const bars = freq && freq.id === 'frequency' ? freq.bars : [];
 
@@ -81,6 +84,7 @@ export function buildPatterns(input: SummaryInput, today: string, range: Pattern
     // From the period records themselves, not the strip: the doctor strip can start at the first note.
     ...bleedingCounts(input, from, today),
     impacts: impacts && impacts.id === 'impacts' ? impacts.items : [],
+    tried: tried && tried.id === 'tried' ? tried.items : [],
     latest: words && words.id === 'words' ? words.quotes[0] ?? null : null,
     tooEarly: recent < MIN_NOTE_DAYS,
   };

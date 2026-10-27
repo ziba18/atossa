@@ -172,6 +172,22 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
         <EmptyLine title="What it got in the way of" line="Nothing logged yet. Say what it stopped you doing and it appears here." />
       )}
 
+      {m.tried.length ? (
+        <FadeIn index={4}>
+          <Card>
+            <Txt variant="groupLabel">What you tried</Txt>
+            <View style={{ gap: space.sm, marginTop: space.sm }}>
+              {m.tried.slice(0, 3).map((t) => (
+                <View key={t.title}>
+                  <Txt variant="body">{t.title}</Txt>
+                  {t.helped ? <Txt variant="secondary">{t.helped}</Txt> : null}
+                </View>
+              ))}
+            </View>
+          </Card>
+        </FadeIn>
+      ) : null}
+
       <EmptyLine title="Sleep and mood" line="Not recorded yet. You can mention them in any note." />
 
       {m.latest ? (
