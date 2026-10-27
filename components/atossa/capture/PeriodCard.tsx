@@ -49,6 +49,8 @@ export function PeriodCard() {
 
   const save = async () => {
     if (!selected) return;
+    // Same day as the start already logged: nothing new to save (no duplicate record).
+    if (selected === lastStart) { setPicking(false); setSelected(null); return; }
     setSaving(true);
     setError('');
     try {
@@ -96,6 +98,9 @@ export function PeriodCard() {
           <Txt variant="body" color={selected ? colors.ink : colors.ink2} style={{ marginTop: space.sm }} accessibilityLiveRegion="polite">
             {selected ? `First day: ${formatDay(selected, 'always')}` : 'No day chosen yet'}
           </Txt>
+          {selected && selected === lastStart ? (
+            <Txt variant="caption" color={colors.ink2} style={{ marginTop: space.xs }}>That’s the start you already logged.</Txt>
+          ) : null}
           <InlineError message={error} style={{ marginTop: space.xs }} />
           <View style={{ marginTop: space.md, gap: space.xs }}>
             <Button label={saving ? 'Saving…' : 'Save'} loading={saving} disabled={!selected} onPress={save} />
