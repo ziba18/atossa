@@ -30,6 +30,7 @@ interface AuthState {
   loginWithApple: (idToken: string, displayName?: string | null, authorizationCode?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
   signOut: () => Promise<void>;
+  signOutEverywhere: () => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
   deleteAccount: () => Promise<void>;
 }
@@ -118,6 +119,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (id) await clearLocalChats(id);
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
+  },
+
+  // Ends every session on every device (server bumps the account's token version), then signs out here.
+  // Throws if the server cannot be reached, so the caller can say so instead of pretending it worked.
+  signOutEverywhere: async () => {
+    await api.post('/auth/logout-all');
+    await useAuthStore.getState().signOut();
   },
 
   deleteAccount: async () => {

@@ -62,6 +62,7 @@ export default function ProfileScreen() {
   const profile = useAuthStore((s) => s.profile);
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
+  const signOutEverywhere = useAuthStore((s) => s.signOutEverywhere);
   const deleteAccount = useAuthStore((s) => s.deleteAccount);
   const records = useRecordsStore((s) => s.records);
   const clearSampleData = useRecordsStore((s) => s.clearSampleData);
@@ -326,6 +327,18 @@ export default function ProfileScreen() {
           onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
           actions={[
             { label: 'Sign out', variant: 'primary', onPress: async () => { await signOut(); router.replace('/(auth)/welcome' as any); } },
+            {
+              label: 'Sign out of all devices',
+              variant: 'secondary',
+              onPress: async () => {
+                try {
+                  await signOutEverywhere();
+                  router.replace('/(auth)/welcome' as any);
+                } catch {
+                  showToast('We couldn’t reach the server. Check your connection and try again.');
+                }
+              },
+            },
             { label: 'Cancel', variant: 'text', onPress: () => setConfirmingSignOut(false) },
           ]}
         />
