@@ -1454,5 +1454,33 @@ true
 [
 "I want to drive my car into a wall",
 true
+],
+[
+"I cut myself a slice of cake and sat down with the heat pack",
+false
+],
+[
+"cut myself some slack today, rested",
+false
+],
+[
+"can't do this anymore without a break, going to rest this weekend, pain at 4",
+false
+],
+[
+"my face puffing up from crying at the film",
+false
+],
+[
+"I'm 28 weeks pregnant and feeling well, regular scan booked",
+false
+],
+[
+"fever and chills last week, gone now, confused about my dates",
+false
+],
+[
+"can't swallow big pills so asked for liquid",
+false
 ]
 ]

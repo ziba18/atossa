@@ -257,13 +257,13 @@ _SELF = [
     r"(?:thinking (?:about|of)|want(?:ing)? to) taking (?:all|every)\b.{0,20}(?:tablets|pills|medication|painkillers)",
     r"(?:not|won'?t|n't) (?:going to )?wake up (?:tomorrow|again)|(?:don'?t|do not) want to wake up",
     # run 01 probe 2 (4/10 missed): UK/teen distress wording; also covers the not-exist item of set v23 (S-140)
-    r"(?:can'?t|cannot) do this (?:any ?more|anymore)\b", r"(?:want|wanna|wants) (?:to )?(?:just )?(?:be gone|not exist)\b|(?:thinking|think|thought) about not existing|what'?s the point (?:of|in) (?:going on|living|carrying on|anything)",
+    r"(?:can'?t|cannot) do this (?:any ?more|anymore)\b(?! without)", r"(?:want|wanna|wants) (?:to )?(?:just )?(?:be gone|not exist)\b|(?:thinking|think|thought) about not existing|what'?s the point (?:of|in) (?:going on|living|carrying on|anything)",
     r"(?:too many|a load of|loads of) (?:painkillers|tablets|pills)\b.{0,25}on purpose|on purpose.{0,25}(?:tablets|pills|painkillers)",
     # run 01 (S-154, probe 13: 3/8 missed): thoughts of harming a child, of crashing a car, hearing voices
     r"(?:might|going to|want to|thoughts? of|thinking (?:of|about)) (?:hurt|harm|hurting|harming) (?:my|the) (?:baby|child|kids?|son|daughter)\b", r"(?:thoughts?|thinking|urge|want|wanted|imagin\w+|picturing) (?:of |about |to )?(?:driving|drive|crashing|crash|steering|steer) (?:my |the )?car (?:into|off)\b",
     r"\bhearing voices\b.{0,40}\b(?:hurt|harm|kill)\b",
     # run 01 (S-142): self-injury without the word 'harm', and doubt about carrying on
-    r"\bcut myself(?! (?:shaving|on|while|with|opening|chopping|cooking|slicing|badly on)\b)", r"(?:not sure|don'?t know|unsure) (?:if |whether )?i want to (?:carry on|keep going|go on|keep living|live)\b",
+    r"\bcut myself(?! (?:a|an|some|another|shaving|on|while|with|opening|chopping|cooking|slicing|badly on)\b)", r"(?:not sure|don'?t know|unsure) (?:if |whether )?i want to (?:carry on|keep going|go on|keep living|live)\b",
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
     r"end(?:ing)? things", r"(?:took|taken|taking) (?:a load|lots|too many|an overdose)\b.{0,30}(?:tablets|pills|paracetamol)|overdos\w+",
     r"(?:tablets|pills).{0,30}don'?t care what happens", r"self[- ]harm\w*", r"(?:want|wanna|going) to die", r"\bwa+nn?a+ (?:to )?die\b", r"\bsuic?[ci]de\b|\bsucid\w*", r"\bkil (?:myself|me)\b", r"(?:got|have|took|taken) the (?:tablets|pills) out|(?:looking|staring) at (?:the|my) (?:tablets|pills)", r"(?:took|taken|swallowed) too many (?:pils|pilss|tabs|tablits)\b", r"end(?:ing)? it all",
@@ -410,7 +410,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b|"
                     # run 01 probe 4 (8/12 missed): NHS pelvic-pain page 111/999 criteria told in everyday words
                     r"\bshoulder\b.{0,60}\b(?:pregnan\w+|(?:think|might|may) (?:i'?m|i am|be) pregnant)|\bpregnan\w+\b.{0,60}\btip of (?:my |the )?shoulder\b|"
-                    r"\b(?:2\d|3\d|4[0-2]) weeks\b.{0,60}\b(?:regular|contractions?|tightenings?)\b|"
+                    r"\b(?:2\d|3\d|4[0-2]) weeks\b.{0,60}\b(?:regular (?:pains?|tightenings?|contractions?)|contractions?|tightenings?)\b|"
                     r"\bpositive (?:pregnancy )?test\b.{0,60}\b(?:cramp\w*|spotting|bleed\w*|pain\w*)\b|"
                     r"\b(?:pelvi\w+|tummy|belly|abdom\w+)\b.{0,40}\b(?:pain|ache)\b.{0,60}\b(?:temperature of (?:3[89]|4\d)|shivering|very high temperature)\b|"
                     r"\b(?:temperature of (?:3[89]|4\d)|shivering)\b.{0,60}\bpelvi\w+ pain\b|"
@@ -423,7 +423,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:blurr\w*|lost|loss of|double) vision\b (?:came on |started |began )?(?:suddenly|all of a sudden)\b|\bsudden(?:ly)? (?:\w+ ){0,2}(?:blurr\w*|lost|double) vision\b|\bvision\b.{0,15}\b(?:went|goes|gone)\b.{0,15}\b(?:blurr\w+|black|dark|double)\b.{0,30}\b(?:one eye|suddenly)\b|\bblurr\w+ in one eye\b|"
                     r"\bcan'?t tell when i need (?:a |to )?(?:wee|pee|poo|go)\b|\bcan'?t (?:control|feel) (?:my )?(?:bladder|bowels?)\b|\bnumb\b.{0,40}\b(?:bladder|bowels?|between my legs)\b|"
                     r"\b(?:had|having) (?:a )?(?:fit|seizure)\b(?! of)|\bconvuls\w+|\bshaking\b.{0,40}\bbit my tongue\b|\bbit my tongue\b.{0,40}\bshaking\b|"
-                    r"\b(?:confused|forgetting where i am|disorientated)\b(?! about\b).{0,60}\b(?:high temperature|fever)\b(?! has (?:gone|settled|come down))|\b(?:high temperature|fever)\b.{0,60}\b(?:confused|forgetting where i am|disorientated)\b|"
+                    r"\b(?:confused|forgetting where i am|disorientated)\b(?! about\b).{0,60}\b(?:high temperature|fever)\b(?! has (?:gone|settled|come down))|\b(?:high temperature|fever)\b.{0,60}\b(?:confused(?! about\b)|forgetting where i am|disorientated)\b|"
                     r"\bwaters (?:have |just )?broke\b|\bmy waters (?:have )?(?:broken|gone)\b|"
                     # run 01 (S-152, probe 11: 10/10 missed): painkiller overdose by count, stomach bleeding signs after painkillers, opioid mixed with alcohol or doubled, slow breathing, swollen lips
                     r"\b(?:took|taken|swallowed|taking) (?:over |about |around )?(?:9|1\d|[2-9]\d) (?:paracetamol|co-?codamol|ibuprofen|codeine|naproxen|tablets|pills)\b|"
@@ -442,9 +442,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\blump\b.{0,20}\bgroin\b.{0,50}\b(?:painful|vomit\w*)\b|"
                     r"\bseeing things that aren'?t there\b|\bhearing voices\b|\bhaven'?t slept\b.{0,30}\b(?:days|nights)\b.{0,60}\b(?:seeing things|hearing voices)\b|"
                     # run 01 probe 5 (NHS allergic reaction page; 6/12 missed): swelling, wheeze with hives, can't swallow, floppy after an injection
-                    r"\b(?:having|think i'?m having|think i have|got|got an?) an? allergic reaction\b|\bcan'?t swallow\b|"
+                    r"\b(?:having|think i'?m having|think i have|got|got an?) an? allergic reaction\b|\bcan'?t swallow\b(?! (?:big |large |the |my )?(?:pills|tablets|capsules))|"
                     r"\bhives\b.{0,40}\bwheez\w*|\bwheez\w*.{0,40}\bhives\b|"
-                    r"\b(?:tongue|face)\b.{0,20}\b(?:feels? )?(?:huge|puffing up|swelling up)\b|"
+                    r"\btongue\b.{0,20}\b(?:feels? )?(?:huge|puffing up|swelling up)\b|\bface\b.{0,20}\bpuffing up\b.{0,60}\b(?:throat|tight|breath|lips)\b|"
                     r"\blips?\b.{0,20}\btingling\b.{0,30}\b(?:injection|dose|tablets?|capsule)\b|\bfloppy\b.{0,60}\b(?:injection|lips?|tingling)\b|"
                     # NHS pelvic-pain 999 list: pain in the tip of the shoulder together with pelvic/tummy pain (any clause)
                     r"\btip of (?:my |the )?shoulder\b.{0,60}\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b|"
