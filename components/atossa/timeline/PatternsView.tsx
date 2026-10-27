@@ -176,14 +176,18 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
           <PressableCard edge="clay" onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
             <Txt variant="groupLabel">Bleeding</Txt>
             <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m)}</Txt>
-            {m.bleedingDays ? (
+            {m.bleedingDays || m.spottingDays ? (
               <View style={styles.bleedChart} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
                 {m.weeks.map((w) => {
-                  const n = m.days.filter((d) => d.bleeding && d.date >= w.from && d.date <= w.to).length;
+                  const inWeek = (d: { date: string }) => d.date >= w.from && d.date <= w.to;
+                  const n = m.days.filter((d) => d.bleeding && inWeek(d)).length;
+                  // Spotting-only weeks: an outlined clay bar, like the hatched outline in the month view.
+                  const sp = n ? 0 : m.days.filter((d) => d.spotting && inWeek(d)).length;
+                  const v = n || sp;
                   return (
                     <View key={w.from} style={styles.weekCol}>
-                      {n > 0 && (chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL) ? <Txt variant="caption" style={styles.weekNum}>{n}</Txt> : null}
-                      <View style={[styles.weekBar, { height: n ? 4 + n * 4 : 3, backgroundColor: n ? colors.clay : colors.clayTint }]} />
+                      {v > 0 && (chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL) ? <Txt variant="caption" style={styles.weekNum}>{v}</Txt> : null}
+                      <View style={[styles.weekBar, { height: v ? 4 + v * 4 : 3 }, n ? { backgroundColor: colors.clay } : sp ? { backgroundColor: colors.clayTint, borderWidth: 1.5, borderColor: colors.clay } : { backgroundColor: colors.clayTint }]} />
                     </View>
                   );
                 })}
