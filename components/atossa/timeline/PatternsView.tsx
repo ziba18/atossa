@@ -2,10 +2,10 @@
 // dates only (same numbers as For my doctor for the same dates); no trends, verdicts or advice.
 // Each chart has a text equivalent that a screen reader reads first, and each card opens the
 // Timeline list filtered to what it counts.
-import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import Svg, { Circle } from 'react-native-svg';
+import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
 import { untaggedLine } from '../../../lib/records/counts';
@@ -42,21 +42,17 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
   );
 }
 
-/** Ring: share of the range's days that have a note. Decorative (the sentence beside it says the same). */
-function Ring({ part, total }: { part: number; total: number }) {
-  const size = 56, stroke = 8, r = (size - stroke) / 2, c = 2 * Math.PI * r;
-  const frac = total > 0 ? Math.min(1, part / total) : 0;
-  return (
-    <View aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.plumTint} strokeWidth={stroke} fill="none" />
-        <Circle
-          cx={size / 2} cy={size / 2} r={r} stroke={colors.plum} strokeWidth={stroke} fill="none"
-          strokeDasharray={`${c * frac} ${c}`} strokeLinecap="round" transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        />
-      </Svg>
-    </View>
-  );
+/** A week bar that eases up from its baseline once (200 ms); no motion under Reduce Motion. */
+function WeekBar({ height, color }: { height: number; color: string }) {
+  const reduce = useReduceMotion();
+  const t = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) { t.setValue(1); return; }
+    const a = Animated.timing(t, { toValue: 1, duration: 200, easing: Easing.out(Easing.cubic), useNativeDriver: true });
+    a.start();
+    return () => a.stop();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return <Animated.View style={[styles.weekBar, { height, backgroundColor: color, transformOrigin: 'bottom', transform: [{ scaleY: t }] }]} />;
 }
 
 /** One number with a label under it; the row of three sits above the charts. */
@@ -144,15 +140,14 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           onAccessibilityAction={(name) => { const [, from, to] = name.split(':'); if (from && to) onOpenWeek({ from, to }); }}
         >
           <Txt variant="groupLabel">Days with a note, by week</Txt>
-          <View style={styles.ringRow}>
-            {stack ? null : <Ring part={m.noteDays} total={m.totalDays} />}
-            <Txt variant="secondary" style={{ flex: 1 }}>{noteDaysText(m)}. Darker weeks had a higher number.</Txt>
-          </View>
+          <Txt variant="secondary" style={{ marginTop: space.sm }}>
+            {noteDaysText(m)}. Bar height is the days with a note that week; shade is the highest number given that week.
+          </Txt>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
               <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
                 {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
-                <View style={[styles.weekBar, { height: Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18)), backgroundColor: w.peak == null ? colors.ink2 : severityColor(w.peak).bg }]} />
+                <WeekBar height={Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18))} color={w.peak == null ? colors.ink2 : severityColor(w.peak).bg} />
               </Pressable>
             ))}
           </View>
