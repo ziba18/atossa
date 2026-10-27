@@ -27,7 +27,7 @@ interface AuthState {
   register: (email: string, password: string, display_name?: string) => Promise<void>;
   loginWithApple: (idToken: string, displayName?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  signOut: (opts?: { keepOutbox?: boolean }) => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
   deleteAccount: () => Promise<void>;
 }
@@ -108,8 +108,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
   },
 
-  signOut: async () => {
-    await clearOutbox(); // notes still waiting to send belong to this account
+  signOut: async (opts) => {
+    // Notes still waiting to send belong to this account. When the session simply ran out (not the person's choice)
+    // they are kept: each item stores its user id and is sent only after that same account signs in again.
+    if (!opts?.keepOutbox) await clearOutbox();
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },
