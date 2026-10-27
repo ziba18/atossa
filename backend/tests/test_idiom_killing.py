@@ -24,3 +24,8 @@ def test_body_part_killing_me_is_not_self_harm(t):
 @pytest.mark.parametrize("t", SELF)
 def test_self_harm_kept(t):
     assert emergency_kind(t) == "self_harm"
+
+
+@pytest.mark.parametrize("t", ["i've thought about taking my own life", "my side is killing me and I have thought about taking my own life"])
+def test_taking_my_own_life(t):
+    assert emergency_kind(t) == "self_harm"

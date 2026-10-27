@@ -25,3 +25,10 @@ test('body part + killing me never gets the self-harm line', () => {
 test('self-harm wording keeps the self-harm line', () => {
   for (const t of SELF) assert.equal(urgentSignpost(t), SELF_HARM_SIGNPOST, t);
 });
+
+// Run 22 probe: with the idiom gone, 'taking my own life' must fire on its own (it matched nowhere before; on 6d0f3da the
+// combined line only got the support lines by accident, through the 'killing me' bug).
+test("'taking my own life' gets the self-harm line, with or without a body-part idiom", () => {
+  for (const t of ["i've thought about taking my own life", 'my side is killing me and I have thought about taking my own life'])
+    assert.equal(urgentSignpost(t), SELF_HARM_SIGNPOST, t);
+});
