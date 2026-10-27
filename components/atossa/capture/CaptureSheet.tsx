@@ -3,7 +3,7 @@
 // "That's all for now" saves from step 2 on. X / Android back / swipe / scrim always close;
 // with unsaved words the sheet first asks "Keep this note?" in-page (never Alert.alert).
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View, useWindowDimensions, type ScrollViewInstance, type TextInputInstance } from 'react-native';
 import {
   Button, Card, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
 } from '../kit';
@@ -53,6 +53,8 @@ const joinWords = (prefix: string, more: string) => {
 };
 
 function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureOptions }) {
+  // Under ~240 pt wide (200% text on a small phone) the forced line break and helper line push the field off screen.
+  const narrow = useWindowDimensions().width < 240;
   const createRecord = useRecordsStore((s) => s.create);
   const tag = options.tag;
 
@@ -305,10 +307,12 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     const micLabel = recording ? 'Tap to stop' : draft.words.trim() ? 'Add more by voice' : 'Tap to start';
     body = (
       <View>
-        <Txt variant="title" accessibilityRole="header">{PROMPT}</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xs }}>
-          {mode === 'speak' ? 'Say it however it comes. Messy is fine.' : 'Write it however it comes. Messy is fine.'}
-        </Txt>
+        <Txt variant="title" accessibilityRole="header">{narrow ? PROMPT.replace('\n', ' ') : PROMPT}</Txt>
+        {narrow ? null : (
+          <Txt variant="secondary" style={{ marginTop: space.xs }}>
+            {mode === 'speak' ? 'Say it however it comes. Messy is fine.' : 'Write it however it comes. Messy is fine.'}
+          </Txt>
+        )}
         {past ? <Txt variant="caption" style={{ marginTop: space.xs }}>{`Note for ${formatDay(draft.date)}`}</Txt> : null}
         {voiceNotice && mode === 'type' ? (
           <Txt variant="secondary" color={colors.ink} style={{ marginTop: space.sm }}>{VOICE_UNAVAILABLE}</Txt>
@@ -401,7 +405,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       full
       scrollRef={scrollRef}
       header={header}
-      footer={footer}
+      footer={narrow ? undefined : footer}
       closeLabel={confirmClose ? 'Keep editing' : 'Close'}
     >
       {confirmClose && saveError ? <InlineError message={saveError} style={{ marginBottom: space.md }} /> : null}
@@ -417,6 +421,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       {stage === 'capture' && !confirmClose && !signpost ? (
         <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.lg }}>{URGENT_SIGNPOST}</Txt>
       ) : null}
+      {/* Under ~240 pt wide a sticky footer would cover the field, so the action follows the content instead. */}
+      {narrow && footer ? <View style={{ marginTop: space.lg }}>{footer}</View> : null}
     </Sheet>
   );
 }
