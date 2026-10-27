@@ -195,7 +195,7 @@ export function EntryCard({
         >
           <View style={styles.stack}>
             {/* One line, on a tinted card, so an appointment never reads as one more note. */}
-            <GlyphLine icon="calendar-days" variant="secondary" text={hideDate ? who : `${who} · ${when}`} />
+            <GlyphLine icon="calendar-days" variant="secondary" text={hideDate ? who : `${who} · ${keep(when)}`} />
             {told ? <Txt variant="secondary" numberOfLines={2}>{`I was told: ${told}`}</Txt> : null}
           </View>
         </PressableCard>
