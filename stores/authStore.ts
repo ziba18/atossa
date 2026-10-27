@@ -110,6 +110,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signOut: async () => {
     await deleteLastSharedPdf();
+    const id = useAuthStore.getState().user?.id;
+    if (id) await clearLocalChats(id);
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },
