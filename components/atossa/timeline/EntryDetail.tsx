@@ -2,6 +2,7 @@
 // every row editable in place with the same editors. Date via DatePill + DayChooser (no future).
 // Delete is confirmed in-page (ConfirmCard), never Alert.alert.
 import React, { useEffect, useRef, useState } from 'react';
+import { UrgentNote, textOf } from '../UrgentNote';
 import { StyleSheet, TextInput, View, type HostInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -162,6 +163,8 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
             </View>
           ) : null}
         </View>
+
+        <UrgentNote text={draft ? textOf(draft) : ""} />
 
         <Card style={{ paddingVertical: space.xs }}>
           {/* What it felt like — Sam's own words only (never for a quick log without words). */}

@@ -14,6 +14,7 @@ import { todayKey } from '../../../lib/records/dates';
 import { useScrollRef } from '../timeline/navigation';
 import { RecordDateField } from './RecordDateField';
 import { HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
+import { UrgentNote, textOf } from '../UrgentNote';
 
 type AnyData = MedicineData | AppointmentData | HistoryData;
 /** History drafts may have no type yet (nothing pre-selected). */
@@ -293,6 +294,7 @@ type SetFn = (patch: Partial<Draft>) => void;
 function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew: boolean }) {
   return (
     <>
+      <UrgentNote text={textOf(d)} />
       <TextField label="Name" value={d.name} onChangeText={(name) => set({ name })} autoCapitalize="sentences" />
       <TextField label="Dose" optional value={d.dose ?? ''} onChangeText={(dose) => set({ dose })} />
       <RecordDateField
@@ -332,6 +334,7 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
   const hasAfter = !!(d.told.trim() || d.tests.trim() || d.next.trim());
   return (
     <>
+      <UrgentNote text={textOf(d)} />
       <TextField label="Who or where" value={d.who} onChangeText={(who) => set({ who })} autoCapitalize="sentences" />
       <RecordDateField
         label="Date"
@@ -363,6 +366,7 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
 function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
   return (
     <>
+      <UrgentNote text={textOf(d)} />
       <View>
         <FieldLabel label="What it was" />
         <ChipGroup
