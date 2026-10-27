@@ -114,7 +114,7 @@ export function HeatStrip({
       label: PAGE_TYPE.stripLabel, radius: 2, dot: 1.6, stroke: 1, ghost: false,
     };
     return (
-      <View accessible accessibilityLabel={label} style={{ gap: 6 }}>
+      <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ gap: 6 }}>
         {stripRows(strip.days, 31).map((row) => <Row key={row[0].date} row={row} g={g} width={width} />)}
       </View>
     );
@@ -129,7 +129,7 @@ export function HeatStrip({
     label: textSize, radius: 4, dot: 3, stroke: Math.max(1, textSize / 10), ghost: true,
   };
   return (
-    <View accessible accessibilityLabel={label} style={{ gap: Math.round(textSize * 0.8) }}>
+    <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ gap: Math.round(textSize * 0.8) }}>
       {weekBlocks(strip.days).map((b) =>
         b.kind === 'row' ? (
           <Row key={b.row[0].date} row={b.row} g={g} width={width} />
