@@ -63,7 +63,7 @@ export async function signInWithApple(): Promise<{ user: any | null; error: Erro
     // Apple only returns the user's full name on the FIRST sign-in — pass it
     // along so the backend can seed the profile on account creation.
     const appleFullName = buildFullName(credential.fullName ?? null);
-    await useAuthStore.getState().loginWithApple(credential.identityToken, appleFullName);
+    await useAuthStore.getState().loginWithApple(credential.identityToken, appleFullName, credential.authorizationCode);
 
     return { user: useAuthStore.getState().user, error: null };
   } catch (err: any) {
