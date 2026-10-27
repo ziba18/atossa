@@ -5,6 +5,7 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import Svg, { Circle } from 'react-native-svg';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, severityColor, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
@@ -36,6 +37,23 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
           </View>
         </View>
       ))}
+    </View>
+  );
+}
+
+/** Ring: share of the range's days that have a note. Decorative (the sentence beside it says the same). */
+function Ring({ part, total }: { part: number; total: number }) {
+  const size = 56, stroke = 8, r = (size - stroke) / 2, c = 2 * Math.PI * r;
+  const frac = total > 0 ? Math.min(1, part / total) : 0;
+  return (
+    <View aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.plumTint} strokeWidth={stroke} fill="none" />
+        <Circle
+          cx={size / 2} cy={size / 2} r={r} stroke={colors.plum} strokeWidth={stroke} fill="none"
+          strokeDasharray={`${c * frac} ${c}`} strokeLinecap="round" transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      </Svg>
     </View>
   );
 }
@@ -119,7 +137,10 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
           accessibilityLabel={`${noteDaysText(m)}. ${weeksText(m)} Opens your notes.`}
         >
           <Txt variant="groupLabel">Days with a note, by week</Txt>
-          <Txt variant="secondary" style={{ marginTop: space.xxs }}>{noteDaysText(m)}. Darker weeks had a higher number.</Txt>
+          <View style={styles.ringRow}>
+            {stack ? null : <Ring part={m.noteDays} total={m.totalDays} />}
+            <Txt variant="secondary" style={{ flex: 1 }}>{noteDaysText(m)}. Darker weeks had a higher number.</Txt>
+          </View>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
               <View key={w.from} style={styles.weekCol}>
@@ -215,6 +236,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
 }
 
 const styles = StyleSheet.create({
+  ringRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, marginTop: space.sm },
   tiles: { flexDirection: 'row', gap: space.sm },
   tile: { flex: 1, minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
   tileWide: { paddingHorizontal: space.md, paddingVertical: space.sm },
