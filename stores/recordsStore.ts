@@ -121,7 +121,9 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   },
 
   reset: () => {
-    void clearOutbox(); // sign-out / account switch: queued notes belong to the old account
+    // Sign-out / account switch: queued notes belong to the old account. Not on a cold start (nothing loaded yet),
+    // where the tabs layout also calls reset() before the session has restored.
+    if (get().loadedFor) void clearOutbox();
     set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '' });
   },
 
