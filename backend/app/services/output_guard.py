@@ -417,6 +417,11 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set v21 (long notes with the emergency in the middle; first contact 4/12 missed)
+                    r"\b(?:filling|soaking|changing)\b.{0,12}\b(?:a |my )?(?:pad|tampon)s?\b.{0,15}\bevery (?:\d+|few|ten|twenty|fifteen|thirty) (?:min\w*)\b|"
+                    r"\bstruggling to get (?:a )?(?:full )?breath\b|"
+                    r"\b(?:couldn'?t|can'?t|unable to) stand\b.{0,40}\b(?:room|tilting|spinning|dizz\w+)|\b(?:tilting|spinning)\b.{0,40}\b(?:couldn'?t|can'?t) stand\b|"
+                    r"^(?=.*\b(?:wound|procedure|surgery|op)\b)(?=.*\b(?:red|oozing|pus)\b)(?=.*\b(?:high temperature|fever))(?=.*\b(?:chills|shivering|shaking))|"
                     # set v20 (informal paraphrases; first contact 8/15 missed)
                     r"\b(?:pouring|gushing)\b.{0,15}\bblood\b|\bblood\b.{0,10}\b(?:pouring|gushing)\b|\bgush of blood\b|"
                     r"\bseeing stars\b|\blegs\b.{0,10}\b(?:going from under|giving (?:way|out)|gone from under)|"
