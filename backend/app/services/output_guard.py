@@ -320,13 +320,26 @@ URGENT_SELF_HARM = SELF_HARM
 _RESOLVED = re.compile(r"(?<!n't )(?<!not )(?<!never )\b(?:stopped|settled|eased|resolved|subsided|passed|went away|has gone|have gone)\b", re.I)
 
 
+# "last week" often dates the cause, not the symptom: with a present-tense word in the clause it is not past tense.
+_LASTREL = re.compile(r"(?<!since )last (?:year|decade|month|week)", re.I)
+_PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today)\b", re.I)
+
+
+def _is_past(clause: str) -> bool:
+    for m in _PAST.finditer(clause):
+        if _LASTREL.fullmatch(m.group(0)) and _PRESENT.search(clause):
+            continue
+        return True
+    return False
+
+
 def _hits(rx, text: str) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
         for m in rx.finditer(clause):
             before = clause[: m.start()]
             after = clause[m.end():]
-            if _NEG.search(before[-40:]) or _PAST.search(clause) or _OTHER.search(before) or _RESOLVED.search(after):
+            if _NEG.search(before[-40:]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
                 continue
             return True
     return False
@@ -455,7 +468,14 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
 
 def _hits_whole(rx, text: str) -> bool:
     m = rx.search(text)
-    return bool(m) and not (_NEG.search(text[max(0, m.start() - 40):m.start()]) or _PAST.search(text) or _OTHER.search(text[:m.start()]))
+    if not m:
+        return False
+    # Past tense counts only in the sentence(s) the match sits in (same rule as the phone's hitWhole).
+    starts = [i for i, c in enumerate(text[: m.start()]) if c in ".;!?\n"]
+    start = starts[-1] + 1 if starts else 0
+    ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
+    end = m.end() + ends[0] if ends else len(text)
+    return not (_NEG.search(text[max(0, m.start() - 40):m.start()]) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
 
 
 def emergency_kind(user_text: str):

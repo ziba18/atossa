@@ -942,5 +942,25 @@ false
 [
 "Wound from the procedure is healing, a bit itchy, no redness, seeing the nurse Friday.",
 false
+],
+[
+"After my procedure last week the wound is red and oozing and I have a high temperature and chills",
+true
+],
+[
+"temperature 40, rigors, tummy pain, I had a miscarriage last week and it is still sore",
+true
+],
+[
+"I fainted last week at work",
+false
+],
+[
+"I fainted last week and was fine after",
+false
+],
+[
+"last week I had chest pain but it went away",
+false
 ]
 ]

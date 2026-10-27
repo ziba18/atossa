@@ -40,8 +40,20 @@ function normalise(text: string): string {
 // Same decision as the backend `_hits`: a match counts unless its clause is negated, in the past, about someone else or resolved.
 const mk = (src: string) => new RegExp(src, 'i');
 const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SELF2 = mk(P.SELF2_SRC);
+const LASTREL = new RegExp('^(?:' + P.LASTREL_SRC + ')$', 'i'), PRESENT = mk(P.PRESENT_SRC);
 const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES = mk(P.RES_SRC);
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi');
+
+/** Mirrors backend `_is_past`: "last week" with a present-tense word in the clause is not past tense. */
+function isPast(clause: string): boolean {
+  const re = new RegExp(PAST.source, 'gi');
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(clause)) !== null) {
+    if (LASTREL.test(m[0]) && PRESENT.test(clause)) { if (m[0].length === 0) re.lastIndex++; continue; }
+    return true;
+  }
+  return false;
+}
 
 const WHOLE = new RegExp(P.WHOLE_SRC, 'is');
 function hitWhole(text: string): boolean {
@@ -51,7 +63,7 @@ function hitWhole(text: string): boolean {
   const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
   const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
   const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
-  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index)) || PAST.test(sentence) || OTHER.test(text.slice(0, m.index)));
+  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index)) || isPast(sentence) || OTHER.test(text.slice(0, m.index)));
 }
 
 const PREG = /\bpregnan\w+\b/i;
@@ -66,7 +78,7 @@ function hit(pattern: RegExp, text: string): boolean {
     while ((m = re.exec(clause)) !== null) {
       const before = clause.slice(0, m.index);
       const after = clause.slice(m.index + m[0].length);
-      if (!(NEG.test(before.slice(-40)) || PAST.test(clause) || OTHER.test(before) || RES.test(after))) return true;
+      if (!(NEG.test(before.slice(-40)) || isPast(clause) || OTHER.test(before) || RES.test(after))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }
   }
