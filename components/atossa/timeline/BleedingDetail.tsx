@@ -2,6 +2,7 @@
 // words — printed on the GP page, so she must be able to see and edit them), date, Save, Delete.
 // Same rules as the Log bleeding sheet: status required, Spotting is its own status, flow optional.
 import React, { useEffect, useRef, useState } from 'react';
+import { urgentSignpost } from '../../../lib/urgentWording';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -163,6 +164,11 @@ export function BleedingDetail({ date: routeDate, from }: { date: string; from: 
           </View>
         )}
 
+        {urgentSignpost(note) ? (
+          <Card tone="sunken">
+            <Txt accessibilityRole="alert">{urgentSignpost(note)}</Txt>
+          </Card>
+        ) : null}
         <TextField
           label="Anything to note?"
           optional

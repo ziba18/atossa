@@ -2,8 +2,9 @@
 // Status is required and nothing is pre-selected for a new day; flow is optional with no
 // default. Spotting is its own status (never inferred from flow). Saves one period_day per date.
 import React, { useEffect, useState } from 'react';
+import { urgentSignpost } from '../../lib/urgentWording';
 import { View } from 'react-native';
-import { Button, ChipGroup, DatePill, DayChooser, FieldLabel, InlineError, Sheet, TextField, showToast } from './kit';
+import { Button, Card, ChipGroup, DatePill, DayChooser, FieldLabel, InlineError, Sheet, TextField, Txt, showToast } from './kit';
 import { colors, space } from '../../constants/atossaUI';
 import { haptics } from '../../lib/haptics';
 import { todayKey } from '../../lib/records/dates';
@@ -126,6 +127,11 @@ export function LogBleedingSheet({
           />
         </View>
         )}
+        {urgentSignpost(note) ? (
+          <Card tone="sunken">
+            <Txt accessibilityRole="alert">{urgentSignpost(note)}</Txt>
+          </Card>
+        ) : null}
         <TextField
           label="Anything to note?"
           optional
