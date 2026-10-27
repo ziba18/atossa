@@ -160,3 +160,33 @@ def test_young_people_plain_words_v19():
     assert [t for t in SET19["harmless"] if is_emergency(t)] == []
     assert not is_emergency("I haven't been cutting my hair and it's a mess")
     assert not is_emergency("kms is short for kilometres, I ran 5")
+
+
+SET20 = json.loads((Path(__file__).parent / "emergency_set_v20_blind_gynae.json").read_text())
+
+
+def test_gynae_and_post_operation_plain_words_v20():
+    # first contact: 9/20 missed (one was "I feel like ending it"); fixed afterwards (not blind any more)
+    assert [t for t in SET20["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET20["harmless"] if is_emergency(t)] == []
+    for t in ("I used a tampon today and it was fine", "my face swelled a bit from the sun cream last year",
+              "I can't pee in public toilets, awkward", "the operation was in 2019 and the wound healed"):
+        assert not is_emergency(t), t
+
+
+SET21 = json.loads((Path(__file__).parent / "emergency_set_v21_blind_selfharm_indirect.json").read_text())
+
+
+def test_indirect_self_harm_wording_v21():
+    from app.services.output_guard import emergency_kind
+    # first contact: 7/10 missed; the "harmless" list also holds three added after the fix to keep it honest
+    assert [t for t in SET21["emergency"] if emergency_kind(t) != "self_harm"] == []
+    assert [t for t in SET21["harmless"] if is_emergency(t)] == []
+
+
+SET22 = json.loads((Path(__file__).parent / "emergency_set_v22_blind_general.json").read_text())
+
+
+def test_general_emergencies_plain_words_v22():
+    assert [t for t in SET22["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET22["harmless"] if is_emergency(t)] == []

@@ -228,7 +228,7 @@ _SELF = [
     r"end(?:ing)? my (?:own )?life", r"(?:don'?t|do not) want to be (?:alive|here)(?: anymore| any more)?", r"hurt(?:ing)? myself",
     r"cutting myself|(?:been|keep|kept|started) cutting\b|cutting again", r"(?:want|wanna) to (?:just )?disappear(?: forever)?", r"better off (?:dead|without me)", r"take my own life",
     r"(?:took|taken|swallowed) all (?:of )?(?:my|the) (?:paracetamol|tablets|pills|painkillers|medication)", r"(?:sleep|asleep|bed).{0,25}(?:never|not) (?:wake|waking) up", r"(?:no|any) reason to (?:keep )?(?:living|live|go on)(?! (?:in|at|with|near)\b)|don'?t see any (?:reason|point) (?:to|in) (?:keep )?(?:living|live|go on|going on|carry on|carrying on)",
-    r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b", r"no point (?:in )?(?:going on|living|being here)",
+    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b", r"no point (?:in )?(?:going on|living|being here)",
 ]
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
 _SELF_RX = re.compile(r"(?:" + "|".join(_SELF) + r")", re.I)
@@ -349,6 +349,21 @@ _WHOLE = re.compile(r"\b(?:tight|pain|pressure|band|crush\w*|squeez\w+)\b.{0,25}
                     # NHS sepsis wording: high temperature with confusion/drowsiness and shaking or no urine (any order)
                     r"^(?=.*\b(?:fever|high temperature)\b)(?=.*\b(?:confus\w*|drowsy)\b)(?=.*\b(?:shak\w+|shiver\w*|(?:haven'?t|not) (?:passed|had) (?:any )?(?:urine|a wee|wee)))|"
                     r"\b(?:hard as a board|board[- ]?hard)\b.{0,30}\b(?:tummy|stomach|abdomen|belly)\b|\b(?:tummy|stomach|abdomen|belly)\b.{0,30}\b(?:hard as a board|board[- ]?hard)\b|"
+                    # gynae and post-operation wording from the NHS pages (any clause)
+                    r"\b(?:feel like|want to|going to|gonna|ready to|about to) end(?:ing)? it\b|"
+                    r"\b(?:lips|face|tongue|throat)\b.{0,15}\bswell\w*|\bswelling (?:up )?(?:of )?(?:my )?(?:lips|face|tongue)\b|"
+                    r"\b(?:can'?t|cannot|unable to) (?:pee|wee|pass (?:any )?urine)\b(?: at all| for (?:hours|\d+ hours)| all day)|"
+                    r"^(?=.*\b(?:tampons?|menstrual cups?)\b)(?=.*\b(?:left in|forgot|forgotten|stuck)\b)(?=.*\b(?:rash|sunburn|fever|high temperature|unwell|dreadful|burning up)\b)|"
+                    r"^(?=.*\b(?:laparoscop\w*|operation|surgery|wound)\b)(?=.*\b(?:fever|high temperature|leaking|pus|oozing)\b)(?=.*\b(?:worse|unwell|vomit\w*|swollen)\b)|"
+                    r"\b(?:vomit\w*|being sick|throwing up)\b.{0,15}\b(?:non[- ]?stop|constantly|all night)\b.{0,60}\b(?:swollen|bloated|tender|hard)\b|"
+                    r"^(?=.*\b(?:period (?:is |was )?(?:\w+ ){0,3}late|late period|missed (?:a |my )?period|overdue)\b)(?=.*\b(?:one[- ]sided|one side|sharp|stabbing)\b)(?=.*\b(?:dizz\w*|faint\w*))|"
+                    r"\b(?:extreme|horrific|massive)\b.{0,10}\bpain\b.{0,60}\b(?:being sick|vomit\w*|throwing up|can'?t (?:pee|wee))\b|\b(?:extreme|horrific|massive)\b.{0,10}\bpain\b.{0,40}\bnothing helps\b|"
+                    # asthma, stroke, headache and low blood sugar wording from the NHS pages (any clause)
+                    r"\bwheez\w+\b.{0,40}\b(?:inhaler|not (?:helping|working)|isn'?t (?:helping|touching|working))|\binhaler (?:isn'?t|is not|not|doesn'?t|won'?t) (?:helping|working|touching|do anything)|"
+                    r"\b(?:numb\w*|pins and needles|weak\w*|tingl\w*)\b.{0,30}\b(?:one side)\b|\b(?:one side)\b.{0,30}\b(?:face|speech)\b|"
+                    r"\bthunderclap\b|\bworst headache (?:ever|of my life)\b|"
+                    r"\b(?:double|blurr\w*) vision\b.{0,40}\b(?:speak|speech|talk\w*|words)\b|\b(?:can'?t|couldn'?t|cannot) speak (?:right|properly)\b(?!.{0,30}\b(?:nose|cold|throat)\b)|"
+                    r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup)\b)(?=.*\b(?:fever|high temperature|temperature)\b)"
