@@ -247,16 +247,23 @@ export function HeroNumberCard() {
   const daysAway = next ? Math.max(0, diffDays(today, next.data.date)) : 0;
   // Past two months a day count reads as noise; weeks are what a person plans by.
   const inWeeks = daysAway > 60;
-  const count = useCountUp(next ? (inWeeks ? Math.round(daysAway / 7) : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
   const total = noteCount(symptoms);
+  // On the day itself the numeral is the notes ready for the visit, not a "0 days".
+  const count = useCountUp(next ? (daysAway === 0 ? total : inWeeks ? Math.round(daysAway / 7) : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
   let big: string; let line: string; let sub: string; let target: string;
   if (next) {
     const days = diffDays(today, next.data.date);
-    big = days === 0 ? '' : String(count);
     const who = next.data.who.trim();
-    line = inWeeks ? 'weeks until your appointment' : days === 0 ? 'Your appointment is today' : days === 1 ? 'day until your appointment' : 'days until your appointment';
-    const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
-    sub = who ? `${who} · ${notes}` : notes;
+    if (days === 0 && total > 0) {
+      big = String(count);
+      line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
+      sub = who ? `${who} · Opens your summary` : 'Opens your summary';
+    } else {
+      big = days === 0 ? '' : String(count);
+      line = inWeeks ? 'weeks until your appointment' : days === 0 ? 'Your appointment is today' : days === 1 ? 'day until your appointment' : 'days until your appointment';
+      const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
+      sub = who ? `${who} · ${notes}` : notes;
+    }
     target = '/(tabs)/doctor';
   } else if (total === 0) {
     big = '0';

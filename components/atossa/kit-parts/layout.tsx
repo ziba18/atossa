@@ -204,7 +204,11 @@ export function HeroNumber({
   const narrow = useWindowDimensions().width < 240;
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
-      {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt> : null}
+      {big ? (
+        <View style={{ minWidth: 76, height: 76, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
+          <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt>
+        </View>
+      ) : null}
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
       <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, gap: space.xxs }}>
         <Txt variant="headline" style={narrow ? { fontSize: 15, lineHeight: 20 } : undefined}>{line}</Txt>
