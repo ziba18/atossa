@@ -204,19 +204,30 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
         <>
           <Txt style={st.meta}>{section.windowLabel}</Txt>
           <Bars bars={section.bars} st={st} />
-          <View style={{ marginTop: st.s.gap * 5, marginBottom: st.s.gap * 3 }}>
-            <HeatStrip
-              strip={section.strip} width={contentWidth}
-              mode={variant === 'page' ? 'page' : 'weeks'} textSize={st.s.meta[0]}
-            />
-          </View>
-          <StripKey
-            bleeding={section.strip.days.some((d) => d.bleeding)}
-            spotting={section.strip.days.some((d) => d.spotting)}
-            // The large 'weeks' view outlines bleeding/spotting days that have no note (HeatStrip ghost cells).
-            ghost={variant !== 'page' && section.strip.days.some((d) => !d.logged && (d.bleeding || d.spotting))}
-            st={st}
-          />
+          {(() => {
+            // On the phone reader the key sits ABOVE the squares, so what they mean is read before the tall strip.
+            const key = (
+              <StripKey
+                bleeding={section.strip.days.some((d) => d.bleeding)}
+                spotting={section.strip.days.some((d) => d.spotting)}
+                // The large 'weeks' view outlines bleeding/spotting days that have no note (HeatStrip ghost cells).
+                ghost={variant !== 'page' && section.strip.days.some((d) => !d.logged && (d.bleeding || d.spotting))}
+                st={st}
+              />
+            );
+            return (
+              <>
+                {variant !== 'page' ? <View style={{ marginTop: st.s.gap * 3 }}>{key}</View> : null}
+                <View style={{ marginTop: st.s.gap * 5, marginBottom: st.s.gap * 3 }}>
+                  <HeatStrip
+                    strip={section.strip} width={contentWidth}
+                    mode={variant === 'page' ? 'page' : 'weeks'} textSize={st.s.meta[0]}
+                  />
+                </View>
+                {variant === 'page' ? key : null}
+              </>
+            );
+          })()}
           <Txt style={st.meta}>{joinFacts(section.caption, section.strip.windowNote)}</Txt>
         </>
       );
