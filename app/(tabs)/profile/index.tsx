@@ -17,6 +17,7 @@ import { formatRecordDateInline, formatShortDate, noteCount, notesLabel } from '
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
+import { usePageTitle } from '../../../lib/usePageTitle';
 import { IS_PREVIEW } from '../../../lib/preview/flag';
 import { cancelAllScheduledNotifications } from '../../../lib/notifications';
 import { openLegal } from '../../../components/auth/LegalLinks';
@@ -45,6 +46,7 @@ function previewLine(kind: RecordDataKind, records: ReturnType<typeof useRecords
 let previewCleared = false;
 
 export default function ProfileScreen() {
+  usePageTitle('Profile');
   const router = useRouter();
   const navigation = useNavigation();
   const { from: rawFrom } = useLocalSearchParams<{ from?: string }>();

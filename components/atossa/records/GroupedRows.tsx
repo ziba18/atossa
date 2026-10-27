@@ -69,7 +69,10 @@ export function GroupRow({
   accessibilityLabel?: string;
 }) {
   // Under ~280 px (200% zoom) the decorative icon goes and the gap closes, so words are not broken mid-word.
-  const tight = useWindowDimensions().width < 280;
+  const width = useWindowDimensions().width;
+  const tight = width < 280;
+  // Under ~220 pt the value would squeeze the label into broken words, so it moves under the label.
+  const stacked = width < 220 && !!value;
   return (
     <Pressable
       onPress={onPress}
@@ -80,10 +83,11 @@ export function GroupRow({
       {icon && !tight ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
       <View style={styles.text}>
         <Txt variant="body">{label}</Txt>
+        {stacked ? <Txt variant="secondary" style={styles.tabular}>{value}</Txt> : null}
         {detail ? <Txt variant="secondary">{detail}</Txt> : null}
         {quote ? <Quote numberOfLines={2}>{quote}</Quote> : null}
       </View>
-      {value ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
+      {value && !stacked ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
       {chevron ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
     </Pressable>
   );

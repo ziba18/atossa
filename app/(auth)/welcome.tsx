@@ -7,6 +7,7 @@ import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { Button, Card, Quote, Txt, useReduceMotion } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
+import { usePageTitle } from '../../lib/usePageTitle';
 
 const WAVE = [0.3, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.8, 0.55, 0.9, 0.35, 0.6, 0.25];
 const STEPS = [
@@ -20,6 +21,7 @@ const STEPS = [
  * from Today), one plain sentence, then the actions anchored low. One illustration: the waveform resting on a line of text.
  */
 export default function WelcomeScreen() {
+  usePageTitle('Welcome');
   const router = useRouter();
   // Short phones (iPhone SE class): keep the buttons on the first screen, drop the step strip.
   const win = useWindowDimensions();
