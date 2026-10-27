@@ -172,3 +172,13 @@ def test_gynae_and_post_operation_plain_words_v20():
     for t in ("I used a tampon today and it was fine", "my face swelled a bit from the sun cream last year",
               "I can't pee in public toilets, awkward", "the operation was in 2019 and the wound healed"):
         assert not is_emergency(t), t
+
+
+SET21 = json.loads((Path(__file__).parent / "emergency_set_v21_blind_selfharm_indirect.json").read_text())
+
+
+def test_indirect_self_harm_wording_v21():
+    from app.services.output_guard import emergency_kind
+    # first contact: 7/10 missed; the "harmless" list also holds three added after the fix to keep it honest
+    assert [t for t in SET21["emergency"] if emergency_kind(t) != "self_harm"] == []
+    assert [t for t in SET21["harmless"] if is_emergency(t)] == []
