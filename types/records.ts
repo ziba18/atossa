@@ -66,6 +66,26 @@ export interface SymptomData {
   /** Legacy "stopped me doing things". New captures derive it from `impacts.length > 0`. */
   stopped: boolean | null;
   stoppedWords: string;
+  /**
+   * Holistic fields (PRODUCT §4), all optional and patient-entered or pre-filled only from her own
+   * words (components/atossa/capture/holistic.ts on the AI branches). Absent = not recorded.
+   */
+  /** Pads/tampons per day as the chip bands ('1-2' | '3-5' | '6+'), flooding, clots — as reported. */
+  products?: '1-2' | '3-5' | '6+';
+  flooding?: boolean;
+  clots?: boolean;
+  bleedingBetween?: boolean;
+  bleedingAfterSex?: boolean;
+  bowelPain?: boolean;
+  urinePain?: boolean;
+  /** Tiredness 0–10 as given. */
+  fatigue?: number | null;
+  /** Skin and hair chips as reported ('Spots or acne', 'Extra hair', 'Hair loss', 'Dark patches'). */
+  skinHair?: string[];
+  /** Mood in her own words (sensitive). */
+  mood?: string;
+  /** Weight or eating in her own words (sensitive). */
+  eating?: string;
 }
 
 export interface AppointmentData {
@@ -87,6 +107,10 @@ export interface MedicineData {
   stopped: string; // '' = ongoing
   stoppedPrecision: DatePrecision;
   happened: string;
+  /** "Did it help?" as she answered it (Phendo pattern); absent = not answered. */
+  helped?: 'Helped' | 'A little' | 'No' | 'Not sure';
+  /** Side effects in her own words. */
+  sideEffects?: string;
 }
 
 export interface HistoryData {
