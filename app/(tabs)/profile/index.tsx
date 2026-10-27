@@ -35,12 +35,15 @@ function previewLine(kind: RecordDataKind, records: ReturnType<typeof useRecords
     const next = nextAppointment(records.appointment);
     if (next) return `Next: ${formatShortDate(next.data.date)}${next.data.who.trim() ? ` · ${next.data.who.trim()}` : ''}`;
   }
-  const newest = sortRecords(kind, records[kind] as any[])[0];
+  const sorted = sortRecords(kind, records[kind] as any[]);
+  // A medicine still being taken leads the row; otherwise the newest one.
+  const current = kind === 'medicine' ? sorted.find((r: any) => !r.data.stopped) : undefined;
+  const newest = current ?? sorted[0];
   if (!newest) return undefined;
   const d = newest.data as any;
   const date = formatRecordDateInline(kind === 'medicine' ? d.started : d.date, kind === 'medicine' ? d.startedPrecision : d.datePrecision);
   const title = recordTitle(kind, d);
-  return `Latest: ${title.length > 24 ? `${title.slice(0, 23).trimEnd()}…` : title}${date ? ` · ${date}` : ''}`;
+  return `${current ? 'Current' : 'Latest'}: ${title.length > 24 ? `${title.slice(0, 23).trimEnd()}…` : title}${date ? ` · ${date}` : ''}`;
 }
 
 /** Preview mode only: whether Sam's sample data has been cleared this session. */
