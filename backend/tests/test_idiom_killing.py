@@ -29,3 +29,14 @@ def test_self_harm_kept(t):
 @pytest.mark.parametrize("t", ["i've thought about taking my own life", "my side is killing me and I have thought about taking my own life"])
 def test_taking_my_own_life(t):
     assert emergency_kind(t) == "self_harm"
+
+
+@pytest.mark.parametrize("t", ["i tried to kill myself last year and i want to do it again", "i used to self harm and the urge is back",
+                               "two years ago i overdosed and im thinking about doing it again tonight",
+                               "i self harmed as a teenager and today i cut myself again"])
+def test_past_attempt_plus_present_intent(t):
+    assert emergency_kind(t) == "self_harm"
+
+
+def test_past_only_stays_quiet():
+    assert emergency_kind("i self harmed as a teenager, not since") is None

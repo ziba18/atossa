@@ -32,3 +32,11 @@ test("'taking my own life' gets the self-harm line, with or without a body-part 
   for (const t of ["i've thought about taking my own life", 'my side is killing me and I have thought about taking my own life'])
     assert.equal(urgentSignpost(t), SELF_HARM_SIGNPOST, t);
 });
+
+// Run 22 probe 7: a past attempt plus present intent is the highest-risk case; the past-tense check must not hide it.
+test('past self-harm + present intent gets the self-harm line', () => {
+  for (const t of ['i tried to kill myself last year and i want to do it again', 'i used to self harm and the urge is back',
+    'two years ago i overdosed and im thinking about doing it again tonight', 'i self harmed as a teenager and today i cut myself again'])
+    assert.equal(urgentSignpost(t), SELF_HARM_SIGNPOST, t);
+  assert.equal(urgentSignpost('i self harmed as a teenager, not since'), null);
+});

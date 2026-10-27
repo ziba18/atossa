@@ -485,10 +485,17 @@ def _hits_whole(rx, text: str) -> bool:
     return not (_NEG.search(text[max(0, m.start() - 40):m.start()]) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
 
 
+_AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:tonight|today|now)|urge is back|urges? (?:are|is) back|(?:cut|cutting|hurt|hurting) myself again|thinking about (?:doing )?it again|want to do it again)\b", re.I)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     user_text = _IDIOM.sub(" ", _norm(user_text))
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text):
+        return "self_harm"
+    # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
+    # ("i tried to kill myself last year and i want to do it again") is the highest-risk case, not history.
+    if (_SELF_RX.search(user_text) or _SELF_HARM_RX.search(user_text)) and _AGAIN.search(user_text):
         return "self_harm"
     if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text) or _hits_whole(_WHOLE, user_text):
         return "medical"
