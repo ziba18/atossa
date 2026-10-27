@@ -417,6 +417,10 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set v17 (typed fast): pad counts with abbreviations, very hot + confused, sudden headache with stiff neck
+                    r"\b(?:soaked|soaking|filled|gone through|went through|used)\b.{0,12}\b\d+ (?:pads?|tampons?)\b.{0,15}\b(?:in|within) (?:\d+|an?|one|two|three|four) (?:hrs?|hours?)\b|"
+                    r"^(?=.*\b(?:very hot|burning up|fever|high temperature)\b)(?=.*\bconfus\w*)(?=.*\b(?:shak\w+|shiver\w*))|\bconfus\w*\b.{0,40}\b(?:don'?t|do not|dont) know (?:what day|where i am|who)\b|"
+                    r"\b(?:sudden|terrible|worst|awful)\b.{0,15}\bheadache\b.{0,60}\b(?:neck (?:is )?stiff|stiff neck|hit (?:w|with)|like being hit)\b|"
                     # sepsis / DKA / stroke / postnatal-infection wording (set v15, first contact 4/20 missed)
                     r"^(?=.*\b(?:burning up|rigors?|temperature (?:of )?(?:3[89]|4\d))\b)(?=.*\b(?:heart (?:racing|pounding)|(?:haven'?t|not) (?:peed|passed (?:any )?urine|had a wee)|tummy pain|confus\w*))|"
                     r"^(?=.*\b(?:type 1|diabet\w+)\b)(?=.*\b(?:fruity|pear[- ]?drops?|breathing fast|very thirsty))(?=.*\b(?:sick|vomit\w*|drowsy))|"
