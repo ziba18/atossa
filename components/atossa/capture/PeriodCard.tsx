@@ -10,7 +10,6 @@ import { useRouter } from 'expo-router';
 import { Button, Card, DayChooser, InlineError, Txt } from '../kit';
 import { colors, space } from '../../../constants/atossaUI';
 import { api } from '../../../lib/api';
-import { track } from '../../../lib/analytics';
 import { isFuture } from '../../../lib/records/dates';
 import { formatDay } from '../../../lib/records/format';
 import { IS_PREVIEW } from '../../../lib/preview/flag';
@@ -62,7 +61,6 @@ export function PeriodCard() {
     }
     // Friends reads /cycles; the Timeline copy above is the one that matters, so this one is best effort.
     if (!IS_PREVIEW) await api.post('/cycles', { period_start: selected }).catch(() => {});
-    track('Period Start Logged', { source: 'today_card' });
     setSaving(false);
     setPicking(false);
     setSelected(null);
