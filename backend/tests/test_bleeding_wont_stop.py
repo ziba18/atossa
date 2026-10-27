@@ -12,6 +12,11 @@ from app.services.output_guard import is_emergency  # noqa: E402
     "I can't stop the bleeding",
     "bleeding for hours and wont stop",
     "I'm losing a lot of blood",
+    "the toilet water turned red",
+    "red toilet water",
+    "the toilet bowl was full of blood",
+    "blood filled the toilet",
+    "a lot of blood in the toilet",
 ])
 def test_bleeding_that_will_not_stop_is_urgent(text):
     assert is_emergency(text)
@@ -19,6 +24,8 @@ def test_bleeding_that_will_not_stop_is_urgent(text):
 
 @pytest.mark.parametrize("text", [
     "my period is late",
+    "there was blood in the toilet",
+    "I cleaned the toilet",
     "I had a bleed last week that stopped",
     "bleeding on and off, it didn't stop when I rested",
 ])
