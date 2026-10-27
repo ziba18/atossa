@@ -135,13 +135,13 @@ export function RoughDayCard() {
     setSaving(true);
     setError('');
     try {
-      await create('symptom', {
+      const saved = await create('symptom', {
         date: todayKey(), words: '', where: '', typical: null, worst: value, score: value,
         duration: '', stopped: null, stoppedWords: '', source: 'quick', createdAt: noteStamp(todayKey()),
       });
       haptics.success();
       setValue(null);
-      showToast(`Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your GP.`);
+      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your GP.`);
     } catch {
       setError("That didn’t save. Check your connection and try again.");
     } finally {

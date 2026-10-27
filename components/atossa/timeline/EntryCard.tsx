@@ -118,11 +118,12 @@ export function EntryCard({
       return (
         <PressableCard
           onPress={onPress}
-          accessibilityLabel={[kindWord, hideDate ? '' : top, words, strengthA11y, facts].filter(Boolean).join('. ')}
+          accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will send when you are online' : '', words, strengthA11y, facts].filter(Boolean).join('. ')}
           accessibilityHint="Opens the note"
         >
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
+            {item.rec.pending ? <Txt variant="caption">Saved on this phone · will send when you’re online</Txt> : null}
             {words ? <Quote numberOfLines={3}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
               // The severity words sit INSIDE the pill ("9/10 at worst", N7); long facts wrap below it

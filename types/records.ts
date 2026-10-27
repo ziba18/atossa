@@ -157,6 +157,8 @@ export interface Rec<T> {
   id: string;
   data: T;
   createdAt: string;
+  /** Saved on this phone, not yet sent (offline outbox). */
+  pending?: boolean;
 }
 
 export interface Cycle {

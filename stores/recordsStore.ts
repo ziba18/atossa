@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../lib/api';
+import { PENDING_PREFIX, clearOutbox, dequeue, enqueue, isOfflineError, newClientId, readOutbox } from '../lib/outbox';
 import { IS_PREVIEW } from '../lib/preview/flag';
 import { sampleBuckets } from '../lib/preview/seed';
 import type { DataMap, Rec, RecordKind } from '../types/records';
@@ -24,6 +25,8 @@ interface RecordsState {
   error: string;
   load: (userId: string) => Promise<void>;
   reset: () => void;
+  /** Send notes saved while offline; safe to call any time (one run at a time, each note once). */
+  flushOutbox: () => Promise<void>;
   create: <K extends RecordKind>(kind: K, data: DataMap[K]) => Promise<Rec<DataMap[K]>>;
   update: <K extends RecordKind>(kind: K, id: string, data: DataMap[K]) => Promise<void>;
   remove: (kind: RecordKind, id: string) => Promise<void>;
@@ -62,11 +65,16 @@ const serverBackend: Backend = {
 };
 
 let localSeq = 0;
+/** Flag in memory, or in localStorage so it survives a page reload (outbox check). */
+const previewOffline = () => {
+  if ((globalThis as { __PREVIEW_OFFLINE__?: boolean }).__PREVIEW_OFFLINE__) return true;
+  try { return globalThis.localStorage?.getItem('atossa.preview.offline') === '1'; } catch { return false; }
+};
 const previewBackend: Backend = {
   list: async () => sampleBuckets(),
   create: async (kind, data) => {
     // Preview only: reviewers/screenshots set globalThis.__PREVIEW_OFFLINE__ = true to see the failed-save state.
-    if ((globalThis as { __PREVIEW_OFFLINE__?: boolean }).__PREVIEW_OFFLINE__) throw new Error('offline');
+    if (previewOffline()) throw new Error('offline');
     return previewCreate(kind, data);
   },
   update: async () => {},
@@ -80,6 +88,8 @@ const previewCreate = (kind: RecordKind, data: unknown): ServerRecord => ({
 });
 
 const backend = IS_PREVIEW ? previewBackend : serverBackend;
+
+let flushing = false;
 
 export const useRecordsStore = create<RecordsState>((set, get) => ({
   records: emptyBuckets(),
@@ -98,23 +108,75 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
       } else {
         buckets = listed;
       }
+      // Notes still waiting in the outbox stay on screen, marked pending, until they are sent.
+      const waiting = (await readOutbox()).filter((i) => i.userId === userId);
+      for (const i of waiting) {
+        buckets.symptom.push({ id: PENDING_PREFIX + i.clientId, data: i.data, createdAt: i.queuedAt, pending: true });
+      }
       set({ records: buckets, loadedFor: userId, loading: false });
+      if (waiting.length) void get().flushOutbox();
     } catch {
       set({ loading: false, error: "We couldn't load your information. Check your connection and try again." });
     }
   },
 
-  reset: () => set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '' }),
+  reset: () => {
+    void clearOutbox(); // sign-out / account switch: queued notes belong to the old account
+    set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '' });
+  },
+
+  flushOutbox: async () => {
+    if (flushing) return;
+    flushing = true;
+    try {
+      const userId = get().loadedFor;
+      for (const item of await readOutbox()) {
+        if (item.userId !== userId) { await dequeue(item.clientId); continue; }
+        try {
+          const row = await backend.create('symptom', item.data);
+          await dequeue(item.clientId);
+          const rec = toRec<'symptom'>(row);
+          set((s) => ({ records: { ...s.records, symptom: s.records.symptom.map((r) => (r.id === PENDING_PREFIX + item.clientId ? rec : r)) } }));
+        } catch (e) {
+          if (isOfflineError(e)) break; // still offline: keep the rest, try again later
+          await dequeue(item.clientId);
+          set((s) => ({ records: { ...s.records, symptom: s.records.symptom.filter((r) => r.id !== PENDING_PREFIX + item.clientId) } }));
+        }
+      }
+    } finally {
+      flushing = false;
+    }
+  },
 
   create: async (kind, data) => {
-    const row = await backend.create(kind, data);
+    let row: ServerRecord;
+    try {
+      row = await backend.create(kind, data);
+    } catch (e) {
+      const userId = get().loadedFor;
+      if (kind !== 'symptom' || !userId || !isOfflineError(e)) throw e;
+      // No connection: keep the note on this phone and send it later (never lose a note).
+      const clientId = newClientId();
+      const queuedAt = new Date().toISOString();
+      await enqueue({ clientId, userId, data: data as DataMap['symptom'], queuedAt });
+      const rec: Rec<DataMap['symptom']> = { id: PENDING_PREFIX + clientId, data: data as DataMap['symptom'], createdAt: queuedAt, pending: true };
+      set((s) => ({ records: { ...s.records, symptom: [...s.records.symptom, rec] } }));
+      return rec as Rec<DataMap[typeof kind]>;
+    }
     const rec = toRec<typeof kind>(row);
     set((s) => ({ records: { ...s.records, [kind]: [...(s.records[kind] as Rec<any>[]), rec] } as Buckets }));
     return rec;
   },
 
   update: async (kind, id, data) => {
-    await backend.update(id, data);
+    if (id.startsWith(PENDING_PREFIX)) {
+      // Not sent yet: change the queued copy, same client id.
+      const clientId = id.slice(PENDING_PREFIX.length);
+      const queued = (await readOutbox()).find((i) => i.clientId === clientId);
+      if (queued) { await dequeue(clientId); await enqueue({ ...queued, data: data as DataMap['symptom'] }); }
+    } else {
+      await backend.update(id, data);
+    }
     set((s) => ({
       records: {
         ...s.records,
@@ -124,7 +186,8 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   },
 
   remove: async (kind, id) => {
-    await backend.remove(id);
+    if (id.startsWith(PENDING_PREFIX)) await dequeue(id.slice(PENDING_PREFIX.length));
+    else await backend.remove(id);
     set((s) => ({
       records: { ...s.records, [kind]: (s.records[kind] as Rec<any>[]).filter((r) => r.id !== id) } as Buckets,
     }));

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { AppState, Platform } from 'react-native';
 import { Tabs } from 'expo-router';
 import { MainTabBar } from '../../components/atossa/MainTabBar';
 import { CaptureSheet } from '../../components/atossa/capture/CaptureSheet';
@@ -20,6 +21,17 @@ export default function TabsLayout() {
     if (loadedFor && loadedFor !== userId) store.reset();
     if (loadedFor !== userId) store.load(userId);
   }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Send notes saved offline when the app returns to the foreground or the browser comes back online.
+  useEffect(() => {
+    const flush = () => { void useRecordsStore.getState().flushOutbox(); };
+    const sub = AppState.addEventListener('change', (st) => { if (st === 'active') flush(); });
+    if (Platform.OS === 'web') globalThis.addEventListener?.('online', flush);
+    return () => {
+      sub.remove();
+      if (Platform.OS === 'web') globalThis.removeEventListener?.('online', flush);
+    };
+  }, []);
 
   return (
     <>

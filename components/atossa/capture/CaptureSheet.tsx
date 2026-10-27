@@ -211,11 +211,11 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     setSaving(true);
     setSaveError('');
     try {
-      await createRecord('symptom', toSymptom(draft, usedVoice ? 'voice' : 'typed', tag));
+      const saved = await createRecord('symptom', toSymptom(draft, usedVoice ? 'voice' : 'typed', tag));
       haptics.success();
       closeCapture();
       const n = noteCount(useRecordsStore.getState().records.symptom);
-      showToast(`Saved. ${notesLabel(n)} ready for your GP.`);
+      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(n)} ready for your GP.`);
     } catch {
       setSaveError("That didn't save. Your note is still here. Check your connection and try again.");
       setSaving(false);
