@@ -153,9 +153,16 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           </View>
           {m.weeks.length <= 5 ? (
             <View style={styles.chartLabels} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-              {m.weeks.map((w) => (
-                <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>{formatShortDate(w.from)}</Txt>
-              ))}
+              {m.weeks.map((w, i) => {
+                // Year on a second line only where it changes (or when the chart is not in the current year), so labels never wrap mid-date.
+                const y = w.from.slice(0, 4);
+                const showY = i === 0 ? y !== String(new Date().getFullYear()) || m.weeks.some((x) => x.from.slice(0, 4) !== y) : y !== m.weeks[i - 1].from.slice(0, 4);
+                return (
+                  <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>
+                    {formatShortDate(w.from, 'never')}{showY ? `\n${y}` : ''}
+                  </Txt>
+                );
+              })}
             </View>
           ) : null}
           {/* First and last day under the bars so 12 bars are not anonymous (spoken text already gives the range). */}
