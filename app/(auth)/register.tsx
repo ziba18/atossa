@@ -41,7 +41,7 @@ export default function RegisterScreen() {
     try {
       await register(trimmedEmail.toLowerCase(), password, trimmedName);
       track('Signup Completed', { method: 'email' });
-      router.replace('/(auth)/onboarding/basics');
+      router.replace('/(auth)/onboarding/consent');
     } catch (err) {
       setLoading(false);
       if (err instanceof ApiError && err.status === 400) setErrors((e) => ({ ...e, email: 'There is already an account with this email. Try signing in.' }));

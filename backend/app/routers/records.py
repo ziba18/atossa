@@ -1,10 +1,12 @@
 import json
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.record import HealthRecord
+from app.services.rate_limit import limit
 from app.schemas.record import (
     MAX_RECORDS_PER_USER,
     RecordCreate,
@@ -13,7 +15,12 @@ from app.schemas.record import (
     RecordUpdate,
 )
 
+# One person does not save this many items in a day; it bounds what a script can store per account.
+MAX_NEW_RECORDS_PER_DAY = 500
+
 router = APIRouter(prefix="/records", tags=["records"])
+# Writes only: a person saves a handful of notes a minute; this stops a script filling the database.
+_write_limit = Depends(limit("records-write", 120, 60))
 
 
 def _to_response(row: HealthRecord) -> RecordResponse:
@@ -52,7 +59,7 @@ def list_records(
     return RecordListResponse(records=[_to_response(r) for r in rows])
 
 
-@router.post("", response_model=RecordResponse, status_code=201)
+@router.post("", response_model=RecordResponse, status_code=201, dependencies=[_write_limit])
 def create_record(
     body: RecordCreate,
     current_user: User = Depends(get_current_user),
@@ -61,6 +68,10 @@ def create_record(
     count = db.query(HealthRecord).filter(HealthRecord.user_id == current_user.id).count()
     if count >= MAX_RECORDS_PER_USER:
         raise HTTPException(status_code=409, detail="Record limit reached")
+    since = datetime.now(timezone.utc) - timedelta(hours=24)
+    today = db.query(HealthRecord).filter(HealthRecord.user_id == current_user.id, HealthRecord.created_at >= since).count()
+    if today >= MAX_NEW_RECORDS_PER_DAY:
+        raise HTTPException(status_code=429, detail="Too many notes today. Please try again tomorrow.")
     row = HealthRecord(user_id=current_user.id, kind=body.kind, data=json.dumps(body.data))
     db.add(row)
     db.commit()
@@ -68,7 +79,7 @@ def create_record(
     return _to_response(row)
 
 
-@router.put("/{record_id}", response_model=RecordResponse)
+@router.put("/{record_id}", response_model=RecordResponse, dependencies=[_write_limit])
 def update_record(
     record_id: str,
     body: RecordUpdate,

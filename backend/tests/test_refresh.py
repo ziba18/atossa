@@ -2,28 +2,39 @@ from types import SimpleNamespace
 
 import pytest
 from fastapi import HTTPException
+from app.models import UsedRefreshToken
 from app.routers.auth import refresh
 from app.schemas.auth import RefreshRequest
 from app.services.auth import create_access_token, create_refresh_token, decode_token
 
 
 class FakeQuery:
-    def __init__(self, user):
+    def __init__(self, user, model=None):
         self.user = user
+        self.model = model
+
+    def delete(self, *a, **k):
+        return 0
 
     def filter(self, *a, **k):
         return self
 
     def first(self):
-        return self.user
+        return None if self.model is UsedRefreshToken else self.user
 
 
 class FakeDb:
     def __init__(self, user):
         self.user = user
 
-    def query(self, *a):
-        return FakeQuery(self.user)
+    def query(self, model=None):
+        return FakeQuery(self.user, model)
+
+    def add(self, *a):
+        pass
+
+    def commit(self):
+        pass
 
 
 def call(token, user):

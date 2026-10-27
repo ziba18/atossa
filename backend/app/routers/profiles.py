@@ -7,7 +7,7 @@ from app.database import Base, get_db
 from app.dependencies import get_current_user
 from app.models import (
     AlertLog, ConnectedAccount, CycleLog, CyclePrediction, EmergencyContact, HealthMetric,
-    HealthRecord, Profile, SymptomCapture, SymptomLog, User,
+    HealthRecord, Profile, SocialIdentity, SymptomCapture, SymptomLog, UsedRefreshToken, User,
 )
 from app.schemas.profile import ProfileResponse, ProfileUpdate
 from app.services.rate_limit import limit
@@ -35,8 +35,18 @@ def update_profile(
 
     # model_dump(exclude_unset=True) only returns fields the client actually sent,
     # so a PATCH with {"dark_mode": true} won't overwrite all other fields with None.
-    for field, value in body.model_dump(exclude_unset=True).items():
+    changes = body.model_dump(exclude_unset=True)
+    if "consent_version" in changes:
+        # Consent can be given or renewed, never erased or wound back by a client request.
+        new = changes["consent_version"]
+        if new is None:
+            del changes["consent_version"]
+        elif profile.consent_version is not None and new < profile.consent_version:
+            raise HTTPException(status_code=400, detail="Consent version cannot go down")
+    for field, value in changes.items():
         setattr(profile, field, value)
+    if changes.get("consent_version") is not None:
+        profile.consented_at = datetime.now(timezone.utc)  # the server's clock, never the client's
 
     db.commit()
     db.refresh(profile)
@@ -109,6 +119,8 @@ def delete_account(current_user: User = Depends(get_current_user), db: Session =
             ConnectedAccount.invite_email == current_user.email.lower(),
         )
     ).delete(synchronize_session=False)
+    db.query(SocialIdentity).filter(SocialIdentity.user_id == uid).delete(synchronize_session=False)
+    db.query(UsedRefreshToken).filter(UsedRefreshToken.user_id == uid).delete(synchronize_session=False)
     db.query(Profile).filter(Profile.id == uid).delete(synchronize_session=False)
     db.query(User).filter(User.id == uid).delete(synchronize_session=False)
     db.commit()

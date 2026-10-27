@@ -12,9 +12,8 @@ from dataclasses import dataclass
 
 FALLBACK = "I can't assess that, but your GP can. Want to add anything else to your note?"
 URGENT = (
-    "This could need urgent help. If you think this is an emergency, for example chest pain, trouble "
-    "breathing, a face drooping or slurred speech, very heavy bleeding, fainting, or severe sudden pain, "
-    "call 999 or go to A&E. If you are not sure, call NHS 111."
+    "This could need urgent help. If you have severe sudden pain, very heavy bleeding or feel faint, "
+    "call 999 or go to A&E, or call NHS 111."
 )
 
 _CONDITIONS = [
@@ -248,6 +247,10 @@ _BODY = [
     r"(?:very |really |so )pale.{0,40}(?:sick|dizz\w+|faint\w*|sharp)",
 ]
 _SELF = [
+    # set v16 (first contact 6/20 missed): hopelessness, "better off dead", plans phrased without "suicide"
+    r"(?:rather|better off) (?:be )?dead|wish (?:i was|i were|i could be) dead|(?:life (?:isn'?t|is not) worth living|not worth living|done with (?:life|living)|no reason to (?:live|go on))",
+    r"nobody would (?:notice|miss me)\b.{0,30}(?:disappear\w*|gone|died?)|(?:going to|gonna|about to) jump\b",
+    r"(?:thinking (?:about|of)|want(?:ing)? to) taking (?:all|every)\b.{0,20}(?:tablets|pills|medication|painkillers)",
     r"(?:not|won'?t|n't) (?:going to )?wake up (?:tomorrow|again)|(?:don'?t|do not) want to wake up",
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
     r"end(?:ing)? things", r"(?:took|taken|taking) (?:a load|lots|too many|an overdose)\b.{0,30}(?:tablets|pills|paracetamol)|overdos\w+",
@@ -317,13 +320,26 @@ URGENT_SELF_HARM = SELF_HARM
 _RESOLVED = re.compile(r"(?<!n't )(?<!not )(?<!never )\b(?:stopped|settled|eased|resolved|subsided|passed|went away|has gone|have gone)\b", re.I)
 
 
+# "last week" often dates the cause, not the symptom: with a present-tense word in the clause it is not past tense.
+_LASTREL = re.compile(r"(?<!since )last (?:year|decade|month|week)", re.I)
+_PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today)\b", re.I)
+
+
+def _is_past(clause: str) -> bool:
+    for m in _PAST.finditer(clause):
+        if _LASTREL.fullmatch(m.group(0)) and _PRESENT.search(clause):
+            continue
+        return True
+    return False
+
+
 def _hits(rx, text: str) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
         for m in rx.finditer(clause):
             before = clause[: m.start()]
             after = clause[m.end():]
-            if _NEG.search(before[-40:]) or _PAST.search(clause) or _OTHER.search(before) or _RESOLVED.search(after):
+            if _NEG.search(before[-40:]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
                 continue
             return True
     return False
@@ -416,13 +432,57 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set v22 (voice-style notes; first contact 4/12 missed)
+                    r"\btook (?:a lot|loads|lots)\b.{0,15}\b(?:tablets|pills)\b.{0,40}\b(?:strange|drowsy|sleepy|sick|weird)\b|"
+                    r"\bwon'?t wake up\b|\bcan'?t wake\b.{0,20}\b(?:up|her|him|them)\b|"
+                    r"\b(?:don'?t|do not|dont) think i can (?:keep going|go on|carry on)\b|"
+                    r"\b(?:can'?t|cannot|cant|no) (?:control|feel)\b.{0,15}\b(?:bladder|bowel)\b|\bno feeling in my (?:(?:right|left) )?(?:legs?|feet)\b|"
+                    # set v21 (long notes with the emergency in the middle; first contact 4/12 missed)
+                    r"\b(?:filling|soaking|changing)\b.{0,12}\b(?:a |my )?(?:pad|tampon)s?\b.{0,15}\bevery (?:\d+|few|ten|twenty|fifteen|thirty) (?:min\w*)\b|"
+                    r"\bstruggling to get (?:a )?(?:full )?breath\b|"
+                    r"\b(?:couldn'?t|can'?t|unable to) stand\b.{0,40}\b(?:room|tilting|spinning|dizz\w+)|\b(?:tilting|spinning)\b.{0,40}\b(?:couldn'?t|can'?t) stand\b|"
+                    r"^(?=.*\b(?:wound|procedure|surgery|op)\b)(?=.*\b(?:red|oozing|pus)\b)(?=.*\b(?:high temperature|fever))(?=.*\b(?:chills|shivering|shaking))|"
+                    # set v20 (informal paraphrases; first contact 8/15 missed)
+                    r"\b(?:pouring|gushing)\b.{0,15}\bblood\b|\bblood\b.{0,10}\b(?:pouring|gushing)\b|\bgush of blood\b|"
+                    r"\bseeing stars\b|\blegs\b.{0,10}\b(?:going from under|giving (?:way|out)|gone from under)|"
+                    r"\brigid as a board\b|\b(?:tummy|belly|stomach|abdomen) (?:is |went |feels? )(?:rigid|solid)\b(?! with (?:tension|stress|nerves|anxiety|worry))|"
+                    r"\b(?:mouth|face|eyelid)\b.{0,15}\b(?:droop\w*|dropped|falling)\b|\bcan'?t feel my (?:left|right) side\b|"
+                    r"\b(?:lump|clot|tissue)\b.{0,15}\bcame out\b.{0,60}\b(?:freezing|clammy|faint|dizzy)\b|"
+                    r"^(?=.*\b(?:after the op|post[- ]?op)\b)(?=.*\b(?:fever|high temperature)\b)(?=.*\b(?:swollen|smell\w*|pus|discharge))|"
+                    r"\bchest\b.{0,15}\bsqueezing\b|\bsqueezing\b.{0,15}\bchest\b|"
+                    r"\b(?:been |keep |keeps )?having fits\b|"
+                    # set v18 (medicines, late pregnancy, urinary infection with fever; first contact 8/15 missed)
+                    r"\b(?:pill|contraceptive|hrt|patch)\b.{0,60}\b(?:swollen|swelling|painful)\b.{0,15}\b(?:leg|calf)\b|\b(?:swollen|swelling|painful)\b.{0,15}\b(?:leg|calf)\b.{0,60}\b(?:on the pill|the pill|hrt)\b|"
+                    r"\bthroat\b.{0,20}\b(?:tight|closing)\b.{0,40}\b(?:rash|hives|swell\w*|breath\w*|antibiotic|tablet\w*)\b|^(?=.*\b(?:rash|hives)\b)(?=.*\b(?:breath\w*|swell\w*|tongue|throat (?:is |feels? )?(?:tight|closing)))|"
+                    r"\b(?:haven\'?t|hasn\'?t|not|stopped)\b.{0,25}\b(?:felt|feel|feeling)?\s*(?:the |my )?(?:baby|bump)\b.{0,20}\bmov\w+|\b(?:baby|bump)\b.{0,20}\b(?:not moving|stopped moving|hasn\'?t moved|isn\'?t moving)\b|"
+                    r"\bwaters (?:have |had )?(?:broke|gone|broken)\b.{0,60}\b(?:green|brown|blood|smell\w*)\b|"
+                    r"\b(?:swelling|swollen)\b.{0,30}\b(?:face|hands)\b.{0,60}(?<!no )(?<!without )\bheadache\b|(?<!no )(?<!without )\bheadache\b.{0,60}\b(?:face|hands)\b.{0,15}\b(?:swell\w*|swollen)\b|"
+                    r"\b(?:rolling|writhing)\b.{0,15}\b(?:on the |on my )?floor\b|"
+                    r"\b(?:burning|stinging)\b.{0,20}\b(?:wee|pee|urinat\w+)\b.{0,60}\b(?:high fever|fever|high temperature)\b.{0,60}\b(?:back|shaking|shivering)\b|"
+                    r"\b(?:tablets|pills)\b.{0,30}\b(?:wine|vodka|alcohol)\b.{0,40}\b(?:don'?t care|who cares)|"
+                    # set v17 (typed fast): pad counts with abbreviations, very hot + confused, sudden headache with stiff neck
+                    r"\b(?:soaked|soaking|filled|gone through|went through|used)\b.{0,12}\b\d+ (?:pads?|tampons?)\b.{0,15}\b(?:in|within) (?:\d+|an?|one|two|three|four) (?:hrs?|hours?)\b|"
+                    r"^(?=.*\b(?:very hot|burning up|fever|high temperature)\b)(?=.*\bconfus\w*)(?=.*\b(?:shak\w+|shiver\w*))|\bconfus\w*\b.{0,40}\b(?:don'?t|do not|dont) know (?:what day|where i am|who)\b|"
+                    r"\b(?:sudden|terrible|worst|awful)\b.{0,15}\bheadache\b.{0,60}\b(?:neck (?:is )?stiff|stiff neck|hit (?:w|with)|like being hit)\b|"
+                    # sepsis / DKA / stroke / postnatal-infection wording (set v15, first contact 4/20 missed)
+                    r"^(?=.*\b(?:burning up|rigors?|temperature (?:of )?(?:3[89]|4\d))\b)(?=.*\b(?:heart (?:racing|pounding)|(?:haven'?t|not) (?:peed|passed (?:any )?urine|had a wee)|tummy pain|confus\w*))|"
+                    r"^(?=.*\b(?:type 1|diabet\w+)\b)(?=.*\b(?:fruity|pear[- ]?drops?|breathing fast|very thirsty))(?=.*\b(?:sick|vomit\w*|drowsy))|"
+                    r"\b(?:arm|leg|hand|face)\b.{0,25}\bnumb\b.{0,60}\b(?:vision|blurr\w+|speech|slurr\w+|weak\w*)\b|\b(?:vision|blurr\w+|slurr\w+)\b.{0,60}\b(?:arm|leg|hand|face)\b.{0,25}\bnumb\b|"
+                    r"^(?=.*\b(?:miscarriage|gave birth|after the birth|postnatal|termination)\b)(?=.*\b(?:temperature|fever|rigors|shivering))(?=.*\b(?:pain|smell\w*|bleed\w*|discharge))|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup)\b)(?=.*\b(?:fever|high temperature|temperature)\b)"
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))", re.I | re.S)
 
 
 def _hits_whole(rx, text: str) -> bool:
     m = rx.search(text)
-    return bool(m) and not (_NEG.search(text[max(0, m.start() - 40):m.start()]) or _PAST.search(text) or _OTHER.search(text[:m.start()]))
+    if not m:
+        return False
+    # Past tense counts only in the sentence(s) the match sits in (same rule as the phone's hitWhole).
+    starts = [i for i, c in enumerate(text[: m.start()]) if c in ".;!?\n"]
+    start = starts[-1] + 1 if starts else 0
+    ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
+    end = m.end() + ends[0] if ends else len(text)
+    return not (_NEG.search(text[max(0, m.start() - 40):m.start()]) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
 
 
 def emergency_kind(user_text: str):

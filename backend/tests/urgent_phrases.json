@@ -1,202 +1,1050 @@
 [
- [
-  "I can’t breathe",
-  true
- ],
- [
-  "I can't breathe",
-  true
- ],
- [
-  "soaking a pad every hour",
-  true
- ],
- [
-  "I’m soaking a pad every hour",
-  true
- ],
- [
-  "I fainted this morning",
-  true
- ],
- [
-  "severe sudden pain on my left side",
-  true
- ],
- [
-  "worst pain I’ve ever had",
-  true
- ],
- [
-  "I’m pregnant and bleeding",
-  true
- ],
- [
-  "I want to end my life",
-  true
- ],
- [
-  "I want to e​nd my life",
-  true
- ],
- [
-  "heavy bleeding all night",
-  true
- ],
- [
-  "pain is a 10/10",
-  true
- ],
- [
-  "ＣＨＥＳＴ ＰＡＩＮ",
-  true
- ],
- [
-  "cramps on day two, about a 4 out of 10",
-  false
- ],
- [
-  "lower back ache after walking",
-  false
- ],
- [
-  "period was late this month",
-  false
- ],
- [
-  "I felt tired and bloated",
-  false
- ],
- [
-  "took ibuprofen and it helped",
-  false
- ],
- [
-  "mild cramps this morning",
-  false
- ],
- [
-  "spotting before my period",
-  false
- ],
- [
-  "I cannot breathe",
-  true
- ],
- [
-  "I can’t stop bleeding",
-  true
- ],
- [
-  "bleeding won’t stop",
-  true
- ],
- [
-  "I get short of breath",
-  true
- ],
- [
-  "hard to breathe",
-  true
- ],
- [
-  "blood everywhere",
-  true
- ],
- [
-  "my chest feels tight",
-  true
- ],
- [
-  "I'm bleeding and 10 weeks pregnant",
-  true
- ],
- [
-  "a bit tired, breathing fine",
-  false
- ],
- [
-  "period stopped bleeding yesterday",
-  false
- ],
- [
-  "bleeding stopped hours ago",
-  false
- ],
- [
-  "tight jeans made my belly sore",
-  false
- ],
- [
-  "I suddenly feel confused",
-  true
- ],
- [
-  "suddenly became disorientated at work",
-  true
- ],
- [
-  "pain in the tip of my shoulder and my tummy hurts",
-  true
- ],
- [
-  "sharp pain and feeling very lightheaded",
-  true
- ],
- [
-  "looking very pale and feeling sick",
-  true
- ],
- [
-  "I felt a bit dizzy when I stood up",
-  false
- ],
- [
-  "period pain 4 out of 10 today",
-  false
- ],
- [
-  "a little confused about my appointment date",
-  false
- ],
- [
-  "my shoulder is sore from the gym",
-  false
- ],
- [
-  "pale and tired this week",
-  false
- ],
- [
-  "Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.",
-  true
- ],
- [
-  "The pain was sharp and went down my legs. I also felt dizzy and lightheaded.",
-  true
- ],
- [
-  "I feel very dizzy and sharp pain in my tummy",
-  true
- ],
- [
-  "Very sharp pain across my lower belly. I couldn't move around or stand without help.",
-  true
- ],
- [
-  "Mild cramps on day two and I felt a bit dizzy when I stood up fast",
-  false
- ],
- [
-  "Dull ache in my back, no dizziness, slept fine",
-  false
- ],
- [
-  "Sharp pain in my knee after running, no other symptoms",
-  false
- ],
- [
-  "Felt lightheaded after skipping lunch, cramps were a 3 out of 10",
-  false
- ]
+[
+"I can’t breathe",
+true
+],
+[
+"I can't breathe",
+true
+],
+[
+"soaking a pad every hour",
+true
+],
+[
+"I’m soaking a pad every hour",
+true
+],
+[
+"I fainted this morning",
+true
+],
+[
+"severe sudden pain on my left side",
+true
+],
+[
+"worst pain I’ve ever had",
+true
+],
+[
+"I’m pregnant and bleeding",
+true
+],
+[
+"I want to end my life",
+true
+],
+[
+"I want to e​nd my life",
+true
+],
+[
+"heavy bleeding all night",
+true
+],
+[
+"pain is a 10/10",
+true
+],
+[
+"ＣＨＥＳＴ ＰＡＩＮ",
+true
+],
+[
+"cramps on day two, about a 4 out of 10",
+false
+],
+[
+"lower back ache after walking",
+false
+],
+[
+"period was late this month",
+false
+],
+[
+"I felt tired and bloated",
+false
+],
+[
+"took ibuprofen and it helped",
+false
+],
+[
+"mild cramps this morning",
+false
+],
+[
+"spotting before my period",
+false
+],
+[
+"I cannot breathe",
+true
+],
+[
+"I can’t stop bleeding",
+true
+],
+[
+"bleeding won’t stop",
+true
+],
+[
+"I get short of breath",
+true
+],
+[
+"hard to breathe",
+true
+],
+[
+"blood everywhere",
+true
+],
+[
+"my chest feels tight",
+true
+],
+[
+"I'm bleeding and 10 weeks pregnant",
+true
+],
+[
+"a bit tired, breathing fine",
+false
+],
+[
+"period stopped bleeding yesterday",
+false
+],
+[
+"bleeding stopped hours ago",
+false
+],
+[
+"tight jeans made my belly sore",
+false
+],
+[
+"I suddenly feel confused",
+true
+],
+[
+"suddenly became disorientated at work",
+true
+],
+[
+"pain in the tip of my shoulder and my tummy hurts",
+true
+],
+[
+"sharp pain and feeling very lightheaded",
+true
+],
+[
+"looking very pale and feeling sick",
+true
+],
+[
+"I felt a bit dizzy when I stood up",
+false
+],
+[
+"period pain 4 out of 10 today",
+false
+],
+[
+"a little confused about my appointment date",
+false
+],
+[
+"my shoulder is sore from the gym",
+false
+],
+[
+"pale and tired this week",
+false
+],
+[
+"Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.",
+true
+],
+[
+"The pain was sharp and went down my legs. I also felt dizzy and lightheaded.",
+true
+],
+[
+"I feel very dizzy and sharp pain in my tummy",
+true
+],
+[
+"Very sharp pain across my lower belly. I couldn't move around or stand without help.",
+true
+],
+[
+"Mild cramps on day two and I felt a bit dizzy when I stood up fast",
+false
+],
+[
+"Dull ache in my back, no dizziness, slept fine",
+false
+],
+[
+"Sharp pain in my knee after running, no other symptoms",
+false
+],
+[
+"Felt lightheaded after skipping lunch, cramps were a 3 out of 10",
+false
+],
+[
+"my speech is slurred and I can't smile properly on one side",
+true
+],
+[
+"I've come out in hives and my throat is closing up after the nuts",
+true
+],
+[
+"my lips and tongue have swollen after eating prawns",
+true
+],
+[
+"feel like I'm burning up, shivering, heart racing and I haven't peed all day",
+true
+],
+[
+"stiff neck and a headache that's the worst ever, light hurts my eyes",
+true
+],
+[
+"the pain moved to my lower right and now I can't walk, I keep vomiting",
+true
+],
+[
+"sudden stabbing pain on one side of my pelvis, I threw up and I'm sweating",
+true
+],
+[
+"my inhaler isn't helping and I can't speak a full sentence",
+true
+],
+[
+"I'm very thirsty, breathing fast, fruity smell and I feel sick, I have type 1",
+true
+],
+[
+"I had a seizure at work",
+true
+],
+[
+"left arm gone numb and heavy and my vision went blurry",
+true
+],
+[
+"calf pain and swelling after the flight and now my chest hurts when I breathe in",
+true
+],
+[
+"I've taken too many sleeping tablets",
+true
+],
+[
+"been bleeding after the miscarriage for hours and feel like I'll pass out",
+true
+],
+[
+"I was hit by my partner and can't breathe properly",
+true
+],
+[
+"suddenly lost vision in one eye",
+true
+],
+[
+"I am 9 weeks pregnant with sharp one sided pain and shoulder tip pain",
+true
+],
+[
+"my heart is pounding and I feel crushing pressure in my chest",
+true
+],
+[
+"I'm shaking, drenched in sweat and confused, my sugar was 2.1",
+true
+],
+[
+"slight twinge in my calf after running, no swelling",
+false
+],
+[
+"allergic to cats, sneezing today",
+false
+],
+[
+"mild headache, drank water, better now",
+false
+],
+[
+"my inhaler works fine, used it before the gym",
+false
+],
+[
+"period pain 5/10, heat pad helps",
+false
+],
+[
+"felt sick after lunch but ok now",
+false
+],
+[
+"hot flush at night, slept badly",
+false
+],
+[
+"spotting for a day, very light, 6 weeks after the pill change",
+false
+],
+[
+"anxious about my scan on Friday",
+false
+],
+[
+"stiff neck from sleeping on the sofa",
+false
+],
+[
+"I just want everything to stop",
+true
+],
+[
+"nobody would notice if I disappeared",
+true
+],
+[
+"I've been thinking about taking all my tablets",
+true
+],
+[
+"I don't want to be alive tomorrow",
+true
+],
+[
+"I keep cutting my arms when the pain gets too much",
+true
+],
+[
+"I wish I could go to sleep and never wake up",
+true
+],
+[
+"I have a plan to end things this weekend",
+true
+],
+[
+"I can't do this any more, I'm done with life",
+true
+],
+[
+"the pain is making me think of ways to kill myself",
+true
+],
+[
+"everyone would be better off without me",
+true
+],
+[
+"I want to hurt myself so I feel something",
+true
+],
+[
+"I've written notes to my family",
+true
+],
+[
+"I'm going to jump",
+true
+],
+[
+"life isn't worth living with this pain",
+true
+],
+[
+"i dont wanna be here anymore",
+true
+],
+[
+"thinking about ending it all",
+true
+],
+[
+"I took a load of pills and I'm scared",
+true
+],
+[
+"I feel like a burden and want to die",
+true
+],
+[
+"can't stop thinking about suicide",
+true
+],
+[
+"I'd rather be dead than live like this",
+true
+],
+[
+"this pain is killing me today but I'll manage",
+false
+],
+[
+"I'm dead tired after work",
+false
+],
+[
+"my period cramps are murder",
+false
+],
+[
+"feeling a bit low, cried at a film",
+false
+],
+[
+"I'm over this heatwave, can't sleep",
+false
+],
+[
+"killing time before my appointment",
+false
+],
+[
+"fed up with the pain but coping, tried a bath",
+false
+],
+[
+"I could die of embarrassment at the clinic",
+false
+],
+[
+"stressed about work, tired",
+false
+],
+[
+"nothing helps today, feeling down",
+false
+],
+[
+"day 3 of my period and ive soaked thru 4 pads in 2 hrs, feel v weak and shaky",
+true
+],
+[
+"cant breath properly since this morning and my lips feel tingly",
+true
+],
+[
+"woke up w terrible pain in my side, cant stand up, been sick twice, fever too",
+true
+],
+[
+"been feeling faint all day and just collapsed in the kitchen",
+true
+],
+[
+"omg the pain is unreal i think im going to pass out",
+true
+],
+[
+"chest feels tight and my left arm aches, sweating loads",
+true
+],
+[
+"blood everywhere, clots the size of golf balls, dizzy",
+true
+],
+[
+"pain 10/10 cant even talk, boyfriend says call ambulance",
+true
+],
+[
+"I think I'm having a miscarriage, bleeding heavily with really bad cramps and feel faint",
+true
+],
+[
+"my stomach is rock solid and i keep throwing up, worst pain ever",
+true
+],
+[
+"been having thoughts of ending my life since the diagnosis letter",
+true
+],
+[
+"vision went black for a few secs then i fell, head hurts bad",
+true
+],
+[
+"cant stop shaking, very hot, confused, dont know what day it is",
+true
+],
+[
+"sudden terrible headache like being hit w a bat, neck stiff",
+true
+],
+[
+"coughing blood this morning and sharp chest pain when i breathe in",
+true
+],
+[
+"ugh cramps day 1, took 2 ibuprofen and napped, bit better now, flow is medium",
+false
+],
+[
+"bloated all week and cranky, chocolate helped lol",
+false
+],
+[
+"slept badly, tired at work, mild pelvic ache on left, 3/10",
+false
+],
+[
+"had a blood test today, nurse said results in a week, nervous",
+false
+],
+[
+"period 5 days late, test negative, bit of cramping",
+false
+],
+[
+"heavy-ish day 2, changed pad 4 times, no clots, fine otherwise",
+false
+],
+[
+"headache after screen time, drank water, gone now",
+false
+],
+[
+"pain during sex again, mild, will mention to my doctor",
+false
+],
+[
+"felt dizzy for a second getting up from the sofa then fine",
+false
+],
+[
+"nausea in the mornings this week, ginger tea helps",
+false
+],
+[
+"I've just had my coil fitted and the pain is getting worse and I feel faint and hot",
+true
+],
+[
+"I'm on the pill and have a painful swollen leg",
+true
+],
+[
+"started a new antibiotic and now my throat feels tight and I'm covered in a rash",
+true
+],
+[
+"I took double my tablets by mistake and now I'm very drowsy and can't stay awake",
+true
+],
+[
+"bleeding heavily after the baby, passing big clots, heart racing",
+true
+],
+[
+"I'm 36 weeks and haven't felt the baby move all day",
+true
+],
+[
+"my waters broke and there's green fluid",
+true
+],
+[
+"sudden swelling in my face and hands and a bad headache, I'm 30 weeks",
+true
+],
+[
+"the pain went from my tummy to my shoulder and I fainted",
+true
+],
+[
+"I've had a severe allergic reaction before and my face is swelling after my injection",
+true
+],
+[
+"after the laparoscopy my belly is swollen hard and I have a fever",
+true
+],
+[
+"been vomiting for two days and can't keep any fluids down, haven't wee'd since yesterday",
+true
+],
+[
+"my period pain is so bad I have been rolling on the floor and I am vomiting",
+true
+],
+[
+"tablets and wine and I don't care what happens",
+true
+],
+[
+"burning when I wee, high fever, shaking and pain in my back",
+true
+],
+[
+"coil fitted last month, mild cramps on and off",
+false
+],
+[
+"on the pill, spotting for a few days, nothing else",
+false
+],
+[
+"new antibiotic, bit of an upset stomach",
+false
+],
+[
+"37 weeks, baby moving lots, bit of backache",
+false
+],
+[
+"swollen ankles after a long day standing",
+false
+],
+[
+"vomited once last night, ok today, drinking water",
+false
+],
+[
+"period pain 7/10, rolled on the sofa with a hot water bottle, ibuprofen worked",
+false
+],
+[
+"had a glass of wine and a lie in",
+false
+],
+[
+"burning when I wee for a day, drinking lots of water, no fever",
+false
+],
+[
+"mild headache, 30 weeks, midwife says fine",
+false
+],
+[
+"Started the pill 2 months ago, ankles a bit swollen at the end of the day but nothing painful",
+false
+],
+[
+"I had a rash from the new soap, gone after a day, throat fine",
+false
+],
+[
+"my friend is 36 weeks and said the baby is moving loads, we went for a walk",
+false
+],
+[
+"mopped the floor and my back ached afterwards",
+false
+],
+[
+"I felt confused by the leaflet from the pharmacy, will ask on Monday",
+false
+],
+[
+"low fever yesterday, 37.8, took paracetamol, fine today, no shaking",
+false
+],
+[
+"headache and a stiff shoulder from the desk, stretched and it eased",
+false
+],
+[
+"my neck is stiff from the gym, no headache",
+false
+],
+[
+"pads: used 4 today, normal for day 2, no clots",
+false
+],
+[
+"wine at the wedding, then tablets for the headache next morning, fine",
+false
+],
+[
+"swelling in my hands in the heat, went down after resting, no headache",
+false
+],
+[
+"blood test said low iron, started tablets, feeling a bit sick from them",
+false
+],
+[
+"waters? no, just drinking more water this week to help the headaches",
+false
+],
+[
+"the pain was bad last month, rolled around in bed, but this week it's mild",
+false
+],
+[
+"burning feeling in my chest after spicy food, antacid helped",
+false
+],
+[
+"very hot day, felt drained, drank water, no confusion, fine by evening",
+false
+],
+[
+"my sister has a sudden bad headache sometimes, migraine, she takes her tablets",
+false
+],
+[
+"I'm on the pill and have a sore calf after the gym, mild and it eases when I stretch",
+false
+],
+[
+"leg cramps at night, calves tight, magnesium helped",
+false
+],
+[
+"throat tight from shouting at the match",
+false
+],
+[
+"the baby scan is next week, excited and nervous",
+false
+],
+[
+"tablets are huge, hard to swallow, took them with juice",
+false
+],
+[
+"I don't care what the scale says, focusing on how I feel",
+false
+],
+[
+"he was rock hard on the issue of the bills, but I stood my ground",
+false
+],
+[
+"im pouring blood and my head is spinning",
+true
+],
+[
+"feel like im gonna black out, pain is horrendous low down on the right",
+true
+],
+[
+"been sick all night and my tummy is rigid as a board",
+true
+],
+[
+"i keep seeing stars and my legs are going from under me, period is flooding",
+true
+],
+[
+"my heart is going like the clappers and i cant catch my breath",
+true
+],
+[
+"cant feel my left side properly and my mouth is drooping",
+true
+],
+[
+"there was a gush of blood and a big lump came out, now im freezing and clammy",
+true
+],
+[
+"have not stopped bleeding for 3 weeks and today i nearly passed out on the bus",
+true
+],
+[
+"pain so bad i bit through a towel",
+true
+],
+[
+"i feel like i want to disappear forever",
+true
+],
+[
+"i've got a fever, my belly is swollen, and my discharge smells awful after the op",
+true
+],
+[
+"I vomited blood this morning",
+true
+],
+[
+"my breathing is all wheezy and my chest is squeezing",
+true
+],
+[
+"been having fits since last night",
+true
+],
+[
+"im bleeding and i know im pregnant, the pain is on one side and it's sharp",
+true
+],
+[
+"flow is flooding-ish today but pads hold ok, not dizzy",
+false
+],
+[
+"my head is spinning with exam stress",
+false
+],
+[
+"tummy rigid? no, just bloated and gassy",
+false
+],
+[
+"the pain was horrendous last week, better now with the heat patch",
+false
+],
+[
+"period late, bit cramps, test tomorrow",
+false
+],
+[
+"hard day, cried at work, feeling flat",
+false
+],
+[
+"spotting after sex once, light, will mention to the nurse",
+false
+],
+[
+"had a gush of tea down my top lol, bad morning",
+false
+],
+[
+"freezing in the office, tired, period starting tomorrow",
+false
+],
+[
+"nearly missed the bus, rushed, felt breathless for a minute then fine",
+false
+],
+[
+"cramps woke me, 5/10, took co-codamol, slept again",
+false
+],
+[
+"clots small like 10p coins, normal for me day 2",
+false
+],
+[
+"stomach upset after takeaway, sorted by the afternoon",
+false
+],
+[
+"bit wheezy with my hay fever, antihistamine helped",
+false
+],
+[
+"discharge a bit different this month, no smell, no pain",
+false
+],
+[
+"Mostly an ordinary day, work was busy, cramps on and off. Around 6pm the pain suddenly got far worse and I started sweating and felt like I would collapse in the shop.",
+true
+],
+[
+"Day 2 of my period. Used the heating pad, ate fine. Tonight I noticed I'm filling a pad every 20 minutes and the clots are huge, and my hands have gone numb.",
+true
+],
+[
+"Felt ok this morning, mild ache. After lunch there was a sharp stab in my lower left and my vision went grey at the edges, had to sit on the floor.",
+true
+],
+[
+"Another bad flare. I've tried everything and I just can't see a way forward, I keep thinking my family would manage without me.",
+true
+],
+[
+"Tried the new painkillers. About an hour later my lips tingled, my face felt hot and I was struggling to get a full breath.",
+true
+],
+[
+"Nothing eased the pain all night. At 4am I vomited, then I couldn't catch my breath and my chest hurt on the left.",
+true
+],
+[
+"Pregnancy test was positive on Monday. Today sharp pain on the right and a bit of brown bleeding, and my shoulder hurts, feeling light headed.",
+true
+],
+[
+"Slept most of the day. When I got up I couldn't stand without the room tilting and I was sick, the pain was a nine, I rang my mum.",
+true
+],
+[
+"Fever since yesterday, my tummy is swollen and tender, and I've started shaking and I'm not making sense according to my flatmate.",
+true
+],
+[
+"I've been bleeding for 14 days and today I got up and blacked out for a few seconds in the bathroom.",
+true
+],
+[
+"Everything hurts and I don't want to be here. I have the tablets out on the bed.",
+true
+],
+[
+"Mostly an ordinary day, work was busy, cramps on and off, took a paracetamol at lunch and it settled. Tired tonight.",
+false
+],
+[
+"Day 2 of my period. Heating pad, ate fine, flow medium, changed pad three times. Back ache, 4/10.",
+false
+],
+[
+"Felt ok this morning, mild ache. After lunch a short sharp twinge on the left that passed in a minute. Fine now.",
+false
+],
+[
+"Another flare but I'm managing. Spoke to my sister, she helped. Tomorrow I'll book the GP appointment.",
+false
+],
+[
+"Tried the new painkillers, no side effects so far, pain 5/10 down to 3/10.",
+false
+],
+[
+"Nothing seemed to ease the pain until the hot bath, slept ok after, bit sick in the morning but fine.",
+false
+],
+[
+"Period is 3 days late, test negative, a bit of cramping, will test again at the weekend.",
+false
+],
+[
+"Slept most of the day, got up slowly, felt a bit lightheaded for a moment then ok, ate toast.",
+false
+],
+[
+"Cold symptoms since yesterday, sore throat, took tablets, drinking tea, no fever.",
+false
+],
+[
+"Spotting on day 14, light, brown, no pain, same as last month.",
+false
+],
+[
+"Everything hurts today after the long walk, legs mostly. Early night.",
+false
+],
+[
+"Wound from the procedure is healing, a bit itchy, no redness, seeing the nurse Friday.",
+false
+],
+[
+"After my procedure last week the wound is red and oozing and I have a high temperature and chills",
+true
+],
+[
+"temperature 40, rigors, tummy pain, I had a miscarriage last week and it is still sore",
+true
+],
+[
+"I fainted last week at work",
+false
+],
+[
+"I fainted last week and was fine after",
+false
+],
+[
+"last week I had chest pain but it went away",
+false
+],
+[
+"um so i think i might be having a heart attack because my chest is really heavy and my arm is tingling",
+true
+],
+[
+"so basically the bleeding wont stop and ive gone really pale and dizzy and i feel like im going to fall over",
+true
+],
+[
+"the pain started this morning really sharp on the right and now im being sick and i have a temperature and cant straighten up",
+true
+],
+[
+"i dont think i can keep going i want it all to end tonight",
+true
+],
+[
+"i cant stop shaking and my heart is racing and i feel like i am dying",
+true
+],
+[
+"i felt a pop in my belly and then excruciating pain and now im sweating and grey",
+true
+],
+[
+"its like someone is stabbing me in the stomach and i have been sick and i am faint",
+true
+],
+[
+"no feeling in my right leg and i cant control my bladder",
+true
+],
+[
+"my throat is swelling up and i have hives all over after the injection",
+true
+],
+[
+"got blood coming out when i cough and a fever and cant breathe lying down",
+true
+],
+[
+"um so my period started today and the cramps are not too bad i took some ibuprofen and im just resting",
+false
+],
+[
+"so basically work was stressful and i feel tired and a bit low but nothing else",
+false
+],
+[
+"i uh forgot to take my tablets this morning so took them at lunch instead",
+false
+],
+[
+"my daughter has a cold and i didnt sleep much so im shattered today",
+false
+],
+[
+"the pain started this morning mild on the left and eased after a hot bath",
+false
+],
+[
+"i dont think i can face the gym today just want to rest",
+false
+],
+[
+"i cant stop eating chocolate this week my heart wants it lol",
+false
+],
+[
+"felt a pop in my knee at netball but it is fine now",
+false
+],
+[
+"no feeling of hunger this morning and i feel nauseous",
+false
+],
+[
+"my throat is sore and i have a cold",
+false
+],
+[
+"got a cough and a fever last week but it is gone now",
+false
+]
 ]
