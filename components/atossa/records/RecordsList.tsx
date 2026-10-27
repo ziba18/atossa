@@ -1,13 +1,34 @@
 import React from 'react';
+import { View } from 'react-native';
+import { space } from '../../../constants/atossaUI';
+import { formatRecordDate } from '../../../lib/records/format';
 import type { AppointmentData, HistoryData, MedicineData, Rec } from '../../../types/records';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { AddButton, EmptyState, InlineError, ScreenLarge } from '../kit';
-import { Group, GroupRow } from './GroupedRows';
+import type { IconName } from '../../ui/Icon';
+import { Group, GroupHeading, GroupRow } from './GroupedRows';
 import { KIND_INFO, recordFacts, recordTitle, sortRecords, type RecordDataKind } from './recordKinds';
 
 type AnyData = MedicineData | AppointmentData | HistoryData;
 
+function groupByType(recs: Rec<HistoryData>[]): [string, Rec<HistoryData>[]][] {
+  const map = new Map<string, Rec<HistoryData>[]>();
+  for (const r of recs) map.set(r.data.type || 'Health history', [...(map.get(r.data.type || 'Health history') ?? []), r]);
+  return [...map.entries()];
+}
+
 /** "3 saved" / "1 saved" / "None yet" — the count line on Profile and on the list. */
+const PURPOSE: Record<RecordDataKind, string> = {
+  medicine: 'Add what you take or have tried, and it goes into your summary.',
+  appointment: 'Add a booked visit and Today counts down to it.',
+  history: 'Add past tests, scans or things a doctor told you, so they are in one place.',
+};
+const HISTORY_ICONS: Record<string, IconName> = {
+  'Told to me by a doctor': 'file-text', 'Test or scan': 'activity', 'Procedure or surgery': 'clipboard-list', 'Emergency visit': 'heart-pulse',
+};
+const rowIcon = (kind: RecordDataKind, data: AnyData): IconName =>
+  kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : HISTORY_ICONS[(data as HistoryData).type] ?? 'file-text';
+
 export const savedLabel = (n: number) => (n === 0 ? 'None yet' : `${n} saved`);
 
 /**
@@ -29,6 +50,25 @@ export function RecordsList({
   const loadError = useRecordsStore((s) => s.error);
   const sorted = sortRecords(kind, recs);
 
+  const renderRow = (r: Rec<AnyData>) => {
+    const grouped = kind === 'history';
+    const h = r.data as HistoryData;
+    // Under a type header the type is not repeated: the row leads with what was said or found.
+    const said = grouped ? [h.told, h.done, h.result].map((t) => (t ?? '').trim()).find(Boolean)?.split('\n')[0] : '';
+    const title = grouped ? said || recordTitle(kind, r.data) : recordTitle(kind, r.data);
+    const facts = grouped ? formatRecordDate(h.date, h.datePrecision) : recordFacts(kind, r.data);
+    return (
+      <GroupRow
+        key={r.id}
+        icon={rowIcon(kind, r.data)}
+        label={title}
+        detail={facts || undefined}
+        accessibilityLabel={[grouped ? `${h.type}. ${title}` : title, facts].filter(Boolean).join('. ')}
+        onPress={() => onOpen(r.id)}
+      />
+    );
+  };
+
   return (
     <ScreenLarge
       title={info.listTitle}
@@ -38,23 +78,19 @@ export function RecordsList({
     >
       {loadError && !loadedFor ? <InlineError message={loadError} /> : null}
       {sorted.length === 0 && loadedFor ? (
-        <EmptyState icon={kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : 'file-text'} message={info.empty} action={{ label: info.addLabel, onPress: onAdd }} />
+        <EmptyState icon={kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : 'file-text'} message={`${info.empty} ${PURPOSE[kind]}`} action={{ label: info.addLabel, onPress: onAdd }} />
       ) : sorted.length ? (
-        <Group>
-          {sorted.map((r) => {
-            const title = recordTitle(kind, r.data);
-            const facts = recordFacts(kind, r.data);
-            return (
-              <GroupRow
-                key={r.id}
-                label={title}
-                detail={facts || undefined}
-                accessibilityLabel={[title, facts].filter(Boolean).join('. ')}
-                onPress={() => onOpen(r.id)}
-              />
-            );
-          })}
-        </Group>
+        kind === 'history' ? (
+          // Health history: one header per type (the clinic asks for "any reports or results"), newest group first.
+          groupByType(sorted as Rec<HistoryData>[]).map(([type, items], i) => (
+            <View key={type} style={{ marginTop: i ? space.xl : 0 }}>
+              <GroupHeading title={type} />
+              <Group>{items.map((r) => renderRow(r))}</Group>
+            </View>
+          ))
+        ) : (
+          <Group>{sorted.map((r) => renderRow(r))}</Group>
+        )
       ) : null}
     </ScreenLarge>
   );
