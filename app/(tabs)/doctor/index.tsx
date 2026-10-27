@@ -64,7 +64,7 @@ function Step({ title, children }: { title: string; children: React.ReactNode })
 }
 
 export default function DoctorScreen() {
-  const winWidth = useWindowDimensions().width;
+  const { width: winWidth, height: winHeight } = useWindowDimensions();
   usePageTitle('For my doctor');
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
@@ -150,6 +150,8 @@ export default function DoctorScreen() {
     { value: '3m', label: RANGE_LABEL['3m'] },
     { value: '6m', label: RANGE_LABEL['6m'] },
   ];
+  // Short phones (320x568): no intro line, tighter gaps, one-line agenda hint, so the digits card starts on the first screen.
+  const short = winHeight < 640 && winWidth < 700;
   const agendaTitle = agendaTitleFor(upcoming?.data.date === today);
   // No data at all for this summary: a calm empty state instead of an empty page.
   // Web at desktop width: preview (the document) on the right, controls always open on the left.
@@ -187,14 +189,16 @@ export default function DoctorScreen() {
 
   return (
     <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
-      <Txt variant="body" color={colors.ink2}>
-        Your notes, in your words, ready to share.
-      </Txt>
+      {short ? null : (
+        <Txt variant="body" color={colors.ink2}>
+          Your notes, in your words, ready to share.
+        </Txt>
+      )}
 
       {upcoming ? (
-        <Card style={{ marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <Card style={{ marginTop: short ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
           {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
-          {winWidth < 240 ? null : (
+          {winWidth < 240 || short ? null : (
           <View aria-hidden style={{
             width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
             alignItems: 'center', justifyContent: 'center',
@@ -299,8 +303,8 @@ export default function DoctorScreen() {
       ) : null}
 
       {agendaUp ? (
-        <View style={{ marginTop: space.xl }}>
-          <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
+        <View style={{ marginTop: short ? space.md : space.xl }}>
+          <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} compact={short} />
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
       ) : null}

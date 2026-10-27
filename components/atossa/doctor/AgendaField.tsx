@@ -15,8 +15,8 @@ const PRIORITY_PREFIX = 'My main priority is ';
 const prioritySentence = (p: string) => `${PRIORITY_PREFIX}${p.toLowerCase()}.`;
 
 export function AgendaField({
-  value, onChange, onBlur, title,
-}: { value: string; onChange: (t: string) => void; onBlur: () => void; /** agendaTitleFor(appointmentToday) */ title: string }) {
+  value, onChange, onBlur, title, compact,
+}: { value: string; onChange: (t: string) => void; onBlur: () => void; /** agendaTitleFor(appointmentToday) */ title: string; /** short phones: no hint line */ compact?: boolean }) {
   const base = useRef('');
   const [focused, setFocused] = useState(false);
   // Collapsed to one line until it holds words or has focus (keeps the digits card above the fold).
@@ -40,9 +40,11 @@ export function AgendaField({
   return (
     <View>
       <Txt variant="headline" nativeID="agendaLabel">{title}</Txt>
-      <Txt variant="secondary" style={{ marginTop: space.xxs }}>
-        The one thing to take away. Pick one or write your own.
-      </Txt>
+      {compact ? null : (
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>
+          The one thing to take away. Pick one or write your own.
+        </Txt>
+      )}
       <View style={{ marginTop: space.sm }}>
         <ChipGroup
           mode="single"
