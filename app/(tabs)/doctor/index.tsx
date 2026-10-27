@@ -170,12 +170,12 @@ export default function DoctorScreen() {
       <InlineError message={actionError} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs }}>
         <Button
-          label={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
+          label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
           icon="share-2"
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
-          style={{ flex: 1, minWidth: 120, maxWidth: desk ? 420 : undefined }}
+          style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120, maxWidth: desk ? 420 : undefined }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
         <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
