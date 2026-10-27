@@ -505,14 +505,22 @@ function domainLines(
   const flood = of((s) => s.flooding === true);
   const clots = of((s) => s.clots === true);
   const between = of((s) => s.bleedingBetween === true);
+  // NG88 1.1.1 order: impact on bleeding days, then between-period dates, then flow as she chose, then what she tried.
+  const bleedDates = new Set(bleeding.map((d) => d.date));
+  const onBleedDays = notes.filter((s) => s.date >= from && s.date <= to && bleedDates.has(s.date));
+  const impactBleedDays = new Set(onBleedDays.filter((s) => realImpacts(s).length > 0).map((s) => s.date)).size;
+  const triedBleedDays = new Set(onBleedDays.filter((s) => clean(s.tried)).map((s) => s.date)).size;
+  const betweenDates = [...new Set(notes.filter((s) => s.date >= from && s.date <= to && s.bleedingBetween === true).map((s) => s.date))].sort();
   facts.bleeding = {
     text: joinFacts(
+      impactBleedDays ? `got in the way of things on ${plural(impactBleedDays, 'bleeding day')}` : '',
+      between ? `bleeding between periods on ${plural(between, 'day')} (${betweenDates.map((d) => formatShortDate(d, 'always')).join(', ')})` : '',
       starts ? `${plural(starts, 'period')} logged (${plural(new Set(bleeding.map((d) => d.date)).size, 'bleeding day')})` : '',
       spotting.length ? `spotting on ${plural(new Set(spotting.map((d) => d.date)).size, 'day')}` : '',
       ...bands.map(([b, n]) => `${b.replace('-', '–')} pads or tampons a day on ${plural(n, 'day')}`),
       flood ? `flooding on ${plural(flood, 'day')}` : '',
       clots ? `clots on ${plural(clots, 'day')}` : '',
-      between ? `bleeding between periods on ${plural(between, 'day')}` : '',
+      triedBleedDays ? `tried something on ${plural(triedBleedDays, 'bleeding day')}` : '',
     ),
     onset: 'bleeding',
   };
