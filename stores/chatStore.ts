@@ -199,7 +199,7 @@ export async function keepAttachment(a: Omit<ChatAttachment, 'id'>): Promise<Cha
   }
 }
 
-/** Account deletion: remove this user's chats and attachments from the phone too. */
+/** Sign-out and account deletion: remove this user's chats and attachments from the phone too. */
 export async function clearLocalChats(userId: string): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(keyFor(userId));
