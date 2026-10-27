@@ -123,7 +123,7 @@ export function EntryCard({
         >
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
-            {item.rec.pending ? <Txt variant="caption">Saved on this phone · will send when you’re online</Txt> : null}
+            {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will send when you’re online" /> : null}
             {words ? <Quote numberOfLines={3}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
               // The severity words sit INSIDE the pill ("9/10 at worst", N7); long facts wrap below it
