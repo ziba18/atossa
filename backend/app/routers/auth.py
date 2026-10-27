@@ -17,6 +17,7 @@ from app.services.auth import (
 )
 from app.services.password_policy import password_problem
 from app.services.rate_limit import FailureThrottle, limit
+from app.services.security_events import record as record_security_event
 from app.services.social_auth import SocialAuthError, verify_apple_identity_token, verify_google_id_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -67,6 +68,7 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     user = get_user_by_email(db, body.email)
     if not verify_password_or_dummy(body.password, user.hashed_password if user else None):
         _login_failures.fail(email_key)
+        record_security_event("login_failed")
         raise HTTPException(status_code=401, detail="Invalid email or password")
     _login_failures.clear(email_key)
     upgrade_hash_if_needed(db, user, body.password)
@@ -106,6 +108,7 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
     try:
         user_id, version = decode_claims(body.refresh_token, "refresh")
     except JWTError:
+        record_security_event("refresh_rejected")
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     user = db.query(User).filter(User.id == user_id).first()
     if not user or not user.is_active or user.token_version != version:
