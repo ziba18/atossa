@@ -288,7 +288,18 @@ export default function DoctorScreen() {
             <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
           </Card>
         ) : (
-          <DocumentPreview doc={doc} tall={desk} />
+          <>
+            <DocumentPreview doc={doc} tall={desk} />
+            <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>
+              <Button
+                label="See the patterns behind this"
+                variant="text"
+                small
+                onPress={() => { useTimelineSession.getState().setMode('patterns'); router.push('/(tabs)/timeline' as any); }}
+                accessibilityHint="Opens Patterns on the Timeline tab"
+              />
+            </View>
+          </>
         )}
       </Step>
 
