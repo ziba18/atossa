@@ -34,12 +34,14 @@ export function ScreenLarge({
   /** Small ATOSSA wordmark above the title (sign in / register), so the auth screens carry the brand. */
   brand?: boolean;
 }) {
+  // Under ~260 pt (about 200% text on a small phone) a 34 pt title cannot hold 'Appointments' beside the trailing button.
+  const veryNarrow = useWindowDimensions().width < 260;
   const head = (
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
       {brand ? <Txt variant="caption" color={colors.plum} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ATOSSA</Txt> : null}
       <View style={styles.titleRow}>
-        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }}>{title}</Txt>
+        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={[{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }, veryNarrow && { fontSize: 21, lineHeight: 27 }]}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}
       </View>
       {subtitle ? (
