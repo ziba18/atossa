@@ -42,6 +42,7 @@ export default function OnboardingConsentScreen() {
         <Txt variant="body" style={{ marginTop: space.md }}>What you save is health information. It is stored on our server and linked to your account.</Txt>
         <Txt variant="body" style={{ marginTop: space.md }}>Only you can see it. We don’t sell it or use it for adverts.</Txt>
         <Txt variant="body" style={{ marginTop: space.md }}>You can delete single notes, or your whole account, any time in the app.</Txt>
+        <Txt variant="body" style={{ marginTop: space.md }}>Atossa doesn’t diagnose or give medical advice. If you’re worried about your health, talk to a doctor.</Txt>
       </Card>
       <View style={{ marginTop: space.xl }}>
         <SwitchRow label="I agree to Atossa saving my health information as described." value={agreed} onChange={setAgreed} />
