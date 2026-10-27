@@ -3,7 +3,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, field_validator
 import json
 
-RecordKind = Literal["symptom", "appointment", "medicine", "history", "period_day", "doctor_note"]
+RecordKind = Literal["symptom", "appointment", "medicine", "history", "period_day", "doctor_note", "fertility_wish", "allergy"]
 
 MAX_DATA_CHARS = 20_000  # one record's serialised JSON — generous for free-text fields
 MAX_RECORDS_PER_USER = 5_000
