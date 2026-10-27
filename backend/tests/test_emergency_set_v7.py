@@ -51,3 +51,10 @@ SET11 = json.loads((Path(__file__).parent / "emergency_set_v11_narratives.json")
 def test_longer_realistic_notes():
     assert [t for t in SET11["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET11["harmless"] if is_emergency(t)] == []
+
+
+SET12 = json.loads((Path(__file__).parent / "emergency_set_v12_harmless_everyday.json").read_text())
+
+
+def test_everyday_notes_with_faint_clot_breath_words_stay_quiet():
+    assert [t for t in SET12["harmless"] if is_emergency(t)] == []
