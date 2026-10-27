@@ -191,6 +191,8 @@ export interface FreqBar {
   total: number;
   /** "usually 4–6/10, at worst 9/10" — raw values Sam gave; '' when none. */
   strength: string;
+  /** Highest number she gave on these notes (the "Worst" column); null when she gave none. Never averaged. */
+  worst: number | null;
 }
 
 export interface HeatDay {
@@ -333,6 +335,12 @@ function spread(values: number[]): string {
 }
 
 /** Raw strength values for a group of notes: "usually 6/10, worst 9/10". */
+/** The highest number she gave across these notes, or null. */
+function groupWorst(notes: SymptomData[]): number | null {
+  const v = notes.map(peakOf).filter((n): n is number => n != null);
+  return v.length ? Math.max(...v) : null;
+}
+
 function groupStrength(notes: SymptomData[]): string {
   const typical: number[] = [];
   const worst: number[] = [];
@@ -626,10 +634,13 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const noteDays = daysWith(windowNotes, stripFrom, to);
     const bars: FreqBar[] = [];
     if (noteDays) {
-      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes) });
+      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes) });
       zoneDays(windowNotes)
         .slice(0, MAX_ZONE_ROWS)
-        .map(({ label, days: n }) => ({ label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(windowNotes.filter((s) => (s.zones ?? []).includes(label))) }))
+        .map(({ label, days: n }) => {
+          const zn = windowNotes.filter((s) => (s.zones ?? []).includes(label));
+          return { label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(zn), worst: groupWorst(zn) };
+        })
         .forEach((b) => bars.push(b));
     }
 
