@@ -22,7 +22,17 @@ export interface Holistic {
   urinePain?: boolean;
   /** Tummy / bottom mentioned with no bowel or bladder answer: show the combined "Also:" chip row. */
   askBowelBladder: boolean;
+  /** Tiredness named (true) or denied (false); `tiredWords` keeps her clause. Never a score she did not give. */
+  tired?: boolean;
+  tiredWords?: string;
+  /** Skin and hair changes she says she noticed (PRD: each "noticed" only), with her own words. */
+  skin?: { kind: SkinKind; words: string }[];
+  /** "Did it help?" as she put it, one entry per clause that says so, with her own words. */
+  helped?: { verdict: HelpVerdict; words: string }[];
 }
+
+export type SkinKind = 'acne' | 'extraHair' | 'hairLoss' | 'darkPatches';
+export type HelpVerdict = 'yes' | 'a bit' | 'no';
 
 const COUNT: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8,
   nine: 9, ten: 10, eleven: 11, twelve: 12, a: 1, an: 1, once: 1, twice: 2 };
@@ -39,9 +49,22 @@ const AFTER_SEX = /\b(?:bled|bleeding|bleed|spotting|blood)\b[^.;]*\bafter (?:se
 const BOWEL = /\b(poo(?:ing|ed)?|pooping|bowels?|bowel movements?|number two|opening my bowels|on the loo|passing (?:a )?stools?|constipat\w*|passing glass)\b|\b(?:bum|bottom)\b[^.;]*\bwhen i go\b/;
 const URINE = /\b(wee(?:ing)?|pee(?:ing)?|urine|urinat\w*|number one|pass(?:ing)? water|bladder)\b/;
 const PAIN_DENIED = /\b(?:(?:doesn'?t|does not|didn'?t|did not|don'?t|isn'?t|wasn'?t) (?:hurt|sting|burn|ache)|no pain|not painful|painless)\b/;
-const PAIN = /\b(hurts?|hurting|pain(?:ful)?|sore|sharp|sting(?:s|ing)?|burn(?:s|ing)?|agony|ache|aching|stabbing|like passing glass)\b/;
+const PAIN = /\b(hurts?|hurting|pain(?:ful)?|cramps?|cramping|sore|sharp|sting(?:s|ing)?|burn(?:s|ing)?|agony|ache|aching|stabbing|like passing glass)\b/;
 const FINE = /\b(fine|normal|ok|okay|no pain|without pain|painless)\b/;
 const TUMMY = /\b(tummy|stomach|belly|abdomen|bloat\w*|bottom|pelvi\w+)\b/;
+
+// "Tired of this pain" is weariness with the pain, not tiredness.
+const TIRED = /\b(tired(?! of\b)|exhausted|exhaustion|knackered|shattered|fatigued?|drained|worn out|wiped out|no energy|zero energy)\b/;
+const SKIN: [SkinKind, RegExp][] = [
+  ['acne', /\b(acne|spots|spotty|breakouts?|broke out|pimples?|zits?|oily skin)\b/],
+  ['extraHair', /\b(?:hair (?:on|growing on|on my) (?:my )?(?:chin|face|lip|upper lip|tummy|belly|chest|nipples?|back|neck|jaw)|hair growing|facial hair|(?:chin|lip|face) hairs?|more hair)\b/],
+  ['hairLoss', /\b(?:hair (?:is )?(?:falling out|coming out|thinning)|hair loss|thinning hair|losing (?:my )?hair|bald (?:patch|spot)|parting (?:looks )?wider)\b/],
+  ['darkPatches', /\bdark (?:patch(?:es)?|skin|marks?|velvety)\b/],
+];
+const HELP_VERB = /\b(help(?:ed|s)?|eased?|worked|relieved|took the edge off|made (?:a|no|any) difference|did (?:nothing|sod all|zilch|f all)|better after|useless)\b/;
+const HELP_OTHER = /\b(?:need|needs|needed|get|getting|ask(?:ed|ing)? for|can'?t|couldn'?t) (?:\w+ )?help\b/;
+const HELP_NO = /\b(?:(?:didn'?t|did not|doesn'?t|does not|hasn'?t|won'?t|never|nothing) (?:\w+ )?(?:help(?:ed|s)?|work(?:ed|s)?|ease[ds]?)|made no difference|didn'?t make (?:a|any) difference|did (?:nothing|sod all|zilch|f all)|useless)\b/;
+const HELP_BIT = /\b(?:a (?:little|bit|tiny bit)|slightly|somewhat|took the edge off)\b/;
 
 function clauses(lower: string): string[] {
   return lower.split(/[.!?;,]|\bbut\b|\band then\b/).map((c) => c.trim()).filter(Boolean);
@@ -123,5 +146,41 @@ export function holisticFrom(allWords: string): Holistic {
     bowelPain,
     urinePain,
     askBowelBladder: TUMMY.test(lower) && bowelPain === undefined && urinePain === undefined,
+    ...tiredFrom(lower),
+    ...skinFrom(lower),
+    ...helpedFrom(lower),
   };
+}
+
+// "My jeans don't fit and I'm tired": a negation does not reach past "and" (holistic v2, Marketing note).
+function parts(lower: string): string[] {
+  return clauses(lower).flatMap((c) => c.split(/\band\b/)).map((c) => c.trim()).filter(Boolean);
+}
+
+function tiredFrom(lower: string): Pick<Holistic, 'tired' | 'tiredWords'> {
+  for (const c of parts(lower)) {
+    const m = c.match(TIRED);
+    if (m) return { tired: !negated(c, m), tiredWords: c };
+  }
+  return {};
+}
+
+function skinFrom(lower: string): Pick<Holistic, 'skin'> {
+  const out: { kind: SkinKind; words: string }[] = [];
+  for (const c of parts(lower)) {
+    for (const [kind, re] of SKIN) {
+      const m = c.match(re);
+      if (m && !negated(c, m) && !out.some((o) => o.kind === kind)) out.push({ kind, words: c });
+    }
+  }
+  return out.length ? { skin: out } : {};
+}
+
+function helpedFrom(lower: string): Pick<Holistic, 'helped'> {
+  const out: { verdict: HelpVerdict; words: string }[] = [];
+  for (const c of clauses(lower)) {
+    if (!HELP_VERB.test(c) || HELP_OTHER.test(c)) continue;
+    out.push({ verdict: HELP_NO.test(c) ? 'no' : HELP_BIT.test(c) ? 'a bit' : 'yes', words: c });
+  }
+  return out.length ? { helped: out } : {};
 }
