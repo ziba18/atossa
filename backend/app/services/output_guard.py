@@ -430,6 +430,13 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:wine|vodka|alcohol|drank|drinking)\b.{0,50}\b(?:tramadol|codeine|morphine|co-?codamol)\b.{0,60}\b(?:weird|floaty|drowsy|dizzy|sick)\b|\b(?:tramadol|codeine|morphine|co-?codamol)\b.{0,50}\b(?:wine|vodka|alcohol)\b.{0,60}\b(?:weird|floaty|drowsy|dizzy|sick)\b|"
                     r"\b(?:took|taken|swallowed) (?:the )?(?:whole|entire) (?:strip|packet|box|bottle) of (?:\w+ )?(?:tablets|pills)\b|"
                     r"\b(?:shaking|heart (?:is )?(?:pounding|racing))\b.{0,50}\b(?:too many|too much)\b.{0,40}\b(?:painkillers|tablets|pills|energy drinks)\b|\bswollen (?:lips?|tongue|throat)\b|"
+                    # run 01 (S-153, probe 12: 7/8 missed): appendix, torsion, kidney infection, obstruction, shock, dehydration, hernia told in everyday words
+                    r"\b(?:belly button|navel)\b.{0,50}\b(?:moved|spread|shifted)\b.{0,30}\bright\b|\b(?:twisting|stabbing) pain\b.{0,50}\b(?:vomit\w*|being sick)\b|\bcan'?t get comfortable\b.{0,40}\b(?:vomit\w*|sick)\b|"
+                    r"\bback\b.{0,25}\bunder (?:my )?ribs\b.{0,50}\b(?:high fever|chills|temperature of (?:3[89]|4\d)|with fever)\b|\bchills\b.{0,60}\bpain when i wee\b|\b(?:burning|pain) when i wee\b.{0,50}\b(?:high fever|chills|shivering|temperature of (?:3[89]|4\d))\b|"
+                    r"\b(?:haven'?t|hasn'?t|not) passed wind\b|\bcan'?t (?:pass|break) wind\b|"
+                    r"\b(?:pale|clammy)\b,? (?:and |,)?(?:sweaty|clammy)\b|\bpale\b.{0,30}\bheart (?:is )?racing\b|"
+                    r"\bcan'?t keep even (?:water|fluids)\b.{0,30}\bdown\b|\bsick all day\b.{0,60}\b(?:dizzy|faint|can'?t keep)\b|"
+                    r"\blump\b.{0,20}\bgroin\b.{0,50}\b(?:painful|vomit\w*)\b|"
                     # run 01 probe 5 (NHS allergic reaction page; 6/12 missed): swelling, wheeze with hives, can't swallow, floppy after an injection
                     r"\b(?:having|think i'?m having|think i have|got|got an?) an? allergic reaction\b|\bcan'?t swallow\b|"
                     r"\bhives\b.{0,40}\bwheez\w*|\bwheez\w*.{0,40}\bhives\b|"
