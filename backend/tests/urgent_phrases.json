@@ -1046,5 +1046,41 @@ false
 [
 "got a cough and a fever last week but it is gone now",
 false
+],
+[
+"i cut myself last night after the pain",
+true
+],
+[
+"not sure i want to carry on living",
+true
+],
+[
+"unsure whether i want to keep going",
+true
+],
+[
+"i cut myself shaving this morning",
+false
+],
+[
+"Pain during sex again and we've been trying to get pregnant since March.",
+false
+],
+[
+"we are trying to conceive and my period pain is bad",
+false
+],
+[
+"my belly's been killing me since lunch",
+false
+],
+[
+"ovary on the left is killing me",
+false
+],
+[
+"I'm pregnant and have sharp pain on one side",
+true
 ]
 ]
