@@ -41,7 +41,8 @@ export const clearOutbox = () => write([]);
 /** True for "no connection / server down" failures, false for ones a retry cannot fix (bad data, signed out). */
 export function isOfflineError(e: unknown): boolean {
   if (e instanceof ApiError) return e.status >= 500;
-  return true; // fetch rejects with a TypeError when there is no network
+  // fetch rejects with a TypeError when there is no network ("Network request failed" on iOS); the preview backend throws Error('offline').
+  return e instanceof TypeError || (e instanceof Error && e.message === 'offline');
 }
 
 export const newClientId = () => `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
