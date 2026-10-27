@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Circle } from 'react-native-svg';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, severityColor, space } from '../../../constants/atossaUI';
+import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
 import {
@@ -250,5 +250,5 @@ const styles = StyleSheet.create({
   weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.ink2 },
   barHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.sunken, overflow: 'hidden' },
-  fill: { height: 8, borderRadius: 4, backgroundColor: colors.ink2 },
+  fill: { height: 8, borderRadius: 4, backgroundColor: severityRamp[2] },
 });
