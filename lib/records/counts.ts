@@ -72,3 +72,32 @@ export function strengthRange(notes: SymptomData[]): { low: number; high: number
   const values = notes.map(peakOf).filter((n): n is number => n != null);
   return values.length ? { low: Math.min(...values), high: Math.max(...values) } : null;
 }
+
+/** Her own words that name an area she hasn't tagged (PM 2026-10-27: "tired" typed, Sleep and mood empty). */
+export const WORD_CUES = {
+  tired: ['tired', 'worn out', 'exhausted', 'no energy', 'drained'],
+  dizzy: ['dizzy', 'lightheaded', 'light-headed', 'faint'],
+} as const;
+export type WordCue = keyof typeof WORD_CUES;
+
+const NEGATED = /\b(?:not|no|never|wasn['’]?t|isn['’]?t|didn['’]?t|don['’]?t|without)\s+(?:\w+\s+){0,2}$/i;
+
+/**
+ * Notes whose words contain one of the cue's phrases, not negated ("not tired" doesn't count). A count of her words,
+ * never a tag: nothing is written to the record, and the screen shows it only as "appears in n notes".
+ */
+export function wordMentions(notes: SymptomData[], cue: WordCue): { notes: number; total: number } {
+  const worded = notes.filter((s) => s.source !== 'quick' && (s.words ?? '').trim());
+  const hit = (text: string) => WORD_CUES[cue].some((p) => {
+    const re = new RegExp(`\\b${p.replace(/[-]/g, '[- ]?')}\\b`, 'gi');
+    for (let m = re.exec(text); m; m = re.exec(text)) if (!NEGATED.test(text.slice(0, m.index))) return true;
+    return false;
+  });
+  return { notes: worded.filter((s) => hit(s.words)).length, total: worded.length };
+}
+
+/** Empty-area copy when her words mention it: 'Not tagged yet — “tired” appears in 5 of 16 notes'. '' when no mention. */
+export function untaggedLine(notes: SymptomData[], cue: WordCue): string {
+  const { notes: n, total } = wordMentions(notes, cue);
+  return n ? `Not tagged yet — “${cue}” appears in ${n} of ${total} ${total === 1 ? 'note' : 'notes'}` : '';
+}
