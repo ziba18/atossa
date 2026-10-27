@@ -282,24 +282,24 @@ export default function DoctorScreen() {
         </View>
       ) : (
         <>
-      <Step title={nothingYet ? 'Your summary' : 'Preview'}>
-        {nothingYet ? (
-          <Card>
-            <EmptyState
-              message={olderData
-                ? 'Nothing logged in this time. Choose a longer range above, or add a note.'
-                : 'Nothing to share yet. Notes you add will appear here, in your words.'}
-              action={{ label: 'Add a note', onPress: () => openCapture() }}
-              style={{ paddingVertical: space.xl }} />
-          </Card>
-        ) : doc.empty ? (
-          <Card>
-            <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
-          </Card>
-        ) : (
-          <DocumentPreview doc={doc} tall={desk} />
-        )}
-      </Step>
+      {nothingYet || doc.empty ? (
+        <Step title="Your summary">
+          {nothingYet ? (
+            <Card>
+              <EmptyState
+                message={olderData
+                  ? 'Nothing logged in this time. Choose a longer range above, or add a note.'
+                  : 'Nothing to share yet. Notes you add will appear here, in your words.'}
+                action={{ label: 'Add a note', onPress: () => openCapture() }}
+                style={{ paddingVertical: space.xl }} />
+            </Card>
+          ) : (
+            <Card>
+              <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
+            </Card>
+          )}
+        </Step>
+      ) : null}
 
       {agendaUp ? (
         <View style={{ marginTop: space.xl }}>
@@ -308,7 +308,14 @@ export default function DoctorScreen() {
         </View>
       ) : null}
 
-      {!nothingYet && !doc.empty ? <PageOneCards doc={doc} /> : null}
+      {!nothingYet && !doc.empty ? (
+        <>
+          <PageOneCards doc={doc} showAgenda={!agendaUp} />
+          <Step title="See the full page">
+            <DocumentPreview doc={doc} tall={desk} />
+          </Step>
+        </>
+      ) : null}
 
       {nothingYet && !olderData ? null : (
         <Pressable

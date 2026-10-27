@@ -4,16 +4,30 @@
 import React from 'react';
 import { View } from 'react-native';
 import { space } from '../../../constants/atossaUI';
-import { barText, type DoctorDoc } from '../../../lib/records/summary';
+import { barText, curly, type DoctorDoc } from '../../../lib/records/summary';
 import { Card, Txt } from '../kit';
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
-export function PageOneCards({ doc }: { doc: DoctorDoc }) {
+/** `showAgenda` is false when the editable agenda field already sits above the cards. */
+export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showAgenda?: boolean }) {
   const freq = doc.sections.find((s) => s.id === 'frequency');
   const periods = doc.sections.find((s) => s.id === 'periods');
   const impacts = doc.sections.find((s) => s.id === 'impacts');
   const cards: React.ReactNode[] = [];
+  const agenda = doc.agendaBlock;
+
+  if (showAgenda && agenda && (agenda.priority || agenda.questions.length)) {
+    cards.push(
+      <Card key="agenda">
+        <Txt variant="groupLabel">{agenda.priority ? 'Main priority' : agenda.title}</Txt>
+        <View style={{ gap: space.sm, marginTop: space.sm }}>
+          {agenda.priority ? <Txt variant="quote">{`“${curly(agenda.priority)}”`}</Txt> : null}
+          {agenda.questions.map((q) => <Txt key={q} variant="body">{`“${curly(q)}”`}</Txt>)}
+        </View>
+      </Card>,
+    );
+  }
 
   if (freq && freq.id === 'frequency') {
     cards.push(
