@@ -32,7 +32,7 @@ export default function SettingsScreen() {
       <ScreenLarge title="Reminders" back={{ label: 'Profile' }}>
         <Card style={{ gap: space.xs }}>
           <Txt variant="headline">Reminders come with the iPhone app</Txt>
-          <Txt variant="secondary">On the web, Atossa can’t remind you yet. You can still add a note any time you open it.</Txt>
+          <Txt variant="secondary">On the web, Atossa can’t remind you yet. You can still add a note any time you open it.</Txt>
         </Card>
       </ScreenLarge>
     );

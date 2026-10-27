@@ -52,7 +52,7 @@ export default function OnboardingReminders() {
         step={3}
         back={{ label: 'Back' }}
         title="Reminders come with the iPhone app"
-        helper="On the web, Atossa can’t remind you yet. You can still add a note any time you open it."
+        helper="On the web, Atossa can’t remind you yet. You can still add a note any time you open it."
       >
         <View style={{ marginTop: space.xxl, gap: space.xs }}>
           <InlineError message={error} style={{ marginBottom: space.xs }} />
