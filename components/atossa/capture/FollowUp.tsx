@@ -12,7 +12,7 @@ import { MicButton } from './MicButton';
 import { StrengthEditor } from './StrengthEditor';
 import { ZoneEditor } from './ZoneEditor';
 
-export const WHY_ASKING = 'Why I’m asking: GPs usually ask this, so it helps to have it ready.';
+export const WHY_ASKING = 'Why I’m asking: doctors usually ask this, so it helps to have it ready.';
 
 export function questionTitle(q: Question, past: boolean): string {
   switch (q) {

@@ -141,7 +141,7 @@ export default function ChatScreen() {
             {lastIsReply && !sending && hasHerWords ? (
               <View style={styles.actions}>
                 <Button
-                  label="Save as a note for my GP"
+                  label="Save as a note for my doctor"
                   variant="text"
                   small
                   icon="plus"
