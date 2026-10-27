@@ -288,6 +288,16 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
   }
 }
 
+/** Page 1 first block: her main priority as the lead quote, then her questions, each in her words. */
+function AgendaBody({ block, st }: { block: NonNullable<DoctorDoc['agendaBlock']>; st: St }) {
+  return (
+    <View style={{ gap: st.s.item }}>
+      {block.priority ? <Txt style={st.lead}>{`“${curly(block.priority)}”`}</Txt> : null}
+      {block.questions.map((q) => <Txt key={q} style={st.quote}>{`“${curly(q)}”`}</Txt>)}
+    </View>
+  );
+}
+
 /** The document itself. `width` is the page width for 'reader' / 'large'; 'page' is always 595. */
 export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc; variant?: DocVariant; width?: number }) {
   const st = useStyles(variant);
@@ -309,7 +319,7 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
   );
 
   const blocks = [
-    ...(doc.agenda ? [{ key: 'agenda', title: doc.agendaTitle, body: <Txt style={st.lead}>{`“${curly(doc.agenda)}”`}</Txt> }] : []),
+    ...(doc.agendaBlock ? [{ key: 'agenda', title: doc.agendaBlock.title, body: <AgendaBody block={doc.agendaBlock} st={st} /> }] : []),
     ...doc.sections.map((s) => ({
       key: s.id, title: s.title, body: <SectionBody section={s} st={st} contentWidth={contentWidth} variant={variant} />,
     })),
