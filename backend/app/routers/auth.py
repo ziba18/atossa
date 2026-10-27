@@ -28,8 +28,8 @@ _auth_limit = Depends(limit("auth", 20, 60))
 _login_failures = FailureThrottle(8, 900)
 
 
-def _issue_tokens_for_social_user(db: Session, email: str, display_name: str | None) -> TokenResponse:
-    user = get_or_create_social_user(db, email, display_name)
+def _issue_tokens_for_social_user(db: Session, email: str, display_name: str | None, provider: str, subject: str) -> TokenResponse:
+    user = get_or_create_social_user(db, email, display_name, provider, subject)
     if display_name:
         profile = db.query(Profile).filter(Profile.id == user.id).first()
         if profile and not profile.display_name:
@@ -77,7 +77,7 @@ def login_with_apple(body: SocialAuthRequest, db: Session = Depends(get_db)):
         claims = verify_apple_identity_token(body.id_token, settings.apple_bundle_id)
     except SocialAuthError as e:
         raise HTTPException(status_code=401, detail=_social_detail(e, "Apple"))
-    return _issue_tokens_for_social_user(db, claims["email"], body.display_name)
+    return _issue_tokens_for_social_user(db, claims["email"], body.display_name, "apple", claims["sub"])
 
 
 @router.post("/google", response_model=TokenResponse, dependencies=[_auth_limit])
@@ -88,7 +88,7 @@ def login_with_google(body: SocialAuthRequest, db: Session = Depends(get_db)):
         claims = verify_google_id_token(body.id_token, settings.google_web_client_id, body.access_token)
     except SocialAuthError as e:
         raise HTTPException(status_code=401, detail=_social_detail(e, "Google"))
-    return _issue_tokens_for_social_user(db, claims["email"], body.display_name or claims.get("name"))
+    return _issue_tokens_for_social_user(db, claims["email"], body.display_name or claims.get("name"), "google", claims["sub"])
 
 
 @router.get("/me", response_model=UserResponse)

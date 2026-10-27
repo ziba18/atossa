@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.config import settings
-from app.models.user import User, Profile
+from app.models.user import User, Profile, SocialIdentity
 
 # bcrypt_sha256 hashes the password with SHA-256 first, so long passphrases and non-ASCII text are not cut at
 # bcrypt's 72 bytes (ASVS 5.0 6.2.9). Old plain-bcrypt hashes still verify and are re-hashed at the next login.
@@ -73,12 +73,24 @@ def get_user_by_email(db: Session, email: str) -> User | None:
     return db.query(User).filter(func.lower(User.email) == email.strip().lower()).first()
 
 
-def get_or_create_social_user(db: Session, email: str, display_name: str | None = None) -> User:
-    """Find a user by email, creating one (with no password — OAuth-only) if none exists."""
-    user = get_user_by_email(db, email)
-    if user:
-        return user
-    return create_user(db, email, password=None, display_name=display_name)
+def get_or_create_social_user(db: Session, email: str, display_name: str | None = None,
+                              provider: str | None = None, subject: str | None = None) -> User:
+    """Find the account for a signed-in Apple/Google identity, creating one (no password) if none exists.
+
+    The provider's subject id is matched first, so an email address that moves to another person
+    does not open the old account; the email is only used the first time an identity is seen.
+    """
+    if provider and subject:
+        link = db.query(SocialIdentity).filter_by(provider=provider, subject=subject).first()
+        if link:
+            user = db.query(User).filter(User.id == link.user_id).first()
+            if user:
+                return user
+    user = get_user_by_email(db, email) or create_user(db, email, password=None, display_name=display_name)
+    if provider and subject:
+        db.add(SocialIdentity(user_id=user.id, provider=provider, subject=subject))
+        db.commit()
+    return user
 
 
 def create_user(db: Session, email: str, password: str | None, display_name: str | None = None) -> User:
