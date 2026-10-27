@@ -145,7 +145,7 @@ export function EntryCard({
             ) : null}
             {urgent ? (
               <View style={styles.urgent}>
-                <Txt variant="secondary" accessibilityRole="alert" style={{ color: colors.ink }}>{urgent}</Txt>
+                <Txt variant="secondary" style={{ color: colors.ink }}>{urgent}</Txt>
               </View>
             ) : null}
           </View>
