@@ -14,7 +14,7 @@ import { todayKey } from '../../../lib/records/dates';
 import {
   MIN_NOTE_DAYS, PATTERNS_RANGES, STRONG_FROM, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsRange,
 } from '../../../lib/records/patterns';
-import { formatShortDate } from '../../../lib/records/format';
+import { formatShortDate, joinFacts } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { TimelineFilter } from './session';
 
@@ -224,7 +224,10 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
 
       {m.tried.length ? (
         <FadeIn index={4}>
-          <Card>
+          <PressableCard
+            onPress={() => router.push('/(tabs)/doctor' as any)}
+            accessibilityLabel={`What you tried. ${m.tried.slice(0, 3).map((t) => joinFacts(t.title, t.helped)).join('; ')}. Opens For my doctor.`}
+          >
             <Txt variant="groupLabel">What you tried</Txt>
             <View style={{ gap: space.sm, marginTop: space.sm }}>
               {m.tried.slice(0, 3).map((t) => (
@@ -234,7 +237,7 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
                 </View>
               ))}
             </View>
-          </Card>
+          </PressableCard>
         </FadeIn>
       ) : null}
 
