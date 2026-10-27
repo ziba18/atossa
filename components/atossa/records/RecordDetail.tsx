@@ -294,11 +294,26 @@ export function RecordDetail({
 type SetFn = (patch: Partial<Draft>) => void;
 
 function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew: boolean }) {
+  // An existing medicine leads with the question people come back to answer; a new one asks it after the dates.
+  const helped = (
+    <View>
+      <FieldLabel label="Did it help?" />
+      <ChipGroup
+        mode="single"
+        options={[...HELPED_OPTIONS]}
+        allowDeselect
+        value={d.helped ?? null}
+        onChange={(v) => set({ helped: (v ?? undefined) as MedicineData['helped'] })}
+        accessibilityLabel="Did it help?"
+      />
+    </View>
+  );
   return (
     <>
       <UrgentNote text={textOf(d)} />
       <TextField label="Name" value={d.name} onChangeText={(name) => set({ name })} autoCapitalize="sentences" />
       <TextField label="Dose" optional value={d.dose ?? ''} onChangeText={(dose) => set({ dose })} />
+      {isNew ? null : helped}
       <RecordDateField
         label="Started"
         value={d.started}
@@ -315,17 +330,7 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
         min={d.started && d.startedPrecision === 'exact' ? d.started : undefined}
         onChange={(stopped, stoppedPrecision) => set({ stopped, stoppedPrecision })}
       />
-      <View>
-        <FieldLabel label="Did it help?" />
-        <ChipGroup
-          mode="single"
-          options={[...HELPED_OPTIONS]}
-          allowDeselect
-          value={d.helped ?? null}
-          onChange={(v) => set({ helped: (v ?? undefined) as MedicineData['helped'] })}
-          accessibilityLabel="Did it help?"
-        />
-      </View>
+      {isNew ? helped : null}
       <TextField
         label="What I noticed"
         hint="In your own words"
