@@ -247,6 +247,10 @@ _BODY = [
     r"(?:very |really |so )pale.{0,40}(?:sick|dizz\w+|faint\w*|sharp)",
 ]
 _SELF = [
+    # set v16 (first contact 6/20 missed): hopelessness, "better off dead", plans phrased without "suicide"
+    r"(?:rather|better off) (?:be )?dead|wish (?:i was|i were|i could be) dead|(?:life (?:isn'?t|is not) worth living|not worth living|done with (?:life|living)|no reason to (?:live|go on))",
+    r"nobody would (?:notice|miss me)\b.{0,30}(?:disappear\w*|gone|died?)|(?:going to|gonna|about to) jump\b",
+    r"(?:thinking (?:about|of)|want(?:ing)? to) taking (?:all|every)\b.{0,20}(?:tablets|pills|medication|painkillers)",
     r"(?:not|won'?t|n't) (?:going to )?wake up (?:tomorrow|again)|(?:don'?t|do not) want to wake up",
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
     r"end(?:ing)? things", r"(?:took|taken|taking) (?:a load|lots|too many|an overdose)\b.{0,30}(?:tablets|pills|paracetamol)|overdos\w+",
