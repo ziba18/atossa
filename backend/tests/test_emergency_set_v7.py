@@ -182,3 +182,11 @@ def test_indirect_self_harm_wording_v21():
     # first contact: 7/10 missed; the "harmless" list also holds three added after the fix to keep it honest
     assert [t for t in SET21["emergency"] if emergency_kind(t) != "self_harm"] == []
     assert [t for t in SET21["harmless"] if is_emergency(t)] == []
+
+
+SET22 = json.loads((Path(__file__).parent / "emergency_set_v22_blind_general.json").read_text())
+
+
+def test_general_emergencies_plain_words_v22():
+    assert [t for t in SET22["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET22["harmless"] if is_emergency(t)] == []
