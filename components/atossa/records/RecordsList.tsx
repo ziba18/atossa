@@ -1,11 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import { space } from '../../../constants/atossaUI';
+import { colors, radii, space } from '../../../constants/atossaUI';
 import { formatRecordDate } from '../../../lib/records/format';
 import { todayKey } from '../../../lib/records/dates';
 import type { AppointmentData, HistoryData, MedicineData, Rec } from '../../../types/records';
 import { useRecordsStore } from '../../../stores/recordsStore';
-import { AddButton, EmptyState, InlineError, ScreenLarge } from '../kit';
+import { AddButton, EmptyState, InlineError, ScreenLarge, Txt } from '../kit';
+import { Icon } from '../../ui/Icon';
 import type { IconName } from '../../ui/Icon';
 import { Group, GroupHeading, GroupRow } from './GroupedRows';
 import { KIND_INFO, recordFacts, recordTitle, sortRecords, type RecordDataKind } from './recordKinds';
@@ -24,6 +25,33 @@ const PURPOSE: Record<RecordDataKind, string> = {
   appointment: 'Add a booked visit and Today counts down to it.',
   history: 'Add past tests, scans or things a doctor told you, so they are in one place.',
 };
+const EXAMPLE: Record<RecordDataKind, [string, string]> = {
+  medicine: ['Pain relievers', 'Started around June 2024'],
+  appointment: ['GP', 'Around March 2025'],
+  history: ['An ultrasound', 'Around May 2023'],
+};
+
+/** What a saved row will look like, clearly marked as an example (same device as Today's ghost note). */
+function GhostRow({ kind }: { kind: RecordDataKind }) {
+  const [title, facts] = EXAMPLE[kind];
+  return (
+    <View
+      accessible
+      accessibilityLabel={`Example of a saved entry. ${title}. ${facts}.`}
+      style={{ width: '100%', gap: space.xs, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline }}
+    >
+      <Txt variant="caption">Example · yours will appear here</Txt>
+      <View aria-hidden style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, opacity: 0.85 }}>
+        <Icon name={kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : 'file-text'} size={22} color={colors.ink} />
+        <View style={{ flex: 1 }}>
+          <Txt variant="body">{title}</Txt>
+          <Txt variant="secondary">{facts}</Txt>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 const HISTORY_ICONS: Record<string, IconName> = {
   'Told to me by a doctor': 'file-text', 'Test or scan': 'activity', 'Procedure or surgery': 'clipboard-list', 'Emergency visit': 'heart-pulse',
 };
@@ -51,6 +79,7 @@ export function RecordsList({
   const loadError = useRecordsStore((s) => s.error);
   const sorted = sortRecords(kind, recs);
 
+  const nextId = kind === 'appointment' ? sorted.filter((r) => (r.data as AppointmentData).date >= todayKey()).reverse()[0]?.id : undefined;
   const renderRow = (r: Rec<AnyData>) => {
     const grouped = kind === 'history';
     const h = r.data as HistoryData;
@@ -62,6 +91,7 @@ export function RecordsList({
       <GroupRow
         key={r.id}
         icon={rowIcon(kind, r.data)}
+        tint={r.id === nextId}
         label={title}
         detail={facts || undefined}
         accessibilityLabel={[grouped ? `${h.type}. ${title}` : title, facts].filter(Boolean).join('. ')}
@@ -79,7 +109,7 @@ export function RecordsList({
     >
       {loadError && !loadedFor ? <InlineError message={loadError} /> : null}
       {sorted.length === 0 && loadedFor ? (
-        <EmptyState icon={kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : 'file-text'} message={`${info.empty} ${PURPOSE[kind]}`} action={{ label: info.addLabel, onPress: onAdd }} />
+        <EmptyState illustration={<GhostRow kind={kind} />} message={`${info.empty} ${PURPOSE[kind]}`} action={{ label: info.addLabel, onPress: onAdd }} />
       ) : sorted.length ? (
         kind === 'history' ? (
           // Health history: one header per type (the clinic asks for "any reports or results"), newest group first.
@@ -98,6 +128,20 @@ export function RecordsList({
             const past = sorted.filter((r) => !isUpcoming(r));
             if (!upcoming.length || !past.length) return <Group>{sorted.map((r) => renderRow(r))}</Group>;
             return [['Upcoming', upcoming], ['Past', past]].map(([title, items], i) => (
+              <View key={title as string} style={{ marginTop: i ? space.xl : 0 }}>
+                <GroupHeading title={title as string} />
+                <Group>{(items as Rec<AnyData>[]).map((r) => renderRow(r))}</Group>
+              </View>
+            ));
+          })()
+        ) : kind === 'medicine' ? (
+          // Current first, then stopped, once there is one of each.
+          (() => {
+            const stopped = (r: Rec<AnyData>) => !!(r.data as MedicineData).stopped;
+            const current = sorted.filter((r) => !stopped(r));
+            const past = sorted.filter(stopped);
+            if (!current.length || !past.length) return <Group>{sorted.map((r) => renderRow(r))}</Group>;
+            return [['Current', current], ['Stopped', past]].map(([title, items], i) => (
               <View key={title as string} style={{ marginTop: i ? space.xl : 0 }}>
                 <GroupHeading title={title as string} />
                 <Group>{(items as Rec<AnyData>[]).map((r) => renderRow(r))}</Group>

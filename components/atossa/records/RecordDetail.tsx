@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useNavigation } from 'expo-router';
-import { space } from '../../../constants/atossaUI';
+import { colors, space } from '../../../constants/atossaUI';
+import { Icon } from '../../ui/Icon';
 import type {
   AppointmentData, HistoryData, HistoryType, MedicineData, Rec,
 } from '../../../types/records';
@@ -236,6 +237,7 @@ export function RecordDetail({
     <ScreenLarge
       title={isNew ? info.newTitle : info.title}
       back={{ label: backLabel, onPress: requestBack }}
+      right={<Icon name={kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : 'file-text'} size={26} color={colors.ink3} />}
       scrollRef={scrollRef}
     >
       {discardAsk ? (

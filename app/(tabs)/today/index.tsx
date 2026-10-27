@@ -45,7 +45,8 @@ export default function TodayScreen() {
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
   // Short phones (320x568): capture comes first, the number and week strip follow, so "Type a note" is on the first screen.
-  const lowScreen = useWindowDimensions().height < 640;
+  const { height: winH, width: winW } = useWindowDimensions();
+  const lowScreen = winH < 640;
   // On the day of an appointment the hero card is tall; the slim chip keeps "Type a note" on the first screen.
   const apptToday = nextAppointment(useRecordsStore((s) => s.records.appointment))?.data.date === todayKey();
   const short = lowScreen || apptToday || noteCount(symptoms) >= 7;
@@ -65,7 +66,7 @@ export default function TodayScreen() {
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      {short && loadedFor ? <HeroChip /> : null}
+      {short && loadedFor && (winW >= 240 || apptToday) ? <HeroChip /> : null}
       {short ? capture : null}
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
       {loadedFor ? (short && symptoms.length > 0 ? null : <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>)

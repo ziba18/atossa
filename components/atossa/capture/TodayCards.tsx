@@ -222,7 +222,7 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
 }
 
 /** Counts up to `target` once on first show (about half a second); straight to the number under Reduce Motion. */
-function useCountUp(target: number): number {
+export function useCountUp(target: number): number {
   const reduce = useReduceMotion();
   const [n, setN] = useState(reduce ? target : 0);
   useEffect(() => {

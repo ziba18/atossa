@@ -6,8 +6,10 @@ import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 export default function SettingsScreen() {
+  usePageTitle('Reminders');
   const profile = useAuthStore((s) => s.profile);
   const setProfile = useAuthStore((s) => s.setProfile);
 

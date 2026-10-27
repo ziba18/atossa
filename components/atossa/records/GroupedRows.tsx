@@ -56,7 +56,7 @@ const hasIcon = (child: React.ReactNode) =>
  * optional trailing value (ink-3) and a chevron when it navigates.
  */
 export function GroupRow({
-  icon, label, detail, quote, value, onPress, chevron = true, accessibilityLabel,
+  icon, label, detail, quote, value, onPress, chevron = true, accessibilityLabel, tint,
 }: {
   icon?: IconName;
   label: string;
@@ -67,6 +67,8 @@ export function GroupRow({
   onPress: () => void;
   chevron?: boolean;
   accessibilityLabel?: string;
+  /** Soft plum wash for the one row that matters most (e.g. the next appointment). */
+  tint?: boolean;
 }) {
   // Under ~280 px (200% zoom) the decorative icon goes and the gap closes, so words are not broken mid-word.
   const width = useWindowDimensions().width;
@@ -78,7 +80,7 @@ export function GroupRow({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join('. ')}
-      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, pressed && { backgroundColor: colors.canvas }]}
+      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, tint && { backgroundColor: colors.plumTint }, pressed && { backgroundColor: colors.canvas }]}
     >
       {icon && !tight ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
       <View style={styles.text}>

@@ -12,6 +12,7 @@ import { savedLabel } from '../../../components/atossa/records/RecordsList';
 import {
   KIND_INFO, firstParam, recordTitle, sortRecords, type RecordDataKind,
 } from '../../../components/atossa/records/recordKinds';
+import { useCountUp } from '../../../components/atossa/capture/TodayCards';
 import { nextAppointment } from '../../../components/atossa/capture/AppointmentCard';
 import { formatRecordDateInline, formatShortDate, noteCount, notesLabel } from '../../../lib/records/format';
 import { useAuthStore } from '../../../stores/authStore';
@@ -74,6 +75,7 @@ export default function ProfileScreen() {
   // The "your record" summary: how many notes, and the span they cover.
   const noteDates = records.symptom.map((n) => n.data.date).filter(Boolean).sort();
   const total = noteCount(records.symptom);
+  const shownTotal = useCountUp(total);
   const span = noteDates.length
     ? noteDates[0] === noteDates[noteDates.length - 1]
       ? `On ${formatShortDate(noteDates[0])}`
@@ -127,7 +129,7 @@ export default function ProfileScreen() {
   return (
     <ScreenLarge title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
       <HeroNumber
-        big={String(total)}
+        big={String(shownTotal)}
         line={total === 0 ? 'notes so far' : `${total === 1 ? 'note' : 'notes'} in your record`}
         sub={total === 0 ? 'Your first note starts your record' : span}
         onPress={total === 0 ? undefined : () => router.push('/(tabs)/timeline' as any)}

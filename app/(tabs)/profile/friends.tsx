@@ -11,6 +11,7 @@ import { IS_PREVIEW } from '../../../lib/preview/flag';
 import { computeCycleMath, PHASE_LABEL } from '../../../algorithms/cyclePhase';
 import type { CyclePhaseLog } from '../../../algorithms/cyclePhaseLog';
 import type { CycleLog } from '../../../types/database';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 interface PendingInvite {
   id: string;
@@ -29,6 +30,7 @@ interface FriendSummary {
 }
 
 export default function FriendsScreen() {
+  usePageTitle('Friends');
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
 

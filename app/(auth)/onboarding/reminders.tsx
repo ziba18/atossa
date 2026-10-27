@@ -9,11 +9,13 @@ import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
 import { track } from '../../../lib/analytics';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 // Stored when the reminder is off (as before), so Settings has a time ready if it's turned on.
 const DEFAULT_TIME = '20:00';
 
 export default function OnboardingReminders() {
+  usePageTitle('Reminders');
   const router = useRouter();
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
   // Nothing pre-selected: choosing a time is the "yes"; "Not now" is the "no".

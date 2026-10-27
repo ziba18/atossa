@@ -35,8 +35,26 @@ if (Platform.OS !== 'web') cancelPredictedCycleReminders().catch(() => {});
 function AppShell() {
   const { width } = useWindowDimensions();
   const router = useRouter();
-  const wideMock = IS_PREVIEW && usePathname() === '/clinic-mock'; // preview-only desktop mock
+  const pathname = usePathname();
+  const wideMock = IS_PREVIEW && pathname === '/clinic-mock'; // preview-only desktop mock
   const fatalError = useSyncExternalStore(subscribeFatalError, getFatalError);
+
+  // Web: after a route change, keyboard and screen-reader focus moves to the page heading
+  // (otherwise it falls back to <body> and a keyboard user loses their place).
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    const id = setTimeout(() => {
+      // Stacked screens stay mounted underneath, so take the last visible H1.
+      const h = [...document.querySelectorAll<HTMLElement>('[role=heading][aria-level="1"], h1')]
+        .filter((e) => e.getClientRects().length > 0 && !e.closest('[aria-hidden=true]'))
+        .pop();
+      if (!h) return;
+      h.setAttribute('tabindex', '-1');
+      h.style.outline = 'none';
+      h.focus({ preventScroll: true });
+    }, 120);
+    return () => clearTimeout(id);
+  }, [pathname]);
 
   // Route taps on the daily log reminder straight to Today (where capture starts),
   // whether the app was already open (listener) or launched cold from the

@@ -8,10 +8,12 @@ import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
 import { track } from '../../lib/analytics';
+import { usePageTitle } from '../../lib/usePageTitle';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function RegisterScreen() {
+  usePageTitle('Create an account');
   const router = useRouter();
   const register = useAuthStore((s) => s.register);
   const [name, setName] = useState('');
