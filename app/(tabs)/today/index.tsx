@@ -44,13 +44,14 @@ export default function TodayScreen() {
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
-      {loadedFor ? <View style={{ marginBottom: space.md }}><HeroNumberCard /></View> : null}
+      {loadedFor ? <View style={{ marginBottom: space.md }}><HeroNumberCard /></View>
+        : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
       <HeroCard />
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
       {loading && !loadedFor ? (
-        <View style={{ marginTop: space.xl }}><SkeletonCards count={2} label="Loading your notes" /></View>
+        <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
       ) : (
       <View style={{ marginTop: space.xl, gap: space.xl }}>
         {latest ? <LatestNoteCard note={latest} /> : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
