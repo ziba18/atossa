@@ -58,7 +58,7 @@ export default function TodayScreen() {
       {short && loadedFor ? <HeroChip /> : null}
       {short ? capture : null}
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
-      {loadedFor ? (short ? null : <View style={{ marginBottom: space.md }}><HeroNumberCard /></View>)
+      {loadedFor ? (short && symptoms.length > 0 ? null : <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>)
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
       {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
       {short ? null : capture}
