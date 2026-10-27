@@ -197,7 +197,7 @@ export default function ProfileScreen() {
 
       <SafetyLine style={{ marginTop: space.xxl }} />
       <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.sm }}>
-        Your information is private to your account.
+        Your notes are stored under your account and only shared when you share them.
       </Txt>
 
       {IS_PREVIEW ? (

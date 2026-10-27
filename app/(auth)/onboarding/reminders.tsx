@@ -48,7 +48,7 @@ export default function OnboardingReminders() {
       step={3}
       back={{ label: 'Back' }}
       title="Would a daily reminder help?"
-      helper="If today’s worth noting, I’m here. Two minutes is plenty. You can change this later in Settings."
+      helper="Anything to note about your body today? Pain, bleeding, sleep or mood – two minutes. You can change this later in Settings."
     >
       <FieldLabel label="What time suits you?" />
       <ChipGroup

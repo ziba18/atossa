@@ -57,7 +57,7 @@ export default function SettingsScreen() {
               }}
             />
             <Txt variant="caption" style={{ marginTop: space.sm }}>
-              {'The reminder says: “If today’s worth noting, I’m here. Two minutes is plenty.”'}
+              {'The reminder says: “Anything to note about your body today? Pain, bleeding, sleep or mood – two minutes.”'}
             </Txt>
           </View>
         ) : null}

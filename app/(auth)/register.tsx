@@ -50,7 +50,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ScreenLarge title="Create an account" subtitle="Your information stays private to you." back={{ label: 'Back' }}>
+    <ScreenLarge title="Create an account" subtitle="Your notes are stored under your account and only shared when you share them." back={{ label: 'Back' }}>
       <View style={{ gap: space.xl }}>
         <TextField label="Your name" value={name} onChangeText={(v) => { setName(v); clear('name'); }} autoCapitalize="words" autoComplete="name" textContentType="name" error={errors.name} />
         <TextField label="Email" value={email} onChangeText={(v) => { setEmail(v); clear('email'); }} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" placeholder="you@example.com" error={errors.email} />
