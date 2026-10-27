@@ -80,6 +80,10 @@ const recs = <T,>(kind: string, items: T[], dateOf: (t: T) => string): Rec<T>[] 
 
 /** A fresh deep copy of Sam's records, every call (so edits never mutate the seed). */
 export function sampleBuckets(): Buckets {
+  // Design preview only: /doctor?seed=empty shows the first-run screens (no records at all).
+  if (typeof window !== 'undefined' && /[?&]seed=empty\b/.test(window.location?.search ?? '')) {
+    return { symptom: [], period_day: [], appointment: [], medicine: [], history: [], doctor_note: [] };
+  }
   const copy = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
   return {
     symptom: recs('symptom', copy(SYMPTOMS), (d) => d.date),
