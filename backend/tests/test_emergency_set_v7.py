@@ -118,3 +118,13 @@ KNOWN_GAPS = [
 @pytest.mark.parametrize("text", KNOWN_GAPS)
 def test_known_gaps_are_listed_so_a_fix_shows_up(text):
     assert is_emergency(text)
+
+
+SET17 = json.loads((Path(__file__).parent / "emergency_set_v17_blind_texting_style.json").read_text())
+
+
+def test_blind_texting_style_v17():
+    assert [t for t in SET17["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET17["harmless"] if is_emergency(t)] == []
+    for t in ("I take my pills every day", "the baby kicks are strong today"):
+        assert not is_emergency(t), t
