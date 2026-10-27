@@ -19,6 +19,7 @@ import {
   labelEscape, noteCount, noteSortTime, peakOf,
   realImpacts, typicalOf, worstOf,
 } from './format';
+import { BODY_ZONE_LABELS } from './fields';
 import { daysWith, impactDays, inRange as inRangeOf, MAX_ZONE_ROWS, nOfN, strengthRange, zoneDays } from './counts';
 
 // ---- cycles (kept for other callers) --------------------------------------------------------
@@ -617,7 +618,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes) });
       zoneDays(windowNotes)
         .slice(0, MAX_ZONE_ROWS)
-        .map(({ label, days: n }) => ({ label, days: n, total, strength: groupStrength(windowNotes.filter((s) => (s.zones ?? []).includes(label))) }))
+        .map(({ label, days: n }) => ({ label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(windowNotes.filter((s) => (s.zones ?? []).includes(label))) }))
         .forEach((b) => bars.push(b));
     }
 
