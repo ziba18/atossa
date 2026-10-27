@@ -66,7 +66,7 @@ function StatTile({ value, label, onPress, hint, wide, zeroLabel }: { value: num
   return (
     <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
       <View style={wide ? styles.tileRow : undefined}>
-        {none ? <Txt variant="body" style={{ fontWeight: '600' }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>}
+        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>}
         {none ? null : <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>}
       </View>
     </PressableCard>
@@ -128,8 +128,8 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
 
       <FadeIn index={0}>
-        {/* Under ~300 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
-        <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
+        {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
+        <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 270)}>
           <StatTile wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
           <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
           <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
