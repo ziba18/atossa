@@ -140,6 +140,8 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         <PressableCard
           onPress={() => onOpen('Symptoms')}
           accessibilityLabel={`${noteDaysText(m)}. ${weeksText(m)} Opens your notes.`}
+          accessibilityActions={m.weeks.filter((w) => w.noteDays > 0).map((w) => ({ name: `week:${w.from}:${w.to}`, label: `Open the week from ${formatShortDate(w.from, 'always')}` }))}
+          onAccessibilityAction={(name) => { const [, from, to] = name.split(':'); if (from && to) onOpenWeek({ from, to }); }}
         >
           <Txt variant="groupLabel">Days with a note, by week</Txt>
           <View style={styles.ringRow}>

@@ -162,7 +162,7 @@ export function Card({
 
 /** Tappable Card with a chevron-right (ink3, 20) and a pressed state. */
 export function PressableCard({
-  children, onPress, chevron = true, edge, accessibilityLabel, accessibilityHint, style,
+  children, onPress, chevron = true, edge, accessibilityLabel, accessibilityHint, accessibilityActions, onAccessibilityAction, style,
 }: {
   children: React.ReactNode;
   onPress: () => void;
@@ -170,6 +170,9 @@ export function PressableCard({
   edge?: 'clay';
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  /** Extra screen-reader actions (swipe up/down on the card); the default action is still onPress. */
+  accessibilityActions?: { name: string; label: string }[];
+  onAccessibilityAction?: (name: string) => void;
   style?: StyleProp<ViewStyle>;
 }) {
   return (
@@ -178,6 +181,8 @@ export function PressableCard({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
+      accessibilityActions={accessibilityActions}
+      onAccessibilityAction={onAccessibilityAction ? (e) => onAccessibilityAction(e.nativeEvent.actionName) : undefined}
       style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken }, style]}
     >
       {edge ? <View style={styles.clayEdge} /> : null}
