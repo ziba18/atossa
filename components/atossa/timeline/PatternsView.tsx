@@ -31,7 +31,7 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
         <View key={r.label} style={{ gap: 4 }}>
           <View style={styles.barHead}>
             <Txt variant="body" style={{ flexShrink: 1 }}>{r.label}</Txt>
-            <Txt variant="secondary">{plural(r.days, 'day')}</Txt>
+            <Txt variant="secondary" numberOfLines={1} style={{ flexShrink: 0 }}>{plural(r.days, "day")}</Txt>
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
