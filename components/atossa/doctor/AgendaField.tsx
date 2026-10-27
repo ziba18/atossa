@@ -2,7 +2,7 @@
 // border-strong outline (radius 14), like the other text fields, with an optional mic.
 // The mic only shows where on-device dictation works (not in Expo Go or on web).
 import React, { useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 import { colors, heights, radii, space, type as typeScale } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
 import { haptics } from '../../../lib/haptics';
@@ -19,6 +19,7 @@ export function AgendaField({
 }: { value: string; onChange: (t: string) => void; onBlur: () => void; /** agendaTitleFor(appointmentToday) */ title: string; /** short phones: no hint line */ compact?: boolean }) {
   const base = useRef('');
   const [focused, setFocused] = useState(false);
+  const [opened, setOpened] = useState(false);
   // Collapsed to one line until it holds words or has focus (keeps the digits card above the fold).
   const boxH = typeScale.body.lineHeight! * (focused || value.length > 0 ? 2 : 1) + space.sm * 2;
   const dictation = useDictation((transcript) => {
@@ -36,6 +37,23 @@ export function AgendaField({
       dictation.start();
     }
   };
+
+  // Short phones: one row until she opens it, so the digits card stays above the fold.
+  if (compact && !opened && value.length === 0) {
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: heights.minHit }}>
+        <Txt variant="headline" nativeID="agendaLabel" style={{ flex: 1 }}>{title}</Txt>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Add: ${title}`}
+          onPress={() => setOpened(true)}
+          style={{ minHeight: heights.minHit, minWidth: heights.minHit, paddingHorizontal: space.md, borderRadius: radii.pill, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Txt variant="secondary" style={{ color: colors.plum, fontWeight: '600' }}>Add</Txt>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <View>
