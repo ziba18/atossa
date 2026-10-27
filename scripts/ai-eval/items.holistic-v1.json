@@ -1,0 +1,148 @@
+{
+ "note": "Holistic fields set v1 (bleeding amount, bowel/bladder). Written by ai-brain BEFORE holistic.ts existed (2026-10-26 19:20 UTC); author is the rule writer, so first-contact numbers are not independent. Expected values: only what the words say; absent = not recorded.",
+ "bleeding": [
+  {
+   "text": "Period started today, changing my pad every hour, it's soaked through twice",
+   "products": "6+",
+   "flooding": true
+  },
+  {
+   "text": "Bleeding quite a lot, about 7 or 8 pads today",
+   "products": "6+"
+  },
+  {
+   "text": "Light bleeding, only needed 2 pads",
+   "products": "1-2"
+  },
+  {
+   "text": "Went through 4 tampons by lunchtime",
+   "products": "3-5"
+  },
+  {
+   "text": "Big clots this morning and I flooded through my jeans at work",
+   "clots": true,
+   "flooding": true
+  },
+  {
+   "text": "Spotting between periods again, just a liner",
+   "between": true
+  },
+  {
+   "text": "Bled a bit after sex last night",
+   "afterSex": true
+  },
+  {
+   "text": "No clots this time, period is lighter",
+   "clots": false
+  },
+  {
+   "text": "Had to change my cup three times today",
+   "products": "3-5"
+  },
+  {
+   "text": "Leaked onto the sheets overnight even with a night pad",
+   "flooding": true
+  },
+  {
+   "text": "Cramps today but no bleeding yet",
+   "mentionsBleeding": false
+  }
+ ],
+ "bowelBladder": [
+  {
+   "text": "It really hurts when I poo",
+   "bowelPain": true
+  },
+  {
+   "text": "Sharp pain opening my bowels this morning",
+   "bowelPain": true
+  },
+  {
+   "text": "Stinging when I wee",
+   "urinePain": true
+  },
+  {
+   "text": "Painful to pass urine since Tuesday",
+   "urinePain": true
+  },
+  {
+   "text": "Pain going to the toilet, both number one and two",
+   "bowelPain": true,
+   "urinePain": true
+  },
+  {
+   "text": "No pain when I pee, just the usual cramps",
+   "urinePain": false
+  },
+  {
+   "text": "Bowel movements were fine today",
+   "bowelPain": false
+  },
+  {
+   "text": "Agony on the loo this morning, it was like passing glass",
+   "bowelPain": true
+  },
+  {
+   "text": "Burns when I go for a wee",
+   "urinePain": true
+  },
+  {
+   "text": "My tummy is bloated and sore",
+   "askBowelBladder": true
+  },
+  {
+   "text": "Headache all day",
+   "askBowelBladder": false
+  }
+ ],
+ "adversarial_note": "Adversarial items added 19:27 UTC after the first 25-field score, scored once before any rule change.",
+ "adversarial": [
+  {
+   "text": "My sister bleeds through everything, I'm fine though",
+   "mentionsBleeding": false
+  },
+  {
+   "text": "Bought 3 boxes of tampons today"
+  },
+  {
+   "text": "I don't think there were any clots",
+   "clots": false
+  },
+  {
+   "text": "Pain in my lower back when I sit on the loo for ages",
+   "bowelPain": true
+  },
+  {
+   "text": "Need to wee all the time but it doesn't hurt",
+   "urinePain": false
+  },
+  {
+   "text": "Weeing is fine, pooing hurts",
+   "urinePain": false,
+   "bowelPain": true
+  },
+  {
+   "text": "Changed pads 5 times",
+   "products": "3-5"
+  },
+  {
+   "text": "Heavy day, went through a pad an hour",
+   "products": "6+"
+  },
+  {
+   "text": "Sore boobs and my bum hurts when I go",
+   "bowelPain": true
+  },
+  {
+   "text": "Bleeding after sex? No, not this time",
+   "afterSex": false
+  },
+  {
+   "text": "Stomach ache but my bowels are normal",
+   "bowelPain": false
+  },
+  {
+   "text": "Felt sick, went to the loo, nothing"
+  }
+ ]
+}

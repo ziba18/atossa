@@ -8,16 +8,18 @@ Nothing is stored in Atossa's database.
 import html
 import re
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from app.config import settings
 from app.schemas.auth import SocialAuthRequest
+from app.services.rate_limit import limit
 from app.services.basket_buddy_auth import BasketBuddyAuthError, create_supabase_session
 from app.services.social_auth import SocialAuthError, verify_apple_identity_token, verify_google_id_token
 
 router = APIRouter(prefix="/basket-buddy", tags=["basket-buddy"])
+_auth_limit = Depends(limit("basket-auth", 20, 60))
 
 
 class SupabaseSessionResponse(BaseModel):
@@ -34,7 +36,7 @@ def _session(email: str, display_name: str | None) -> SupabaseSessionResponse:
         raise HTTPException(status_code=502, detail=str(e))
 
 
-@router.post("/auth/apple", response_model=SupabaseSessionResponse)
+@router.post("/auth/apple", response_model=SupabaseSessionResponse, dependencies=[_auth_limit])
 def basket_login_with_apple(body: SocialAuthRequest):
     try:
         claims = verify_apple_identity_token(body.id_token, settings.basket_apple_bundle_id)
@@ -43,7 +45,7 @@ def basket_login_with_apple(body: SocialAuthRequest):
     return _session(claims["email"], body.display_name)
 
 
-@router.post("/auth/google", response_model=SupabaseSessionResponse)
+@router.post("/auth/google", response_model=SupabaseSessionResponse, dependencies=[_auth_limit])
 def basket_login_with_google(body: SocialAuthRequest):
     audiences = [settings.basket_google_web_client_id.strip()] + [
         c.strip() for c in settings.basket_google_known_client_ids.split(",")

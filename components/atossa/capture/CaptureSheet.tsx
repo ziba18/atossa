@@ -288,6 +288,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   // ---- body ---------------------------------------------------------------------------------
   // Nothing said yet: sit the mic lower so the step does not read as an empty sheet.
   const idleSpeak = mode === 'speak' && !draft.words && !recording;
+  const signpost = urgentSignpost([draft.words, draft.whereText, draft.tried].join(". "));
   let body: React.ReactNode;
   if (confirmClose) {
     body = (
@@ -407,6 +408,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       {confirmClose && saveError ? <InlineError message={saveError} style={{ marginBottom: space.md }} /> : null}
       {signpost && !confirmClose ? (
         // Fixed line only (H4): no label, no score, nothing stored; the note saves as usual.
+        // Shown on every step, because "That's all for now" saves without reaching the noted card.
         <Card tone="sunken" style={{ marginBottom: space.md }}>
           <Txt accessibilityRole="alert">{signpost}</Txt>
         </Card>

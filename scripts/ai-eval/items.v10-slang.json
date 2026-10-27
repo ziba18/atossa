@@ -1,0 +1,221 @@
+[
+ {
+  "id": "v10-01",
+  "strata": "b10",
+  "text": "Proper belly ache on the right, a 6 I'd say.",
+  "gold": {
+   "zones": [
+    "Lower tummy right"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 6,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-02",
+  "strata": "b10",
+  "text": "Got the monthlies and my back is killing me.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-03",
+  "strata": "b10",
+  "text": "Feeling rough, cramps like mad, off work.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Work or study"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-04",
+  "strata": "b10",
+  "text": "Pains in my tum since yesterday, bottom of my belly on the left.",
+  "gold": {
+   "zones": [
+    "Lower tummy left"
+   ],
+   "when": null,
+   "duration": "Since yesterday",
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-05",
+  "strata": "b10",
+  "text": "Done in. Couldn't be bothered to see anyone.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Plans with people"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-06",
+  "strata": "b10",
+  "text": "Cannae sleep wi' the pain, it's gey bad.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-07",
+  "strata": "b10",
+  "text": "Me back's been murder all week.",
+  "gold": {
+   "zones": [
+    "Lower back"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-08",
+  "strata": "b10",
+  "text": "Bit of a stitch low down in the middle, nothing major.",
+  "gold": {
+   "zones": [
+    "Lower tummy centre"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-09",
+  "strata": "b10",
+  "text": "Have been dead tired and the cramps kept me up.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-10",
+  "strata": "b10",
+  "text": "Pain's gone through the roof, a solid 8.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 8,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-11",
+  "strata": "b10",
+  "text": "Not been to the gym in a fortnight cos of it.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Exercise"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-12",
+  "strata": "b10",
+  "text": "Honestly fine today, no complaints.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-13",
+  "strata": "b10",
+  "text": "Aching all over, mostly my legs, maybe a 5.",
+  "gold": {
+   "zones": [
+    "Legs"
+   ],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": 5,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-14",
+  "strata": "b10",
+  "text": "Crampy on and off, but only when I'm on.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [],
+   "worst": null,
+   "tried": null
+  }
+ },
+ {
+  "id": "v10-15",
+  "strata": "b10",
+  "text": "Bad one last night, woke up at 4 with it.",
+  "gold": {
+   "zones": [],
+   "when": null,
+   "duration": null,
+   "impacts": [
+    "Sleep"
+   ],
+   "worst": null,
+   "tried": null
+  }
+ }
+]

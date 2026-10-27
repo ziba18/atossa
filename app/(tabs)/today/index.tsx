@@ -16,6 +16,7 @@ import { space } from '../../../constants/atossaUI';
 import { isHumanName } from '../../../lib/humanName';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
+import { CHAT_ENABLED } from '../../../lib/features';
 
 function greeting(name: string | null | undefined): string {
   const hour = new Date().getHours(); // time of day only — dates always come from todayKey()
@@ -70,13 +71,15 @@ export default function TodayScreen() {
       </View>
       )}
       <View style={{ marginTop: space.lg, alignItems: 'center', gap: space.xxs }}>
-        <Button
-          label="Talk it through instead"
-          variant="text"
-          small
-          onPress={() => router.push('/(tabs)/today/chat' as any)}
-          accessibilityHint="Opens a chat. It can’t diagnose; you can turn it into a note for your doctor"
-        />
+        {CHAT_ENABLED ? (
+          <Button
+            label="Talk it through instead"
+            variant="text"
+            small
+            onPress={() => router.push('/(tabs)/today/chat' as any)}
+            accessibilityHint="Opens a chat. It can’t diagnose; you can turn it into a note for your doctor"
+          />
+        ) : null}
         <Txt variant="caption" style={{ textAlign: 'center' }}>
           Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
         </Txt>

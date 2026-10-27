@@ -3,6 +3,7 @@ import type { Profile } from '../types/database';
 import { api, clearTokens, saveTokens } from '../lib/api';
 import { clearOutbox } from '../lib/outbox';
 import { clearLocalChats } from './chatStore';
+import { deleteLastSharedPdf } from '../components/atossa/doctor/share';
 
 export interface AuthSession {
   access_token: string;
@@ -110,6 +111,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signOut: async () => {
     await clearOutbox(); // notes still waiting to send belong to this account
+    await deleteLastSharedPdf();
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },
@@ -119,6 +121,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     await clearOutbox();
     const id = useAuthStore.getState().user?.id;
     if (id) await clearLocalChats(id);
+    await deleteLastSharedPdf();
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },

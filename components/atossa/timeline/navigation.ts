@@ -31,10 +31,24 @@ const ROOTS: Record<string, string> = {
   Profile: '/(tabs)/profile',
 };
 
+const KNOWN_LABELS = new Set([
+  'Today', 'Timeline', 'For my doctor', 'Profile', 'Period', 'Spotting', 'Medicines', 'Appointments', 'Health history',
+]);
+// "14 Jul", "14–29 Jul", "14 Jul–29 Sep 2026": the date-range titles of period runs.
+const DATE_LABEL = /^\d{1,2}(?: [A-Za-z]{3}(?: \d{4})?)?(?:–\d{1,2} [A-Za-z]{3}(?: \d{4})?)?$/;
+
+/**
+ * A back-button label taken from a link's `from` param. Anything that is not a screen title or a
+ * date range falls back, so a crafted attosa:// link cannot put its own text in the app's chrome.
+ */
+export function safeBackLabel(raw: string | string[] | undefined, fallback = 'Timeline'): string {
+  const v = (Array.isArray(raw) ? raw[0] : raw)?.trim();
+  return v && (KNOWN_LABELS.has(v) || DATE_LABEL.test(v)) ? v : fallback;
+}
+
 /** Normalise the `from` search param (string | string[] | undefined) to a label. */
 export function fromLabel(from: string | string[] | undefined): string {
-  const v = Array.isArray(from) ? from[0] : from;
-  return v && v.trim() ? v : 'Timeline';
+  return safeBackLabel(from);
 }
 
 /**

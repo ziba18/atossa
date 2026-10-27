@@ -1,0 +1,127 @@
+[
+ {
+  "id": "v13-01",
+  "text": "Bloated all day and feel sick after eating.",
+  "gold": [
+   "Bloating",
+   "Nausea"
+  ]
+ },
+ {
+  "id": "v13-02",
+  "text": "Pain when I go to the toilet, number twos are awful.",
+  "gold": [
+   "Bowel"
+  ]
+ },
+ {
+  "id": "v13-03",
+  "text": "Peeing a lot more than usual and it stings.",
+  "gold": [
+   "Bladder"
+  ]
+ },
+ {
+  "id": "v13-04",
+  "text": "So tired I can't think, wiped out by 3pm.",
+  "gold": [
+   "Tiredness"
+  ]
+ },
+ {
+  "id": "v13-05",
+  "text": "No nausea today, just a dull ache.",
+  "gold": []
+ },
+ {
+  "id": "v13-06",
+  "text": "Wasn't bloated at all this week.",
+  "gold": []
+ },
+ {
+  "id": "v13-07",
+  "text": "My sister is always tired and bloated.",
+  "gold": []
+ },
+ {
+  "id": "v13-08",
+  "text": "Went home sick from work with cramps.",
+  "gold": []
+ },
+ {
+  "id": "v13-09",
+  "text": "I feel sick of this pain honestly.",
+  "gold": []
+ },
+ {
+  "id": "v13-10",
+  "text": "Tummy swollen and tight, constipated again.",
+  "gold": [
+   "Bloating",
+   "Bowel"
+  ]
+ },
+ {
+  "id": "v13-11",
+  "text": "Diarrhoea twice today and a sore tummy.",
+  "gold": [
+   "Bowel"
+  ]
+ },
+ {
+  "id": "v13-12",
+  "text": "Throwing up this morning, dizzy too.",
+  "gold": [
+   "Nausea"
+  ]
+ },
+ {
+  "id": "v13-13",
+  "text": "Energy is fine, bowels fine, bladder fine.",
+  "gold": []
+ },
+ {
+  "id": "v13-14",
+  "text": "Feeling drained, barely moved off the sofa.",
+  "gold": [
+   "Tiredness"
+  ]
+ },
+ {
+  "id": "v13-15",
+  "text": "Had a wee and it burned.",
+  "gold": [
+   "Bladder"
+  ]
+ },
+ {
+  "id": "v13-16",
+  "text": "It's a six, lower back, nothing else to report.",
+  "gold": []
+ },
+ {
+  "id": "v13-17",
+  "text": "Exhausted but the pain isn't bad.",
+  "gold": [
+   "Tiredness"
+  ]
+ },
+ {
+  "id": "v13-18",
+  "text": "Not tired, not bloated, just a headache.",
+  "gold": []
+ },
+ {
+  "id": "v13-19",
+  "text": "Poo was loose and I felt nauseous all morning.",
+  "gold": [
+   "Bowel",
+   "Nausea"
+  ]
+ },
+ {
+  "id": "v13-20",
+  "text": "I sat in the sick bay at school.",
+  "gold": []
+ }
+]
