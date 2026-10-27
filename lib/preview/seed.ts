@@ -60,8 +60,10 @@ const HISTORY: HistoryData[] = [
 
 type Buckets = { [K in RecordKind]: Rec<DataMap[K]>[] };
 
+// The newest record keeps 14:10 (the pinned preview day); older ones vary so the Timeline doesn't read as one batch.
+const TIMES = ['14:10', '08:35', '19:20', '12:05', '21:40', '07:50', '16:25'];
 const recs = <T,>(kind: string, items: T[], dateOf: (t: T) => string): Rec<T>[] =>
-  items.map((data, i) => ({ id: `seed-${kind}-${i + 1}`, data, createdAt: `${dateOf(data)}T14:10:00.000Z` }));
+  items.map((data, i) => ({ id: `seed-${kind}-${i + 1}`, data, createdAt: `${dateOf(data)}T${TIMES[i % TIMES.length]}:00.000Z` }));
 
 /** A fresh deep copy of Sam's records, every call (so edits never mutate the seed). */
 export function sampleBuckets(): Buckets {

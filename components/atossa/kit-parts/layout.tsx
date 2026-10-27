@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
@@ -17,7 +17,7 @@ import { Quote, Txt } from './Txt';
  * content capped at 600 wide. Pass `back` for pushed screens to show a BackChevron above the title.
  */
 export function ScreenLarge({
-  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer,
+  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide, brand,
 }: {
   title: string;
   subtitle?: React.ReactNode;
@@ -29,12 +29,17 @@ export function ScreenLarge({
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
   /** Pinned under the scroll area (rare — e.g. a share bar). */
   footer?: React.ReactNode;
+  /** Desktop web only: lets the content run to the shell's wider column (two-column screens). */
+  wide?: boolean;
+  /** Small ATOSSA wordmark above the title (sign in / register), so the auth screens carry the brand. */
+  brand?: boolean;
 }) {
   const head = (
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
+      {brand ? <Txt variant="caption" color={colors.plum} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ATOSSA</Txt> : null}
       <View style={styles.titleRow}>
-        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flex: 1, flexShrink: 1 }}>{title}</Txt>
+        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}
       </View>
       {subtitle ? (
@@ -49,7 +54,7 @@ export function ScreenLarge({
       {scroll ? (
         <ScrollView
           ref={scrollRef as React.RefObject<ScrollViewInstance>}
-          contentContainerStyle={[styles.column, styles.scrollContent, contentStyle]}
+          contentContainerStyle={[styles.column, wide && { maxWidth: 1040 }, styles.scrollContent, contentStyle]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
           automaticallyAdjustKeyboardInsets
@@ -64,7 +69,7 @@ export function ScreenLarge({
           {children}
         </View>
       )}
-      {footer ? <View style={[styles.column, styles.footer]}>{footer}</View> : null}
+      {footer ? <View style={[styles.column, wide && { maxWidth: 1040 }, styles.footer]}>{footer}</View> : null}
     </SafeAreaView>
   );
 }
@@ -112,7 +117,7 @@ export function BackChevron({ label, onPress }: { label: string; onPress?: () =>
 export function SectionTitle({ title, right, style }: { title: string; right?: React.ReactNode; style?: StyleProp<ViewStyle> }) {
   return (
     <View style={[styles.sectionTitle, style]}>
-      <Txt variant="title" accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flex: 1, flexShrink: 1 }}>{title}</Txt>
+      <Txt variant="title" accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }}>{title}</Txt>
       {right}
     </View>
   );
@@ -173,11 +178,55 @@ export function PressableCard({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
-      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.canvas }, style]}
+      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken }, style]}
     >
       {edge ? <View style={styles.clayEdge} /> : null}
       <View style={{ flex: 1, minWidth: 0 }}>{children}</View>
       {chevron ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+    </Pressable>
+  );
+}
+
+/**
+ * The screen's one big number: a 48 pt numeral (omit `big` for a sentence-only state), a headline
+ * line and a secondary sub-line. Pass `onPress` to make the whole card a PressableCard.
+ */
+export function HeroNumber({
+  big, line, sub, onPress, accessibilityHint,
+}: {
+  big?: string;
+  line: string;
+  sub: string;
+  onPress?: () => void;
+  accessibilityHint?: string;
+}) {
+  // Under ~240 pt wide (200% text) 17 pt "appointment" no longer fits the column and breaks mid-word.
+  const narrow = useWindowDimensions().width < 240;
+  const body = (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
+      {big ? <Txt variant="numeral" style={{ fontSize: 48, lineHeight: 52 }}>{big}</Txt> : null}
+      {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
+      <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, gap: space.xxs }}>
+        <Txt variant="headline" style={narrow ? { fontSize: 15, lineHeight: 20 } : undefined}>{line}</Txt>
+        <Txt variant="secondary">{sub}</Txt>
+      </View>
+    </View>
+  );
+  if (!onPress) return <Card>{body}</Card>;
+  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint}>{body}</PressableCard>;
+}
+
+/** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
+export function QuickTile({ label, icon, onPress }: { label: string; icon: IconName; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [styles.qtile, pressed && { backgroundColor: colors.canvas }]}
+    >
+      <View aria-hidden style={styles.qicon}><Icon name={icon} size={20} color={colors.ink} /></View>
+      <Txt variant="secondary" style={{ flex: 1, color: colors.ink }} maxFontSizeMultiplier={1.4}>{label}</Txt>
     </Pressable>
   );
 }
@@ -289,7 +338,7 @@ export function InlineError({ message, onRetry, style }: { message: string; onRe
   );
 }
 
-export const SAFETY_TEXT = "If you feel very unwell or you're worried, contact your GP, NHS 111 or 999.";
+export const SAFETY_TEXT = "If you feel very unwell or you’re worried, contact your GP, NHS 111 or 999.";
 
 /** The fixed safety line (Profile + foot of the summary builder). Static: NEVER triggered by content. */
 export function SafetyLine({ style }: { style?: StyleProp<ViewStyle> }) {
@@ -370,12 +419,18 @@ export function GlyphLine({
 }
 
 const styles = StyleSheet.create({
+  qtile: {
+    flexBasis: '48%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 56,
+    paddingHorizontal: space.sm, paddingVertical: space.xs, borderRadius: 16, backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
+  },
+  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter },
   // Ends clear of the toast zone, so a toast never sits over the last action (UX #30).
   scrollContent: { paddingBottom: heights.toastClearance },
   head: { paddingTop: space.sm, marginBottom: space.xl },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 44 },
+  titleRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs, minHeight: 44 },
   right: { flexDirection: 'row', alignItems: 'center', gap: space.xs, flexShrink: 0 },
   footer: { paddingVertical: space.sm, borderTopWidth: 1, borderTopColor: colors.hairline, backgroundColor: colors.canvas },
   // Sunken + ink2 (V31): plum is for actions/selection, so the header's only plum is "+".

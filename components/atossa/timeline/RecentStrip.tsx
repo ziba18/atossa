@@ -17,7 +17,7 @@ const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 interface Cell { key: string; letter: string; worst: number | null; noted: boolean }
 
-export function RecentStrip({ symptoms }: { symptoms: Rec<SymptomData>[] }) {
+export function RecentStrip({ symptoms, flush }: { symptoms: Rec<SymptomData>[]; flush?: boolean }) {
   const [inner, setInner] = useState(0);
   // Narrow screens / big text: show the last 7 days instead of squeezing 14 cells.
   const days = inner > 0 && inner < MAX_DAYS * MIN_CELL ? MIN_DAYS : MAX_DAYS;
@@ -41,7 +41,7 @@ export function RecentStrip({ symptoms }: { symptoms: Rec<SymptomData>[] }) {
 
   const label = `Last ${days} days: notes on ${noteDays} ${noteDays === 1 ? 'day' : 'days'}`;
   return (
-    <Card style={styles.card}>
+    <Card style={[styles.card, flush && { marginTop: 0 }]}>
       <View style={styles.head}>
         <Txt variant="groupLabel">Last {days} days</Txt>
         <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? 'No notes yet' : `${noteDays} ${noteDays === 1 ? 'day' : 'days'} with notes`}</Txt>

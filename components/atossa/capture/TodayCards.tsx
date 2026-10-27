@@ -1,13 +1,13 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
-  Button, Card, Chip, FactLine, InlineError, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast,
+  Button, Card, Chip, FactLine, HeroNumber, InlineError, QuickTile, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
-import { colors, layout, space } from '../../../constants/atossaUI';
+import { colors, layout, radii, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
@@ -19,6 +19,9 @@ import {
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
 import { MicButton } from './MicButton';
+import { nextAppointment } from './AppointmentCard';
+import { type IconName } from '../../ui/Icon';
+import { addDays, diffDays } from '../../../lib/records/dates';
 
 // Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
 // then white — the hero is never cooler than the paper around it. Top 40% only.
@@ -32,6 +35,18 @@ const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 /** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
+/** The brand waveform, still and decorative: the same bars as the recording indicator, as a quiet header for the hero. */
+const WAVE = [0.25, 0.4, 0.65, 0.35, 0.8, 1, 0.55, 0.9, 0.45, 0.7, 0.3, 0.55, 0.35, 0.2];
+function WaveMotif() {
+  return (
+    <View aria-hidden style={styles.wave}>
+      {WAVE.map((h, i) => (
+        <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
+      ))}
+    </View>
+  );
+}
+
 export function HeroCard() {
   return (
     <Card tone="hero" style={styles.hero}>
@@ -42,21 +57,29 @@ export function HeroCard() {
         end={{ x: 0.5, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
+      <WaveMotif />
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
         {PROMPT_BALANCED}
       </Txt>
-      <View style={styles.heroMic}>
-        <MicButton
-          onPress={() => openCapture({ mode: 'speak', startRecording: true })}
-          accessibilityLabel="Tap to talk"
-          accessibilityHint="Opens a new note and starts recording"
-        />
-        {/* The primary action's label outranks the secondary link (V7). */}
-        <Txt variant="headline" style={styles.micLabel} aria-hidden>
-          Tap to talk
-        </Txt>
-      </View>
-      <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
+      {Platform.OS === 'web' ? (
+        // Browsers have no voice capture here: lead with the typed note instead of a mic that opens the Type tab.
+        <Button label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md }} />
+      ) : (
+        <>
+          <View style={styles.heroMic}>
+            <MicButton
+              onPress={() => openCapture({ mode: 'speak', startRecording: true })}
+              accessibilityLabel="Tap to talk"
+              accessibilityHint="Opens a new note and starts recording"
+            />
+            {/* The primary action's label outranks the secondary link (V7). */}
+            <Txt variant="headline" style={styles.micLabel} aria-hidden>
+              Tap to talk
+            </Txt>
+          </View>
+          <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
+        </>
+      )}
       <View style={styles.next} accessible accessibilityLabel="After you speak, Atossa asks only for what’s missing: when, how strong, and where.">
         <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.xs }}>Next:</Txt>
         {NEXT_STEPS.map((label, i) => (
@@ -119,7 +142,7 @@ export function RoughDayCard() {
       setValue(null);
       showToast(`Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your GP.`);
     } catch {
-      setError("That didn't save. Check your connection and try again.");
+      setError("That didn’t save. Check your connection and try again.");
     } finally {
       setSaving(false);
     }
@@ -142,6 +165,22 @@ export function RoughDayCard() {
 /** Most recent symptom note (by date, then by when it was saved). */
 export function latestNote(symptoms: Rec<SymptomData>[]): Rec<SymptomData> | undefined {
   return [...symptoms].sort(compareNotesNewestFirst)[0];
+}
+
+/** First run: what a saved note will look like here, clearly marked as an example. */
+export function GhostNoteCard() {
+  return (
+    <View style={styles.ghost} accessible accessibilityLabel="Example of a saved note. Sharp low belly pain since Tuesday, worse in the evening. 7 out of 10 at worst. Your notes will appear here.">
+      <Txt variant="caption">Example · your notes will appear here</Txt>
+      <View style={{ opacity: 0.85 }} aria-hidden>
+        <Quote numberOfLines={2}>Sharp low belly pain since Tuesday, worse in the evening.</Quote>
+        <View style={[styles.factRow, { marginTop: space.sm }]}>
+          <SeverityTag value={7} suffix="/10 at worst" />
+          <Txt variant="secondary">Lower belly</Txt>
+        </View>
+      </View>
+    </View>
+  );
 }
 
 export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
@@ -167,12 +206,13 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
       accessibilityHint="Opens the note"
     >
       <View style={{ gap: space.sm }}>
-        <Txt variant="caption">{`Your latest note · ${date}`}</Txt>
+        {/* Non-breaking spaces keep the date together, so at 320 it wraps before it rather than orphaning the time. */}
+        <Txt variant="caption">{`Your latest note · ${date.replace(/ /g, '\u00A0')}`}</Txt>
         {words ? <Quote numberOfLines={4}>{words}</Quote> : <Txt variant="headline">Rough day</Txt>}
         {worst != null || facts ? (
           <View style={styles.factRow}>
             {worst != null ? <SeverityTag value={worst} suffix={suffix} /> : null}
-            {facts ? <View style={{ flex: 1 }}><FactLine parts={[facts]} numberOfLines={2} /></View> : null}
+            {facts ? <View style={{ flex: 1, minWidth: 110 }}><FactLine parts={[facts]} numberOfLines={2} /></View> : null}
           </View>
         ) : null}
       </View>
@@ -180,9 +220,97 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
   );
 }
 
+/** Counts up to `target` once on first show (about half a second); straight to the number under Reduce Motion. */
+function useCountUp(target: number): number {
+  const reduce = useReduceMotion();
+  const [n, setN] = useState(reduce ? target : 0);
+  useEffect(() => {
+    if (reduce || target <= 1) { setN(target); return; }
+    const start = Date.now();
+    const id = setInterval(() => {
+      const t = Math.min(1, (Date.now() - start) / 500);
+      setN(Math.round(target * (1 - (1 - t) * (1 - t))));
+      if (t >= 1) clearInterval(id);
+    }, 40);
+    return () => clearInterval(id);
+  }, [target, reduce]);
+  return n;
+}
+
+/** The screen's one big number: days to the next appointment, else notes in the last 7 days. */
+export function HeroNumberCard() {
+  const router = useRouter();
+  const symptoms = useRecordsStore((s) => s.records.symptom);
+  const appts = useRecordsStore((s) => s.records.appointment);
+  const today = todayKey();
+  const next = nextAppointment(appts);
+  const daysAway = next ? Math.max(0, diffDays(today, next.data.date)) : 0;
+  // Past two months a day count reads as noise; weeks are what a person plans by.
+  const inWeeks = daysAway > 60;
+  const count = useCountUp(next ? (inWeeks ? Math.round(daysAway / 7) : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
+  const total = noteCount(symptoms);
+  let big: string; let line: string; let sub: string; let target: string;
+  if (next) {
+    const days = diffDays(today, next.data.date);
+    big = days === 0 ? '' : String(count);
+    const who = next.data.who.trim();
+    line = inWeeks ? 'weeks until your appointment' : days === 0 ? 'Your appointment is today' : days === 1 ? 'day until your appointment' : 'days until your appointment';
+    const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
+    sub = who ? `${who} · ${notes}` : notes;
+    target = '/(tabs)/doctor';
+  } else if (total === 0) {
+    big = '0';
+    line = 'notes so far';
+    sub = 'Your first note starts your record';
+    target = '';
+  } else {
+    const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
+    big = String(count);
+    line = week === 1 ? 'note in the last 7 days' : 'notes in the last 7 days';
+    sub = total === week ? 'Open them in your Timeline' : `${notesLabel(total)} in all`;
+    target = '/(tabs)/timeline';
+  }
+  return (
+    <HeroNumber
+      big={big} line={line} sub={sub}
+      onPress={target ? () => router.push(target as any) : undefined}
+      accessibilityHint={next ? 'Opens For my doctor' : 'Opens Timeline'}
+    />
+  );
+}
+
+const QUICK_ROWS: { label: string; icon: IconName; tag?: string }[] = [
+  { label: 'Pain', icon: 'zap', tag: 'Pain today' },
+  { label: 'Bleeding', icon: 'droplet' },
+  { label: 'Tummy, bowel or bladder', icon: 'activity', tag: 'Tummy, bowel or bladder' },
+  { label: 'Tired', icon: 'moon', tag: 'Tired' },
+  { label: 'Mood', icon: 'heart', tag: 'Mood' },
+  { label: 'Skin or hair', icon: 'sparkles', tag: 'Skin or hair' },
+  { label: 'Something new', icon: 'plus', tag: 'Something new' },
+];
+
+/** Icon + label tiles, two across (replace the four outline chips); each opens a note already started on that topic. */
+export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
+  return (
+    <View style={styles.qgrid}>
+      {QUICK_ROWS.map((r) => (
+        <QuickTile
+          key={r.label}
+          label={r.label}
+          icon={r.icon}
+          onPress={() => (r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'speak', tag: r.tag }))}
+        />
+      ))}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
+  ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
+  wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
   next: {
@@ -194,5 +322,5 @@ const styles = StyleSheet.create({
   chipsWrap: { marginHorizontal: -layout.gutter },
   chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
   fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },
-  factRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  factRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs },
 });

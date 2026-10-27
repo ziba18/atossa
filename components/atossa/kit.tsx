@@ -16,7 +16,7 @@ export { FadeIn } from './kit-parts/FadeIn';
 export { SkeletonCards } from './kit-parts/Skeleton';
 export { ToastHost, showToast, dismissToast } from './kit-parts/toast';
 export {
-  ScreenLarge, HeaderAvatar, BackChevron, SectionTitle, Card, PressableCard, NotedRow, FactLine,
+  ScreenLarge, HeaderAvatar, BackChevron, SectionTitle, Card, PressableCard, HeroNumber, QuickTile, NotedRow, FactLine,
   EmptyState, InlineError, SafetyLine, SAFETY_TEXT, ConfirmCard, GlyphLine,
   type CardTone, type ConfirmAction,
 } from './kit-parts/layout';
