@@ -78,3 +78,11 @@ def test_blind_nhs_samaritans_wording_v14():
     for t in ("I had a fit of giggles at work", "I'm trying to keep fit", "passing blood clots on day two as usual",
               "I see the point in resting more", "my face felt flushed after the gym"):
         assert not is_emergency(t), t
+
+
+SET15 = json.loads((Path(__file__).parent / "emergency_set_v15_blind_nhs_pages.json").read_text())
+
+
+def test_blind_nhs_pages_wording_v15():
+    assert [t for t in SET15["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET15["harmless"] if is_emergency(t)] == []
