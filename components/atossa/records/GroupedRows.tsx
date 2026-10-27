@@ -34,12 +34,13 @@ export function Group({
   accessibilityLabel?: string;
 }) {
   const rows = React.Children.toArray(children).filter(Boolean);
+  const tight = useWindowDimensions().width < 280; // rows drop their glyph here, so the divider starts at the row edge
   return (
     <View style={[styles.group, style]} accessibilityLabel={accessibilityLabel}>
       {edge ? <View style={styles.clayEdge} /> : null}
       {rows.map((child, i) => (
         <View key={i} style={edge ? styles.afterEdge : undefined}>
-          {i > 0 ? <View style={[styles.divider, { marginLeft: hasIcon(child) ? DIVIDER_INSET : ROW_PAD }]} /> : null}
+          {i > 0 ? <View style={[styles.divider, { marginLeft: hasIcon(child) && !tight ? DIVIDER_INSET : ROW_PAD }]} /> : null}
           {child}
         </View>
       ))}
