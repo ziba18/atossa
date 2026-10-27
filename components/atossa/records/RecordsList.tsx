@@ -38,7 +38,7 @@ export function RecordsList({
     >
       {loadError && !loadedFor ? <InlineError message={loadError} /> : null}
       {sorted.length === 0 && loadedFor ? (
-        <EmptyState message={info.empty} action={{ label: info.addLabel, onPress: onAdd }} />
+        <EmptyState icon={kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : 'file-text'} message={info.empty} action={{ label: info.addLabel, onPress: onAdd }} />
       ) : sorted.length ? (
         <Group>
           {sorted.map((r) => {
