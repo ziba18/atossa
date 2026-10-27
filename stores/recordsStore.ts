@@ -175,7 +175,9 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
       // Not sent yet: change the queued copy, same client id.
       const clientId = id.slice(PENDING_PREFIX.length);
       const queued = (await readOutbox()).find((i) => i.clientId === clientId);
-      if (queued) { await dequeue(clientId); await enqueue({ ...queued, data: data as DataMap['symptom'] }); }
+      if (!queued) throw new Error('This note was just sent. Open it again to edit it.');
+      await dequeue(clientId);
+      await enqueue({ ...queued, data: data as DataMap['symptom'] });
     } else {
       await backend.update(id, data);
     }
