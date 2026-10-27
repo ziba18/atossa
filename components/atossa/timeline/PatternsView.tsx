@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   ringRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, marginTop: space.sm },
   bleedChart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 44, marginTop: space.sm },
   tiles: { flexDirection: 'row', gap: space.sm },
-  tile: { flex: 1, minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
+  tile: { flex: 1, alignItems: 'flex-start', minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
   tileWide: { paddingHorizontal: space.md, paddingVertical: space.sm },
   tileRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   tileNum: { fontSize: 32, lineHeight: 38 },
