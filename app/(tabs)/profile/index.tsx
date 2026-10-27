@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { ScrollView, type ScrollViewInstance } from 'react-native';
+import { ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
+import { DATA_LINES } from '../../../constants/dataLocation';
 import {
-  Button, ConfirmCard, SafetyLine, ScreenLarge, Txt, showToast,
+  Button, Card, ConfirmCard, SafetyLine, ScreenLarge, Txt, showToast,
 } from '../../../components/atossa/kit';
 import type { IconName } from '../../../components/ui/Icon';
 import { Group, GroupHeading, GroupRow } from '../../../components/atossa/records/GroupedRows';
@@ -135,6 +136,13 @@ export default function ProfileScreen() {
           onPress={() => router.push('/(tabs)/profile/friends' as any)}
         />
       </Group>
+
+      <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
+      <Card>
+        <View style={{ gap: space.sm }}>
+          {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
+        </View>
+      </Card>
 
       <GroupHeading title="About" style={{ marginTop: space.xxl }} />
       <Group>
