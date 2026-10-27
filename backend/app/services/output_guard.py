@@ -287,6 +287,12 @@ _WHOLE = re.compile(r"\b(?:stabbing|agony|agonising|screaming)\b.{0,60}\b(?:curl
                     r"\btip of (?:my |the )?shoulder\b.{0,60}\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b|"
                     r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,60}\btip of (?:my |the )?shoulder\b|"
                     # NHS toxic shock page: tampon or cup in use together with a high temperature and another sign (any clause)
+                    r"\bpain\b.{0,25}\bright (?:ribs?|rib cage|side of (?:my )?ribs)\b.{0,60}\bright shoulder\b|"
+                    # NHS PID page 999 list: very high temperature with chills/shivering together with pelvic or tummy pain
+                    r"\b(?:(?:very )?high temperature|fever)\b.{0,60}\b(?:chills|shivering|shivery)\b.{0,80}\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,15}\bpain|"
+                    r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,15}\bpain\b.{0,80}\b(?:(?:very )?high temperature|fever)\b.{0,60}\b(?:chills|shivering|shivery)\b|"
+                    # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
+                    r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup)\b)(?=.*\b(?:fever|high temperature|temperature)\b)"
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))", re.I | re.S)
 
