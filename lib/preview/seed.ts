@@ -11,6 +11,11 @@ const symptom = (
   date: string, words: string, where: string, worst: number, duration: string, stopped: boolean, stoppedWords: string,
 ): SymptomData => ({
   date, words, where, worst, score: worst, duration, stopped, stoppedWords, source: 'typed',
+  zones: [
+    'Lower tummy centre',
+    ...(/legs/i.test(where) ? ['Legs'] : []),
+    ...(/back/i.test(where) ? ['Lower back'] : []),
+  ],
 });
 
 const SYMPTOMS: SymptomData[] = [
