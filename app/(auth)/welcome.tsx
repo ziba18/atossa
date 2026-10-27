@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, layout, space } from '../../constants/atossaUI';
-import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
+import { Button, Card, Quote, Txt, useReduceMotion } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
 
@@ -17,7 +17,7 @@ const STEPS = [
 
 /**
  * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
- * from Today), one plain sentence, then the actions anchored low. No imagery.
+ * from Today), one plain sentence, then the actions anchored low. One illustration: the waveform resting on a line of text.
  */
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -26,6 +26,13 @@ export default function WelcomeScreen() {
   const short = win.height < 700;
   const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
   useEffect(() => track('Welcome Viewed'), []);
+  // One 400 ms rise of the waveform on first paint; nothing moves under Reduce Motion.
+  const reduceMotion = useReduceMotion();
+  const rise = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (reduceMotion) { rise.setValue(1); return; }
+    Animated.timing(rise, { toValue: 1, duration: 400, easing: Easing.out(Easing.cubic), useNativeDriver: Platform.OS !== 'web' }).start();
+  }, [reduceMotion, rise]);
 
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
@@ -38,10 +45,14 @@ export default function WelcomeScreen() {
             style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
           />
           <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
-          {short ? null : <View aria-hidden style={styles.wave}>
-            {WAVE.map((h, i) => (
-              <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-            ))}
+          {/* Illustration B: the brand waveform grown large, resting on a line of text (a voice becoming a note). */}
+          {short ? null : <View aria-hidden style={styles.art}>
+            <Animated.View style={[styles.wave, { opacity: rise, transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) }] }]}>
+              {WAVE.map((h, i) => (
+                <View key={i} style={{ width: 4, height: Math.round(8 + h * 40), borderRadius: 2, backgroundColor: i % 3 === 0 ? colors.plum : `${colors.plum}80` }} />
+              ))}
+            </Animated.View>
+            <View style={styles.textLine} />
           </View>}
         </View>
 
@@ -98,7 +109,9 @@ const styles = StyleSheet.create({
   band: { marginHorizontal: -layout.gutter, paddingHorizontal: layout.gutter, paddingTop: space.md, paddingBottom: space.sm, gap: space.xs },
   wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
   heroLine: { fontSize: 36, lineHeight: 42 },
-  wave: { flexDirection: 'row', alignItems: 'center', gap: 4, height: 30 },
+  art: { alignItems: 'center', gap: space.xs, paddingVertical: space.xs },
+  wave: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 48 },
+  textLine: { width: 148, height: 14, borderRadius: 7, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.plum },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'center', gap: 4 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },

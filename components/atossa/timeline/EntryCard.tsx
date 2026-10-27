@@ -127,7 +127,7 @@ export function EntryCard({
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
             {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will send when you’re online" /> : null}
-            {words ? <Quote numberOfLines={3}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
+            {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
               // The severity words sit INSIDE the pill ("9/10 at worst", N7); long facts wrap below it
               <View style={styles.facts}>
@@ -188,13 +188,14 @@ export function EntryCard({
       const told = a.told?.trim();
       return (
         <PressableCard
+          style={styles.appointment}
           onPress={onPress}
           accessibilityLabel={[`Appointment, ${who}`, hideDate ? '' : when, told ? `I was told: ${told}` : ''].filter(Boolean).join('. ')}
           accessibilityHint="Opens the appointment"
         >
           <View style={styles.stack}>
-            <GlyphLine icon="calendar-days" text={hideDate ? 'Appointment' : when} />
-            <Txt variant="headline">{who}</Txt>
+            {/* One line, on a tinted card, so an appointment never reads as one more note. */}
+            <GlyphLine icon="calendar-days" variant="secondary" text={hideDate ? who : `${who} · ${keep(when)}`} />
             {told ? <Txt variant="secondary" numberOfLines={2}>{`I was told: ${told}`}</Txt> : null}
           </View>
         </PressableCard>
@@ -230,4 +231,5 @@ const styles = StyleSheet.create({
   // N11: the 4 pt clay edge sits inside the card's own padding, so bleeding content lines up
   // with every other card (x 41, not 45).
   clayInset: { paddingLeft: space.lg },
+  appointment: { backgroundColor: colors.plumTint, borderColor: colors.plumTint },
 });

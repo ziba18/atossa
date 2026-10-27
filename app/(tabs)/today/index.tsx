@@ -8,6 +8,7 @@ import { View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
+import { PeriodCard } from '../../../components/atossa/capture/PeriodCard';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
   GhostNoteCard, HeroCard, HeroChip, HeroNumberCard, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
@@ -17,6 +18,8 @@ import { isHumanName } from '../../../lib/humanName';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { CHAT_ENABLED } from '../../../lib/features';
+import { useTimelineSession } from '../../../components/atossa/timeline/session';
+import { noteCount } from '../../../lib/records/format';
 
 function greeting(name: string | null | undefined): string {
   const hour = new Date().getHours(); // time of day only — dates always come from todayKey()
@@ -36,6 +39,7 @@ export default function TodayScreen() {
   const loadedFor = useRecordsStore((s) => s.loadedFor);
   const load = useRecordsStore((s) => s.load);
   const loading = useRecordsStore((s) => s.loading);
+  const setTimelineMode = useTimelineSession((s) => s.setMode);
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
   // Short phones (320x568): capture comes first, the number and week strip follow, so "Type a note" is on the first screen.
@@ -47,6 +51,7 @@ export default function TodayScreen() {
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
+      {loadedFor ? <View style={{ marginTop: space.md }}><PeriodCard /></View> : null}
     </>
   );
 
@@ -61,6 +66,18 @@ export default function TodayScreen() {
       {loadedFor ? (short && symptoms.length > 0 ? null : <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>)
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
       {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
+      {/* Patterns need a few notes to say anything; from 7 on, one tap from here (Timeline > Patterns). */}
+      {loadedFor && noteCount(symptoms) >= 7 ? (
+        <View style={{ marginBottom: space.md, marginLeft: -space.xs, alignItems: 'flex-start' }}>
+          <Button
+            label="See your patterns"
+            variant="text"
+            small
+            onPress={() => { setTimelineMode('patterns'); router.push('/(tabs)/timeline' as any); }}
+            accessibilityHint="Opens Patterns on the Timeline tab"
+          />
+        </View>
+      ) : null}
       {short ? null : capture}
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>

@@ -4,11 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
 
-export const ONBOARDING_STEPS = 4;
+export const ONBOARDING_STEPS = 3;
 
 /**
- * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
- * above four quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
+ * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 3" caption
+ * above three quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
@@ -22,7 +22,7 @@ export function OnboardingScreen({
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
 }) {
   return (
-    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+    <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView
         ref={scrollRef as React.RefObject<ScrollViewInstance>}
         contentContainerStyle={styles.column}

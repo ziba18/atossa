@@ -105,7 +105,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <View style={{ marginTop: space.lg }}>
         <EmptyState
           icon="calendar-days"
-          message={`Patterns appear after a week of notes. ${recent === 0 ? 'No notes yet.' : `So far: notes on ${plural(recent, 'day')}.`}`}
+          message={`Patterns appear after a week of notes. ${recent === 0 ? 'No notes in this time range.' : `So far: notes on ${plural(recent, 'day')}.`}`}
           action={{ label: 'Add a note', onPress: () => openCapture() }}
           style={{ marginTop: space.xxl }}
         />
@@ -153,9 +153,16 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           </View>
           {m.weeks.length <= 5 ? (
             <View style={styles.chartLabels} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-              {m.weeks.map((w) => (
-                <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>{formatShortDate(w.from)}</Txt>
-              ))}
+              {m.weeks.map((w, i) => {
+                // Year on a second line only where it changes (or when the chart is not in the current year), so labels never wrap mid-date.
+                const y = w.from.slice(0, 4);
+                const showY = i === 0 ? y !== String(new Date().getFullYear()) || m.weeks.some((x) => x.from.slice(0, 4) !== y) : y !== m.weeks[i - 1].from.slice(0, 4);
+                return (
+                  <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>
+                    {formatShortDate(w.from, 'never')}{showY ? `\n${y}` : ''}
+                  </Txt>
+                );
+              })}
             </View>
           ) : null}
           {/* First and last day under the bars so 12 bars are not anonymous (spoken text already gives the range). */}
@@ -255,7 +262,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         accessibilityLabel="Make my summary for my doctor. Opens For my doctor."
       >
         <Txt variant="headline">Make my summary for my doctor</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xxs }}>One clear page from your notes, in your words.</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>A clear summary from your notes, in your words.</Txt>
       </PressableCard>
 
       <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>

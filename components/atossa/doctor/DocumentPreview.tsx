@@ -102,7 +102,7 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
             </View>
             <View style={{ flex: 1 }}>
               <Txt variant="headline">See the full page</Txt>
-              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel}`}</Txt>
+              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel.replace(/ /g, "\u00A0")}`}</Txt>
             </View>
             <View aria-hidden><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
           </Pressable>

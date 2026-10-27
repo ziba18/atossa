@@ -38,7 +38,13 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
     cards.push(
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
-        {all ? <Txt variant="secondary" style={{ marginTop: space.xxs }}>{`${all.days} of ${plural(all.total, 'day')} with a note`}</Txt> : null}
+        {all ? (
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.sm, marginTop: space.xxs }}>
+            <Txt variant="secondary" style={{ flex: 1, minWidth: 0 }}>{`${all.days} of ${plural(all.total, 'day')} with a note`}</Txt>
+            {/* The column header: said once here, so the rows below carry only the number. */}
+            {areas.some((b) => worstOf(b.strength ?? '')) ? <Txt variant="secondary" aria-hidden>Worst</Txt> : null}
+          </View>
+        ) : null}
         <View style={{ gap: space.sm, marginTop: space.sm }}>
           {areas.slice(0, 3).map((b) => {
             const w = worstOf(b.strength ?? '');
@@ -51,7 +57,6 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
                 </View>
                 {w ? (
                   <View style={{ alignItems: 'flex-end' }} accessible accessibilityLabel={`Worst ${w} out of 10`}>
-                    <Txt variant="secondary">Worst</Txt>
                     <Txt variant="body" style={{ fontVariant: ['tabular-nums'] }}>{`${w}/10`}</Txt>
                   </View>
                 ) : null}

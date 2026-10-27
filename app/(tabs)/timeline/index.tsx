@@ -1,10 +1,10 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, type ScrollViewInstance } from 'react-native';
+import { View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
+  AddButton, Button, Chip, ChipGroup, Sheet, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
@@ -32,6 +32,13 @@ const MODES: { value: TimelineMode; label: string }[] = [
   { value: 'month', label: 'Month' },
   { value: 'patterns', label: 'Patterns' },
 ];
+
+/** "3 notes · worst 9/10" (worst only when a note gave a number). */
+function weekSummary(items: ListItem[]): string {
+  const notes = items.filter((x): x is Extract<ListItem, { kind: 'symptom' }> => x.kind === 'symptom');
+  const worsts = notes.map((x) => worstOf(x.rec.data)).filter((n): n is number => n != null);
+  return [notesLabel(notes.length), worsts.length ? `worst ${Math.max(...worsts)}/10` : ''].filter(Boolean).join(' · ');
+}
 
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 
@@ -147,6 +154,11 @@ function ListView({
   setFilter: (f: (typeof TIMELINE_FILTERS)[number]) => void;
   onOpen: (item: ListItem) => void;
 }) {
+  // Short phones (320x568): Today already shows the strip; here the first note card must be on screen.
+  const win = useWindowDimensions();
+  const short = win.height < 640;
+  const tiny = win.width < 280; // 200% text on a small phone: the week summary drops under the label
+  const [filterOpen, setFilterOpen] = useState(false);
   const options = useMemo(
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
     [feed],
@@ -188,18 +200,24 @@ function ListView({
   return (
     <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
-      <View style={{ marginTop: space.lg }}>
+      <View style={{ marginTop: space.lg, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <Chip
+          label={filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
+          selected={filter !== 'All'}
+          onPress={() => setFilterOpen(true)}
+        />
+        {filter !== 'All' ? <Chip ghost label="Clear" onPress={() => setFilter('All')} /> : null}
+      </View>
+      <Sheet visible={filterOpen} onClose={() => setFilterOpen(false)} title="Show">
         <ChipGroup
-          scroll
-          bleed
           accessibilityLabel="Show"
           options={options}
           value={filter}
-          onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
+          onChange={(v) => { if (v) { setFilter(v as TimelineFilter); setFilterOpen(false); } }}
         />
-      </View>
+      </Sheet>
       {/* The strip counts symptom notes, so it only shows where those are on the list. */}
-      {filter === 'All' || filter === 'Symptoms' ? (
+      {(filter === 'All' || filter === 'Symptoms') && !short ? (
         <RecentStrip symptoms={symptoms} />
       ) : null}
       {groups.length === 0 && filter !== 'All' ? (
@@ -211,13 +229,13 @@ function ListView({
           // Week header: 15/600 ink2 (groupLabel) — quieter than the card titles it groups.
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
           <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? space.xl : space.xxl }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm }}>
+            <View style={{ flexDirection: 'row', flexWrap: tiny ? 'wrap' : 'nowrap', alignItems: 'center', columnGap: space.sm, rowGap: 0, marginBottom: space.sm }}>
               <Txt variant="groupLabel" accessibilityRole="header" style={{ fontFamily: fonts.serif, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
-              <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
+              {tiny ? null : <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />}
               {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (
                 <Txt variant="caption" maxFontSizeMultiplier={1.4}>
-                  {notesLabel(g.items.filter((x) => x.kind === 'symptom').length)}
+                  {weekSummary(g.items)}
                 </Txt>
               ) : null}
             </View>

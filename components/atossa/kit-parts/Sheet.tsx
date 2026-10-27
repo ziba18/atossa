@@ -8,7 +8,11 @@ import { Txt } from './Txt';
 
 /** True when the user asked the OS to reduce motion (then sheets fade instead of sliding). */
 export function useReduceMotion(): boolean {
-  const [reduce, setReduce] = useState(false);
+  // Web: read the media query on the first render, so the first frame already honours it
+  // (the async AccessibilityInfo answer arrives after a one-shot entrance animation has started).
+  const [reduce, setReduce] = useState(
+    () => Platform.OS === 'web' && typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
+  );
   useEffect(() => {
     let alive = true;
     AccessibilityInfo.isReduceMotionEnabled?.().then((v) => { if (alive) setReduce(v); }).catch(() => {});

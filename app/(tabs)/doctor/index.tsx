@@ -16,6 +16,7 @@ import { PageOneCards } from '../../../components/atossa/doctor/PageOneCards';
 import { SectionToggles } from '../../../components/atossa/doctor/SectionToggles';
 import { printSummary, shareSummaryPdf } from '../../../components/atossa/doctor/share';
 import { useDoctorBuilder, useDoctorDoc } from '../../../components/atossa/doctor/useDoctorDoc';
+import { useTimelineSession } from '../../../components/atossa/timeline/session';
 import { haptics } from '../../../lib/haptics';
 import { formatDay, joinFacts, notesLabel } from '../../../lib/records/format';
 import { toKey, todayKey } from '../../../lib/records/dates';
@@ -227,7 +228,7 @@ export default function DoctorScreen() {
         </Card>
       ) : null}
 
-      {desk ? (
+      {desk && !nothingYet ? (
         <View style={{ flexDirection: 'row', gap: space.xxl, alignItems: 'flex-start' }}>
           <View style={{ width: 340 }}>
       {nothingYet ? null : (
@@ -287,7 +288,18 @@ export default function DoctorScreen() {
             <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
           </Card>
         ) : (
-          <DocumentPreview doc={doc} tall={desk} />
+          <>
+            <DocumentPreview doc={doc} tall={desk} />
+            <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>
+              <Button
+                label="See the patterns behind this"
+                variant="text"
+                small
+                onPress={() => { useTimelineSession.getState().setMode('patterns'); router.push('/(tabs)/timeline' as any); }}
+                accessibilityHint="Opens Patterns on the Timeline tab"
+              />
+            </View>
+          </>
         )}
       </Step>
 
@@ -327,6 +339,15 @@ export default function DoctorScreen() {
           <Step title="Your summary page">
             <DocumentPreview doc={doc} tall={desk} />
           </Step>
+          <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>
+            <Button
+              label="See the patterns behind this"
+              variant="text"
+              small
+              onPress={() => { useTimelineSession.getState().setMode('patterns'); router.push('/(tabs)/timeline' as any); }}
+              accessibilityHint="Opens Patterns on the Timeline tab"
+            />
+          </View>
         </>
       ) : null}
 
