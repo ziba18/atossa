@@ -67,3 +67,14 @@ def test_everyday_uses_of_self_harm_words_stay_quiet_but_real_statements_do_not(
     assert [t for t in SET13["harmless"] if is_emergency(t)] == []
     for t in ("i hurt myself on purpose last night", "i want to disappear forever"):
         assert is_emergency(t), t
+
+
+SET14 = json.loads((Path(__file__).parent / "emergency_set_v14_blind_nhs_samaritans.json").read_text())
+
+
+def test_blind_nhs_samaritans_wording_v14():
+    assert [t for t in SET14["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET14["harmless"] if is_emergency(t)] == []
+    for t in ("I had a fit of giggles at work", "I'm trying to keep fit", "passing blood clots on day two as usual",
+              "I see the point in resting more", "my face felt flushed after the gym"):
+        assert not is_emergency(t), t
