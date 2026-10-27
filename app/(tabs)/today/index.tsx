@@ -20,6 +20,8 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 import { CHAT_ENABLED } from '../../../lib/features';
 import { useTimelineSession } from '../../../components/atossa/timeline/session';
 import { noteCount } from '../../../lib/records/format';
+import { todayKey } from '../../../lib/records/dates';
+import { nextAppointment } from '../../../components/atossa/capture/AppointmentCard';
 
 function greeting(name: string | null | undefined): string {
   const hour = new Date().getHours(); // time of day only — dates always come from todayKey()
@@ -43,7 +45,10 @@ export default function TodayScreen() {
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
   // Short phones (320x568): capture comes first, the number and week strip follow, so "Type a note" is on the first screen.
-  const short = useWindowDimensions().height < 640;
+  const lowScreen = useWindowDimensions().height < 640;
+  // On the day of an appointment the hero card is tall; the slim chip keeps "Type a note" on the first screen.
+  const apptToday = nextAppointment(useRecordsStore((s) => s.records.appointment))?.data.date === todayKey();
+  const short = lowScreen || apptToday;
 
   const capture = (
     <>
