@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
+  AddButton, Button, Chip, ChipGroup, Sheet, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
@@ -156,6 +156,7 @@ function ListView({
 }) {
   // Short phones (320x568): Today already shows the strip; here the first note card must be on screen.
   const short = useWindowDimensions().height < 640;
+  const [filterOpen, setFilterOpen] = useState(false);
   const options = useMemo(
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
     [feed],
@@ -197,16 +198,22 @@ function ListView({
   return (
     <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
-      <View style={{ marginTop: space.lg }}>
+      <View style={{ marginTop: space.lg, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <Chip
+          label={filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
+          selected={filter !== 'All'}
+          onPress={() => setFilterOpen(true)}
+        />
+        {filter !== 'All' ? <Chip ghost label="Clear" onPress={() => setFilter('All')} /> : null}
+      </View>
+      <Sheet visible={filterOpen} onClose={() => setFilterOpen(false)} title="Show">
         <ChipGroup
-          scroll
-          bleed
           accessibilityLabel="Show"
           options={options}
           value={filter}
-          onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
+          onChange={(v) => { if (v) { setFilter(v as TimelineFilter); setFilterOpen(false); } }}
         />
-      </View>
+      </Sheet>
       {/* The strip counts symptom notes, so it only shows where those are on the list. */}
       {(filter === 'All' || filter === 'Symptoms') && !short ? (
         <RecentStrip symptoms={symptoms} />
