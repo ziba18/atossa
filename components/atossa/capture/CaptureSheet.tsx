@@ -13,7 +13,7 @@ import { closeCapture, useCaptureStore, type CaptureOptions } from '../../../lib
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
 import { formatDay, noteCount, notesLabel } from '../../../lib/records/format';
-import { urgentSignpost } from '../../../lib/urgentWording';
+import { URGENT_SIGNPOST, urgentSignpost } from '../../../lib/urgentWording';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { type Draft, answeredOf, emptyDraft, hasContent, toSymptom } from './draft';
 import { FollowUp } from './FollowUp';
@@ -413,6 +413,10 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
         </Card>
       ) : null}
       {body}
+      {/* Always there on the writing step, whatever is typed: the same fixed sentence the detector shows, never a reading of the note. */}
+      {stage === 'capture' && !confirmClose && !signpost ? (
+        <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.lg }}>{URGENT_SIGNPOST}</Txt>
+      ) : null}
     </Sheet>
   );
 }
