@@ -306,8 +306,8 @@ export function SegmentedControl<T extends string>({
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }) {
-  // Below ~240 pt (200% text on a small phone) three labels no longer fit at 15 pt.
-  const narrow = useWindowDimensions().width < 240;
+  // Below ~270 pt (200% text on a small phone) three labels no longer fit at 15 pt.
+  const narrow = useWindowDimensions().width < 270;
   return (
     <View style={[styles.segTrack, style]} accessibilityRole="tablist" accessibilityLabel={accessibilityLabel}>
       {options.map((o) => {
@@ -325,7 +325,7 @@ export function SegmentedControl<T extends string>({
             hitSlop={{ top: 4, bottom: 4 }}
             style={[styles.seg, selected && styles.segSelected]}
           >
-            <Txt maxFontSizeMultiplier={1.6} numberOfLines={1} style={[styles.segText, narrow && { fontSize: 11 }, selected && { color: colors.ink }]}>
+            <Txt maxFontSizeMultiplier={1.6} numberOfLines={1} style={[styles.segText, narrow && { fontSize: 12 }, selected && { color: colors.ink }]}>
               {label}
             </Txt>
           </Pressable>
