@@ -14,13 +14,13 @@ import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
 import {
-  EMPTY_FILTER_TEXT, buildFeed, filterFeed, groupFeed, itemsOnDay, mergeBleedingRuns, type FeedItem, type ListItem,
+  EMPTY_FILTER_TEXT, buildFeed, filterFeed, inArea, groupFeed, itemsOnDay, mergeBleedingRuns, type FeedItem, type ListItem,
 } from '../../../components/atossa/timeline/feed';
 import {
   AFTER_SHEET_MS, bleedingHref, entryHref, periodHref, recordHref,
 } from '../../../components/atossa/timeline/navigation';
-import { TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type TimelineMode } from '../../../components/atossa/timeline/session';
-import { colors, space } from '../../../constants/atossaUI';
+import { AREA_FILTERS, TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type TimelineMode } from '../../../components/atossa/timeline/session';
+import { colors, fonts, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { mondayOf, parseKey, todayKey } from '../../../lib/records/dates';
 import { bleedingStatus, noteCount, notesLabel, worstOf } from '../../../lib/records/format';
@@ -147,6 +147,10 @@ function ListView({
   setFilter: (f: (typeof TIMELINE_FILTERS)[number]) => void;
   onOpen: (item: ListItem) => void;
 }) {
+  const options = useMemo(
+    () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
+    [feed],
+  );
   const groups = useMemo(() => groupFeed(mergeBleedingRuns(filterFeed(feed, filter))), [feed, filter]);
   // Patterns week bar -> scroll to that week's group (y = this view's offset + the group's offset).
   const rootY = useRef(0);
@@ -189,7 +193,7 @@ function ListView({
           scroll
           bleed
           accessibilityLabel="Show"
-          options={TIMELINE_FILTERS}
+          options={options}
           value={filter}
           onChange={(v) => { if (v) setFilter(v as TimelineFilter); }}
         />
@@ -208,7 +212,7 @@ function ListView({
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
           <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? space.xl : space.xxl }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm }}>
-              <Txt variant="groupLabel" accessibilityRole="header">{g.label}</Txt>
+              <Txt variant="groupLabel" accessibilityRole="header" style={{ fontFamily: fonts.serif, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
               <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
               {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (

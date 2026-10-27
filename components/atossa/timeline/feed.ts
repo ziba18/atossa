@@ -6,6 +6,7 @@ import type {
 } from '../../../types/records';
 import { MONTH_NAMES, addDays, mondayOf, parseKey, toKey } from '../../../lib/records/dates';
 import { noteSortTime, weekLabel } from '../../../lib/records/format';
+import { wordMentions } from '../../../lib/records/counts';
 import type { TimelineFilter } from './session';
 
 export type FeedItem =
@@ -57,7 +58,7 @@ export function buildFeed(src: FeedSources): FeedItem[] {
   return items.sort((a, b) => b.date.localeCompare(a.date) || b.sort.localeCompare(a.sort));
 }
 
-const FILTER_KIND: Record<Exclude<TimelineFilter, 'All'>, FeedItem['kind']> = {
+const FILTER_KIND: Record<Exclude<TimelineFilter, 'All' | 'Bowel or bladder' | 'Tiredness'>, FeedItem['kind']> = {
   Symptoms: 'symptom',
   Bleeding: 'bleeding',
   Appointments: 'appointment',
@@ -101,8 +102,18 @@ export function mergeBleedingRuns(feed: FeedItem[]): ListItem[] {
   return out;
 }
 
+/** Symptom notes that belong to an area chip. Tiredness is her own words (a word count, never a tag). */
+export function inArea(i: FeedItem, filter: 'Bowel or bladder' | 'Tiredness'): boolean {
+  if (i.kind !== 'symptom') return false;
+  const s = i.rec.data;
+  return filter === 'Tiredness'
+    ? wordMentions([s], 'tired').notes > 0
+    : s.bowelPain === true || s.urinePain === true || (s.zones ?? []).includes('Bottom');
+}
+
 export function filterFeed(feed: FeedItem[], filter: TimelineFilter): FeedItem[] {
   if (filter === 'All') return feed;
+  if (filter === 'Bowel or bladder' || filter === 'Tiredness') return feed.filter((i) => inArea(i, filter));
   const kind = FILTER_KIND[filter];
   return feed.filter((i) => i.kind === kind);
 }
@@ -112,6 +123,8 @@ export const EMPTY_FILTER_TEXT: Record<Exclude<TimelineFilter, 'All'>, string> =
   Bleeding: 'No bleeding logged yet.',
   Appointments: 'No appointments yet.',
   Medicines: 'No medicines yet.',
+  'Bowel or bladder': 'No notes about this yet.',
+  Tiredness: 'No notes mention feeling tired yet.',
 };
 
 export interface FeedGroup {

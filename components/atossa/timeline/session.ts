@@ -3,9 +3,11 @@ import { create } from 'zustand';
 // Timeline view choices remembered for the session (not persisted): List/Month and the filter.
 
 export type TimelineMode = 'list' | 'month' | 'patterns';
-export type TimelineFilter = 'All' | 'Symptoms' | 'Bleeding' | 'Appointments' | 'Medicines';
+export type TimelineFilter = 'All' | 'Symptoms' | 'Bleeding' | 'Appointments' | 'Medicines' | 'Bowel or bladder' | 'Tiredness';
 
-export const TIMELINE_FILTERS: TimelineFilter[] = ['All', 'Symptoms', 'Bleeding', 'Appointments', 'Medicines'];
+export const TIMELINE_FILTERS: TimelineFilter[] = ['All', 'Symptoms', 'Bleeding', 'Bowel or bladder', 'Tiredness', 'Appointments', 'Medicines'];
+/** Area chips only appear once a note belongs to them (no dead chips); the rest are always there. */
+export const AREA_FILTERS: TimelineFilter[] = ['Bowel or bladder', 'Tiredness'];
 
 interface TimelineSession {
   mode: TimelineMode;
