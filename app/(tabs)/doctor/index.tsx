@@ -160,6 +160,8 @@ export default function DoctorScreen() {
   // No data at all for this summary: a calm empty state instead of an empty page.
   // Web at desktop width: preview (the document) on the right, controls always open on the left.
   const desk = Platform.OS === 'web' && winWidth >= 1024;
+  // Under ~240 pt wide (200% text on a small phone) a sticky bar plus the tab bar leaves no room for the summary: the bar moves to the end of the page.
+  const inlineBar = winWidth < 240;
   const nothingYet = doc.empty && doc.available.length === 0;
   // An appointment today: the note field sits above the Customise fold (phone layout) so it is hard to miss.
   const agendaUp = !desk && !nothingYet && upcoming?.data.date === today;
@@ -193,7 +195,7 @@ export default function DoctorScreen() {
   );
 
   return (
-    <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={nothingYet ? undefined : footer}>
+    <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={nothingYet || inlineBar ? undefined : footer}>
       {short ? null : (
         <Txt variant="body" color={colors.ink2}>
           Your notes, in your words, ready to share.
@@ -430,6 +432,7 @@ export default function DoctorScreen() {
       )}
 
       <SafetyLine style={{ marginTop: space.xxl }} />
+      {inlineBar ? <View style={{ marginTop: space.xl }}>{footer}</View> : null}
     </ScreenLarge>
   );
 }
