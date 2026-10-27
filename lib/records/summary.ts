@@ -6,7 +6,8 @@
 // Rules (every string produced here): it only repeats what Sam entered. Never a condition name,
 // an interpretation, a threshold label, a cause ("linked to"), a trend or a suggestion. No averages
 // — strength is shown as the raw values Sam gave (or a min–max of them). Sections and fields with
-// no data are omitted entirely (never an empty label). "Not sure" / "Skip" / "It varies" /
+// no data are omitted from `sections` (never an empty label); the 13 PRODUCT §4 areas in `domains`
+// each get one line, "Not recorded" when empty, so a clinician can tell "not logged" from "left out". "Not sure" / "Skip" / "It varies" /
 // "Nothing today" are never counted as impacts; an unanswered strength is never 0.
 import { colors, severityColor } from '../../constants/atossaUI';
 import type {
@@ -18,6 +19,7 @@ import {
   labelEscape, noteCount, noteSortTime, peakOf,
   realImpacts, typicalOf, worstOf,
 } from './format';
+import { daysWith, impactDays, inRange as inRangeOf, nOfN, strengthRange, zoneDays } from './counts';
 
 // ---- cycles (kept for other callers) --------------------------------------------------------
 
@@ -68,18 +70,65 @@ export type SectionId =
   | 'sex' | 'mood' | 'eating';
 
 /** Section titles, in document order. Sensitive ones are off unless switched on per summary. */
+// Order = app-blueprint §3.7a page 1: (agenda) · main symptoms pattern · periods · associated
+// (the sensitive ones sit here) · impact · tried · history/medicines · in my words. Appointments
+// follow history (§3.7a lists none; kept for the visit write-ups).
 export const SECTION_META: { id: SectionId; title: string; sensitive: boolean }[] = [
-  { id: 'words', title: 'Symptoms in my words', sensitive: false },
   { id: 'frequency', title: 'How often and how strong', sensitive: false },
   { id: 'periods', title: 'Periods logged', sensitive: false },
-  { id: 'impacts', title: 'What it got in the way of', sensitive: false },
-  { id: 'tried', title: 'What I’ve tried', sensitive: false },
-  { id: 'appointments', title: 'Appointments', sensitive: false },
-  { id: 'history', title: 'Health history', sensitive: false },
   { id: 'sex', title: 'Sex & intimacy', sensitive: true },
   { id: 'mood', title: 'Mood', sensitive: true },
   { id: 'eating', title: 'Eating', sensitive: true },
+  { id: 'impacts', title: 'What it got in the way of', sensitive: false },
+  { id: 'tried', title: 'What I’ve tried', sensitive: false },
+  { id: 'history', title: 'Health history', sensitive: false },
+  { id: 'appointments', title: 'Appointments', sensitive: false },
+  { id: 'words', title: 'Symptoms in my words', sensitive: false },
 ];
+
+// ---- the 13 areas (PRODUCT.md §4), in §3.7a order -------------------------------------------
+
+export type DomainId =
+  | 'agenda' | 'pain' | 'fatigue' | 'bleeding' | 'bowelBladder' | 'sexPain' | 'mood' | 'skinHair'
+  | 'eating' | 'impact' | 'tried' | 'history' | 'fertility';
+
+/** `section` = the sensitive switch that governs the area (off → "Not included", data or not). */
+export const DOMAINS: { id: DomainId; heading: string; section?: SectionId }[] = [
+  { id: 'agenda', heading: 'Appointments and what I want from them' },
+  { id: 'pain', heading: 'Pain' },
+  { id: 'fatigue', heading: 'Tiredness and sleep' },
+  { id: 'bleeding', heading: 'Bleeding and periods' },
+  { id: 'bowelBladder', heading: 'Bowel and bladder' },
+  { id: 'sexPain', heading: 'Pain with sex', section: 'sex' },
+  { id: 'mood', heading: 'Mood', section: 'mood' },
+  { id: 'skinHair', heading: 'Skin and hair' },
+  { id: 'eating', heading: 'Weight and eating', section: 'eating' },
+  { id: 'impact', heading: 'What it got in the way of' },
+  { id: 'tried', heading: 'What I’ve tried' },
+  { id: 'history', heading: 'Health history' },
+  { id: 'fertility', heading: 'Plans for pregnancy' },
+];
+
+export const NOT_RECORDED = 'Not recorded';
+/** Shown for a sensitive area that is switched off — the same words whether or not it has data. */
+export const NOT_INCLUDED = 'Not included in this summary';
+
+export type DomainState = 'recorded' | 'not-recorded' | 'not-included';
+export interface DomainLine {
+  id: DomainId;
+  heading: string;
+  state: DomainState;
+  /** The facts as counts / her choices, or NOT_RECORDED / NOT_INCLUDED. */
+  text: string;
+  /** "First noticed: …" (as reported) for symptom groups with notes; '' otherwise. Never computed. */
+  onset: string;
+}
+
+/** Symptom groups that carry a patient-entered "When did you first notice this?" (pm/prd/onset-and-treatments.md). */
+export type OnsetGroup = 'pain' | 'bleeding' | 'bowelBladder' | 'fatigue' | 'mood' | 'skinHair';
+export interface Onset { month?: number; year?: number; notSure?: boolean }
+export const FERTILITY_OPTIONS = ['Trying to get pregnant', 'Not now', 'Not sure', 'Prefer not to say'] as const;
+export type FertilityWish = (typeof FERTILITY_OPTIONS)[number];
 
 export const isSensitive = (id: SectionId) => SECTION_META.find((s) => s.id === id)?.sensitive ?? false;
 
@@ -165,7 +214,13 @@ export interface HeatStripModel {
 
 export interface PeriodRun { range: string; days: number; flows: string; notes: DocQuote[] }
 export interface CountItem { label: string; days: number }
-export interface TriedItem { title: string; dates: string; noticed: string }
+export interface TriedItem {
+  title: string; dates: string; noticed: string;
+  /** "Did it help? A little" — her answer; '' when not answered. */
+  helped: string;
+  /** Side effects in her words; '' when none given. */
+  sideEffects: string;
+}
 export interface DatedItem { date: string; title: string; lines: DocLine[] }
 
 export type DocSection =
@@ -193,6 +248,10 @@ export interface DoctorDoc {
   /** Every section that HAS data (included or not) — drives the Sections switches. */
   available: { id: SectionId; title: string; sensitive: boolean }[];
   entries: number;
+  /** One line per PRODUCT §4 area, in DOMAINS order — "Not recorded" when empty. */
+  domains: DomainLine[];
+  /** "9 of 13 areas recorded" — a count, never a percentage or a quality score. */
+  completeness: string;
   footer: string;
   /** Nothing to share: no included section with data. */
   empty: boolean;
@@ -206,6 +265,10 @@ export interface SummaryInput {
   appointments: Rec<AppointmentData>[];
   /** Sam's display name, if it's a real name. */
   name?: string;
+  /** "When did you first notice this?" per symptom group, exactly as entered. */
+  onset?: Partial<Record<OnsetGroup, Onset>>;
+  /** Her answer to the optional pregnancy-plans question. */
+  fertility?: FertilityWish | null;
 }
 
 export interface SummaryOptions {
@@ -226,7 +289,6 @@ export const agendaTitleFor = (appointmentToday?: boolean) =>
 const STRIP_MAX_DAYS = 93; // three rows of 31 on the A4 page
 const MAX_QUOTES = 5;
 const MAX_LISTED = 3; // appointments / history items on the page; the rest are counted ("N earlier …")
-const NOT_IMPACTS = new Set(['Nothing today']);
 const ESCAPES = new Set(['Not sure', 'Skip', 'It varies']);
 
 const clean = (s: string | undefined | null) => (s ?? '').trim();
@@ -354,25 +416,128 @@ function periodRuns(days: PeriodDayData[]): PeriodDayData[][] {
   return runs;
 }
 
-/** Distinct days per impact item, in first-seen order, sorted by count (desc). */
-function countImpacts(notes: SymptomData[], keep: (item: string) => boolean): CountItem[] {
-  const days = new Map<string, Set<string>>();
-  for (const s of notes) {
-    for (const item of realImpacts(s)) {
-      if (NOT_IMPACTS.has(item) || !keep(item)) continue;
-      if (!days.has(item)) days.set(item, new Set());
-      days.get(item)!.add(s.date);
-    }
+/** "around June 2015 (as reported)" — only what she typed; never derived from note dates. */
+export function onsetText(o: Onset | undefined): string {
+  if (!o) return `First noticed: ${NOT_RECORDED}`;
+  if (o.notSure && !o.year) return 'First noticed: not sure (as reported)';
+  if (!o.year) return `First noticed: ${NOT_RECORDED}`;
+  const when = o.month && o.month >= 1 && o.month <= 12 ? `${MONTH_NAMES[o.month - 1]} ${o.year}` : `${o.year}`;
+  return `First noticed: around ${when} (as reported)`;
+}
+
+/** The 13 PRODUCT §4 areas, one line each, in DOMAINS order. Counts and her own choices only. */
+function domainLines(
+  input: SummaryInput, options: SummaryOptions, notes: SymptomData[], bleedDays: PeriodDayData[],
+  impactItems: CountItem[], triedCount: number,
+): DomainLine[] {
+  const { from, to } = options;
+  const include = options.include ?? {};
+  const total = inclusiveDays(from, to);
+  const of = (has: (s: SymptomData) => boolean) => nOfN(notes, from, to, has).days;
+  const dayText = (n: number) => `${n} of ${plural(total, 'day')}`;
+  const onsetFor = (g: OnsetGroup) => onsetText(input.onset?.[g]);
+
+  const facts: Record<DomainId, { text: string; onset?: OnsetGroup }> = {} as never;
+  // Appointments and agenda.
+  const appts = input.appointments.filter((r) => r.data.date || clean(r.data.who)).length;
+  facts.agenda = {
+    text: joinFacts(clean(options.agenda) ? 'Agenda written' : '', appts ? plural(appts, 'appointment') + ' saved' : ''),
+  };
+  // Pain: any note with a number, a zone or her words that isn't only a quick log.
+  const painNote = (s: SymptomData) => peakOf(s) != null || (s.zones ?? []).length > 0 || (s.source !== 'quick' && clean(s.words) !== '');
+  const painDays = of(painNote);
+  const range = strengthRange(notes.filter(painNote));
+  facts.pain = {
+    text: painDays ? joinFacts(`Notes on ${dayText(painDays)}`, range ? `numbers given ${spread([range.low, range.high])}` : '') : '',
+    onset: 'pain',
+  };
+  // Tiredness and sleep.
+  const tiredDays = of((s) => s.fatigue != null);
+  const sleepDays = of((s) => realImpacts(s).includes('Sleep'));
+  const tired = notes.map((s) => s.fatigue).filter((n): n is number => n != null);
+  facts.fatigue = {
+    text: joinFacts(tiredDays ? `Tiredness given on ${dayText(tiredDays)} (${spread(tired)})` : '', sleepDays ? `sleep affected on ${plural(sleepDays, 'day')}` : ''),
+    onset: 'fatigue',
+  };
+  // Bleeding and periods: logged days + heaviness as reported on notes.
+  const bleeding = bleedDays.filter((d) => bleedingStatus(d) !== 'spotting');
+  const spotting = bleedDays.filter((d) => bleedingStatus(d) === 'spotting');
+  const starts = periodRuns(bleedDays).length;
+  const productDays = (band: string) => of((s) => s.products === band);
+  const bands = (['1-2', '3-5', '6+'] as const).map((b) => [b, productDays(b)] as const).filter(([, n]) => n > 0);
+  const flood = of((s) => s.flooding === true);
+  const clots = of((s) => s.clots === true);
+  const between = of((s) => s.bleedingBetween === true);
+  facts.bleeding = {
+    text: joinFacts(
+      starts ? `${plural(starts, 'period')} logged (${plural(new Set(bleeding.map((d) => d.date)).size, 'bleeding day')})` : '',
+      spotting.length ? `spotting on ${plural(new Set(spotting.map((d) => d.date)).size, 'day')}` : '',
+      ...bands.map(([b, n]) => `${b.replace('-', '–')} pads or tampons a day on ${plural(n, 'day')}`),
+      flood ? `flooding on ${plural(flood, 'day')}` : '',
+      clots ? `clots on ${plural(clots, 'day')}` : '',
+      between ? `bleeding between periods on ${plural(between, 'day')}` : '',
+    ),
+    onset: 'bleeding',
+  };
+  const bowel = of((s) => s.bowelPain === true);
+  const urine = of((s) => s.urinePain === true);
+  facts.bowelBladder = {
+    text: joinFacts(bowel ? `pain opening bowels on ${plural(bowel, 'day')}` : '', urine ? `pain passing urine on ${plural(urine, 'day')}` : ''),
+    onset: 'bowelBladder',
+  };
+  const sexDays = of((s) => realImpacts(s).includes('Sex'));
+  const afterSex = of((s) => s.bleedingAfterSex === true);
+  facts.sexPain = {
+    text: joinFacts(sexDays ? `got in the way of sex on ${plural(sexDays, 'day')}` : '', afterSex ? `bleeding after sex on ${plural(afterSex, 'day')}` : ''),
+  };
+  const moodNotes = of((s) => clean(s.mood) !== '');
+  facts.mood = { text: moodNotes ? `${plural(moodNotes, 'note')} in my words` : '', onset: 'mood' };
+  const skin = new Map<string, Set<string>>();
+  for (const s of notes) for (const c of s.skinHair ?? []) skin.set(c, (skin.get(c) ?? new Set()).add(s.date));
+  facts.skinHair = { text: joinFacts(...[...skin].map(([c, d]) => `${c} · ${plural(d.size, 'day')}`)), onset: 'skinHair' };
+  const eating = of((s) => clean(s.eating) !== '');
+  facts.eating = { text: eating ? `${plural(eating, 'note')} in my words` : '' };
+  facts.impact = { text: joinFacts(...impactItems.map((c) => `${c.label} · ${plural(c.days, 'day')}`)) };
+  facts.tried = { text: triedCount ? plural(triedCount, 'thing') + ' listed' : '' };
+  facts.history = { text: input.history.length ? plural(input.history.length, 'item') + ' saved' : '' };
+  facts.fertility = { text: input.fertility ? `${input.fertility} (as chosen)` : '' };
+
+  return DOMAINS.map(({ id, heading, section }) => {
+    const f = facts[id];
+    if (section && !sectionIncluded(section, include)) return { id, heading, state: 'not-included', text: NOT_INCLUDED, onset: '' };
+    const hasData = f.text !== '';
+    return {
+      id, heading,
+      state: hasData ? 'recorded' : 'not-recorded',
+      text: hasData ? f.text : NOT_RECORDED,
+      // AC1: the onset line only appears for a group with at least one note.
+      onset: f.onset && hasData ? onsetFor(f.onset) : '',
+    };
+  });
+}
+
+/** Plain-text export of the same model (copy/paste into a portal or an email to oneself). */
+export function summaryToText(doc: DoctorDoc): string {
+  const lines = [doc.title, doc.meta, ''];
+  if (doc.agenda) lines.push(doc.agendaTitle.toUpperCase(), doc.agenda, '');
+  lines.push(`AREAS (${doc.completeness})`);
+  for (const d of doc.domains) {
+    lines.push(`${d.heading}: ${d.text}`);
+    if (d.onset) lines.push(`  ${d.onset}`);
   }
-  return [...days.entries()]
-    .map(([label, set]) => ({ label, days: set.size }))
-    .sort((a, b) => b.days - a.days);
+  const words = doc.sections.find((s) => s.id === 'words');
+  if (words && words.id === 'words') {
+    lines.push('', 'IN MY WORDS');
+    for (const q of words.quotes) lines.push(`${q.dateLabel}: "${q.text}"`);
+  }
+  lines.push('', doc.footer);
+  return lines.join('\n').replace(/\u2060/g, '');
 }
 
 export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions): DoctorDoc {
   const { from, to, today } = options;
   const include = options.include ?? {};
-  const inRange = (d: string) => d >= from && d <= to;
+  const inRange = (d: string) => inRangeOf(d, from, to);
 
   const timed = input.symptoms.filter((r) => inRange(r.data.date))
     .map<TimedNote>((r) => ({ s: r.data, at: noteSortTime(r) }))
@@ -417,15 +582,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       days.push({ date: k, logged: list.length > 0, value: peaks.length ? Math.max(...peaks) : null, bleeding: bleedSet.has(k), spotting: spotSet.has(k) });
     }
 
-    const noteDays = byDay.size;
+    const noteDays = daysWith(windowNotes, stripFrom, to);
     const bars: FreqBar[] = [];
     if (noteDays) {
       bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes) });
-      const zones = new Map<string, SymptomData[]>();
-      for (const s of windowNotes) for (const z of s.zones ?? []) zones.set(z, [...(zones.get(z) ?? []), s]);
-      [...zones.entries()]
-        .map(([label, list]) => ({ label, days: new Set(list.map((s) => s.date)).size, total, strength: groupStrength(list) }))
-        .sort((a, b) => b.days - a.days)
+      zoneDays(windowNotes)
+        .map(({ label, days: n }) => ({ label, days: n, total, strength: groupStrength(windowNotes.filter((s) => (s.zones ?? []).includes(label))) }))
         .forEach((b) => bars.push(b));
     }
 
@@ -478,7 +640,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   }
 
   // 4. What it got in the way of (Sex goes to its own sensitive section).
-  const impactItems = countImpacts(notes, (i) => i !== 'Sex');
+  const impactItems = impactDays(notes, (i) => i !== 'Sex');
   const legacyStopped = notes.filter((s) => !s.impacts && s.stopped === true);
   if (legacyStopped.length) {
     impactItems.push({ label: 'Stopped me doing things', days: new Set(legacyStopped.map((s) => s.date)).size });
@@ -494,6 +656,8 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     title: joinFacts(clean(m.name), clean(m.dose)),
     dates: docRange(m.started, m.startedPrecision, m.stopped, m.stoppedPrecision),
     noticed: clean(m.happened),
+    helped: m.helped ? `Did it help? ${m.helped}` : '',
+    sideEffects: clean(m.sideEffects),
   }));
   const triedQuotes = notes.filter((s) => clean(s.tried)).slice(0, 3).map((s) => quoteOf(s, clean(s.tried), false));
   if (tried.length || triedQuotes.length) all.push({ id: 'tried', title: 'What I’ve tried', items: tried, quotes: triedQuotes });
@@ -552,11 +716,15 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   }
 
   // 8. Sensitive sections — only when such data exists (mood / eating have no fields yet).
-  const sexItems = countImpacts(notes, (i) => i === 'Sex');
+  const sexItems = impactDays(notes, (i) => i === 'Sex');
   if (sexItems.length) all.push({ id: 'sex', title: 'Sex & intimacy', items: sexItems, quotes: [] });
 
+  const order = (id: SectionId) => SECTION_META.findIndex((m) => m.id === id);
+  all.sort((a, b) => order(a.id) - order(b.id));
   const available = SECTION_META.filter((m) => all.some((s) => s.id === m.id));
   const sections = all.filter((s) => sectionIncluded(s.id, include));
+  const domains = domainLines(input, options, notes, bleedDays, impactItems, tried.length + triedQuotes.length);
+  const recorded = domains.filter((d) => d.state === 'recorded').length;
   const agenda = clean(options.agenda);
   const entries = noteCount(input.symptoms, { from, to });
   const name = clean(input.name);
@@ -565,6 +733,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     title: name ? `Symptom summary — ${name}` : 'Symptom summary',
     meta: joinFacts(rangeLabel, options.visitType ?? '', `Made ${formatShortDate(today, 'always')}`),
     from, to, rangeLabel, agenda, agendaTitle: agendaTitleFor(options.appointmentToday), sections, available, entries,
+    domains, completeness: `${recorded} of ${plural(DOMAINS.length, 'area')} recorded`,
     footer: `Patient-reported via Atossa · not clinically verified · ${rangeLabel} · ${plural(entries, 'entry', 'entries')}`,
     // An agenda on its own isn't a summary: nothing to share until a section has data.
     empty: sections.length === 0,
