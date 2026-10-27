@@ -141,7 +141,7 @@ export function RoughDayCard() {
       });
       haptics.success();
       setValue(null);
-      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your GP.`);
+      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your doctor.`);
     } catch {
       setError("That didn’t save. Check your connection and try again.");
     } finally {

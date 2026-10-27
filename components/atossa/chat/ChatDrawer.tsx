@@ -121,7 +121,7 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
                     key={c.id}
                     tone="destructive"
                     title="Delete this chat?"
-                    message="It will be removed from this phone. Notes you saved for your GP stay."
+                    message="It will be removed from this phone. Notes you saved for your doctor stay."
                     actions={[
                       { label: 'Delete', variant: 'destructive', onPress: () => { remove(c.id); setConfirmId(null); } },
                       { label: 'Cancel', variant: 'text', onPress: () => setConfirmId(null) },

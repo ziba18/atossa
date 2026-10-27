@@ -1,7 +1,7 @@
 // "What I'd like from this appointment" ("… from today" when it's today) — a 2-line white field with a
 // border-strong outline (radius 14), like the other text fields, with an optional mic.
 // The mic only shows where on-device dictation works (not in Expo Go or on web).
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { colors, heights, radii, space, type as typeScale } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
@@ -18,6 +18,9 @@ export function AgendaField({
   value, onChange, onBlur, title,
 }: { value: string; onChange: (t: string) => void; onBlur: () => void; /** agendaTitleFor(appointmentToday) */ title: string }) {
   const base = useRef('');
+  const [focused, setFocused] = useState(false);
+  // Collapsed to one line until it holds words or has focus (keeps the digits card above the fold).
+  const boxH = typeScale.body.lineHeight! * (focused || value.length > 0 ? 2 : 1) + space.sm * 2;
   const dictation = useDictation((transcript) => {
     const joined = [base.current.trim(), transcript.trim()].filter(Boolean).join(' ');
     onChange(joined);
@@ -38,7 +41,7 @@ export function AgendaField({
     <View>
       <Txt variant="headline" nativeID="agendaLabel">{title}</Txt>
       <Txt variant="secondary" style={{ marginTop: space.xxs }}>
-        What’s the one thing you want your GP to take away? Pick a main priority or write your own.
+        The one thing to take away. Pick one or write your own.
       </Txt>
       <View style={{ marginTop: space.sm }}>
         <ChipGroup
@@ -46,6 +49,8 @@ export function AgendaField({
           options={[...PRIORITIES]}
           value={PRIORITIES.find((p) => value.startsWith(prioritySentence(p))) ?? null}
           allowDeselect
+          scroll
+          bleed
           accessibilityLabel="Main priority"
           onChange={(v) => {
             const rest = PRIORITIES.reduce((t, p) => (t.startsWith(prioritySentence(p)) ? t.slice(prioritySentence(p).length).trim() : t), value);
@@ -64,9 +69,10 @@ export function AgendaField({
         <TextInput
           value={value}
           onChangeText={onChange}
-          onBlur={onBlur}
+          onFocus={() => setFocused(true)}
+          onBlur={() => { setFocused(false); onBlur(); }}
           multiline
-          numberOfLines={2}
+          numberOfLines={1}
           maxLength={400}
           accessibilityLabel={title}
           accessibilityLabelledBy="agendaLabel"
@@ -74,11 +80,11 @@ export function AgendaField({
           placeholderTextColor={colors.ink2}
           textAlignVertical="top"
           style={{
-            ...typeScale.body, flex: 1, minHeight: typeScale.body.lineHeight! * 2 + space.sm * 2, paddingVertical: space.sm,
+            ...typeScale.body, flex: 1, minHeight: boxH, paddingVertical: space.sm,
           }}
         />
         {dictation.supported ? (
-          <View style={{ paddingTop: (typeScale.body.lineHeight! * 2 + space.sm * 2 - heights.minHit) / 2 }}>
+          <View style={{ paddingTop: Math.max(0, (boxH - heights.minHit) / 2) }}>
             <IconButton
               icon={dictation.recording ? 'square' : 'mic'}
               label={dictation.recording ? 'Stop dictating' : 'Dictate instead of typing'}

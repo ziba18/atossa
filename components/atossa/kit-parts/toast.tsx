@@ -16,7 +16,7 @@ const useToastStore = create<ToastState>(() => ({ message: null, seq: 0 }));
 let timer: ReturnType<typeof setTimeout> | null = null;
 
 /**
- * Show the one app toast ("Saved. 13 notes ready for your GP."). A new toast replaces the
+ * Show the one app toast ("Saved. 13 notes ready for your doctor."). A new toast replaces the
  * previous one. Auto-dismisses after 3 s (longer for long messages). System status only — never health content.
  */
 export function showToast(message: string): void {

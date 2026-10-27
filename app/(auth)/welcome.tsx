@@ -12,7 +12,7 @@ const WAVE = [0.3, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.8, 0.55, 0.9, 0.35, 0.6, 0.25];
 const STEPS = [
   { word: 'Say it', line: 'Speak or type' },
   { word: 'See it', line: 'Notes line up by date' },
-  { word: 'Show it', line: 'One page for your GP' },
+  { word: 'Show it', line: 'A summary for your doctor' },
 ];
 
 /**

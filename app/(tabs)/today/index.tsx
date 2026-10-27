@@ -4,7 +4,7 @@
 import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
@@ -37,20 +37,29 @@ export default function TodayScreen() {
   const loading = useRecordsStore((s) => s.loading);
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
+  // Short phones (320x568): capture comes first, the number and week strip follow, so "Type a note" is on the first screen.
+  const short = useWindowDimensions().height < 640;
+
+  const capture = (
+    <>
+      <HeroCard />
+      <View style={{ marginTop: space.md }}>
+        <QuickRows onPeriod={() => setBleeding(true)} />
+      </View>
+    </>
+  );
 
   return (
     <ScreenLarge title="Today" subtitle={greeting(name)} right={<HeaderAvatar />}>
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
+      {short ? capture : null}
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
-      {loadedFor ? <View style={{ marginBottom: space.md }}><HeroNumberCard /></View>
+      {loadedFor ? <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
       {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
-      <HeroCard />
-      <View style={{ marginTop: space.md }}>
-        <QuickRows onPeriod={() => setBleeding(true)} />
-      </View>
+      {short ? null : capture}
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
       ) : (
@@ -66,7 +75,7 @@ export default function TodayScreen() {
           variant="text"
           small
           onPress={() => router.push('/(tabs)/today/chat' as any)}
-          accessibilityHint="Opens a chat. It can’t diagnose; you can turn it into a note for your GP"
+          accessibilityHint="Opens a chat. It can’t diagnose; you can turn it into a note for your doctor"
         />
         <Txt variant="caption" style={{ textAlign: 'center' }}>
           Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.

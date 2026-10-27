@@ -4,7 +4,7 @@
 // every word on a phone; pinch-zoom on iOS for a closer look. The whole page is still laid out
 // (clipped) so the caption can say how many A4 pages the PDF will be.
 import React, { useState } from 'react';
-import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import type { DoctorDoc } from '../../../lib/records/summary';
@@ -83,6 +83,9 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
         </View>
       ) : null}
       <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" />
+      {Platform.OS === 'web' ? (
+        <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
+      ) : null}
       {doc.sections.length ? (
         <View style={{ marginTop: space.md, gap: space.xs }}>
           <Txt variant="groupLabel">In this summary</Txt>

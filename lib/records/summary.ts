@@ -326,7 +326,7 @@ function spread(values: number[]): string {
   return lo === hi ? `${hi}/10` : `${lo}\u2060–\u2060${hi}/10`;
 }
 
-/** Raw strength values for a group of notes: "usually 6/10, at worst 7–9/10". */
+/** Raw strength values for a group of notes: "usually 6/10, worst 9/10". */
 function groupStrength(notes: SymptomData[]): string {
   const typical: number[] = [];
   const worst: number[] = [];
@@ -344,7 +344,7 @@ function groupStrength(notes: SymptomData[]): string {
   }
   return [
     typical.length ? `usually ${spread(typical)}` : '',
-    worst.length ? `at worst ${spread(worst)}` : '',
+    worst.length ? `worst ${Math.max(...worst)}/10` : '',
     quick.length ? `quick logs ${spread(quick)}` : '',
   ].filter(Boolean).join(', ');
 }

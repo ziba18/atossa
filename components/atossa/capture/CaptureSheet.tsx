@@ -215,7 +215,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       haptics.success();
       closeCapture();
       const n = noteCount(useRecordsStore.getState().records.symptom);
-      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(n)} ready for your GP.`);
+      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(n)} ready for your doctor.`);
     } catch {
       setSaveError("That didn't save. Your note is still here. Check your connection and try again.");
       setSaving(false);

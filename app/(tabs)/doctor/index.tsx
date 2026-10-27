@@ -182,9 +182,6 @@ export default function DoctorScreen() {
           onPress={() => router.push('/(tabs)/doctor/show' as any)}
         />
       </View>
-      {Platform.OS === 'web' && !doc.empty ? (
-        <Txt variant="caption">Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
-      ) : null}
     </View>
   );
 
