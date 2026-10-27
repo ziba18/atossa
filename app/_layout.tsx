@@ -10,6 +10,7 @@ import '../hooks/useAuth';
 import { cancelPredictedCycleReminders } from '../lib/notifications';
 import { UI } from '../constants/atossaUI';
 import { ErrorScreen, ToastHost } from '../components/atossa/kit';
+import { sweepStaleSharedPdfs } from '../components/atossa/doctor/share';
 import { PrivacyCover } from '../components/atossa/PrivacyCover';
 import { useFonts } from 'expo-font';
 // Per-weight imports so only the fonts we use are bundled. Inter 400/500/600 for all UI;
@@ -27,6 +28,9 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 // cycle prediction. The app no longer predicts anything, so clear any that
 // are still queued on the device.
 if (Platform.OS !== 'web') cancelPredictedCycleReminders().catch(() => {});
+
+// A summary PDF shared in a session the system killed would otherwise stay in the cache.
+sweepStaleSharedPdfs().catch(() => {});
 
 // Importing useAuth (above) runs the module-level startAuthInit() side effect that
 // begins the session restore. `app/index.tsx` reads auth state and routes accordingly,
