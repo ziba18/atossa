@@ -54,5 +54,5 @@ test('NG73 1.3.1 on the Sam seed (sensitive areas on): groups recorded vs Not re
   const n = rep.filter((r) => r.recorded).length;
   console.log(`NG73 1.3.1 groups on Sam's A4: ${n} of ${rep.length} recorded`);
   assert.equal(rep.length, 6);
-  assert.equal(n, 4, 'Sam seed (design-redesign 8e89440): pain, impact, bowel, bladder recorded; sex, fertility not recorded');
+  assert.equal(n, 5, 'Sam seed v3: pain, impact, sex, bowel, bladder recorded; fertility not recorded');
 });
