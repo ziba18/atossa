@@ -4,6 +4,7 @@
 // Timeline list filtered to what it counts.
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, severityColor, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
@@ -60,6 +61,7 @@ function EmptyLine({ title, line }: { title: string; line: string }) {
 }
 
 export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => void }) {
+  const router = useRouter();
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
   const symptom = useRecordsStore((s) => s.records.symptom);
@@ -176,6 +178,14 @@ export function PatternsView({ onOpen }: { onOpen: (filter: TimelineFilter) => v
           </Card>
         </FadeIn>
       ) : null}
+
+      <PressableCard
+        onPress={() => router.push('/(tabs)/doctor' as any)}
+        accessibilityLabel="Make my summary for my doctor. Opens For my doctor."
+      >
+        <Txt variant="headline">Make my summary for my doctor</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>One clear page from your notes, in your words.</Txt>
+      </PressableCard>
 
       <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
         Counts of what you logged, from {MIN_NOTE_DAYS}+ days of notes. They match your summary for the same dates.
