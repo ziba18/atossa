@@ -45,6 +45,19 @@ export async function deleteLastSharedPdf(): Promise<void> {
   } catch {}
 }
 
+/** At app start: remove summary PDFs left in the print cache by a session that was killed after sharing. */
+export async function sweepStaleSharedPdfs(): Promise<void> {
+  if (Platform.OS === 'web') return;
+  try {
+    const { Directory, File, Paths } = await import('expo-file-system');
+    const dir = new Directory(Paths.cache, 'Print');
+    if (!dir.exists) return;
+    for (const entry of dir.list()) {
+      if (entry instanceof File && entry.name.toLowerCase().endsWith('.pdf')) entry.delete();
+    }
+  } catch {}
+}
+
 /**
  * Make the PDF and open the share sheet. `onReady` fires once the file exists (success haptic +
  * toast), before the share sheet opens. Throws on failure (caller shows InlineError).
