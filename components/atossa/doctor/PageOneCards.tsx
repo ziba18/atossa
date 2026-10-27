@@ -3,7 +3,7 @@
 // DoctorDoc); descriptive only. "See the full page" opens the reflowed document.
 import React from 'react';
 import { View } from 'react-native';
-import { space } from '../../../constants/atossaUI';
+import { colors, radii, space } from '../../../constants/atossaUI';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
 import { Card, Txt } from '../kit';
 
@@ -54,6 +54,10 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
                 <View style={{ flex: 1, minWidth: 0 }}>
                   <Txt variant="body">{b.label}</Txt>
                   <Txt variant="secondary">{`${b.days} of ${plural(b.total, 'day')}${u ? ` · ${u}` : ''}`}</Txt>
+                  {/* Length = days with a note out of the range; the words above carry the number. */}
+                  <View aria-hidden style={{ height: 4, borderRadius: radii.pill, backgroundColor: colors.hairline, marginTop: space.xs, overflow: 'hidden' }}>
+                    <View style={{ width: `${Math.max(2, Math.min(100, (b.days / Math.max(1, b.total)) * 100))}%`, height: 4, borderRadius: radii.pill, backgroundColor: colors.ink2 }} />
+                  </View>
                 </View>
                 {w ? (
                   <View style={{ alignItems: 'flex-end' }} accessible accessibilityLabel={`Worst ${w} out of 10`}>

@@ -33,8 +33,9 @@ const isCancel = (e: unknown) => /cancel|did not complete|dismiss/i.test(String(
  * readers). Disabled: an ink-3 glyph on a sunken disc, so it can't be mistaken for an active button.
  */
 function BarIconButton({
-  icon, label, onPress, disabled, busy,
-}: { icon: IconName; label: string; onPress: () => void; disabled?: boolean; busy?: boolean }) {
+  icon, label, onPress, disabled, busy, compact,
+}: { icon: IconName; label: string; onPress: () => void; disabled?: boolean; busy?: boolean; compact?: boolean }) {
+  const size = compact ? heights.minHit : heights.secondary;
   const inactive = disabled || busy;
   return (
     <Pressable
@@ -45,7 +46,7 @@ function BarIconButton({
       accessibilityState={{ disabled: !!inactive, busy: !!busy }}
       hitSlop={4}
       style={({ pressed }) => ({
-        width: heights.secondary, height: heights.secondary, borderRadius: radii.pill, borderWidth: 1,
+        width: size, height: size, borderRadius: radii.pill, borderWidth: 1,
         borderColor: inactive ? colors.hairline : colors.borderStrong, alignItems: 'center', justifyContent: 'center',
         backgroundColor: inactive || pressed ? colors.sunken : 'transparent',
       })}
@@ -179,12 +180,12 @@ export default function DoctorScreen() {
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
-          style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120, maxWidth: desk ? 420 : undefined }}
+          style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120, maxWidth: desk ? 420 : undefined, ...(short ? { minHeight: heights.minHit } : null) }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
-        <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
+        <BarIconButton compact={short} icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
         <BarIconButton
-          icon="monitor" label="Show on screen" disabled={doc.empty}
+          compact={short} icon="monitor" label="Show on screen" disabled={doc.empty}
           onPress={() => router.push('/(tabs)/doctor/show' as any)}
         />
       </View>
