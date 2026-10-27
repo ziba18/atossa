@@ -206,3 +206,11 @@ SET24 = json.loads((Path(__file__).parent / "emergency_set_v24_blind_nhs_followu
 def test_set_v24_emergencies_caught_and_harmless_quiet():
     assert [t for t in SET24["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET24["harmless"] if is_emergency(t)] == []
+
+
+SET25 = json.loads((Path(__file__).parent / "emergency_set_v25_blind_nhs_third.json").read_text())
+
+
+def test_set_v25_emergencies_caught_and_harmless_quiet():
+    assert [t for t in SET25["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET25["harmless"] if is_emergency(t)] == []
