@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
+import { ScrollView, StyleSheet, View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
@@ -21,6 +21,8 @@ export function OnboardingScreen({
   children: React.ReactNode;
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
 }) {
+  // Under ~240 pt of layout width (200% text on a 320 phone) the 34 pt title broke words mid-letter.
+  const narrow = useWindowDimensions().width < 240;
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView
@@ -39,7 +41,7 @@ export function OnboardingScreen({
             ))}
           </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
-          <Txt variant="largeTitle" accessibilityRole="header">{title}</Txt>
+          <Txt variant={narrow ? 'title' : 'largeTitle'} accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>
         {children}
