@@ -111,6 +111,7 @@ KNOWN_GAPS = [
     "Nie mogę oddychać",
     "Ni allaf anadlu",
     "Me quiero morir",
+    "so like the bleeding is um really heavy and it wont stop",
 ]
 
 
@@ -128,4 +129,11 @@ def test_blind_texting_style_v17():
     assert [t for t in SET17["harmless"] if is_emergency(t)] == []
     for t in ("I take my pills every day", "the baby kicks are strong today",
               "Strong squeezing pain across my lower belly, sometimes running down my legs."):
+        assert not is_emergency(t), t
+
+
+def test_dictation_fillers_do_not_hide_an_emergency_and_ordinary_like_stays_quiet():
+    for t in ("um i cant like breathe", "i i i dont wanna be here anymore um"):
+        assert is_emergency(t), t
+    for t in ("I would like to track my period", "I wanna track my sleep", "i am like so tired today, um, bit of a headache"):
         assert not is_emergency(t), t

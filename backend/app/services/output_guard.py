@@ -121,7 +121,12 @@ def _norm(text: str) -> str:
     t = re.sub(r"(?<=[A-Za-z])[0134@$](?=[A-Za-z])", lambda m: _LEET[m.group(0)], t)
     t = re.sub(r"\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b", lambda m: re.sub(r"[ .\-]", "", m.group(0)), t)
     # stretched letters ("sooo heavily") and doubled spaces ("chest  pain")
-    return re.sub(r"[ \t]{2,}", " ", re.sub(r"([A-Za-z])\1{2,}", r"\1", t))
+    t = re.sub(r"([A-Za-z])\1{2,}", r"\1", t)
+    # dictation fillers ("um i cant like breathe") and "wanna"/"gonna"
+    t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
+    t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
+    t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
+    return re.sub(r"[ \t]{2,}", " ", t)
 
 
 def _sentences(text: str) -> list[str]:

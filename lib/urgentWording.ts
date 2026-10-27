@@ -27,7 +27,12 @@ function normalise(text: string): string {
   t = t.replace(/(?<=[A-Za-z])[0134@$](?=[A-Za-z])/g, (c) => LEET[c]);
   t = t.replace(/\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b/g, (m) => m.replace(/[ .\-]/g, ''));
   // stretched letters ("sooo heavily") and doubled spaces ("chest  pain"); mirrors backend `_norm`
-  return t.replace(/([A-Za-z])\1{2,}/g, '$1').replace(/[ \t]{2,}/g, ' ');
+  t = t.replace(/([A-Za-z])\1{2,}/g, '$1');
+  // dictation fillers ("um i cant like breathe") and "wanna"; mirrors backend `_norm`
+  t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
+  t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
+  t = t.replace(/\bwanna\b/gi, 'want to');
+  return t.replace(/[ \t]{2,}/g, ' ');
 }
 
 // Same decision as the backend `_hits`: a match counts unless its clause is negated, in the past, about someone else or resolved.
