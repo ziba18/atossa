@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { Button, ChipGroup, FieldLabel, InlineError } from '../../../components/atossa/kit';
@@ -42,6 +42,28 @@ export default function OnboardingReminders() {
       setLoading(null);
     }
   };
+
+  // The web build can't schedule notifications, so don't offer a reminder that would never arrive.
+  if (Platform.OS === 'web') {
+    return (
+      <OnboardingScreen
+        step={3}
+        back={{ label: 'Back' }}
+        title="Reminders come with the iPhone app"
+        helper="On the web, Atossa can’t remind you yet. You can still add a note any time you open it."
+      >
+        <View style={{ marginTop: space.xxl, gap: space.xs }}>
+          <InlineError message={error} style={{ marginBottom: space.xs }} />
+          <Button
+            label={loading ? 'Finishing…' : 'Continue'}
+            loading={loading !== null}
+            disabled={loading !== null}
+            onPress={() => finish(false)}
+          />
+        </View>
+      </OnboardingScreen>
+    );
+  }
 
   return (
     <OnboardingScreen

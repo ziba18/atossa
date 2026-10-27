@@ -44,6 +44,9 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
     }
   };
 
+  // The web build has no native Apple/Google sign-in; email is the only way in there.
+  if (Platform.OS === 'web') return null;
+
   if (IN_EXPO_GO) {
     return (
       <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
