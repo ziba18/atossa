@@ -193,7 +193,7 @@ export default function DoctorScreen() {
   );
 
   return (
-    <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
+    <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={nothingYet ? undefined : footer}>
       {short ? null : (
         <Txt variant="body" color={colors.ink2}>
           Your notes, in your words, ready to share.
@@ -325,6 +325,17 @@ export default function DoctorScreen() {
             </Card>
           )}
         </Step>
+      ) : null}
+
+      {nothingYet && !olderData ? (
+        <View style={{ marginTop: space.md }} accessible accessibilityLabel="Example summary. Made-up words, not yours.">
+        <Card tone="sunken">
+          <Txt variant="groupLabel">Example</Txt>
+          <Txt variant="secondary" style={{ marginTop: space.xxs }}>How often and how strong</Txt>
+          <Txt variant="body" style={{ marginTop: space.xs }}>Lower tummy · 12 of 28 days</Txt>
+          <Txt variant="quote" style={{ marginTop: space.sm }}>{'“Dull ache that comes and goes, worse in the evening.”'}</Txt>
+        </Card>
+        </View>
       ) : null}
 
       {agendaUp ? (
