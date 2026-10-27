@@ -65,16 +65,13 @@ export default function TodayScreen() {
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
       {loadedFor ? (short && symptoms.length > 0 ? null : <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>)
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
-      {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
-      {/* Patterns need a few notes to say anything; from 7 on, one tap from here (Timeline > Patterns). */}
-      {loadedFor && noteCount(symptoms) >= 7 ? (
-        <View style={{ marginBottom: space.md, marginLeft: -space.xs, alignItems: 'flex-start' }}>
-          <Button
-            label="See your patterns"
-            variant="text"
-            small
-            onPress={() => { setTimelineMode('patterns'); router.push('/(tabs)/timeline' as any); }}
-            accessibilityHint="Opens Patterns on the Timeline tab"
+      {loadedFor && symptoms.length > 0 ? (
+        <View style={{ marginBottom: space.md }}>
+          {/* Patterns need a few notes to say anything; from 7 on, one tap from here (Timeline > Patterns). */}
+          <RecentStrip
+            symptoms={symptoms}
+            flush
+            onPatterns={noteCount(symptoms) >= 7 ? () => { setTimelineMode('patterns'); router.push('/(tabs)/timeline' as any); } : undefined}
           />
         </View>
       ) : null}

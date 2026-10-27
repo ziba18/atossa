@@ -3,7 +3,7 @@
 // Days with a note but no score show a dot; days with nothing stay empty. Descriptive only.
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Card, Txt } from '../kit';
+import { Button, Card, Txt } from '../kit';
 import { colors, severityColor, space } from '../../../constants/atossaUI';
 import { addDays, parseKey, todayKey } from '../../../lib/records/dates';
 import { worstOf } from '../../../lib/records/format';
@@ -17,7 +17,7 @@ const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 interface Cell { key: string; letter: string; worst: number | null; noted: boolean }
 
-export function RecentStrip({ symptoms, flush }: { symptoms: Rec<SymptomData>[]; flush?: boolean }) {
+export function RecentStrip({ symptoms, flush, onPatterns }: { symptoms: Rec<SymptomData>[]; flush?: boolean; onPatterns?: () => void }) {
   const [inner, setInner] = useState(0);
   // Narrow screens / big text: show the last 7 days instead of squeezing 14 cells.
   const days = inner > 0 && inner < MAX_DAYS * MIN_CELL ? MIN_DAYS : MAX_DAYS;
@@ -61,6 +61,11 @@ export function RecentStrip({ symptoms, flush }: { symptoms: Rec<SymptomData>[];
           );
         })}
       </View>
+      {onPatterns ? (
+        <View style={{ marginLeft: -space.xs, alignItems: 'flex-start' }}>
+          <Button label="See your patterns" variant="text" small onPress={onPatterns} accessibilityHint="Opens Patterns on the Timeline tab" />
+        </View>
+      ) : null}
     </Card>
   );
 }
