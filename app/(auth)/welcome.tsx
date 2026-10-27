@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
-        <View style={styles.band}>
+        <View style={[styles.band, short && { paddingTop: space.xs, paddingBottom: space.xs }]}>
           <LinearGradient
             colors={[colors.plumTint, colors.canvas]}
             start={{ x: 0.5, y: 0 }}
@@ -58,7 +58,7 @@ export default function WelcomeScreen() {
           </View>}
         </View>
 
-        <View style={styles.hero}>
+        <View style={[styles.hero, short && styles.heroShort]}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
             Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
@@ -91,7 +91,7 @@ export default function WelcomeScreen() {
           Atossa never diagnoses. It keeps your notes in your words.
         </Txt>}
 
-        <View style={styles.actions}>
+        <View style={[styles.actions, short && { marginTop: 0 }]}>
           <Button label="Create an account" onPress={() => router.push('/(auth)/register')} />
           <Button label="I already have an account" variant="text" onPress={() => router.push('/(auth)/login')} />
           <SocialAuthButtons mode="signup" />
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
   // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
   // anchored actions (not above the headline).
   hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.lg },
+  heroShort: { paddingTop: 0, paddingBottom: space.sm, gap: space.xs },
   example: { gap: space.xs, marginTop: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   tag: { backgroundColor: colors.plumTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
