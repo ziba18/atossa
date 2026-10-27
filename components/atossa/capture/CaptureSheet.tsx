@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
 import {
-  Button, Card, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
+  Button, Card, ConfirmCard, InlineError, SafetyLine, SegmentedControl, Sheet, Txt, showToast,
 } from '../kit';
 import { colors, fonts, radii, space } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
@@ -404,6 +404,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
         </Card>
       ) : null}
       {body}
+      {/* Always there on the writing step, whatever is typed: the fixed line is a signpost, never a reading of the note. */}
+      {stage === 'capture' && !confirmClose && !signpost ? <SafetyLine style={{ marginTop: space.lg }} /> : null}
     </Sheet>
   );
 }
