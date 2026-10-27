@@ -366,7 +366,6 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
 function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
   return (
     <>
-      <UrgentNote text={textOf(d)} />
       <View>
         <FieldLabel label="What it was" />
         <ChipGroup
