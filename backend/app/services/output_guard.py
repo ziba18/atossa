@@ -488,6 +488,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
                     r"^(?=.*\b(?:stopped eating (?:completely|altogether|anything)|not eaten|haven'?t eaten)\b)(?=.*\b(?:too weak|can'?t stand|faint\w*|dizzy)\b)|"
+                    # set p99 (cauda equina and jaundice wording; first contact 2/8 missed)
+                    r"\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b.{0,60}\b(?:legs?|feet|foot|numb\w*|weak\w*)\b|\b(?:legs?|feet|foot|numb\w*|weak\w*)\b.{0,60}\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b|"
+                    r"^(?=.*\byellow (?:skin|eyes)\b)(?=.*(?<!no )\b(?:fever|temperature|stabbing pain|severe pain|sharp pain)\b)|"
                     # set p98 (abdomen, head, mixing alcohol, young baby; first contact 4/12 missed)
                     r"\b(?:board[- ]like|hard as a board)\b.{0,20}\b(?:stomach|abdomen|tummy|belly)\b|\b(?:stomach|abdomen|tummy|belly)\b.{0,20}\b(?:board[- ]like|hard as a board|rigid (?:and|,) (?:tender|painful|hard))\b|"
                     r"\b(?:sudden|crushing)\b.{0,20}\bheadache\b.{0,40}\b(?:vomit\w*|sick)\b.{0,40}\b(?:sleepy|drowsy|confus\w*)\b|"
