@@ -9,6 +9,7 @@ import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, heights, severityRamp, space } from '../../../constants/atossaUI';
 import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
+import { Icon } from '../../ui/Icon';
 import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
@@ -61,15 +62,17 @@ function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter
       </View>
       <View style={{ marginTop: space.xs }}>
         {parts.map((x) => {
+          const tappable = Boolean(x.opens) && x.n > 0;
           const row = (
             <>
               <View aria-hidden style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: x.color, borderWidth: x.key === 'none' ? 1 : 0, borderColor: colors.borderStrong }} />
               <Txt variant="body" style={{ flex: 1 }}>{x.label}</Txt>
               <Txt variant="body" style={{ fontVariant: ['tabular-nums'] }}>{x.n}</Txt>
+              <View aria-hidden style={{ width: 20 }}>{tappable ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}</View>
             </>
           );
           const rowStyle = { flexDirection: 'row' as const, alignItems: 'center' as const, gap: space.sm, minHeight: heights.minHit };
-          return x.opens && x.n > 0 ? (
+          return tappable ? (
             <Pressable key={x.key} accessibilityRole="button" accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}. ${x.hint}`} onPress={() => onOpen(x.opens!)} style={({ pressed }) => [rowStyle, { opacity: pressed ? 0.7 : 1 }]}>{row}</Pressable>
           ) : (
             <View key={x.key} accessible accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}`} style={rowStyle}>{row}</View>
