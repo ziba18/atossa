@@ -257,6 +257,7 @@ export default function ProfileScreen() {
             value={exportPw}
             onChangeText={(v) => { setExportPw(v); setExportError(''); }}
             secret
+            autoFocus
             autoCapitalize="none"
             autoComplete="current-password"
             textContentType="password"
