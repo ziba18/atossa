@@ -24,6 +24,12 @@ export function OnboardingScreen({
 }) {
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
+      <LinearGradient
+        colors={['#E6DCFB', colors.canvas]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={[styles.wash, { pointerEvents: 'none' }]}
+      />
       <ScrollView
         ref={scrollRef as React.RefObject<ScrollViewInstance>}
         contentContainerStyle={styles.column}
@@ -59,6 +65,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: layout.gutter, paddingBottom: space.xxxl,
   },
   head: { paddingTop: space.sm, marginBottom: space.xxl },
+  wash: { position: 'absolute', top: 0, left: 0, right: 0, height: 360 },
   noBack: { height: 44 },
   step: { marginTop: space.xs, marginBottom: space.xs },
   track: { height: 4, borderRadius: 2, backgroundColor: colors.sunken, marginTop: space.xs, overflow: 'hidden' },
