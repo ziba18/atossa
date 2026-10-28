@@ -12,11 +12,13 @@ export const ONBOARDING_STEPS = 5;
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
-  step, title, helper, back, children, scrollRef,
+  step, title, helper, badge, back, children, scrollRef,
 }: {
   step: number;
   title: string;
   helper?: string;
+  /** Small outlined label above the title, e.g. the area a question is about. */
+  badge?: string;
   back?: { label: string; onPress?: () => void };
   children: React.ReactNode;
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
@@ -41,6 +43,7 @@ export function OnboardingScreen({
             ))}
           </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
+          {badge ? <View style={styles.badge}><Txt variant="caption" color={colors.ink}>{badge}</Txt></View> : null}
           <Txt variant={narrow ? 'title' : 'hero'} accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>
@@ -59,6 +62,10 @@ const styles = StyleSheet.create({
   head: { paddingTop: space.sm, marginBottom: space.xxl },
   noBack: { height: 44 },
   step: { marginTop: space.xs, marginBottom: space.xs },
+  badge: {
+    alignSelf: 'flex-start', marginTop: space.sm, marginBottom: space.xs, paddingHorizontal: space.md, paddingVertical: 4,
+    borderRadius: 999, borderWidth: 1, borderColor: colors.ink,
+  },
   segments: { flexDirection: 'row', gap: 6, marginTop: space.xs },
   segment: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.sunken },
   segmentDone: { backgroundColor: colors.plum },

@@ -67,7 +67,8 @@ export default function OnboardingOnset() {
       step={4}
       back={{ label: 'Back', onPress: () => (i > 0 ? setI(i - 1) : router.back()) }}
       title="When did you first notice this?"
-      helper={`${area[0].toUpperCase()}${area.slice(1)}. Pick the year. A rough answer is fine, and so is “Not sure”.`}
+      badge={`${area[0].toUpperCase()}${area.slice(1)}`}
+      helper="Pick the year. A rough answer is fine, and so is “Not sure”."
     >
       <ChipGroup
         options={options}
