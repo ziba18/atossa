@@ -13,12 +13,12 @@ import { IS_PREVIEW } from '../lib/preview/flag';
 import { ErrorScreen, ToastHost } from '../components/atossa/kit';
 import { PrivacyCover } from '../components/atossa/PrivacyCover';
 import { useFonts } from 'expo-font';
-// Per-weight imports so only the fonts we use are bundled. Inter 400/500/600 for all UI;
-// Instrument Serif ITALIC only (Sam's words, Today hero, summary title) — never a weight.
-import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
-import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
-import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
-import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
+// Per-weight imports so only the fonts we use are bundled. Plus Jakarta Sans 400/500/600 for all UI;
+// Fraunces 400 only (Sam's words, Today hero, summary title) — never a weight.
+import { PlusJakartaSans_400Regular } from '@expo-google-fonts/plus-jakarta-sans/400Regular';
+import { PlusJakartaSans_500Medium } from '@expo-google-fonts/plus-jakarta-sans/500Medium';
+import { PlusJakartaSans_600SemiBold } from '@expo-google-fonts/plus-jakarta-sans/600SemiBold';
+import { Fraunces_400Regular } from '@expo-google-fonts/fraunces/400Regular';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useSyncExternalStore } from 'react';
 
@@ -57,10 +57,10 @@ function AppShell() {
   }, [router]);
 
   const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    InstrumentSerif_400Regular_Italic,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    Fraunces_400Regular,
   });
 
   // Hide the splash as soon as the fonts are ready. The auth session continues

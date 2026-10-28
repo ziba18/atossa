@@ -49,10 +49,10 @@ export function severityColor(n: number): { bg: string; fg: string } {
 
 /** Font family names, as registered in app/_layout.tsx. Serif is the ITALIC face and never takes a weight. */
 export const fonts = {
-  regular: 'Inter_400Regular',
-  medium: 'Inter_500Medium',
-  semibold: 'Inter_600SemiBold',
-  serif: 'InstrumentSerif_400Regular_Italic',
+  regular: 'PlusJakartaSans_400Regular',
+  medium: 'PlusJakartaSans_500Medium',
+  semibold: 'PlusJakartaSans_600SemiBold',
+  serif: 'Fraunces_400Regular',
 } as const;
 
 export type TypeVariant =
@@ -61,7 +61,7 @@ export type TypeVariant =
   | 'fieldLabel' | 'groupLabel';
 
 /**
- * The type scale. `hero` and `quote` are Instrument Serif Italic and are ONLY for
+ * The type scale. `hero` and `quote` are Fraunces (upright) and are ONLY for
  * Sam's own words, the Today hero prompt and the summary title. No 700 weight anywhere.
  */
 export const type: Record<TypeVariant, TextStyle> = {

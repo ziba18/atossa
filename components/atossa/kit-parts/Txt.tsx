@@ -20,8 +20,8 @@ const styleFor = (v: TxtVariant): TextStyle => (typeScale as Record<string, Text
 
 /**
  * All text. `variant` is the type scale (constants/atossaUI.ts `type`). `hero` and `quote`
- * render Instrument Serif Italic — use them ONLY for Sam's own words, the Today hero prompt
- * and the summary title. Never pass fontWeight (Inter weights are separate font files;
+ * render Fraunces — use them ONLY for Sam's own words, the Today hero prompt
+ * and the summary title. Never pass fontWeight (Plus Jakarta Sans weights are separate font files;
  * the serif has one face).
  */
 export function Txt({

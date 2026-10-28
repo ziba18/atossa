@@ -16,7 +16,7 @@ const STEPS = [
 ];
 
 /**
- * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
+ * One calm screen: wordmark, a single serif hero line (the one-serif-line-per-hero rule
  * from Today), one plain sentence, then the actions anchored low. No imagery.
  */
 export default function WelcomeScreen() {
