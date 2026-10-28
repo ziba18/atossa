@@ -76,8 +76,8 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
             <View
               style={{ flex: 1, minWidth: 0, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: space.xs }}
             >
-              <Txt variant="numeral" style={{ fontSize: 32, lineHeight: 36 }}>{String(all.days)}</Txt>
-              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`of ${plural(all.total, 'day')} with a note`}</Txt>
+              {/* The count itself sits in the proof strip above; here it is only said once, in words. */}
+              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`Days by area, of ${plural(all.total, 'day')}`}</Txt>
             </View>
             {/* The column header: said once here, so the rows below carry only the number. */}
             {areas.some((b) => worstOf(b.strength ?? '')) ? <Txt variant="secondary" aria-hidden>Worst</Txt> : null}
