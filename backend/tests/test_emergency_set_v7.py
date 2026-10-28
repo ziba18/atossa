@@ -278,3 +278,11 @@ SET33 = json.loads((Path(__file__).parent / "emergency_set_v33_contraception.jso
 def test_set_v33_contraception_caught_and_harmless_quiet():
     assert [t for t in SET33["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET33["harmless"] if is_emergency(t)] == []
+
+
+SET34 = json.loads((Path(__file__).parent / "emergency_set_v34_hormone_distress.json").read_text())
+
+
+def test_set_v34_hormone_distress_caught_and_harmless_quiet():
+    assert [t for t in SET34["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET34["harmless"] if is_emergency(t)] == []
