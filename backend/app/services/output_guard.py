@@ -702,6 +702,11 @@ _THIRD_NOW = re.compile(
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
 
+# A lead-in like "I don't know what to do," / "Not sure what's going on:" / "No idea why, but" is not a negation of what follows;
+# it is turned into a sentence break before detection (measured: such lead-ins silenced 14-37% of caught emergency lines).
+_LEADIN = re.compile(r"\b(?:i(?:'m| am) )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))", re.I)
+
+
 _HEDGE = re.compile(r"\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b", re.I)  # "probably nothing but ..." is a hedge, not a negation
 
 
@@ -723,7 +728,7 @@ _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:to
 
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
-    user_text = _IDIOM.sub(" ", _norm(user_text))
+    user_text = _LEADIN.sub(". ", _IDIOM.sub(" ", _norm(user_text)))
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text):
         return "self_harm"
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note

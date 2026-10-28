@@ -80,6 +80,7 @@ function hitWhole(text: string): boolean {
 }
 
 const THIRD = new RegExp(P.THIRD_SRC, 'is');
+const LEADIN = new RegExp(P.LEADIN_SRC, 'gi');
 const THIRDC = new RegExp(P.THIRDC_SRC, 'i');
 
 const PREG = /\bpregnan\w+\b/i;
@@ -103,7 +104,7 @@ function hit(pattern: RegExp, text: string): boolean {
 
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
-  const t = normalise(text).replace(IDIOM, ' ');
+  const t = normalise(text).replace(IDIOM, ' ').replace(LEADIN, '. ');
   if (hit(SELF, t) || hit(SELF2, t)) return SELF_HARM_SIGNPOST;
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
