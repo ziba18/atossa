@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   // Same words and place; a quiet rule instead of a filled box so her own words get the first read (Safety OK pending before a hosted build).
   urgent: { borderLeftWidth: 2, borderLeftColor: colors.plum, paddingLeft: space.sm },
   facts: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.xs, rowGap: space.xs },
-  factText: { flexShrink: 1, minWidth: 0 },
+  factText: { flex: 1, flexBasis: 0, minWidth: 96 },
   // N11: the 4 pt clay edge sits inside the card's own padding, so bleeding content lines up
   // with every other card (x 41, not 45).
   clayInset: { paddingLeft: space.lg },

@@ -60,7 +60,7 @@ export function HeroCard() {
         end={{ x: 0.5, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
-      <WaveMotif />
+      {Platform.OS === 'web' ? null : <WaveMotif />}
       <Txt variant="hero" style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT_BALANCED}
       </Txt>
@@ -241,7 +241,7 @@ export function OnsetConfirmRow({ note }: { note: Rec<SymptomData> }) {
   }, []);
   const phrase = onsetWords(note.data.words ?? '');
   const group = onsetGroupFor(note.data);
-  if (!phrase || skipped == null || skipped.includes(note.id) || onsetFromHistory(history)[group]) return null;
+  if (!phrase || !group || skipped == null || skipped.includes(note.id) || onsetFromHistory(history)[group]) return null;
   const skip = () => {
     const next = [...skipped, note.id].slice(-50);
     setSkipped(next);

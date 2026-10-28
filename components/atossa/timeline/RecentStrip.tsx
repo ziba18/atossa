@@ -80,7 +80,7 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
 }
 
 const styles = StyleSheet.create({
-  card: { padding: space.md, gap: space.sm, marginTop: space.lg },
+  card: { paddingHorizontal: space.md, paddingVertical: space.sm, gap: space.xs, marginTop: space.lg },
   head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   row: { flexDirection: 'row', gap: 3 },
   col: { flex: 1, alignItems: 'center', gap: 4 },

@@ -29,3 +29,11 @@ test('confirmed phrase is her words, per group, and prints verbatim', () => {
   assert.match(text, /First noticed: “since I was 15” \(her words\)/);
   assert.doesNotMatch(text, new RegExp(ONSET_TYPE.replace(/[()]/g, '\\$&')), 'the onset record is never a history row');
 });
+
+test('group: no group word means no group (the row is not offered), never a default of pain', () => {
+  assert.equal(onsetGroupFor({ words: "It's been going on for 6 months." }), null);
+  assert.equal(onsetGroupFor({ words: 'for years honestly, maybe ten' }), null);
+  assert.equal(onsetGroupFor({ words: 'the bloating started about six months ago' }), 'bowelBladder');
+  assert.equal(onsetGroupFor({ words: 'This tiredness began last spring' }), 'fatigue');
+  assert.equal(onsetGroupFor({ words: 'since I was 15', worst: 6 }), 'pain');
+});

@@ -288,18 +288,20 @@ export const ONSET_GROUP_LABEL: Record<OnsetGroup, string> = {
   pain: 'pain', bleeding: 'bleeding', bowelBladder: 'bowel or bladder', fatigue: 'tiredness', mood: 'mood', skinHair: 'skin or hair',
 };
 
-/** Which onset group a note's words speak about; pain when nothing else clearly fits. */
-export function onsetGroupFor(s: { words?: string; worst?: number | null; zones?: string[]; bleedingBetween?: boolean; bowelPain?: boolean; urinePain?: boolean }): OnsetGroup {
+/** Which onset group a note's words speak about; null when nothing clearly fits (the row is then not offered, so a phrase is never filed under a group she did not name). */
+export function onsetGroupFor(s: { words?: string; worst?: number | null; zones?: string[]; bleedingBetween?: boolean; bowelPain?: boolean; urinePain?: boolean }): OnsetGroup | null {
   const w = (s.words ?? '').toLowerCase();
   if (/\b(skin|acne|spots|breakouts?|broke out|hair|chin)\b/.test(w)) return 'skinHair';
   if (/\b(low mood|mood|anxious|anxiety|irritable|tearful|depressed)\b/.test(w)) return 'mood';
   // Bloating is a tummy/bowel word: a note that names it never falls to the pain default (PM 3c, U02).
-  if (s.bowelPain || s.urinePain || /\b(bowel|poo|toilet|bladder|wee|urine|bloat\w*)\b/.test(w)) return 'bowelBladder';
+  if (s.bowelPain || s.urinePain || /\b(bowel|poo|toilet|bladder|wee|urine|bloat\w*|constipation|diarrhoea)\b/.test(w)) return 'bowelBladder';
   // Pain words win over a mention of her period ("cramps since my first period" is about pain).
   if (s.bleedingBetween || (!/\b(pain|painful|cramps?|cramping|ache|aching|hurts?|sore)\b/.test(w) && /\b(bleed|bleeding|period|periods|spotting|clots?|flow|flooding)\b/.test(w))) return 'bleeding';
   // A note that also names a strength or a body place is about pain first; tiredness only when it is the whole note.
   if (s.worst == null && !(s.zones ?? []).length && /\b(tired|tiredness|exhausted|exhaustion|fatigue|fatigued|sleep)\b/.test(w)) return 'fatigue';
-  return 'pain';
+  // Pain only when the note says so (a pain word, a strength or a body place); otherwise there is no honest group.
+  if (s.worst != null || (s.zones ?? []).length || /\b(pain|painful|cramps?|cramping|ache|aching|hurts?|sore|agony)\b/.test(w)) return 'pain';
+  return null;
 }
 
 /** The onset phrases she confirmed, newest wins per group. */

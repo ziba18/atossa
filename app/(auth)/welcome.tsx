@@ -10,8 +10,10 @@ import { track } from '../../lib/analytics';
 import { usePageTitle } from '../../lib/usePageTitle';
 
 const WAVE = [0.3, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.8, 0.55, 0.9, 0.35, 0.6, 0.25];
+// The web pilot has no voice, so it promises writing only; the phone app keeps speaking.
+const WEB = Platform.OS === 'web';
 const STEPS = [
-  { word: 'Say it', line: 'Speak or type' },
+  { word: WEB ? 'Write it' : 'Say it', line: WEB ? 'Type it in your words' : 'Speak or type' },
   { word: 'See it', line: 'Notes line up by date' },
   { word: 'Show it', line: 'A summary for your doctor' },
 ];
@@ -48,7 +50,7 @@ export default function WelcomeScreen() {
           />
           <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
           {/* Illustration B: the brand waveform grown large, resting on a line of text (a voice becoming a note). */}
-          {short ? null : <View aria-hidden style={styles.art}>
+          {short || WEB ? null : <View aria-hidden style={styles.art}>
             <Animated.View style={[styles.wave, { opacity: rise, transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) }] }]}>
               {WAVE.map((h, i) => (
                 <View key={i} style={{ width: 4, height: Math.round(8 + h * 40), borderRadius: 2, backgroundColor: i % 3 === 0 ? colors.plum : `${colors.plum}80` }} />
@@ -62,10 +64,10 @@ export default function WelcomeScreen() {
         <View style={[styles.hero, short && styles.heroShort]}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
-            Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
+            {WEB ? 'Write it' : 'Say it'} the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
           </Txt>
           <Card style={styles.example}>
-            <Txt variant="caption" color={colors.ink2}>What you say</Txt>
+            <Txt variant="caption" color={colors.ink2}>{WEB ? 'What you write' : 'What you say'}</Txt>
             <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>
             <Txt variant="caption" color={colors.ink2}>What your doctor sees</Txt>
             <View style={styles.tags}>
