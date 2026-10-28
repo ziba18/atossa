@@ -1059,16 +1059,22 @@ function sectionInner(s: DocSection): string {
 // Areas with no section of their own on the page (tiredness, bowel and bladder, sex, mood, skin and hair, eating,
 // pregnancy plans): one quiet line each so a clinic sees what she logged and what she did not ('Not recorded').
 const AREAS_WITH_SECTION: DomainId[] = ['agenda', 'pain', 'bleeding', 'impact', 'tried', 'history'];
-function otherAreasHtml(doc: DoctorDoc): string {
+/** The 'Other areas' rows for the page and the on-screen document: recorded lines, then one line each for areas
+ * with nothing recorded / left out, naming them. Empty when every area has its own section. */
+export function otherAreaRows(doc: DoctorDoc): { label: string; text: string; muted: boolean }[] {
   const rows = doc.domains.filter((d) => !AREAS_WITH_SECTION.includes(d.id));
-  if (!rows.length) return '';
-  const line = (label: string, text: string, muted: boolean) => `<tr><th>${esc(label)}</th><td${muted ? ' class="muted"' : ''}>${esc(text)}</td></tr>`;
   const names = (state: DomainState) => rows.filter((d) => d.state === state).map((d) => d.heading).join(', ');
-  const recorded = rows.filter((d) => d.state === 'recorded').map((d) => line(d.heading, d.text.replace(/\u2060/g, ''), false));
-  // Areas with nothing to say share one line each, so every area still names itself without a row apiece.
+  const recorded = rows.filter((d) => d.state === 'recorded').map((d) => ({ label: d.heading, text: d.text.replace(/\u2060/g, ''), muted: false }));
   const rest = (['not-recorded', 'not-included'] as DomainState[]).filter((st) => names(st))
-    .map((st) => line(st === 'not-recorded' ? NOT_RECORDED : NOT_INCLUDED, names(st), true));
-  return `<section class="keep"><h2>Other areas</h2><table class="dl areas">${[...recorded, ...rest].join('')}</table></section>`;
+    .map((st) => ({ label: st === 'not-recorded' ? NOT_RECORDED : NOT_INCLUDED, text: names(st), muted: true }));
+  return [...recorded, ...rest];
+}
+
+function otherAreasHtml(doc: DoctorDoc): string {
+  const rows = otherAreaRows(doc);
+  if (!rows.length) return '';
+  const line = (r: { label: string; text: string; muted: boolean }) => `<tr><th>${esc(r.label)}</th><td${r.muted ? ' class="muted"' : ''}>${esc(r.text)}</td></tr>`;
+  return `<section class="keep"><h2>Other areas</h2><table class="dl areas">${rows.map(line).join('')}</table></section>`;
 }
 
 export function summaryToHtml(doc: DoctorDoc): string {

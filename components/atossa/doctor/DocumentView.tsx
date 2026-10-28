@@ -11,6 +11,7 @@ import Svg, { Line } from 'react-native-svg';
 import { fonts } from '../../../constants/atossaUI';
 import { joinFacts } from '../../../lib/records/format';
 import {
+  otherAreaRows,
   APPT_AHEAD, APPT_PAST, DOC_COLORS, PAGE_TYPE, SPOT_DASH, SPOT_STROKE, STRIP_BLEED_KEY, STRIP_KEY, STRIP_SPOT_KEY,
   FAMILY_HISTORY_LABEL, barText, countText, curly, daysText,
   type DatedItem, type DocQuote, type DocSection, type DoctorDoc, type FreqBar,
@@ -358,6 +359,8 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
     })),
   ];
 
+  const areas = otherAreaRows(doc);
+
   return (
     <View
       style={{
@@ -370,6 +373,16 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
         {keepYear(doc.meta, st)}
       </Txt>
       {blocks.map((b, i) => block(b.key, b.title, b.body, i === 0))}
+      {areas.length ? block('areas', 'Other areas', (
+        <View style={{ gap: isPage ? 0 : st.s.gap }}>
+          {areas.map((r) => (
+            <View key={r.label} style={isPage ? { flexDirection: 'row', gap: 8 } : undefined}>
+              <Txt style={[st.meta, isPage && { width: 132 }]}>{r.label}</Txt>
+              <Txt style={[st.meta, isPage && { flex: 1 }, { color: r.muted ? C.ink2 : C.ink }]}>{r.text}</Txt>
+            </View>
+          ))}
+        </View>
+      ), false) : null}
       <View style={{ flexGrow: 1 }} />
       <View style={{ marginTop: st.s.section, paddingTop: st.s.gap * 2, borderTopWidth: 0.5, borderTopColor: C.borderStrong }}>
         <Txt style={isPage ? { ...st.meta, fontSize: PAGE_TYPE.footer[0], lineHeight: PAGE_TYPE.footer[1] } : st.meta}>{doc.footer}</Txt>
