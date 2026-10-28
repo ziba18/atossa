@@ -886,6 +886,52 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PREG_CTX + r"(?=[\s\S]*\b(?:contra
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:no|not|haven'?t been|isn'?t) (?:vomit\w*|sick)\b)(?=[\s\S]*\b(?:vomit\w*|sick|throwing up|threw up)\b[^.!?\n]{0,15}\bgreen\b(?! (?:tea|smoothie|juice|salad|veg\w*|beans|light))|[\s\S]*\bgreen (?:sick|vomit|bile)\b)"
                     + r"(?=[\s\S]*\b(?:bloated|swollen|distended|hard belly|rigid)\b)", _WHOLE.flags)
 
+
+# run12 (PM class o, own v96 first contact 9/10 missed): more paracetamol / painkiller than the packet says, in everyday words.
+# nhs.uk/medicines/paracetamol-for-adults/common-questions-about-paracetamol-for-adults (reviewed 24 Mar 2026): "Get help from
+# NHS 111 if you've taken more paracetamol than it says on the packet or leaflet" (Safety run28 ruling: the one fixed line).
+_PK = r"(?:paracetamol|co-?codamol|painkillers?|ibuprofen|codeine|solpadeine|lemsip|night nurse|beechams)"
+_PK_COMBO = r"(?:lemsip|night nurse|beechams|cold and flu|co-?codamol|solpadeine|sudafed max)"
+_OD_SIGN = (r"(?:(?:lost (?:track|count) of|not sure|no idea|can'?t remember) how many\b|\bkept taking (?:them|it|more)\b|"
+            r"\bat \d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+(?:and\s+)?\d{1,2}\b|more (?:\w+ ){0,2}than (?:it says on |what )?(?:the |my )?(?:packet|leaflet|box|label)(?: says)?|"
+            r"\bevery (?:hour|two hours|2 hours|1 hour|one hour|half an hour|30 minutes)\b|"
+            r"\b(?:[3-9]|three|four|five|six) (?:\w+ )?(?:paracetamol|painkillers|co-?codamol|tablets|pills) (?:at once|at a time|in one go)\b|"
+            r"\b(?:finished|took|had|taken|swallowed) (?:off )?the rest of (?:the |my )?(?:packet|box|strip)\b|"
+            r"\bdoubl(?:ed|ing) up on\b|\bdouble (?:doses?|dosing)\b|"
+            r"\b(?:probably|about|around|maybe|like|nearly|over) (?:9|1\d|2\d)(?: or (?:1\d|2\d))? (?:since|today|so far|in total|now)\b|"
+            r"\b(?:9|1\d|2\d) (?:paracetamol|painkillers|co-?codamol) (?:today|since|so far|in total)\b)")
+_OD_QUIET = (r"(?![\s\S]*\b(?:as the (?:packet|leaflet) says|within the (?:leaflet|packet|dose|limit)|no other paracetamol|"
+             r"as (?:the|my) (?:gp|doctor|pharmacist) (?:said|advised))\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK + r"\b)(?=[\s\S]*" + _OD_SIGN + r")"
+                    + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK_COMBO + r"\b)(?=[\s\S]*\bparacetamol\b)(?=[\s\S]*\b(?:on top|together|as well|both (?:have|contain|had)|didn'?t realise|then (?:two|2) more)\b)", _WHOLE.flags)
+
+
+# run12 (PM class n, own v97 first contact 5/10 missed): a sudden, extremely painful headache with being sick, drowsiness,
+# confusion or light hurting. nhs.uk/conditions/subarachnoid-haemorrhage (reviewed 04 Sep 2025): "Call 999". Her usual
+# migraine, a slow build, a few seconds on standing, or someone else's headache stay quiet.
+_HA_SUDDEN = r"(?:sudden\w*|out of nowhere|all at once|in seconds|like a light switch|thunderclap|instant\w*|something pop\w* in my head|hit me)"
+_HA_SEVERE = r"(?:worst|most painful|excruciating|agonis\w+|agony|blinding|thunderclap|never had (?:pain|a headache|anything) like|horrendous|severe|unbearable)"
+_HA_SIGN = (r"(?:(?<!no )(?<!not )(?:been |being |keep |kept )?(?:sick|vomit\w*|throwing up|threw up)|drowsy|(?:very|so|really) sleepy|can'?t (?:stay awake|keep my eyes open)|"
+            r"confused|stiff neck|" + _LIGHT + r")")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|migraine|my normal|went (?:in|after) a few|hangover|tension|last year)\b)(?![\s\S]*\bmy (?:sister|mum|friend|brother|dad|partner)\b[^.!?\n]{0,30}\bheadache)"
+                    + r"(?=[\s\S]*\b" + _HA_SUDDEN + r")(?=[\s\S]*\b" + _HA_SEVERE + r")(?=[\s\S]*\bheadache|[\s\S]*\bpain at the back of my head)(?=[\s\S]*\b" + _HA_SIGN + r")", _WHOLE.flags)
+
+
+# run12 (PM class m, own v98 first contact 5/10 missed): back pain with weakness or numbness in BOTH legs.
+# nhs.uk/conditions/sciatica (reviewed 03 Dec 2024): "Go to A&E or call 999". One leg (sciatica), tired/achy legs stay quiet.
+_LEGS_BAD = r"(?:weak\w*|numb\w*|dead|giving way|give way|tingl\w*|pins and needles|heavy)"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:after the (?:long )?run|from sitting|cross-legged|restless legs|usual)\b)(?=[\s\S]*\bback(?:ache)?\b)"
+                    + r"(?=[\s\S]*\bboth\b|[\s\S]*\bcan'?t feel my legs\b)(?=[\s\S]*\blegs\b[^.!?]{0,40}\b" + _LEGS_BAD + r"\b|[\s\S]*\b" + _LEGS_BAD + r"\b[^.!?]{0,30}\blegs\b)", _WHOLE.flags)
+
+
+# run12 (PM class l, own v99 first contact 2/10 missed): face, lips, mouth, tongue or throat swelling or tightness, or wheeze,
+# soon after a new medicine. nhs.uk/conditions/anaphylaxis: "Call 999". Dental numbing, a cold sore, an old swelling that has gone stay quiet.
+_NEWMED = (r"(?:new (?:\w+ ){0,2}(?:medicine|medication|tablets?|pills?|antibiotics?|painkillers?|antihistamines?|injection|dose)|first (?:dose|time taking)|"
+           r"after the (?:injection|jab)|since the new|amoxicillin|penicillin)")
+_ANA = (r"(?:\b(?:throat|tongue|lips?|mouth|face)\b[^.!?]{0,30}\b(?:swell\w*|swollen|puff\w*|tight\w*|closing|thick|huge)\b|\bswelled up\b|\bwheez\w*|"
+        r"struggling to breathe|hard to (?:swallow|breathe)|can'?t (?:breathe|swallow))")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:dentist|numbed|numbing|cold sore|gone now|hay fever|from crying)\b)(?=[\s\S]*\b" + _NEWMED + r")(?=[\s\S]*" + _ANA + r")", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
@@ -903,7 +949,7 @@ _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/r
 
 # A lead-in like "I don't know what to do," / "Not sure what's going on:" / "No idea why, but" is not a negation of what follows;
 # it is turned into a sentence break before detection (measured: such lead-ins silenced 14-37% of caught emergency lines).
-_LEADIN = re.compile(r"\b(?:i(?:'m| am)? )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))"
+_LEADIN = re.compile(r"\b(?:i(?:'m| am)? )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b(?! how (?:many|much)\b)[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))"
                      # the same openers said with no punctuation (dictated text, S-226): fixed phrases only
                      r"|\b(?:i(?:'m| am)? )?(?:don'?t know|do not know|not sure) (?:what to do|what'?s (?:going on|happening|wrong)|what is (?:going on|happening|wrong)|why)\b|\bno idea why\b|\bi(?:'m| am) not in a good way\b|\bnothing helps\b|\bdon'?t worry\b|\bwithout my (?:partner|mum|mom|friend|husband|wife) here\b", re.I)
 
