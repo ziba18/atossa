@@ -10,6 +10,25 @@ import { Card, Txt } from '../kit';
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
+/** Three counts from the frequency section, at the top of page 1: what she recorded, in numbers. Same figures as the card below. */
+function ProofStrip({ all, top, worst }: { all: { days: number; total: number }; top?: { label: string; days: number }; worst?: string }) {
+  const tiles = [
+    { big: String(all.days), small: `of ${plural(all.total, 'day')} with a note` },
+    ...(top ? [{ big: String(top.days), small: `days: ${top.label.toLowerCase()}` }] : []),
+    ...(worst ? [{ big: `${worst}/10`, small: 'worst, out of 10' }] : []),
+  ];
+  return (
+    <View style={{ flexDirection: 'row', gap: space.xs }} accessible accessibilityLabel={tiles.map((t) => `${t.big} ${t.small}`).join('. ')}>
+      {tiles.map((t) => (
+        <View key={t.small} aria-hidden style={{ flex: 1, minWidth: 0, backgroundColor: colors.ink, borderRadius: radii.input, padding: space.sm }}>
+          <Txt variant="numeral" numberOfLines={1} style={{ fontSize: 24, lineHeight: 30, color: colors.white }}>{t.big}</Txt>
+          <Txt variant="caption" style={{ color: colors.white, marginTop: space.xxs }}>{t.small}</Txt>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 /** `showAgenda` is false when the editable agenda field already sits above the cards. */
 export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showAgenda?: boolean }) {
   const freq = doc.sections.find((s) => s.id === 'frequency');
@@ -31,6 +50,18 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
   }
 
   if (freq && freq.id === 'frequency') {
+    const [first, ...rest] = freq.bars;
+    if (first) {
+      const worstNums = rest.map((b) => Number(/worst (\d+)\/10/.exec(b.strength ?? '')?.[1])).filter((n) => !Number.isNaN(n));
+      cards.push(
+        <ProofStrip
+          key="proof"
+          all={first}
+          top={rest[0]}
+          worst={worstNums.length ? String(Math.max(...worstNums)) : undefined}
+        />,
+      );
+    }
     // The first bar is "Days with a note": it becomes the card subtitle; the rest are area rows with
     // the count on the left and one right-aligned "Worst" column (no "worst 9/10" repeated in text).
     const [all, ...areas] = freq.bars;
