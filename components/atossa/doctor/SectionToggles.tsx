@@ -33,6 +33,7 @@ export function SectionToggles({
                 <Txt variant="body" style={{ flexShrink: 1 }}>{s.title}</Txt>
               </View>
               {s.sensitive ? <Txt variant="caption">Off unless you turn it on for this summary</Txt> : null}
+              {s.id === 'history' ? <Txt variant="caption">Includes your allergies and family history</Txt> : null}
             </View>
             <Toggle value={on} onChange={(v) => onChange(s.id, v)} label={`Include ${s.title}`} />
           </View>
