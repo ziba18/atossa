@@ -219,11 +219,14 @@ function sexPainFrom(lower: string): Pick<Holistic, 'sexPain' | 'sexPainWords'> 
   return {};
 }
 
-const BABY = '(?:a baby|for a baby|pregnant|pregnancy|to conceive|conceiving|kids|children|a family)';
+const BABY = '(?:a baby|babies|for a baby|pregnant|pregnancy|to conceive|conceiving|kids|children|a family)';
 const FERT_TRYING = new RegExp(`\\b(?:trying|try|ttc|been trying|we're trying|started trying)\\b[^.;]*\\b${BABY}|\\btrying to conceive\\b|\\bttc\\b`);
-const FERT_UNSURE = new RegExp(`\\b(?:not sure|don'?t know|unsure|undecided|back and forth)\\b[^.;]*\\b${BABY}|\\b${BABY}\\b[^.;]*\\b(?:not sure|don'?t know|unsure)\\b`);
-const FERT_LATER = new RegExp(`\\b(?:not trying|don'?t want to get pregnant|not (?:for|until) a few years|one day|not yet|not right now|not at the moment|in a few years|later on)\\b`);
-const FERT_TOPIC = new RegExp(`\\b(?:baby|pregnant|conceive|kids|children|start(?:ing)? a family|ttc)\\b`);
+const FERT_UNSURE = new RegExp(`\\b(?:not sure|don'?t know|unsure|undecided|back and forth|torn|on the fence|no idea|haven'?t decided|not decided|can'?t decide)\\b[^.;]*\\b${BABY}|\\b${BABY}\\b[^.;]*\\b(?:not sure|don'?t know|unsure)\\b`);
+// A wish with a later time ("a baby next year", "a family in a few years") is not trying now.
+const FERT_LATER = new RegExp(`\\b(?:not trying|don'?t want to get pregnant|not (?:for|until) a few years|one day|not yet|not right now|not at the moment|in a few years|later on|not planning|no plans|any ?time soon|(?:aren'?t|isn'?t|not) on (?:the|my) (?:cards|radar|agenda))\\b|\\b(?:want|wanting|like|love|hoping|hope|plan|planning) to (?:have|start|get)\\b[^.;]*\\b(?:next year|in (?:a|two|three|\\d+) (?:year|years)|in the future|eventually)\\b`);
+// A present wish counts as trying only with a step she took ("came off the pill because we want to get pregnant").
+const FERT_STOPPED = new RegExp(`\\b(?:came off|come off|stopped|off|quit|had (?:my|the) coil (?:out|removed))\\b[^.;]*\\b(?:pill|contraception|coil|implant|injection)?[^.;]*\\b(?:want|wanting|hoping|hope|trying|plan|planning) (?:to|for) (?:get pregnant|have a baby|start a family|conceive|a baby)\\b`);
+const FERT_TOPIC = new RegExp(`\\b(?:baby|babies|pregnant|conceive|kids|children|(?:start(?:ing)?|want|have|having) a family|ttc)\\b`);
 
 function fertilityFrom(lower: string): Pick<Holistic, 'fertility'> {
   for (const s of lower.split(/[.!?;]/).map((x) => x.trim()).filter(Boolean)) {
@@ -231,7 +234,7 @@ function fertilityFrom(lower: string): Pick<Holistic, 'fertility'> {
     if (/\b(?:sister|friend|mum|cousin|colleague)\b[^.;]*\bpregnant\b/.test(s)) continue;
     if (FERT_UNSURE.test(s)) return { fertility: { wish: 'Not sure', words: s } };
     if (FERT_LATER.test(s)) return { fertility: { wish: 'Not now', words: s } };
-    if (FERT_TRYING.test(s)) return { fertility: { wish: 'Trying to get pregnant', words: s } };
+    if (FERT_TRYING.test(s) || FERT_STOPPED.test(s)) return { fertility: { wish: 'Trying to get pregnant', words: s } };
   }
   return {};
 }

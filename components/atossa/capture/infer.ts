@@ -155,7 +155,8 @@ function triedFrom(words: string): string | undefined {
 
 const OTHER_NOUN = '(?:sister|mum|mom|mother|dad|father|brother|friend|cousin|partner|boyfriend|girlfriend|husband|wife|colleague|daughter|son|aunt|auntie|nan|nana|gran|granny|grandma|neighbour|neighbor|boss|teacher)';
 // "My mum's pain", "Mum's had it worse": a possessive or bare relative at the start is someone else too.
-const OTHER_SUBJECT = new RegExp(`^(?:(?:my )?${OTHER_NOUN}(?:['’]s)?\\b|she\\b|he\\b|her\\b|his\\b|they\\b|their\\b)`, 'i');
+// "My partner and I are trying" is her sentence too (joint subject).
+const OTHER_SUBJECT = new RegExp(`^(?:(?:my )?${OTHER_NOUN}(?:['’]s)?\\b(?!\\s+and\\s+(?:i|me)\\b)|she\\b|he\\b|her\\b|his\\b|they\\b|their\\b)`, 'i');
 const OTHER_MENTION = new RegExp(`\\bmy ${OTHER_NOUN}\\b`, 'i');
 const THIRD_PERSON = /\b(?:she|he|her|his|hers|they|their)\b/i;
 const FIRST_PERSON = /\b(?:i|i['’]m|i['’]ve|i['’]d|me|mine|myself)\b/i;
