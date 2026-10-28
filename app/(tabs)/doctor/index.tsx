@@ -36,6 +36,8 @@ function BarIconButton({
   icon, label, caption, onPress, disabled, busy, compact,
 }: { icon: IconName; label: string; /** One word under the circle (hidden in the compact bar). */ caption?: string; onPress: () => void; disabled?: boolean; busy?: boolean; compact?: boolean }) {
   const size = compact ? heights.minHit : heights.secondary;
+  // The caption costs ~16 pt of bar height; on shorter screens (< 700) the glyph and its label alone stay.
+  const roomForCaption = useWindowDimensions().height >= 700;
   const inactive = disabled || busy;
   return (
     <Pressable
@@ -58,7 +60,7 @@ function BarIconButton({
           >
             <Icon name={icon} size={24} color={inactive ? colors.ink3 : colors.ink} />
           </View>
-          {caption && !compact ? <Txt variant="caption" color={inactive ? colors.ink3 : colors.ink2}>{caption}</Txt> : null}
+          {caption && !compact && roomForCaption ? <Txt variant="caption" color={inactive ? colors.ink3 : colors.ink2}>{caption}</Txt> : null}
         </>
       )}
     </Pressable>
