@@ -233,10 +233,11 @@ export default function DoctorScreen() {
           </View>
           )}
           <View style={{ flex: 1 }}>
-            <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
-            <Txt variant="headline">
-              {joinFacts(upcoming.data.who.trim(), formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
+            {/* The date rides the caption so the name gets a line to itself (one line at 360). */}
+            <Txt variant="caption">
+              {joinFacts(upcoming.data.date === today ? 'Appointment today' : 'Next appointment', formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
             </Txt>
+            <Txt variant="headline">{upcoming.data.who.trim() || formatDay(upcoming.data.date)}</Txt>
           </View>
         </Card>
       ) : null}
