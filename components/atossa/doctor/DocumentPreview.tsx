@@ -74,7 +74,7 @@ function ReaderSheet({ doc, open, onClose }: { doc: DoctorDoc; open: boolean; on
 export function SummaryThumb({ doc, width = 96 }: { doc: DoctorDoc; width?: number }) {
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
-  const height = Math.round(width * (A4.height / A4.width));
+  const height = Math.round(width * 1.1); // the top of page 1 (header, agenda, pattern table), not the whole sheet
   const pages = pagesFor(docHeight);
   return (
     <View style={{ alignItems: 'center', gap: space.xxs }}>
