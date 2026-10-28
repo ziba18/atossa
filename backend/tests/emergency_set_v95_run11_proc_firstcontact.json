@@ -1,5 +1,5 @@
 {
- "_note": "AI Brain run11 second own set, written 18:31 UTC AFTER the run11 procedure rule and scored once (first contact, not tuned on). Same classes as run11-proc-lookalikes.json. The one first-contact false alarm ('My cousin had surgery last week and has a fever') is left out of this saved set: known, pre-existing, not fixed.",
+ "_note": "AI Brain run11 second own set, written 18:31 UTC AFTER the run11 procedure rule and scored once (first contact, not tuned on). Same classes as run11-proc-lookalikes.json. The one first-contact false alarm ('My cousin had surgery last week and has a fever') was fixed afterwards (A50, tuned on it) and is now in this set.",
  "emergency": [
   "Mirena inserted 4 days ago and tonight I'm shivering, feverish and my heart is pounding",
   "My aunt had a hysteroscopy months ago. I had my own one on Wednesday and I'm burning up now",
@@ -11,6 +11,7 @@
   "Mirena fitted last month, fine since, bit crampy",
   "My mum had an operation years ago and gets shivery in winter",
   "Biopsy last week, the waiting makes my heart race when I think about results",
-  "Family history of fibroids, no surgery myself, feeling cold and shivery from the rain"
+  "Family history of fibroids, no surgery myself, feeling cold and shivery from the rain",
+  "My cousin had surgery last week and has a fever, I'm visiting her"
  ]
 }
