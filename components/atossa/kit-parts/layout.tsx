@@ -53,7 +53,7 @@ export function ScreenLarge({
     </View>
   );
   return (
-    <SafeAreaView edges={["top"]} role="main" style={styles.screen}>
+    <SafeAreaView edges={["top"]} role="main" style={[styles.screen, !wash && { backgroundColor: colors.surface }]}>
       {wash ? (
         <LinearGradient
           colors={['#E6DCFB', colors.canvas]}
