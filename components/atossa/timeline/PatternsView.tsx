@@ -191,7 +191,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
-        <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 270)}>
+        <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
           <StatTile wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
           <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
           <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
