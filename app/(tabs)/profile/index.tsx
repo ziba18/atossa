@@ -137,6 +137,7 @@ export default function ProfileScreen() {
 
   const onDeleteAccount = async () => {
     if (deleting) return;
+    if (IS_PREVIEW) { setConfirmingDelete(false); showToast('Preview only: nothing was deleted.'); return; }
     setDeleting(true);
     try {
       await deleteAccount();
@@ -228,14 +229,12 @@ export default function ProfileScreen() {
             chevron={false}
             onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(false); setExportDone(false); setExporting(true); }}
           />
-        {IS_PREVIEW ? null : (
-          <GroupRow
-            icon="trash-2"
-            label="Delete account"
-            chevron={false}
-            onPress={() => { setConfirmingSignOut(false); setExporting(false); setConfirmingDelete(true); }}
-          />
-        )}
+        <GroupRow
+          icon="trash-2"
+          label="Delete account"
+          chevron={false}
+          onPress={() => { setConfirmingSignOut(false); setExporting(false); setConfirmingDelete(true); }}
+        />
       </Group>
 
       <GroupHeading title="About" style={{ marginTop: space.xxl }} />
