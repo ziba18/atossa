@@ -1,7 +1,7 @@
 // Page 1 of the summary as native cards for a phone: the thumbnail is too small to read, so the
 // first sections are repeated here at body size. Same numbers as the document (read from the same
 // DoctorDoc); descriptive only. "See the full page" opens the reflowed document.
-import React from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { colors, radii, space } from '../../../constants/atossaUI';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
@@ -16,10 +16,12 @@ function ProofStrip({ all, top, worst }: { all: { days: number; total: number };
     ...(top ? [{ big: String(top.days), small: `days · ${top.label.toLowerCase()}` }] : []),
     ...(worst ? [{ big: `${worst}/10`, small: 'worst, out of 10' }] : []),
   ];
+  // Under ~270 wide (200% text on a small phone) three tiles side by side break words: stack them, as Patterns does.
+  const [stack, setStack] = useState(false);
   return (
-    <View style={{ flexDirection: 'row', gap: space.xs }} accessible accessibilityLabel={tiles.map((t) => `${t.big} ${t.small}`).join('. ')}>
+    <View onLayout={(e) => setStack(e.nativeEvent.layout.width < 270)} style={{ flexDirection: stack ? 'column' : 'row', gap: space.xs }} accessible accessibilityLabel={tiles.map((t) => `${t.big} ${t.small}`).join('. ')}>
       {tiles.map((t) => (
-        <View key={t.big + t.small} aria-hidden style={{ flex: 1, minWidth: 0, backgroundColor: colors.ink, borderRadius: radii.input, padding: space.sm }}>
+        <View key={t.big + t.small} aria-hidden style={{ flex: stack ? undefined : 1, minWidth: 0, backgroundColor: colors.ink, borderRadius: radii.input, padding: space.sm }}>
           <Txt variant="numeral" numberOfLines={1} style={{ fontSize: 24, lineHeight: 30, color: colors.white }}>{t.big}</Txt>
           <Txt variant="caption" style={{ color: colors.white, marginTop: space.xxs }}>{t.small}</Txt>
         </View>
