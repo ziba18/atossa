@@ -9,6 +9,7 @@ import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
 import { untaggedLine } from '../../../lib/records/counts';
+import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
 import {
@@ -271,7 +272,11 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         <FadeIn index={4}>
           <Card>
             <Txt variant="caption">Latest, in your words · {m.latest.dateLabel}</Txt>
-            <View style={{ marginTop: space.xs }}><Quote numberOfLines={3}>{m.latest.text}</Quote></View>
+            <View style={{ marginTop: space.xs, gap: space.sm }}>
+              <Quote numberOfLines={3}>{m.latest.text}</Quote>
+              {/* Same rule as the Timeline card: the 999 / 111 line only for a note from today or yesterday. */}
+              <UrgentNote text={m.latest.text} date={m.latest.date} />
+            </View>
           </Card>
         </FadeIn>
       ) : null}
