@@ -47,10 +47,10 @@ export default function WelcomeScreen() {
           {short ? null : (
           <Card style={styles.example}>
             <Txt variant="caption" color={colors.ink2}>What you say</Txt>
-            <Quote>Sharp low belly pain since Tuesday, worse in the evening, missed work.</Quote>
+            <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>
             <Txt variant="caption" color={colors.ink2}>What your doctor sees</Txt>
             <View style={styles.tags}>
-              {['Lower belly', '7/10 at worst', '3 days'].map((t) => (
+              {['Lower belly', '7/10 at worst', 'Since Tuesday'].map((t) => (
                 <View key={t} style={styles.tag}>
                   <Txt variant="caption" color={colors.plum} style={styles.tagText}>{t}</Txt>
                 </View>
