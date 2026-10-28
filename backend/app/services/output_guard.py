@@ -642,6 +642,12 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"^(?=.*\b(?:miscarriage|gave birth|after the birth|postnatal|termination)\b)(?=.*\b(?:temperature|fever|rigors|shivering))(?=.*\b(?:pain|smell\w*|bleed\w*|discharge))|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup)\b)(?=.*\b(?:fever|high temperature|temperature)\b)"
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
+                    # set p106 (first contact 5/10 missed): fertility treatment swelling with breathlessness, pregnancy headache with flashing lights, bladder numbness in words, double-over pain with cold sweat, spreading hot red leg with chills
+                    r"^(?=.*\b(?:egg collection|egg retrieval|ivf|stimulation|injections?)\b)(?=.*\b(?:belly|tummy|abdomen|stomach)\b.{0,25}\b(?:huge|tight|swollen|bloated|hard)\b)(?=.*\b(?:can'?t breathe|barely breathe|short of breath|breathless\w*|struggling to breathe)\b)|"
+                    r"^(?=.*\b(?:\d{2} weeks|pregnan\w+)\b)(?=.*\b(?:headache|head (?:is )?pounding|head hurts)\b)(?=.*\b(?:flashing lights?|flashes|seeing spots|blurr\w+ vision)\b)|"
+                    r"\bcan'?t feel when i'?m (?:peeing|weeing|pooing|going)\b|\bcan'?t feel (?:myself )?(?:peeing|weeing)\b|"
+                    r"\b(?:doubled me over|doubled over)\b.{0,60}\b(?:vomiting|being sick)\b.{0,60}\b(?:cold|clammy)\b.{0,15}\b(?:sweaty|and sweaty|sweat)\b|"
+                    r"\b(?:hot|red)\b.{0,15}\b(?:red|hot)\b.{0,15}\bswollen (?:area|patch|leg|arm)\b.{0,60}\b(?:getting bigger|spreading)\b.{0,60}\b(?:chills|fever|shivering|unwell)\b|"
                     # NHS toxic shock page in words (no number): tampon or cup in use, feeling hot/cold/shivery or flu-like, and another sign (PM held-out set, p105)
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup|cup)\b)(?=.*\b(?:shiver\w*|hot and cold|burning hot|flu-?like|sandpaper)\b)(?=.*\b(?:rash|sunburn\w*|sandpaper|awful|unwell|weak|dizz\w*|dreadful|so ill|vomit\w*|diarrh\w*|aches?)\b)", re.I | re.S)
 # Someone else collapsing or fainting, said in the present with a second warning sign (Q-new-14 recommendation; clinician to confirm)
