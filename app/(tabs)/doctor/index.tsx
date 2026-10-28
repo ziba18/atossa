@@ -144,28 +144,28 @@ export default function DoctorScreen() {
   const olderData = symptomRecs.some((r) => r.data.date < doc.from) || periodRecs.some((r) => r.data.date < doc.from);
   const off = doc.empty || busy !== null;
 
-  // One slim row: Share PDF (primary) + Print and Show on screen as labelled 48 icon buttons.
+  // Save PDF is the one primary; Print and On screen are text buttons on one line below it.
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+      <Button
+        label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
+        accessibilityLabel={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
+        icon={winWidth >= 380 ? 'file-text' : undefined}
+        onPress={share}
+        loading={busy === 'share'}
+        disabled={off}
+        style={{ alignSelf: desk ? 'flex-start' : 'stretch', minWidth: desk ? 320 : 0, ...(short ? { minHeight: heights.minHit } : null) }}
+        accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
+      />
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: desk ? 'flex-start' : 'center', gap: space.md }}>
         <Button
-          label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
-          accessibilityLabel={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
-          icon={winWidth >= 380 ? 'file-text' : undefined}
-          onPress={share}
-          loading={busy === 'share'}
-          disabled={off}
-          style={{ flex: 1.3, minWidth: 0, paddingHorizontal: space.sm, maxWidth: desk ? 420 : undefined, ...(short ? { minHeight: heights.minHit } : null) }}
-          accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
+          label="Print" variant="text" small onPress={print} disabled={off} loading={busy === 'print'}
+          style={{ minWidth: 0 }} accessibilityHint="Sends the summary to a printer"
         />
         <Button
-          label="Print" variant="secondary" small onPress={print} disabled={off} loading={busy === 'print'}
-          style={{ flex: 0.8, minWidth: 0, paddingHorizontal: space.sm }} accessibilityHint="Sends the summary to a printer"
-        />
-        <Button
-          label={winWidth < 340 ? "Screen" : "On screen"} variant="secondary" small disabled={doc.empty}
-          onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ flex: 1, minWidth: 0, paddingHorizontal: space.sm }}
+          label="On screen" variant="text" small disabled={doc.empty}
+          onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ minWidth: 0 }}
           accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
         />
       </View>
