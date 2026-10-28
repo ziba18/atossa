@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 30
     # Comma-separated allowed CORS origins; "*" keeps the previous behaviour.
     cors_origins: str = "*"
+    # Set HIDE_API_DOCS=1 in production to switch off /docs, /redoc and /openapi.json.
+    hide_api_docs: bool = False
     # Expected audiences for verifying social sign-in identity tokens.
     apple_bundle_id: str = "com.attosa.app"
     google_web_client_id: str = ""

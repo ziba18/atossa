@@ -6,6 +6,7 @@ import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
+import { usePageTitle } from '../../lib/usePageTitle';
 import { isVoiceCaptureSupported } from '../../lib/transcription';
 
 const stepsFor = (voice: boolean) => [
@@ -19,6 +20,7 @@ const stepsFor = (voice: boolean) => [
  * from Today), one plain sentence, then the actions anchored low. No imagery.
  */
 export default function WelcomeScreen() {
+  usePageTitle('Welcome');
   const router = useRouter();
   // Short phones (iPhone SE class): keep the buttons on the first screen, drop the step strip.
   const win = useWindowDimensions();

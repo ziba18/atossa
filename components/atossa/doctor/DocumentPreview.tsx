@@ -43,7 +43,57 @@ function PageCrop({ doc, width, height, onHeight }: { doc: DoctorDoc; width: num
   );
 }
 
-export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean }) {
+/** Pages the PDF will run to, from the on-screen page's laid-out height (factor measured in design/a4-gap.md, run 22). */
+function pagesFor(docHeight: number) {
+  return Math.max(1, Math.ceil(((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY) * PRINT_VS_SCREEN));
+}
+
+/** The reader sheet: the whole summary at a size you can read. One place, used by the thumbnail and the preview. */
+function ReaderSheet({ doc, open, onClose }: { doc: DoctorDoc; open: boolean; onClose: () => void }) {
+  const { width: screenW } = useWindowDimensions();
+  const readerWidth = Math.min(screenW, layout.maxContentWidth) - layout.gutter * 2; // the Sheet's content gutter
+  return (
+    <Sheet visible={open} onClose={onClose} title="Your summary" full scroll={false} closeLabel="Close summary">
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: space.xxxl, alignItems: 'center' }}
+        maximumZoomScale={3}
+        minimumZoomScale={1}
+        bouncesZoom
+        pinchGestureEnabled
+      >
+        <View style={{ borderWidth: 1, borderColor: colors.hairline, borderRadius: radii.input, overflow: 'hidden' }}>
+          <DocumentView doc={doc} variant="reader" width={readerWidth - 2} />
+        </View>
+      </ScrollView>
+    </Sheet>
+  );
+}
+
+/** Phones: page 1 itself, scaled (the same DocumentView the PDF uses), above the fold. Tap opens the readable page. */
+export function SummaryThumb({ doc, width = 96 }: { doc: DoctorDoc; width?: number }) {
+  const [docHeight, setDocHeight] = useState<number>(A4.height);
+  const [open, setOpen] = useState(false);
+  const height = Math.round(width * 1.1); // the top of page 1 (header, agenda, pattern table), not the whole sheet
+  const pages = pagesFor(docHeight);
+  return (
+    <View style={{ alignItems: 'center', gap: space.xxs }}>
+      <Pressable
+        onPress={() => setOpen(true)}
+        accessibilityRole="button"
+        accessibilityLabel="Preview of page 1 of your summary"
+        accessibilityHint="Opens the summary at a size you can read"
+        style={({ pressed }) => [{ width, height, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, overflow: 'hidden', opacity: pressed ? 0.85 : 1 }, shadows.hero]}
+      >
+        <PageCrop doc={doc} width={width - 2} height={height - 2} onHeight={setDocHeight} />
+      </Pressable>
+      <Txt variant="caption">{`Page 1 of ${pages}`}</Txt>
+      <ReaderSheet doc={doc} open={open} onClose={() => setOpen(false)} />
+    </View>
+  );
+}
+
+export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: boolean; noCard?: boolean }) {
   const [width, setWidth] = useState(0);
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
@@ -51,7 +101,7 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
   // The on-screen page runs about 15% longer than the PDF's compact tables. Measured on Sam's seed (real Chromium PDF vs
   // this height): 2.18 / 1.96 / 1.68 / 1.17 screen pages printed as 2 / 2 / 2 / 1 pages, each at or just under the
   // estimate (design/a4-gap.md, run 22). Never lower the factor without re-measuring.
-  const pages = Math.max(1, Math.ceil(((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY) * PRINT_VS_SCREEN));
+  const pages = pagesFor(docHeight);
   const inner = Math.max(0, width - 2); // inside the 1 px border
   const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : THUMB_MAX_H);
   const wordsSec = doc.sections.find((x) => x.id === 'words');
@@ -86,7 +136,7 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
           <View style={{ height: 0, overflow: 'hidden' }} aria-hidden>
             {inner > 0 ? <PageCrop doc={doc} width={inner} height={0} onHeight={setDocHeight} /> : null}
           </View>
-          <Pressable
+          {noCard ? null : <Pressable
             onPress={() => setOpen(true)}
             accessibilityRole="button"
             accessibilityLabel={`Your summary page, ${pages === 1 ? 'one page' : `about ${pages} pages`}, ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'}, ${doc.rangeLabel}`}
@@ -102,10 +152,10 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
             </View>
             <View style={{ flex: 1 }}>
               <Txt variant="headline">See the full page</Txt>
-              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel}`}</Txt>
+              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel.replace(/ /g, "\u00A0")}`}</Txt>
             </View>
             <View aria-hidden><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
-          </Pressable>
+          </Pressable>}
         </View>
       )}
       {words ? (
@@ -132,20 +182,7 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
         </View>
       ) : null}
 
-      <Sheet visible={open} onClose={() => setOpen(false)} title="Your summary" full scroll={false} closeLabel="Close summary">
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: space.xxxl, alignItems: 'center' }}
-          maximumZoomScale={3}
-          minimumZoomScale={1}
-          bouncesZoom
-          pinchGestureEnabled
-        >
-          <View style={{ borderWidth: 1, borderColor: colors.hairline, borderRadius: radii.input, overflow: 'hidden' }}>
-            <DocumentView doc={doc} variant="reader" width={readerWidth - 2} />
-          </View>
-        </ScrollView>
-      </Sheet>
+      <ReaderSheet doc={doc} open={open} onClose={() => setOpen(false)} />
     </View>
   );
 }

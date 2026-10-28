@@ -6,6 +6,7 @@ import { haptics } from '../../../lib/haptics';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { daysInMonth, parseKey, toKey, todayKey } from '../../../lib/records/dates';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 /** Day / month / year boxes → 'YYYY-MM-DD', '' when all empty, null when invalid. */
 function birthDateKey(day: string, month: string, year: string): string | null {
@@ -25,6 +26,7 @@ function inRange(text: string, min: number, max: number): number | null {
 }
 
 export default function EditProfileScreen() {
+  usePageTitle('My details');
   const { profile, fetchProfile } = useAuthStore();
   const dob = profile?.date_of_birth ? parseKey(profile.date_of_birth) : null;
 
@@ -83,7 +85,7 @@ export default function EditProfileScreen() {
         </View>
 
         <TextField label="Usual days between periods" hint="From the start of one period to the start of the next" value={cycle} onChangeText={digits(setCycle)} keyboardType="number-pad" maxLength={2} />
-        <TextField label="Usual period length in days" value={period} onChangeText={digits(setPeriod)} keyboardType="number-pad" maxLength={2} />
+        <TextField label="Usual period length in days" hint="How many days your period usually lasts" value={period} onChangeText={digits(setPeriod)} keyboardType="number-pad" maxLength={2} />
 
         <InlineError message={error} />
         <Button label="Save my details" icon="check" loading={saving} onPress={save} />

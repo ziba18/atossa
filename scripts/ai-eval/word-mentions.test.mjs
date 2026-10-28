@@ -1,10 +1,12 @@
 // PM 2026-10-27 task 6: Sam typed "tired"/"dizzy" but Patterns said "Sleep and mood: Not recorded yet". Decision: no
 // silent tag (Atossa never infers beyond her words); the empty card counts her words instead, "Not tagged yet — …".
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/word-mentions.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/word-mentions.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { untaggedLine, wordMentions } from '../../lib/records/counts.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { untaggedLine, wordMentions } = await import('../../lib/records/counts.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const notes = () => sampleBuckets().symptom.map((r) => r.data);
 const note = (words, source = 'typed') => ({ date: '2026-09-01', words, source });
@@ -30,4 +32,12 @@ test('negation and quick logs do not count; nothing is tagged', () => {
 test('copy stays a count of her words: no label, no cause', () => {
   const line = untaggedLine(notes(), 'tired');
   assert.doesNotMatch(line, /fatigue|anaemi|iron|because|due to|sign of|likely|suggest|%/i);
+});
+
+test('Sleep and mood shows her own tiredness ratings (days + range, no average) before the word count', async () => {
+  const { fatigueLine } = await import('../../lib/records/counts.ts');
+  const n = (date, fatigue) => ({ date, words: 'very tired', source: 'text', fatigue });
+  assert.equal(fatigueLine([n('2026-09-01', 3), n('2026-09-02', 7), n('2026-09-02', 6)]), 'Tiredness rated on 2 days (3–7 out of 10)');
+  assert.equal(fatigueLine([n('2026-09-01', 4)]), 'Tiredness rated on 1 day (4 out of 10)');
+  assert.equal(fatigueLine([{ date: '2026-09-01', words: 'very tired', source: 'text' }]), '');
 });

@@ -7,12 +7,14 @@ import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, fonts, severityColor, severityRamp, space } from '../../../constants/atossaUI';
-import { untaggedLine } from '../../../lib/records/counts';
+import { colors, fonts, heights, severityRamp, space } from '../../../constants/atossaUI';
+import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
+import { Icon } from '../../ui/Icon';
+import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
 import {
-  MIN_NOTE_DAYS, PATTERNS_RANGES, STRONG_FROM, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsRange,
+  MIN_NOTE_DAYS, PATTERNS_RANGES, STRONG_FROM, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsModel, type PatternsRange,
 } from '../../../lib/records/patterns';
 import { formatShortDate, joinFacts } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -31,7 +33,7 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
         <View key={r.label} style={{ gap: 4 }}>
           <View style={styles.barHead}>
             <Txt variant="body" style={{ flexShrink: 1 }}>{r.label}</Txt>
-            <Txt variant="body" numberOfLines={1} style={{ flexShrink: 0, fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
+            <Txt variant="body" style={{ flexShrink: 1, marginLeft: 'auto', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
@@ -39,6 +41,45 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
         </View>
       ))}
     </View>
+  );
+}
+
+/** The 28 days as one bar: days with bleeding logged, other days with a note, days with nothing logged. Counts add to the range. */
+function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter) => void }) {
+  const withB = m.days.filter((d) => d.bleeding).length; // same count as the 'days of bleeding' tile
+  const without = m.days.filter((d) => d.logged && !d.bleeding).length;
+  const none = m.totalDays - withB - without;
+  const parts: { key: string; label: string; n: number; color: string; opens?: TimelineFilter; hint?: string }[] = [
+    { key: 'with', label: 'Bleeding logged', n: withB, color: colors.plum, opens: 'Bleeding', hint: 'Opens your bleeding days.' },
+    { key: 'without', label: 'Note, no bleeding', n: without, color: `${colors.plum}73`, opens: 'Symptoms', hint: 'Opens your notes.' },
+    { key: 'none', label: 'Nothing logged', n: none, color: colors.hairline },
+  ];
+  return (
+    <Card>
+      <Txt variant="groupLabel">Your {m.totalDays} days</Txt>
+      <View style={{ flexDirection: 'row', height: 20, borderRadius: 10, overflow: 'hidden', marginTop: space.sm, gap: 2 }} accessibilityLabel={`${noteDaysText(m)}.`} role="img">
+        {parts.filter((x) => x.n > 0).map((x) => <View key={x.key} style={{ flexGrow: x.n, flexBasis: 0, backgroundColor: x.color }} />)}
+      </View>
+      <View style={{ marginTop: space.xs }}>
+        {parts.map((x) => {
+          const tappable = Boolean(x.opens) && x.n > 0;
+          const row = (
+            <>
+              <View aria-hidden style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: x.color, borderWidth: x.key === 'none' ? 1 : 0, borderColor: colors.borderStrong }} />
+              <Txt variant="body" style={{ flex: 1 }}>{x.label}</Txt>
+              <Txt variant="body" style={{ fontVariant: ['tabular-nums'] }}>{x.n}</Txt>
+              <View aria-hidden style={{ width: 20 }}>{tappable ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}</View>
+            </>
+          );
+          const rowStyle = { flexDirection: 'row' as const, alignItems: 'center' as const, gap: space.sm, minHeight: heights.minHit };
+          return tappable ? (
+            <Pressable key={x.key} accessibilityRole="button" accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}. ${x.hint}`} onPress={() => onOpen(x.opens!)} style={({ pressed }) => [rowStyle, { opacity: pressed ? 0.7 : 1 }]}>{row}</Pressable>
+          ) : (
+            <View key={x.key} accessible accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}`} style={rowStyle}>{row}</View>
+          );
+        })}
+      </View>
+    </Card>
   );
 }
 
@@ -55,6 +96,25 @@ function WeekBar({ height, color }: { height: number; color: string }) {
   return <Animated.View style={[styles.weekBar, { height, backgroundColor: color, transformOrigin: 'bottom', transform: [{ scaleY: t }] }]} />;
 }
 
+/** Counts up from 0 once (450 ms ease-out); shows the final number straight away under Reduce Motion. The spoken label always carries the final value. */
+function CountUp({ value }: { value: number }) {
+  const reduce = useReduceMotion();
+  const [n, setN] = useState(reduce || value <= 1 ? value : 0);
+  useEffect(() => {
+    if (reduce || value <= 1) { setN(value); return; }
+    const start = Date.now();
+    let raf = 0;
+    const tick = () => {
+      const t = Math.min(1, (Date.now() - start) / 450);
+      setN(Math.round(value * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, reduce]);
+  return <>{n}</>;
+}
+
 /** One number with a label under it; the row of three sits above the charts. */
 function StatTile({ value, label, onPress, hint, wide, zeroLabel }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean; zeroLabel?: string }) {
   // A zero that means "nothing logged" reads as a sentence, not a big 0.
@@ -62,7 +122,7 @@ function StatTile({ value, label, onPress, hint, wide, zeroLabel }: { value: num
   return (
     <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
       <View style={wide ? styles.tileRow : undefined}>
-        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>}
+        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}><CountUp value={value} /></Txt>}
         {none ? null : <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>}
       </View>
     </PressableCard>
@@ -111,7 +171,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <View style={{ marginTop: space.lg }}>
         <EmptyState
           icon="calendar-days"
-          message={`Patterns appear after a week of notes. ${recent === 0 ? 'No notes yet.' : `So far: notes on ${plural(recent, 'day')}.`}`}
+          message={`Patterns appear after a week of notes. ${recent === 0 ? (m.notes === 0 ? 'Your first note starts them.' : 'No notes in this time range.') : `So far: notes on ${plural(recent, 'day')}.`}`}
           action={{ label: 'Add a note', onPress: () => openCapture() }}
           style={{ marginTop: space.xxl }}
         />
@@ -120,7 +180,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
   }
 
   const inRange = symptom.filter((r) => r.data.date >= m.from && r.data.date <= m.to).map((r) => r.data);
-  const sleepLine = untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
+  const sleepLine = fatigueLine(inRange) || untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
   const maxWeek = Math.max(1, ...m.weeks.map((w) => w.noteDays));
   const rangeText = `${formatShortDate(m.from, 'always')} – ${formatShortDate(m.to, 'always')}`;
 
@@ -128,8 +188,6 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
     <View style={{ gap: space.md, marginTop: space.lg }}>
       {toggle}
       <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
-      {/* One sentence of proof, counts only (Iris dashboard headline): the same words the chart card speaks. */}
-      <Txt variant="hero" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 28, lineHeight: 34 }}>{noteDaysText(m)}.</Txt>
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
@@ -140,6 +198,11 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         </View>
       </FadeIn>
 
+      {range === '4w' ? (
+        <FadeIn index={1}>
+          <SplitDays m={m} onOpen={onOpen} />
+        </FadeIn>
+      ) : (
       <FadeIn index={1}>
         <PressableCard
           onPress={() => onOpen('Symptoms')}
@@ -190,10 +253,11 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           ) : null}
         </PressableCard>
       </FadeIn>
+      )}
 
       {m.zones.length ? (
         <FadeIn index={2}>
-          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${plural(z.days, 'day')}`).join('; ')}. Opens your notes.`}>
+          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${z.days} of ${plural(m.totalDays, 'day')}`).join('; ')}. Opens your notes.`}>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>Where you felt it</Txt>
             <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} />
           </PressableCard>
@@ -204,7 +268,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       {m.bleedingDays || m.spottingDays ? (
         <FadeIn index={2}>
-          <PressableCard edge="clay" onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
+          <PressableCard onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
             <Txt variant="groupLabel">Bleeding</Txt>
             <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m)}</Txt>
             {m.bleedingDays || m.spottingDays ? (
@@ -232,7 +296,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       {m.impacts.length ? (
         <FadeIn index={3}>
-          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it got in the way of. ${m.impacts.map((i) => `${i.label}, ${plural(i.days, 'day')}`).join('; ')}. Opens your notes.`}>
+          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it got in the way of. ${m.impacts.map((i) => `${i.label}, ${i.days} of ${plural(m.totalDays, 'day')}`).join('; ')}. Opens your notes.`}>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>What it got in the way of</Txt>
             <Bars rows={m.impacts} total={m.totalDays} />
           </PressableCard>
@@ -266,7 +330,11 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         <FadeIn index={4}>
           <Card>
             <Txt variant="caption">Latest, in your words · {m.latest.dateLabel}</Txt>
-            <View style={{ marginTop: space.xs }}><Quote numberOfLines={3}>{m.latest.text}</Quote></View>
+            <View style={{ marginTop: space.xs, gap: space.sm }}>
+              <Quote numberOfLines={3}>{m.latest.text}</Quote>
+              {/* Same rule as the Timeline card: the 999 / 111 line only for a note from today or yesterday. */}
+              <UrgentNote text={m.latest.text} date={m.latest.date} />
+            </View>
           </Card>
         </FadeIn>
       ) : null}
@@ -276,7 +344,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         accessibilityLabel="Make my summary for my doctor. Opens For my doctor."
       >
         <Txt variant="headline">Make my summary for my doctor</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xxs }}>One clear page from your notes, in your words.</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>A clear summary from your notes, in your words.</Txt>
       </PressableCard>
 
       <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
@@ -304,7 +372,7 @@ const styles = StyleSheet.create({
   weekCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
   weekNum: { fontSize: 11 },
   weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.ink2 },
-  barHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
+  barHead: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 0, justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.sunken, overflow: 'hidden' },
-  fill: { height: 8, borderRadius: 4, backgroundColor: severityRamp[3] },
+  fill: { height: 8, borderRadius: 4, backgroundColor: severityRamp[2] },
 });

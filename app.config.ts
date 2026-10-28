@@ -62,6 +62,8 @@ const config: ExpoConfig = {
   web: {
     favicon: './assets/favicon.png',
     bundler: 'metro',
+    description: 'Say how you feel in your own words. Atossa tidies it into a clear summary for your doctor.',
+    themeColor: '#F7F3EE',
   },
   plugins: [
     ['expo-router', { asyncRoutes: false }],

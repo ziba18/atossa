@@ -9,7 +9,7 @@ import type { IconName } from '../../ui/Icon';
 import { colors, radii, space } from '../../../constants/atossaUI';
 import { urgentSignpost } from '../../../lib/urgentWording';
 import { textOf } from '../UrgentNote';
-import { toKey, todayKey } from '../../../lib/records/dates';
+import { addDays, toKey, todayKey } from '../../../lib/records/dates';
 import {
   BLEEDING_STATUS_LABEL, bleedingFacts, bleedingStatus, firstLine, formatDay, formatRange, formatRecordDate,
   formatRecordDateInline, formatWhere, labelEscape, typicalOf, worstOf,
@@ -23,6 +23,11 @@ import type { ListItem } from './feed';
  * by the capture lane), then the record's server `createdAt`. A note about today that was created
  * today counts too, which also covers the design preview's pinned "today".
  */
+function isRecentDay(date: string): boolean {
+  const today = todayKey();
+  return date === today || date === addDays(today, -1);
+}
+
 function timeOf(rec: { createdAt?: string; data: object }, date: string): string {
   const own = rec.data as { time?: unknown; createdAt?: unknown };
   if (typeof own.time === 'string' && /^\d{1,2}:\d{2}$/.test(own.time)) return own.time.padStart(5, '0');
@@ -113,7 +118,8 @@ export function EntryCard({
       const s = item.rec.data;
       const words = firstLine(s);
       const { tag, tagWord, facts } = symptomCardFacts(s);
-      const urgent = urgentSignpost(textOf(s));
+      // Only for notes from today or yesterday (Safety ruling): a 999 line on an older entry is noise.
+      const urgent = isRecentDay(s.date) ? urgentSignpost(textOf(s)) : null;
       const kindWord = s.source === 'voice' ? 'Voice note' : s.source === 'quick' ? 'Rough day' : 'Note';
       const time = timeOf(item.rec, s.date);
       const top = hideDate ? (time || kindWord) : [formatDay(s.date), time].filter(Boolean).join(' · ');
@@ -127,7 +133,7 @@ export function EntryCard({
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
             {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will send when you’re online" /> : null}
-            {words ? <Quote numberOfLines={3}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
+            {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
               // The severity words sit INSIDE the pill ("9/10 at worst", N7); long facts wrap below it
               <View style={styles.facts}>
@@ -139,7 +145,7 @@ export function EntryCard({
             ) : null}
             {urgent ? (
               <View style={styles.urgent}>
-                <Txt variant="secondary" accessibilityRole="alert" style={{ color: colors.ink }}>{urgent}</Txt>
+                <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent}</Txt>
               </View>
             ) : null}
           </View>
@@ -186,15 +192,19 @@ export function EntryCard({
       const when = formatRecordDate(a.date, item.precision);
       const who = a.who?.trim() || 'Appointment';
       const told = a.told?.trim();
+      const stackDate = who.length + when.length > 26;
       return (
         <PressableCard
+          style={styles.appointment}
           onPress={onPress}
           accessibilityLabel={[`Appointment, ${who}`, hideDate ? '' : when, told ? `I was told: ${told}` : ''].filter(Boolean).join('. ')}
           accessibilityHint="Opens the appointment"
         >
           <View style={styles.stack}>
-            <GlyphLine icon="calendar-days" text={hideDate ? 'Appointment' : when} />
-            <Txt variant="headline">{who}</Txt>
+            {/* One line, on a tinted card, so an appointment never reads as one more note. */}
+            {/* Long name + date: the date goes on its own line instead of leaving a dot at the end of line one. */}
+            <GlyphLine icon="calendar-days" variant="secondary" text={hideDate ? who : stackDate ? who : `${who} · ${keep(when)}`} />
+            {!hideDate && stackDate ? <Txt variant="secondary">{when}</Txt> : null}
             {told ? <Txt variant="secondary" numberOfLines={2}>{`I was told: ${told}`}</Txt> : null}
           </View>
         </PressableCard>
@@ -224,10 +234,12 @@ export function EntryCard({
 
 const styles = StyleSheet.create({
   stack: { gap: space.xs },
-  urgent: { backgroundColor: colors.sunken, borderRadius: radii.input - 4, paddingHorizontal: space.sm, paddingVertical: space.xs },
+  // Same words and place; a quiet rule instead of a filled box so her own words get the first read (Safety OK pending before a hosted build).
+  urgent: { borderLeftWidth: 2, borderLeftColor: colors.plum, paddingLeft: space.sm },
   facts: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.xs, rowGap: space.xs },
-  factText: { flexShrink: 1, minWidth: 0 },
+  factText: { flex: 1, flexBasis: 0, minWidth: 96 },
   // N11: the 4 pt clay edge sits inside the card's own padding, so bleeding content lines up
   // with every other card (x 41, not 45).
   clayInset: { paddingLeft: space.lg },
+  appointment: { backgroundColor: colors.plumTint, borderColor: colors.plumTint },
 });

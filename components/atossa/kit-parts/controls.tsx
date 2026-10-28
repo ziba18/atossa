@@ -114,7 +114,7 @@ export function AddButton({ label, onPress }: { label: string; onPress: () => vo
  * `ghost` is for the always-offered non-answers: "Not sure", "It varies", "Skip".
  */
 export function Chip({
-  label, selected = false, onPress, ghost, disabled, accessibilityRole = 'button', style,
+  label, selected = false, onPress, ghost, disabled, accessibilityRole = 'button', accessibilityHint, style,
 }: {
   label: string;
   selected?: boolean;
@@ -122,11 +122,13 @@ export function Chip({
   ghost?: boolean;
   disabled?: boolean;
   accessibilityRole?: 'button' | 'radio' | 'checkbox';
+  accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
 }) {
   return (
     <Pressable
       onPress={() => { haptics.selection(); onPress(); }}
+      accessibilityHint={accessibilityHint}
       disabled={disabled}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={label}

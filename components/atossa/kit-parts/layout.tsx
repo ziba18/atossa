@@ -37,12 +37,14 @@ export function ScreenLarge({
   /** Lavender light behind the header (Iris). Off for the evidence page, which stays white. */
   wash?: boolean;
 }) {
+  // Under ~260 pt (about 200% text on a small phone) a 34 pt title cannot hold 'Appointments' beside the trailing button.
+  const veryNarrow = useWindowDimensions().width < 260;
   const head = (
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
       {brand ? <Txt variant="caption" color={colors.plum} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ATOSSA</Txt> : null}
       <View style={styles.titleRow}>
-        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }}>{title}</Txt>
+        <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={[{ flexGrow: 1, flexShrink: 1, flexBasis: veryNarrow ? Math.ceil(title.length * 12.5) : 150 }, veryNarrow && { fontSize: 21, lineHeight: 27 }]}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}
       </View>
       {subtitle ? (
@@ -208,13 +210,15 @@ export function PressableCard({
  * line and a secondary sub-line. Pass `onPress` to make the whole card a PressableCard.
  */
 export function HeroNumber({
-  big, line, sub, onPress, accessibilityHint,
+  big, line, sub, onPress, accessibilityHint, keepSub,
 }: {
   big?: string;
   line: string;
   sub: string;
   onPress?: () => void;
   accessibilityHint?: string;
+  /** Keep the sub-line on short screens (screens with no capture prompt to protect, e.g. Profile). */
+  keepSub?: boolean;
 }) {
   // Under ~240 pt wide (200% text) 17 pt "appointment" no longer fits the column and breaks mid-word.
   const winW = useWindowDimensions().width;
@@ -234,12 +238,12 @@ export function HeroNumber({
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
       <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: short ? 90 : 130, gap: space.xxs }}>
         <Txt variant="headline" style={narrow ? { fontSize: 15, lineHeight: 20 } : undefined}>{line}</Txt>
-        {short ? null : <Txt variant="secondary">{sub}</Txt>}
+        {short && !keepSub ? null : <Txt variant="secondary">{sub}</Txt>}
       </View>
     </View>
   );
   if (!onPress) return <Card>{body}</Card>;
-  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
+  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
 }
 
 /** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
@@ -413,7 +417,7 @@ export function ConfirmCard({
               label={a.label}
               variant={i === confirmIdx ? 'destructiveOutline' : 'text'}
               onPress={a.onPress}
-              style={i === confirmIdx ? { flex: 1 } : { paddingHorizontal: space.md }}
+              style={i === confirmIdx ? { flexGrow: 1, flexShrink: 0, minWidth: 96 } : { paddingHorizontal: space.md }}
             />
           ))}
         </View>
@@ -471,7 +475,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderRadius: radii.card, borderWidth: 1, borderColor: colors.hairline,
     padding: space.lg, overflow: 'hidden',
   },
-  confirmRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  confirmRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs },
   pressable: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: heights.minHit },
   edgePad: { paddingLeft: space.lg + 4 },
   clayEdge: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: colors.clay },

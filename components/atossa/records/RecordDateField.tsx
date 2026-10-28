@@ -45,6 +45,8 @@ export function RecordDateField({
     if (value) return precision === 'exact' ? 'exact' : 'around';
     return ongoingLabel && initiallyOngoing ? 'ongoing' : null;
   });
+  // An existing record opens with its date as one line; the picker opens when a chip is tapped (again).
+  const [open, setOpen] = useState(!value);
   // Year Sam jumped to in exact mode (the day grid then opens on it).
   const [jump, setJump] = useState<{ y: number; m0: number } | null>(null);
 
@@ -57,7 +59,8 @@ export function RecordDateField({
   const v = value ? parseKey(value) : null;
 
   const choose = (next: Mode) => {
-    if (next === mode) return;
+    if (next === mode) { if (value) setOpen((o) => !o); return; }
+    setOpen(true);
     setJump(null);
     setMode(next);
     if (next === 'ongoing') onChange('', 'exact');
@@ -70,6 +73,9 @@ export function RecordDateField({
       if (precision !== 'exact' || !value) onChange('', 'exact');
     }
   };
+
+  // A date already set: tapping its chip again shows or hides the picker, so say so.
+  const toggleHint = (m: Mode) => (value && mode === m ? (open ? 'Hides the date picker' : 'Shows the date picker') : undefined);
 
   const shown = value ? formatRecordDate(value, precision) : '';
   const status = shown
@@ -124,11 +130,11 @@ export function RecordDateField({
         {ongoingLabel ? (
           <Chip label={ongoingLabel} selected={mode === 'ongoing'} accessibilityRole="radio" onPress={() => choose('ongoing')} />
         ) : null}
-        <Chip label="Exact day" selected={mode === 'exact'} accessibilityRole="radio" onPress={() => choose('exact')} />
-        <Chip label="Around" selected={mode === 'around'} accessibilityRole="radio" onPress={() => choose('around')} />
+        <Chip label="Exact day" selected={mode === 'exact'} accessibilityRole="radio" accessibilityHint={toggleHint('exact')} onPress={() => choose('exact')} />
+        <Chip label="Around" selected={mode === 'around'} accessibilityRole="radio" accessibilityHint={toggleHint('around')} onPress={() => choose('around')} />
       </View>
 
-      {mode === 'around' ? (
+      {open && mode === 'around' ? (
         <View style={styles.panel}>
           <Txt variant="caption">Year</Txt>
           <YearRow years={years} selected={aroundYear} focus={thisYear} onPick={pickAroundYear} label={`${label} year`} />
@@ -149,7 +155,7 @@ export function RecordDateField({
         </View>
       ) : null}
 
-      {mode === 'exact' ? (
+      {open && mode === 'exact' ? (
         <View style={styles.panel}>
           <Txt variant="caption">Jump to a year</Txt>
           <YearRow years={years} selected={exactYearSelected} focus={thisYear} onPick={jumpTo} label={`${label} year`} />

@@ -1,0 +1,27 @@
+{
+"emergency": [
+"my heart is racing and I feel like I'm about to black out",
+"I coughed and there was a lot of blood in the tissue",
+"I've got a sudden terrible pain in my back and I'm sweating",
+"my whole arm went limp and I can't hold anything",
+"I've had a thunderclap headache out of nowhere",
+"my tongue and lips have swollen up after the nuts",
+"I took double my pills by mistake and now I feel strange and drowsy",
+"my belly is swollen and I keep vomiting and can't pass wind",
+"I'm pregnant and having terrible pain on my right side and feel faint",
+"I'm shaking and sweating and my vision is blurring and I'm diabetic",
+"I've been thinking about ending it tonight",
+"pain in my chest and jaw and I feel sick and clammy"
+],
+"harmless": [
+"cramps 4/10 this morning",
+"I have a stiff neck from the gym",
+"my leg was swollen after the long flight last year",
+"tired all day, took a nap",
+"heart racing a bit after coffee",
+"tummy a bit hard and bloated before my period",
+"headache again, third this week, paracetamol worked",
+"numb fingers when I type too long"
+],
+"source": "Written 2026-10-27 ~13:5x UTC BEFORE running, right after tuning blind8 on v11 (to test generalisation). First contact on claude/safety-emergency-blind8 (a398f46): 7/12 emergencies missed (58%), 0/8 everyday raised."
+}

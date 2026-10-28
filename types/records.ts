@@ -8,7 +8,9 @@ export type HistoryType =
   | 'Told to me by a doctor'
   | 'Test or scan'
   | 'Procedure or surgery'
-  | 'Emergency visit';
+  | 'Emergency visit'
+  | 'Allergies (in my words)'
+  | 'When it started (in my words)';
 
 /** How a symptom note was captured. 'quick' = the Today "Rough day" log, which has NO words. */
 export type CaptureSource = 'voice' | 'typed' | 'quick';

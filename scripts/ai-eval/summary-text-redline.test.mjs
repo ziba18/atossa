@@ -2,11 +2,13 @@
 // the plain-text export and the A4 HTML (tags stripped). Patient words are exempt (pm/redline-words.md "Review as quote"):
 // text inside quotes, her agenda lines, any line that is verbatim one of her typed fields (e.g. history "Why I went"),
 // and the options she chose in a "Flow (your choice):" line. Everything else is ours and must be clean.
-// Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/summary-text-redline.test.mjs
+// Run: node --experimental-strip-types --test scripts/ai-eval/summary-text-redline.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDoctorSummary, summaryToText, summaryToHtml } from '../../lib/records/summary.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary, summaryToText, summaryToHtml } = await import('../../lib/records/summary.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 // pm/redline-words.md Block rows (same list as summary-v2-redline.test.mjs, plus "insides"-free zone check).
 const BLOCK = /\b(diagnos\w*|risk|predict\w*|typical|atypical|normal|abnormal|irregular|heavy|insights?|pattern analysis|correlat\w*|linked to|triggers?|in range|out of range|worsening|getting (?:worse|better)|improving|trend\w*|ovulation|fertile|follicular|luteal|may match|consistent with|suggests?|likely|approved|validated|faster diagnosis|streak|well done|great job|keep it up|chronic|severe|moderate|mild|score|percent)\b|%|🎉/i;

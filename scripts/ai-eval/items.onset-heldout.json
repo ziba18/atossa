@@ -1,0 +1,30 @@
+{
+ "about": "Onset-in-her-words held-out set (ai-brain run05, written 2026-10-28 02:1x UTC BEFORE lib/records/onset.ts existed). gold = a substring the extracted phrase must contain, or null = nothing may be extracted. Same author as the rule = weak evidence; ask Marketing for an independent set.",
+ "items": [
+  {"id": "P01", "text": "My periods have been this painful since I was 15.", "gold": "since I was 15"},
+  {"id": "P02", "text": "Cramps like this for about two years now.", "gold": "for about two years"},
+  {"id": "P03", "text": "I've had the bloating on and off since my teens", "gold": "since my teens"},
+  {"id": "P04", "text": "The heavy bleeding started around 2019", "gold": "around 2019"},
+  {"id": "P05", "text": "It's been going on for 6 months.", "gold": "for 6 months"},
+  {"id": "P06", "text": "pain with sex ever since I had my son", "gold": "since I had my son"},
+  {"id": "P07", "text": "This tiredness began last spring", "gold": "last spring"},
+  {"id": "P08", "text": "I first noticed the spotting in March", "gold": "March"},
+  {"id": "P09", "text": "always been like this since my first period", "gold": "since my first period"},
+  {"id": "P10", "text": "for years honestly, maybe ten", "gold": "for years"},
+  {"id": "P11", "text": "my back pain has been there since 2021", "gold": "since 2021"},
+  {"id": "P12", "text": "for the last few weeks the pain is worse", "gold": "for the last few weeks"},
+  {"id": "P13", "text": "since coming off the pill in January it's been awful", "gold": "since coming off the pill in January"},
+  {"id": "P14", "text": "started when I was about 12 or 13", "gold": "when I was about 12"},
+  {"id": "P15", "text": "It started two years ago, after my daughter was born", "gold": "two years ago"},
+  {"id": "N01", "text": "two years ago I moved house", "gold": null},
+  {"id": "N02", "text": "My appointment is in 3 weeks", "gold": null},
+  {"id": "N03", "text": "I've been on the pill for 5 years", "gold": null},
+  {"id": "N04", "text": "Pain 7/10 since this morning", "gold": null},
+  {"id": "N05", "text": "I was 15 when we went to Spain", "gold": null},
+  {"id": "N06", "text": "Took ibuprofen for two days", "gold": null},
+  {"id": "N07", "text": "My sister has had endo for years", "gold": null},
+  {"id": "N08", "text": "Since the GP said it's normal I haven't gone back", "gold": null},
+  {"id": "N09", "text": "Waited 6 months for the scan", "gold": null},
+  {"id": "N10", "text": "I've worked there for about two years", "gold": null}
+ ]
+}

@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import {
   Button, Card, Chip, FactLine, HeroNumber, InlineError, QuickTile, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
-import { colors, layout, radii, space } from '../../../constants/atossaUI';
+import { colors, layout, radii, severityRamp, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
@@ -18,18 +18,33 @@ import {
 } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { onsetWords } from '../../../lib/records/onset';
+import { ONSET_GROUP_LABEL, ONSET_TYPE, onsetFromHistory, onsetGroupFor } from '../../../lib/records/summary';
 import { MicButton } from './MicButton';
 import { nextAppointment } from './AppointmentCard';
 import { type IconName } from '../../ui/Icon';
-import { addDays, diffDays } from '../../../lib/records/dates';
+import { MONTH_NAMES, addDays, diffDays, parseKey } from '../../../lib/records/dates';
 
 const PROMPT = 'What’s been going on with your body?';
 
+/** The brand waveform, still and decorative: the same bars as the recording indicator, as a quiet header for the hero. */
+const WAVE = [0.25, 0.4, 0.65, 0.35, 0.8, 1, 0.55, 0.9, 0.45, 0.7, 0.3, 0.55, 0.35, 0.2];
+function WaveMotif() {
+  return (
+    <View aria-hidden style={styles.wave}>
+      {WAVE.map((h, i) => (
+        <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
+      ))}
+    </View>
+  );
+}
+
 export function HeroCard() {
-  const narrowW = useWindowDimensions().width < 360;
   return (
     <Card tone="hero" style={styles.hero}>
-      <Txt variant="hero" style={[styles.center, narrowW && { fontSize: 25, lineHeight: 31 }]} accessibilityRole="header" accessibilityLabel={PROMPT}>
+      {null}
+      <Txt variant="hero" style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT}
       </Txt>
       {Platform.OS === 'web' ? (
@@ -113,7 +128,7 @@ export function RoughDayCard() {
   return (
     <Card style={{ gap: space.md }}>
       <View style={{ gap: space.xxs }}>
-        <Txt variant="headline" accessibilityRole="header">Rough day?</Txt>
+        <Txt variant="headline" accessibilityRole="header" aria-level={2}>Rough day?</Txt>
         <Txt variant="secondary">Just the number is enough.</Txt>
       </View>
       <SeverityRow value={value} onChange={setValue} label="How rough, from 0 to 10" showLabel={false} />
@@ -182,8 +197,58 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
   );
 }
 
+const ONSET_SKIP_KEY = 'atossa.onsetSkipped';
+
+/**
+ * One quiet row under the latest note when it holds a "since …" phrase. Her words, verbatim, are saved as
+ * when this started only if she says so; "Not now" is remembered on this phone and never asks again for the note.
+ */
+export function OnsetConfirmRow({ note }: { note: Rec<SymptomData> }) {
+  const create = useRecordsStore((s) => s.create);
+  const history = useRecordsStore((s) => s.records.history);
+  const [skipped, setSkipped] = useState<string[] | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    AsyncStorage.getItem(ONSET_SKIP_KEY).then((v) => setSkipped(v ? JSON.parse(v) : [])).catch(() => setSkipped([]));
+  }, []);
+  const phrase = onsetWords(note.data.words ?? '');
+  const group = onsetGroupFor(note.data);
+  if (!phrase || !group || skipped == null || skipped.includes(note.id) || onsetFromHistory(history)[group]) return null;
+  const skip = () => {
+    const next = [...skipped, note.id].slice(-50);
+    setSkipped(next);
+    AsyncStorage.setItem(ONSET_SKIP_KEY, JSON.stringify(next)).catch(() => {});
+  };
+  const save = async () => {
+    if (saving) return;
+    setSaving(true);
+    setError('');
+    try {
+      await create('history', { type: ONSET_TYPE, date: todayKey(), datePrecision: 'exact', told: phrase, done: group, result: '' });
+      haptics.success();
+      showToast('Saved. It will show on your doctor summary in your words.');
+    } catch {
+      setError("That didn’t save. Check your connection and try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <View style={styles.onset} accessible={false}>
+      <Txt variant="body">{`Save “${phrase}” as when your ${ONSET_GROUP_LABEL[group]} started?`}</Txt>
+      <Txt variant="caption">It goes on your doctor summary in your words. You can delete it under Health history.</Txt>
+      <InlineError message={error} />
+      <View style={styles.onsetActions}>
+        <Button label="Save" small onPress={save} loading={saving} />
+        <Button label="Not now" variant="text" small onPress={skip} disabled={saving} />
+      </View>
+    </View>
+  );
+}
+
 /** Counts up to `target` once on first show (about half a second); straight to the number under Reduce Motion. */
-function useCountUp(target: number): number {
+export function useCountUp(target: number): number {
   const reduce = useReduceMotion();
   const [n, setN] = useState(reduce ? target : 0);
   useEffect(() => {
@@ -207,11 +272,12 @@ export function HeroNumberCard() {
   const today = todayKey();
   const next = nextAppointment(appts);
   const daysAway = next ? Math.max(0, diffDays(today, next.data.date)) : 0;
-  // Past two months a day count reads as noise; weeks are what a person plans by.
+  // Past two months a count reads as noise: the date itself ("14 April") is what a person plans by.
   const inWeeks = daysAway > 60;
+  const apptDate = next ? parseKey(next.data.date) : null;
   const total = noteCount(symptoms);
   // On the day itself the numeral is the notes ready for the visit, not a "0 days".
-  const count = useCountUp(next ? (daysAway === 0 ? total : inWeeks ? Math.round(daysAway / 7) : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
+  const count = useCountUp(next ? (daysAway === 0 ? total : inWeeks && apptDate ? apptDate.d : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
   let big: string; let line: string; let sub: string; let target: string;
   if (next) {
     const days = diffDays(today, next.data.date);
@@ -223,7 +289,7 @@ export function HeroNumberCard() {
       sub = who ? `${who} · ${tail}` : tail;
     } else {
       big = String(count);
-      line = inWeeks ? 'weeks until your appointment' : days === 1 ? 'day until your appointment' : 'days until your appointment';
+      line = inWeeks && apptDate ? `${MONTH_NAMES[apptDate.m0]}${apptDate.y !== parseKey(today).y ? ` ${apptDate.y}` : ''} · your appointment` : days === 1 ? 'day until your appointment' : 'days until your appointment';
       const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
       sub = who ? `${who} · ${notes}` : notes;
     }
@@ -240,6 +306,15 @@ export function HeroNumberCard() {
     sub = total === week ? 'Open them in your Timeline' : `${notesLabel(total)} in all`;
     target = '/(tabs)/timeline';
   }
+  // First run: a big "0" says nothing, so the card is one plain sentence instead of a number.
+  if (!next && total === 0) {
+    return (
+      <Card style={{ gap: space.xxs }}>
+        <Txt variant="headline">Nothing saved yet</Txt>
+        <Txt variant="secondary">Your first note starts your record.</Txt>
+      </Card>
+    );
+  }
   return (
     <HeroNumber
       big={big} line={line} sub={sub}
@@ -252,6 +327,7 @@ export function HeroNumberCard() {
 /** Short phones (320x568): the same number as HeroNumberCard as one line above the prompt, so the appointment signal is not pushed off the first screen. */
 export function HeroChip() {
   const router = useRouter();
+  const winW = useWindowDimensions().width;
   const symptoms = useRecordsStore((s) => s.records.symptom);
   const appts = useRecordsStore((s) => s.records.appointment);
   const today = todayKey();
@@ -259,19 +335,26 @@ export function HeroChip() {
   const total = noteCount(symptoms);
   const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
   const days = next ? diffDays(today, next.data.date) : -1;
-  let label = ''; let target = '/(tabs)/timeline';
-  if (next && days === 0 && total > 0) { label = `${notesLabel(total)} ready for your appointment today`; target = '/(tabs)/doctor'; }
-  else if (next && days > 0) { label = days > 60 ? `${Math.round(days / 7)} weeks to your appointment` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
+  let label = ''; let sub = ''; let target = '/(tabs)/timeline';
+  if (next && days === 0 && total > 0) { label = 'Appointment today'; sub = `${notesLabel(total)} ready for your appointment`; target = '/(tabs)/doctor'; }
+  else if (next && days > 0 && days <= 60 && total > 0) { label = `Appointment ${formatDay(next.data.date).replace(/ /g, '\u00a0')}`; sub = `${notesLabel(total)} ready`; target = '/(tabs)/doctor'; }
+  else if (next && days > 0) { label = days > 60 ? `Appointment on ${parseKey(next.data.date).d} ${MONTH_NAMES[parseKey(next.data.date).m0]}` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
   else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
   if (!label) return null;
   return (
     <PressableCard
       onPress={() => router.push(target as any)}
-      accessibilityLabel={label}
+      accessibilityLabel={sub ? `${label}. ${sub}` : label}
       accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Timeline'}
+      chevron={winW >= 240} // at 195 pt the chevron left 'Appointment' too little room and it broke mid-word
       style={styles.chip}
     >
-      <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
+      <View style={styles.chipRow}>
+        <View style={{ flexShrink: 1 }}>
+          <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
+          {sub ? <Txt variant="secondary" style={{ fontVariant: ['tabular-nums'] }}>{sub}</Txt> : null}
+        </View>
+      </View>
     </PressableCard>
   );
 }
@@ -304,10 +387,15 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 
 const styles = StyleSheet.create({
   chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: 'center', marginBottom: space.sm },
+  chipRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm },
+  ramp: { flexDirection: 'row', alignItems: 'flex-end', gap: 2, height: 18 },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   hero: { paddingTop: space.lg, paddingBottom: space.lg, paddingHorizontal: space.lg, alignItems: 'flex-start' },
   center: { textAlign: 'left' },
+  onset: { gap: space.xs, padding: space.md, borderRadius: radii.card, backgroundColor: colors.plumTint },
+  onsetActions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm, marginTop: space.xs },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
+  wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
   chipsWrap: { marginHorizontal: -layout.gutter },

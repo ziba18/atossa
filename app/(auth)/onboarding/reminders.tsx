@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { Button, ChipGroup, FieldLabel, InlineError } from '../../../components/atossa/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
-import { syncDailyLogReminder } from '../../../lib/notifications';
+import { syncDailyLogReminder, DAILY_LOG_REMINDER_BODY } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
 import { track } from '../../../lib/analytics';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 // Stored when the reminder is off (as before), so Settings has a time ready if it's turned on.
 const DEFAULT_TIME = '20:00';
 
 export default function OnboardingReminders() {
+  usePageTitle('Reminders');
   const router = useRouter();
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
   // Nothing pre-selected: choosing a time is the "yes"; "Not now" is the "no".
@@ -43,12 +45,34 @@ export default function OnboardingReminders() {
     }
   };
 
+  // The web build can't schedule notifications, so don't offer a reminder that would never arrive.
+  if (Platform.OS === 'web') {
+    return (
+      <OnboardingScreen
+        step={3}
+        back={{ label: 'Back' }}
+        title="Reminders come with the iPhone app"
+        helper="On the web, Atossa can’t remind you yet. You can still add a note any time you open it."
+      >
+        <View style={{ marginTop: space.xxl, gap: space.xs }}>
+          <InlineError message={error} style={{ marginBottom: space.xs }} />
+          <Button
+            label={loading ? 'Finishing…' : 'Continue'}
+            loading={loading !== null}
+            disabled={loading !== null}
+            onPress={() => finish(false)}
+          />
+        </View>
+      </OnboardingScreen>
+    );
+  }
+
   return (
     <OnboardingScreen
-      step={4}
+      step={3}
       back={{ label: 'Back' }}
       title="Would a daily reminder help?"
-      helper="If today’s worth noting, I’m here. Two minutes is plenty. You can change this later in Settings."
+      helper={`The reminder says: “${DAILY_LOG_REMINDER_BODY}” You can change this later in Settings.`}
     >
       <FieldLabel label="What time suits you?" />
       <ChipGroup

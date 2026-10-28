@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useNavigation } from 'expo-router';
-import { space } from '../../../constants/atossaUI';
+import { colors, space } from '../../../constants/atossaUI';
+import { Icon } from '../../ui/Icon';
 import type {
   AppointmentData, HistoryData, HistoryType, MedicineData, Rec,
 } from '../../../types/records';
@@ -14,7 +15,8 @@ import { todayKey } from '../../../lib/records/dates';
 import { useScrollRef } from '../timeline/navigation';
 import { UrgentNote, textOf } from '../UrgentNote';
 import { RecordDateField } from './RecordDateField';
-import { HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
+import { ONSET_GROUP_LABEL, ONSET_TYPE, type OnsetGroup } from '../../../lib/records/summary';
+import { ALLERGY_TYPE, PICKABLE_HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
 
 const HELPED_OPTIONS = ['Helped', 'A little', 'No', 'Not sure'] as const;
 
@@ -49,6 +51,8 @@ function missing(kind: RecordDataKind, d: Draft): string {
     return need.length ? `Add ${need.join(' and ')} to save.` : '';
   }
   const h = d as HistoryDraft;
+  if (h.type === ALLERGY_TYPE) return h.told.trim() ? '' : 'Add your allergies to save.';
+  if (h.type === ONSET_TYPE) return h.told.trim() ? '' : 'Add your words to save.';
   const need = [!h.type && 'what it was', !h.date && 'when'].filter(Boolean);
   return need.length ? `Add ${need.join(' and ')} to save.` : '';
 }
@@ -67,6 +71,12 @@ function cleaned(kind: RecordDataKind, d: Draft): AnyData {
     };
   }
   const h = d as HistoryDraft;
+  // An allergy line is a plain statement: no date step (it carries the day it was written), no steps or result.
+  if (h.type === ALLERGY_TYPE) {
+    return { ...h, type: ALLERGY_TYPE, date: h.date || todayKey(), datePrecision: h.date ? h.datePrecision : 'exact', told: h.told.trim(), done: '', result: '' };
+  }
+  // An onset phrase keeps its group key in `done`; only her words change.
+  if (h.type === ONSET_TYPE) return { ...h, type: ONSET_TYPE, told: h.told.trim(), result: '' };
   return { ...h, type: h.type as HistoryType, told: h.told.trim(), done: h.done.trim(), result: h.result.trim() };
 }
 
@@ -236,6 +246,7 @@ export function RecordDetail({
     <ScreenLarge
       title={isNew ? info.newTitle : info.title}
       back={{ label: backLabel, onPress: requestBack }}
+      right={<Icon name={kind === 'medicine' ? 'pill' : kind === 'appointment' ? 'calendar' : 'file-text'} size={26} color={colors.ink3} />}
       scrollRef={scrollRef}
     >
       {discardAsk ? (
@@ -294,11 +305,26 @@ export function RecordDetail({
 type SetFn = (patch: Partial<Draft>) => void;
 
 function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew: boolean }) {
+  // An existing medicine leads with the question people come back to answer; a new one asks it after the dates.
+  const helped = (
+    <View>
+      <FieldLabel label="Did it help?" />
+      <ChipGroup
+        mode="single"
+        options={[...HELPED_OPTIONS]}
+        allowDeselect
+        value={d.helped ?? null}
+        onChange={(v) => set({ helped: (v ?? undefined) as MedicineData['helped'] })}
+        accessibilityLabel="Did it help?"
+      />
+    </View>
+  );
   return (
     <>
       <UrgentNote text={textOf(d)} />
       <TextField label="Name" value={d.name} onChangeText={(name) => set({ name })} autoCapitalize="sentences" />
       <TextField label="Dose" optional value={d.dose ?? ''} onChangeText={(dose) => set({ dose })} />
+      {isNew ? null : helped}
       <RecordDateField
         label="Started"
         value={d.started}
@@ -315,17 +341,7 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
         min={d.started && d.startedPrecision === 'exact' ? d.started : undefined}
         onChange={(stopped, stoppedPrecision) => set({ stopped, stoppedPrecision })}
       />
-      <View>
-        <FieldLabel label="Did it help?" />
-        <ChipGroup
-          mode="single"
-          options={[...HELPED_OPTIONS]}
-          allowDeselect
-          value={d.helped ?? null}
-          onChange={(v) => set({ helped: (v ?? undefined) as MedicineData['helped'] })}
-          accessibilityLabel="Did it help?"
-        />
-      </View>
+      {isNew ? helped : null}
       <TextField
         label="What I noticed"
         hint="In your own words"
@@ -347,7 +363,7 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
   const hasAfter = !!(d.told.trim() || d.tests.trim() || d.next.trim());
   return (
     <>
-      <UrgentNote text={textOf(d)} />
+      <UrgentNote text={textOf(d)} date={d.date} precision={d.datePrecision} />
       <TextField label="Who or where" value={d.who} onChangeText={(who) => set({ who })} autoCapitalize="sentences" />
       <RecordDateField
         label="Date"
@@ -377,28 +393,43 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
 }
 
 function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
+  if (d.type === ONSET_TYPE) {
+    return (
+      <TextField
+        label={`When your ${ONSET_GROUP_LABEL[d.done as OnsetGroup] ?? 'symptoms'} started`}
+        hint="In your own words. It goes on your doctor summary as you write it."
+        multiline value={d.told} onChangeText={(told) => set({ told })}
+      />
+    );
+  }
   return (
     <>
-      <UrgentNote text={textOf(d)} />
+      <UrgentNote text={textOf(d)} date={d.date} precision={d.datePrecision} />
       <View>
         <FieldLabel label="What it was" />
         <ChipGroup
-          options={HISTORY_TYPES}
+          options={PICKABLE_HISTORY_TYPES}
           ghosts={[]}
           value={d.type || null}
           onChange={(type) => set({ type: (type ?? '') as HistoryType | '' })}
           accessibilityLabel="What it was"
         />
       </View>
-      <RecordDateField
-        label="When"
-        value={d.date}
-        precision={d.datePrecision}
-        onChange={(date, datePrecision) => set({ date, datePrecision })}
-      />
-      <TextField label="What I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
-      <TextField label="What was done" optional multiline value={d.done} onChangeText={(done) => set({ done })} />
-      <TextField label="Result" optional hint="How it went, in your own words" multiline value={d.result} onChangeText={(result) => set({ result })} />
+      {d.type === ALLERGY_TYPE ? (
+        <TextField label="Allergies (in my words)" hint="Write anything you want your doctor to know. We don’t check or comment on it." multiline value={d.told} onChangeText={(told) => set({ told })} />
+      ) : (
+        <>
+          <RecordDateField
+            label="When"
+            value={d.date}
+            precision={d.datePrecision}
+            onChange={(date, datePrecision) => set({ date, datePrecision })}
+          />
+          <TextField label="What I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
+          <TextField label="What was done" optional multiline value={d.done} onChangeText={(done) => set({ done })} />
+          <TextField label="Result" optional hint="How it went, in your own words" multiline value={d.result} onChangeText={(result) => set({ result })} />
+        </>
+      )}
     </>
   );
 }

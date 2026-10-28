@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { Profile } from '../types/database';
 import { api, clearTokens, saveTokens } from '../lib/api';
 import { clearOutbox } from '../lib/outbox';
+import { clearSnapshot } from '../lib/recordsSnapshot';
 import { clearLocalChats } from './chatStore';
 import { deleteLastSharedPdf } from '../components/atossa/doctor/share';
 
@@ -26,7 +27,7 @@ interface AuthState {
   fetchProfile: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, display_name?: string) => Promise<void>;
-  loginWithApple: (idToken: string, displayName?: string | null) => Promise<void>;
+  loginWithApple: (idToken: string, displayName?: string | null, authorizationCode?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
   signOut: () => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
@@ -83,10 +84,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
   },
 
-  loginWithApple: async (idToken, displayName) => {
+  loginWithApple: async (idToken, displayName, authorizationCode) => {
     const tokens = await api.post<{ access_token: string; refresh_token: string }>(
       '/auth/apple',
-      { id_token: idToken, display_name: displayName ?? undefined },
+      { id_token: idToken, display_name: displayName ?? undefined, authorization_code: authorizationCode ?? undefined },
     );
     await saveTokens(tokens.access_token, tokens.refresh_token);
     const [user, profile] = await Promise.all([
@@ -111,7 +112,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signOut: async () => {
     await clearOutbox(); // notes still waiting to send belong to this account
+    await clearSnapshot(); // the offline copy of her records too
     await deleteLastSharedPdf();
+    const id = useAuthStore.getState().user?.id;
+    if (id) await clearLocalChats(id);
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
   },
@@ -119,6 +123,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   deleteAccount: async () => {
     await api.delete('/me');
     await clearOutbox();
+    await clearSnapshot();
     const id = useAuthStore.getState().user?.id;
     if (id) await clearLocalChats(id);
     await deleteLastSharedPdf();

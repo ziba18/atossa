@@ -127,7 +127,8 @@ export interface DomainLine {
 
 /** Symptom groups that carry a patient-entered "When did you first notice this?" (pm/prd/onset-and-treatments.md). */
 export type OnsetGroup = 'pain' | 'bleeding' | 'bowelBladder' | 'fatigue' | 'mood' | 'skinHair';
-export interface Onset { month?: number; year?: number; notSure?: boolean }
+/** `words`: her own phrase ("since I was 15"), confirmed by her; shown verbatim, never turned into a date. */
+export interface Onset { month?: number; year?: number; notSure?: boolean; words?: string }
 export const FERTILITY_OPTIONS = ['Trying to get pregnant', 'Not now', 'Not sure', 'Prefer not to say'] as const;
 export type FertilityWish = (typeof FERTILITY_OPTIONS)[number];
 
@@ -193,6 +194,8 @@ export interface FreqBar {
   strength: string;
   /** Where and when the highest rating was given: "Lower tummy centre · Thu 24 Sep"; '' when no rating. Most recent on a tie. */
   worstOn?: string;
+  /** Highest number she gave on these notes (the "Worst" column); null when she gave none. Never averaged. */
+  worst: number | null;
 }
 
 export interface HeatDay {
@@ -232,7 +235,7 @@ export type DocSection =
   | { id: 'periods'; title: string; runs: PeriodRun[]; spotting: string }
   | { id: 'impacts' | 'sex' | 'mood' | 'eating'; title: string; items: CountItem[]; quotes: DocQuote[] }
   | { id: 'tried'; title: string; items: TriedItem[]; quotes: DocQuote[] }
-  | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string }
+  | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string; allergies: string }
   /** `upcoming` = today's appointment and later ones — never shown as past. */
   | { id: 'appointments'; title: string; items: DatedItem[]; more: string; upcoming: DatedItem[] };
 
@@ -279,6 +282,40 @@ export interface SummaryInput {
   familyHistory?: string;
 }
 
+/** The one Health history type that is a plain statement, with no date, steps or result. */
+export const ALLERGY_TYPE: HistoryData['type'] = 'Allergies (in my words)';
+/** Her confirmed onset phrase for one symptom group: `done` holds the group key, `told` her words, verbatim. */
+export const ONSET_TYPE: HistoryData['type'] = 'When it started (in my words)';
+export const ONSET_GROUP_LABEL: Record<OnsetGroup, string> = {
+  pain: 'pain', bleeding: 'bleeding', bowelBladder: 'bowel or bladder', fatigue: 'tiredness', mood: 'mood', skinHair: 'skin or hair',
+};
+
+/** Which onset group a note's words speak about; null when nothing clearly fits (the row is then not offered, so a phrase is never filed under a group she did not name). */
+export function onsetGroupFor(s: { words?: string; worst?: number | null; zones?: string[]; bleedingBetween?: boolean; bowelPain?: boolean; urinePain?: boolean }): OnsetGroup | null {
+  const w = (s.words ?? '').toLowerCase();
+  if (/\b(skin|acne|spots|breakouts?|broke out|hair|chin)\b/.test(w)) return 'skinHair';
+  if (/\b(low mood|mood|anxious|anxiety|irritable|tearful|depressed)\b/.test(w)) return 'mood';
+  // Bloating is a tummy/bowel word: a note that names it never falls to the pain default (PM 3c, U02).
+  if (s.bowelPain || s.urinePain || /\b(bowel|poo|toilet|bladder|wee|urine|bloat\w*|constipation|diarrhoea)\b/.test(w)) return 'bowelBladder';
+  // Pain words win over a mention of her period ("cramps since my first period" is about pain).
+  if (s.bleedingBetween || (!/\b(pain|painful|cramps?|cramping|ache|aching|hurts?|sore)\b/.test(w) && /\b(bleed|bleeding|period|periods|spotting|clots?|flow|flooding)\b/.test(w))) return 'bleeding';
+  // A note that also names a strength or a body place is about pain first; tiredness only when it is the whole note.
+  if (s.worst == null && !(s.zones ?? []).length && /\b(tired|tiredness|exhausted|exhaustion|fatigue|fatigued|sleep)\b/.test(w)) return 'fatigue';
+  // Pain only when the note says so (a pain word, a strength or a body place); otherwise there is no honest group.
+  if (s.worst != null || (s.zones ?? []).length || /\b(pain|painful|cramps?|cramping|ache|aching|hurts?|sore|agony)\b/.test(w)) return 'pain';
+  return null;
+}
+
+/** The onset phrases she confirmed, newest wins per group. */
+export function onsetFromHistory(history: Rec<HistoryData>[]): Partial<Record<OnsetGroup, Onset>> {
+  const out: Partial<Record<OnsetGroup, Onset>> = {};
+  for (const r of [...history].sort((a, b) => a.createdAt.localeCompare(b.createdAt))) {
+    if (r.data.type !== ONSET_TYPE || !r.data.told.trim()) continue;
+    out[r.data.done as OnsetGroup] = { words: r.data.told.trim() };
+  }
+  return out;
+}
+export const ALLERGIES_LABEL = 'Allergies, in my words';
 export const FAMILY_HISTORY_LABEL = 'Family health history, as I was told it';
 
 export interface SummaryOptions {
@@ -350,6 +387,12 @@ function worstWhen(notes: SymptomData[]): string {
 }
 
 /** Raw strength values for a group of notes: "usually 6/10, worst 9/10". */
+/** The highest number she gave across these notes, or null. */
+function groupWorst(notes: SymptomData[]): number | null {
+  const v = notes.map(peakOf).filter((n): n is number => n != null);
+  return v.length ? Math.max(...v) : null;
+}
+
 function groupStrength(notes: SymptomData[]): string {
   const typical: number[] = [];
   const worst: number[] = [];
@@ -465,6 +508,7 @@ function periodRuns(days: PeriodDayData[]): PeriodDayData[][] {
 /** "around June 2015 (as reported)" — only what she typed; never derived from note dates. */
 export function onsetText(o: Onset | undefined): string {
   if (!o) return `First noticed: ${NOT_RECORDED}`;
+  if (!o.year && o.words?.trim()) return `First noticed: “${o.words.trim()}” (her words)`;
   if (o.notSure && !o.year) return 'First noticed: not sure (as reported)';
   if (!o.year) return `First noticed: ${NOT_RECORDED}`;
   const when = o.month && o.month >= 1 && o.month <= 12 ? `${MONTH_NAMES[o.month - 1]} ${o.year}` : `${o.year}`;
@@ -514,27 +558,35 @@ function domainLines(
   const flood = of((s) => s.flooding === true);
   const clots = of((s) => s.clots === true);
   const between = of((s) => s.bleedingBetween === true);
+  // NG88 1.1.1 order: impact on bleeding days, then between-period dates, then flow as she chose, then what she tried.
+  const bleedDates = new Set(bleeding.map((d) => d.date));
+  const onBleedDays = notes.filter((s) => s.date >= from && s.date <= to && bleedDates.has(s.date));
+  const impactBleedDays = new Set(onBleedDays.filter((s) => realImpacts(s).length > 0).map((s) => s.date)).size;
+  const triedBleedDays = new Set(onBleedDays.filter((s) => clean(s.tried)).map((s) => s.date)).size;
+  const betweenDates = [...new Set(notes.filter((s) => s.date >= from && s.date <= to && s.bleedingBetween === true).map((s) => s.date))].sort();
   facts.bleeding = {
     text: joinFacts(
+      impactBleedDays ? `got in the way of things on ${plural(impactBleedDays, 'bleeding day')}` : '',
+      between ? `bleeding between periods on ${plural(between, 'day')} (${betweenDates.map((d) => formatShortDate(d, 'always')).join(', ')})` : '',
       starts ? `${plural(starts, 'period')} logged (${plural(new Set(bleeding.map((d) => d.date)).size, 'bleeding day')})` : '',
       spotting.length ? `spotting on ${plural(new Set(spotting.map((d) => d.date)).size, 'day')}` : '',
       ...bands.map(([b, n]) => `${b.replace('-', '–')} pads or tampons a day on ${plural(n, 'day')}`),
       flood ? `flooding on ${plural(flood, 'day')}` : '',
       clots ? `clots on ${plural(clots, 'day')}` : '',
-      between ? `bleeding between periods on ${plural(between, 'day')}` : '',
+      triedBleedDays ? `tried something on ${plural(triedBleedDays, 'bleeding day')}` : '',
     ),
     onset: 'bleeding',
   };
   const bowel = of((s) => s.bowelPain === true);
   const urine = of((s) => s.urinePain === true);
   facts.bowelBladder = {
-    text: joinFacts(bowel ? `pain opening bowels on ${plural(bowel, 'day')}` : '', urine ? `pain passing urine on ${plural(urine, 'day')}` : ''),
+    text: joinFacts(bowel ? `Pain opening bowels on ${plural(bowel, 'day')}` : '', urine ? `pain passing urine on ${plural(urine, 'day')}` : ''),
     onset: 'bowelBladder',
   };
   const sexDays = of((s) => realImpacts(s).includes('Sex'));
   const afterSex = of((s) => s.bleedingAfterSex === true);
   facts.sexPain = {
-    text: joinFacts(sexDays ? `got in the way of sex on ${plural(sexDays, 'day')}` : '', afterSex ? `bleeding after sex on ${plural(afterSex, 'day')}` : ''),
+    text: joinFacts(sexDays ? `Got in the way of sex on ${plural(sexDays, 'day')}` : '', afterSex ? `bleeding after sex on ${plural(afterSex, 'day')}` : ''),
   };
   const moodNotes = of((s) => clean(s.mood) !== '');
   facts.mood = { text: moodNotes ? `${plural(moodNotes, 'note')} in my words` : '', onset: 'mood' };
@@ -578,9 +630,11 @@ export function summaryToText(doc: DoctorDoc): string {
   for (const d of doc.domains) {
     lines.push(`${d.heading}: ${d.text}`);
     if (d.onset) lines.push(`  ${d.onset}`);
-    if (d.id === 'history' && d.state === 'recorded') {
+    if (d.id === 'history') {
       const h = doc.sections.find((x) => x.id === 'history');
       if (h && h.id === 'history' && h.family) lines.push(`  ${FAMILY_HISTORY_LABEL}: "${h.family}"`);
+      // Same as the A4: whenever the history section exists the page says something about allergies.
+      if (h && h.id === 'history') lines.push(`  ${ALLERGIES_LABEL}: ${h.allergies ? `"${h.allergies}"` : 'not recorded'}`);
     }
   }
   const words = doc.sections.find((s) => s.id === 'words');
@@ -643,10 +697,13 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const noteDays = daysWith(windowNotes, stripFrom, to);
     const bars: FreqBar[] = [];
     if (noteDays) {
-      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worstOn: worstWhen(windowNotes) });
+      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes), worstOn: worstWhen(windowNotes) });
       zoneDays(windowNotes)
         .slice(0, MAX_ZONE_ROWS)
-        .map(({ label, days: n }) => ({ label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(windowNotes.filter((s) => (s.zones ?? []).includes(label))) }))
+        .map(({ label, days: n }) => {
+          const zn = windowNotes.filter((s) => (s.zones ?? []).includes(label));
+          return { label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(zn), worst: groupWorst(zn) };
+        })
         .forEach((b) => bars.push(b));
     }
 
@@ -759,9 +816,13 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   }
 
   // 7. Health history — "Around" dates.
-  const hist = [...input.history.map((r) => r.data)].sort((a, b) => b.date.localeCompare(a.date));
+  const histAll = input.history.map((r) => r.data);
+  const hist = histAll.filter((h) => h.type !== ALLERGY_TYPE && h.type !== ONSET_TYPE).sort((a, b) => b.date.localeCompare(a.date));
+  // The patient's own allergy words, verbatim; never ticked, validated or commented on.
+  const allergyText = histAll.filter((h) => h.type === ALLERGY_TYPE).map((h) => clean(h.told)).filter(Boolean).join('; ');
   const familyText = clean(input.familyHistory);
-  if (hist.length || familyText) {
+  // With any notes saved the page always says something about allergies, even if only 'not recorded'.
+  if (hist.length || familyText || allergyText || notes.length) {
     all.push({
       id: 'history',
       title: 'Health history',
@@ -776,6 +837,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       })),
       more: hist.length > MAX_LISTED ? `${plural(hist.length - MAX_LISTED, 'earlier item')} saved in Atossa.` : '',
       family: familyText,
+      allergies: allergyText,
     });
   }
 
@@ -1001,7 +1063,7 @@ function sectionInner(s: DocSection): string {
     case 'appointments':
       return `<section>${head}${s.upcoming.length ? `<p class="sub">${esc(APPT_AHEAD)}</p>${datedTableHtml(s.upcoming)}${s.items.length ? `<p class="sub">${esc(APPT_PAST)}</p>` : ''}` : ''}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
     case 'history':
-      return `<section>${head}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}${s.family ? `<p><span class="muted">${esc(FAMILY_HISTORY_LABEL)}:</span> <span class="serif">“${esc(curly(s.family))}”</span></p>` : ''}</section>`;
+      return `<section>${head}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}${s.allergies ? `<p><span class="muted">${esc(ALLERGIES_LABEL)}:</span> <span class="serif">“${esc(curly(s.allergies))}”</span></p>` : `<p><span class="muted">${esc(ALLERGIES_LABEL)}:</span> not recorded</p>`}${s.family ? `<p><span class="muted">${esc(FAMILY_HISTORY_LABEL)}:</span> <span class="serif">“${esc(curly(s.family))}”</span></p>` : ''}</section>`;
   }
 }
 
@@ -1011,6 +1073,30 @@ function sectionInner(s: DocSection): string {
  * if the device has them, else the system sans + a serif italic (they can't be embedded here).
  * Type (pt): body 10.5/14.5, quotes 12/16, meta 9/12, heads 12/16 — see PAGE_TYPE.
  */
+// Areas with no section of their own on the page (tiredness, bowel and bladder, sex, mood, skin and hair, eating,
+// pregnancy plans): one quiet line each so a clinic sees what she logged and what she did not ('Not recorded').
+const AREAS_WITH_SECTION: DomainId[] = ['agenda', 'pain', 'bleeding', 'impact', 'tried', 'history'];
+/** The 'Other areas' rows for the page and the on-screen document: recorded lines, then one line each for areas
+ * with nothing recorded / left out, naming them. Empty when every area has its own section. */
+export function otherAreaRows(doc: DoctorDoc): { label: string; text: string; muted: boolean }[] {
+  const rows = doc.domains.filter((d) => !AREAS_WITH_SECTION.includes(d.id));
+  const names = (state: DomainState) => rows.filter((d) => d.state === state).map((d) => d.heading).join(', ');
+  const recorded = rows.filter((d) => d.state === 'recorded').map((d) => ({ label: d.heading, text: d.text.replace(/\u2060/g, ''), muted: false }));
+  const rest = (['not-recorded', 'not-included'] as DomainState[]).filter((st) => names(st))
+    .map((st) => ({ label: st === 'not-recorded' ? NOT_RECORDED : NOT_INCLUDED, text: names(st), muted: true }));
+  // 'First noticed' as she told it, per area, only where she saved one (the plain-text copy already carries these).
+  const first = doc.domains.filter((d) => d.onset && !d.onset.endsWith(NOT_RECORDED))
+    .map((d) => ({ label: `First noticed · ${d.heading}`, text: d.onset.replace(/^First noticed: /, ''), muted: false }));
+  return [...first, ...recorded, ...rest];
+}
+
+function otherAreasHtml(doc: DoctorDoc): string {
+  const rows = otherAreaRows(doc);
+  if (!rows.length) return '';
+  const line = (r: { label: string; text: string; muted: boolean }) => `<tr><th>${esc(r.label)}</th><td${r.muted ? ' class="muted"' : ''}>${esc(r.text)}</td></tr>`;
+  return `<section class="keep"><h2>Other areas</h2><table class="dl areas">${rows.map(line).join('')}</table></section>`;
+}
+
 export function summaryToHtml(doc: DoctorDoc): string {
   const C = DOC_COLORS;
   const T = PAGE_TYPE;
@@ -1021,6 +1107,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
         doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`
       : '',
     ...doc.sections.map(sectionHtml),
+    otherAreasHtml(doc),
   ].join('');
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(doc.title)}</title>
@@ -1034,7 +1121,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   h1 { font-family: ${SERIF}; font-style: italic; font-weight: 400; ${pt(T.title)} margin: 0; }
   .metahead { color: ${C.ink2}; ${pt(T.meta)} margin: 3pt 0 0; padding-bottom: 8pt; border-bottom: 1pt solid ${C.ink}; }
   h2 { ${pt(T.head)} font-weight: 600; margin: 0 0 5pt; }
-  section { padding: ${T.section - 5}pt 0 ${T.section - 9}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
+  section { padding: ${T.section - 6}pt 0 ${T.section - 10}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
   h2 { break-after: avoid; page-break-after: avoid; }
   .keep { break-inside: avoid; page-break-inside: avoid; }
   section:last-child { border-bottom: 0; }
@@ -1051,16 +1138,17 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dl { border-collapse: collapse; margin-top: 1pt; width: 100%; }
   table.dl th { width: 112pt; padding: 0 8pt 1pt 0; text-align: left; vertical-align: baseline; font-weight: 400; color: ${C.ink2}; ${pt(T.label)} }
   table.dl td { padding: 0 0 1pt; vertical-align: baseline; }
+  table.areas th { ${pt(T.meta)} width: 132pt; white-space: nowrap; } table.areas td { ${pt(T.meta)} color: ${C.ink}; } table.areas td.muted { color: ${C.ink2}; }
   table.notes { width: 100%; border-collapse: collapse; table-layout: fixed; }
   table.notes th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
-  table.notes td { padding: 4pt 6pt 4pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
+  table.notes td { padding: 3pt 6pt 3pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
   table.notes td.serif { ${pt(T.body)} }
   table.notes td.nw { white-space: nowrap; }
   table.dated td { padding: 3pt 6pt 3pt 0; }
   table.dated td:nth-child(1) { width: 66pt; } table.dated td:nth-child(2) { width: 96pt; }
   table.dated.tried td:nth-child(1) { width: 120pt; } table.dated.tried td:nth-child(2) { width: 110pt; }
   table.dated tr:last-child td { border-bottom: 0; }
-  table.notes th:nth-child(1) { width: 86pt; } table.notes th:nth-child(2) { width: 78pt; } table.notes th:nth-child(3) { width: 74pt; } table.notes th:nth-child(4) { width: 64pt; }
+  table.notes th:nth-child(1) { width: 80pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
   .bar { margin: 3pt 0 6pt; }
   .track { height: 5pt; background: ${C.track}; border: 0.5pt solid ${C.borderStrong}; margin-top: 2pt; }
   .fill { height: 100%; background: ${C.ink}; }

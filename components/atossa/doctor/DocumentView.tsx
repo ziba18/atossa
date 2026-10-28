@@ -11,6 +11,7 @@ import Svg, { Line } from 'react-native-svg';
 import { fonts } from '../../../constants/atossaUI';
 import { joinFacts } from '../../../lib/records/format';
 import {
+  otherAreaRows,
   APPT_AHEAD, APPT_PAST, DOC_COLORS, PAGE_TYPE, SPOT_DASH, SPOT_STROKE, STRIP_BLEED_KEY, STRIP_KEY, STRIP_SPOT_KEY,
   FAMILY_HISTORY_LABEL, barText, countText, curly, daysText,
   type DatedItem, type DocQuote, type DocSection, type DoctorDoc, type FreqBar,
@@ -121,10 +122,11 @@ function Bars({ bars, st }: { bars: FreqBar[]; st: St }) {
     <View style={{ gap: st.s.gap * 3, marginTop: st.s.gap * 2 }}>
       {bars.map((b) => (
         <View key={b.label} accessible accessibilityLabel={joinFacts(barText(b), b.strength)}>
-          <Txt style={st.body}>
-            <Txt style={st.strong}>{barText(b)}</Txt>
-            {b.strength ? <Txt style={st.muted}>{` · ${b.strength}`}</Txt> : null}
-          </Txt>
+          {/* Two blocks that wrap as wholes: a middot between them used to end a line ('… days ·'). */}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: st.s.gap * 3 }}>
+            <Txt style={[st.body, st.strong]}>{barText(b)}</Txt>
+            {b.strength ? <Txt style={[st.body, st.muted]}>{b.strength}</Txt> : null}
+          </View>
           <View style={{ height: st.s.track, backgroundColor: C.track, borderWidth: 0.5, borderColor: C.borderStrong, marginTop: st.s.gap }}>
             <View style={{ height: '100%', width: `${Math.max(1.5, (b.days / Math.max(1, b.total)) * 100)}%`, backgroundColor: C.ink }} />
           </View>
@@ -177,7 +179,22 @@ function KeyMark({ kind, st }: { kind: 'bleeding' | 'spotting'; st: St }) {
   );
 }
 
-function StripKey({ bleeding, spotting, ghost, st }: { bleeding: boolean; spotting: boolean; ghost: boolean; st: St }) {
+function StripKey({ bleeding, spotting, ghost, st, compact }: { bleeding: boolean; spotting: boolean; ghost: boolean; st: St; compact?: boolean }) {
+  // Phone reader: the number/dot sentence, then the line marks on their own row — same words, shorter (the printed page keeps the full key).
+  if (compact) {
+    return (
+      <View>
+        <Txt style={st.meta}>{STRIP_KEY}</Txt>
+        {bleeding || spotting || ghost ? (
+          <Txt style={st.meta}>
+            {bleeding ? <><KeyMark kind="bleeding" st={st} />{` ${STRIP_BLEED_KEY}.`}</> : null}
+            {spotting ? <>{bleeding ? '  ' : ''}<KeyMark kind="spotting" st={st} />{` ${STRIP_SPOT_KEY}.`}</> : null}
+            {ghost ? `${bleeding || spotting ? '  ' : ''}Faint box = no note on a bleeding or spotting day.` : null}
+          </Txt>
+        ) : null}
+      </View>
+    );
+  }
   return (
     <Txt style={st.meta}>
       {STRIP_KEY}
@@ -211,6 +228,7 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
                 bleeding={section.strip.days.some((d) => d.bleeding)}
                 spotting={section.strip.days.some((d) => d.spotting)}
                 // The large 'weeks' view outlines bleeding/spotting days that have no note (HeatStrip ghost cells).
+                compact={variant !== 'page'}
                 ghost={variant !== 'page' && section.strip.days.some((d) => !d.logged && (d.bleeding || d.spotting))}
                 st={st}
               />
@@ -329,7 +347,7 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
         borderTopWidth: first ? 0 : 0.75, borderTopColor: C.borderStrong,
       }}
     >
-      <Txt style={[st.head, { marginBottom: st.s.gap * 2 }]} accessibilityRole="header">{title}</Txt>
+      <Txt style={[st.head, { marginBottom: st.s.gap * 2 }]} accessibilityRole="header" aria-level={2}>{title}</Txt>
       {children}
     </View>
   );
@@ -340,6 +358,8 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
       key: s.id, title: s.title, body: <SectionBody section={s} st={st} contentWidth={contentWidth} variant={variant} />,
     })),
   ];
+
+  const areas = otherAreaRows(doc);
 
   return (
     <View
@@ -353,6 +373,16 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
         {keepYear(doc.meta, st)}
       </Txt>
       {blocks.map((b, i) => block(b.key, b.title, b.body, i === 0))}
+      {areas.length ? block('areas', 'Other areas', (
+        <View style={{ gap: isPage ? 0 : st.s.gap }}>
+          {areas.map((r) => (
+            <View key={r.label} style={isPage ? { flexDirection: 'row', gap: 8 } : undefined}>
+              <Txt style={[st.meta, isPage && { width: 132 }]}>{r.label}</Txt>
+              <Txt style={[st.meta, isPage && { flex: 1 }, { color: r.muted ? C.ink2 : C.ink }]}>{r.text}</Txt>
+            </View>
+          ))}
+        </View>
+      ), false) : null}
       <View style={{ flexGrow: 1 }} />
       <View style={{ marginTop: st.s.section, paddingTop: st.s.gap * 2, borderTopWidth: 0.5, borderTopColor: C.borderStrong }}>
         <Txt style={isPage ? { ...st.meta, fontSize: PAGE_TYPE.footer[0], lineHeight: PAGE_TYPE.footer[1] } : st.meta}>{doc.footer}</Txt>

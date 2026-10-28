@@ -70,6 +70,9 @@ async function refreshOnce(): Promise<RefreshResult> {
       body: JSON.stringify({ refresh_token: refresh }),
     });
     if (!res.ok) {
+      // A server that is waking up, overloaded or rate-limiting (502/503/504, 5xx, 408, 429) has not rejected the
+      // token: keep it. Only an answer that says the token is no good signs the person out.
+      if (res.status >= 500 || res.status === 408 || res.status === 429) return { token: null, network: true };
       await clearTokens();
       return { token: null, network: false };
     }

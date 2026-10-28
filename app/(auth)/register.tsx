@@ -8,10 +8,12 @@ import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
 import { track } from '../../lib/analytics';
+import { usePageTitle } from '../../lib/usePageTitle';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function RegisterScreen() {
+  usePageTitle('Create an account');
   const router = useRouter();
   const register = useAuthStore((s) => s.register);
   const [name, setName] = useState('');
@@ -41,7 +43,7 @@ export default function RegisterScreen() {
     try {
       await register(trimmedEmail.toLowerCase(), password, trimmedName);
       track('Signup Completed', { method: 'email' });
-      router.replace('/(auth)/onboarding/basics');
+      router.replace('/(auth)/onboarding/consent');
     } catch (err) {
       setLoading(false);
       if (err instanceof ApiError && err.status === 400) setErrors((e) => ({ ...e, email: 'There is already an account with this email. Try signing in.' }));
@@ -50,7 +52,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ScreenLarge title="Create an account" subtitle="Your information stays private to you." back={{ label: 'Back' }}>
+    <ScreenLarge title="Create an account" subtitle="Your notes are stored under your account and only shared when you share them." back={{ label: 'Back' }}>
       <View style={{ gap: space.xl }}>
         <TextField label="Your name" value={name} onChangeText={(v) => { setName(v); clear('name'); }} autoCapitalize="words" autoComplete="name" textContentType="name" error={errors.name} />
         <TextField label="Email" value={email} onChangeText={(v) => { setEmail(v); clear('email'); }} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" placeholder="you@example.com" error={errors.email} />

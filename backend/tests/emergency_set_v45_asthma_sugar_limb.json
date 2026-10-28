@@ -1,0 +1,18 @@
+{
+ "emergency": [
+  "I've been wheezing all night and my lips look a bit blue, the blue inhaler does nothing.",
+  "I'm shaky, sweaty and confused, my sugar is very low and the glucose isn't working.",
+  "My right leg is pale, cold and numb and I can't feel my foot.",
+  "My foot has gone white and cold and I can't move my toes.",
+  "Asthma bad, lips going grey and can barely talk.",
+  "Blood sugar crashed to very low and I'm confused, juice isn't helping."
+ ],
+ "harmless": [
+  "My hands were cold and a bit pale after the walk, warmed up with tea.",
+  "Fingers white and numb in the cold but fine once inside, usual Raynaud's.",
+  "Blue inhaler helps, no wheeze today, breathing fine.",
+  "Sugar was low this morning, had a biscuit and felt better, no confusion.",
+  "Foot went numb sitting cross-legged, pins and needles, gone after a stretch.",
+  "I've had this migraine before, took my usual tablets, and it has eased now."
+ ]
+}

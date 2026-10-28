@@ -60,7 +60,7 @@ export function AgendaField({
       <Txt variant="headline" nativeID="agendaLabel">{title}</Txt>
       {compact ? null : (
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>
-          The one thing to take away. Pick one or write your own.
+          Pick one, or write your own.
         </Txt>
       )}
       <View style={{ marginTop: space.sm }}>

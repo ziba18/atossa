@@ -1,13 +1,15 @@
 import React, { useCallback } from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { space } from '../../../constants/atossaUI';
 import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
-import { syncDailyLogReminder } from '../../../lib/notifications';
+import { syncDailyLogReminder, DAILY_LOG_REMINDER_BODY } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 export default function SettingsScreen() {
+  usePageTitle('Reminders');
   const profile = useAuthStore((s) => s.profile);
   const setProfile = useAuthStore((s) => s.setProfile);
 
@@ -23,6 +25,18 @@ export default function SettingsScreen() {
 
   const reminderOn = profile?.daily_log_reminder_enabled ?? true;
   const reminderTime = profile?.daily_log_reminder_time ?? '20:00';
+
+  // The web build can't schedule notifications, so no switches that would look like they work.
+  if (Platform.OS === 'web') {
+    return (
+      <ScreenLarge title="Reminders" back={{ label: 'Profile' }}>
+        <Card style={{ gap: space.xs }}>
+          <Txt variant="headline">Reminders come with the iPhone app</Txt>
+          <Txt variant="secondary">On the web, Atossa can’t remind you yet. You can still add a note any time you open it.</Txt>
+        </Card>
+      </ScreenLarge>
+    );
+  }
 
   return (
     <ScreenLarge title="Reminders" back={{ label: 'Profile' }}>
@@ -57,7 +71,7 @@ export default function SettingsScreen() {
               }}
             />
             <Txt variant="caption" style={{ marginTop: space.sm }}>
-              {'The reminder says: “If today’s worth noting, I’m here. Two minutes is plenty.”'}
+              {`The reminder says: “${DAILY_LOG_REMINDER_BODY}”`}
             </Txt>
           </View>
         ) : null}

@@ -3,7 +3,7 @@
 // "That's all for now" saves from step 2 on. X / Android back / swipe / scrim always close;
 // with unsaved words the sheet first asks "Keep this note?" in-page (never Alert.alert).
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
+import { Platform, ScrollView, StyleSheet, TextInput, View, useWindowDimensions, type ScrollViewInstance, type TextInputInstance } from 'react-native';
 import {
   Button, Card, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
 } from '../kit';
@@ -13,7 +13,7 @@ import { closeCapture, useCaptureStore, type CaptureOptions } from '../../../lib
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
 import { formatDay, noteCount, notesLabel } from '../../../lib/records/format';
-import { urgentSignpost } from '../../../lib/urgentWording';
+import { URGENT_SIGNPOST, urgentSignpost } from '../../../lib/urgentWording';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { type Draft, answeredOf, emptyDraft, hasContent, toSymptom } from './draft';
 import { FollowUp } from './FollowUp';
@@ -53,6 +53,11 @@ const joinWords = (prefix: string, more: string) => {
 };
 
 function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureOptions }) {
+  // Under ~240 pt wide (200% text on a small phone) the forced line break and helper line push the field off screen.
+  const win = useWindowDimensions();
+  const narrow = win.width < 240;
+  // Under ~520 pt tall (keyboard up on a small window) the field starts smaller so the Continue bar and the safety box stay reachable.
+  const lowH = win.height < 520;
   const createRecord = useRecordsStore((s) => s.create);
   const tag = options.tag;
 
@@ -226,7 +231,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
   // ---- header / footer ----------------------------------------------------------------------
   let header: React.ReactNode;
   if (!confirmClose && stage === 'capture') {
-    header = (
+    // The web build has no voice at all, so it opens straight on the writing area: no tab that leads to a dead end.
+    header = Platform.OS === 'web' ? null : (
       <SegmentedControl<Mode>
         accessibilityLabel="Speak or type"
         options={[{ value: 'speak', label: 'Speak' }, { value: 'type', label: 'Type' }]}
@@ -305,10 +311,12 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     const micLabel = recording ? 'Tap to stop' : draft.words.trim() ? 'Add more by voice' : 'Tap to start';
     body = (
       <View>
-        <Txt variant="title" accessibilityRole="header">{PROMPT}</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xs }}>
-          {mode === 'speak' ? 'Say it however it comes. Messy is fine.' : 'Write it however it comes. Messy is fine.'}
-        </Txt>
+        <Txt variant="title" accessibilityRole="header">{narrow ? PROMPT.replace('\n', ' ') : PROMPT}</Txt>
+        {narrow ? null : (
+          <Txt variant="secondary" style={{ marginTop: space.xs }}>
+            {mode === 'speak' ? 'Say it however it comes. Messy is fine.' : 'Write it however it comes. Messy is fine.'}
+          </Txt>
+        )}
         {past ? <Txt variant="caption" style={{ marginTop: space.xs }}>{`Note for ${formatDay(draft.date)}`}</Txt> : null}
         {voiceNotice && mode === 'type' ? (
           <Txt variant="secondary" color={colors.ink} style={{ marginTop: space.sm }}>{VOICE_UNAVAILABLE}</Txt>
@@ -326,7 +334,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 placeholderTextColor={colors.ink2}
                 accessibilityLabel="Your words"
                 accessibilityHint="You can edit these before you continue"
-                style={[styles.box, styles.transcript]}
+                style={[styles.box, styles.transcript, lowH && styles.lowField]}
               />
             ) : null}
             <View style={[styles.micArea, idleSpeak && styles.micAreaIdle]}>
@@ -353,7 +361,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
             accessibilityLabel="Your words"
             onFocus={() => setTypedFocus(true)}
             onBlur={() => setTypedFocus(false)}
-            style={[styles.box, styles.typed, typedFocus && styles.typedFocus]}
+            style={[styles.box, styles.typed, lowH && styles.lowField, typedFocus && styles.typedFocus]}
           />
         )}
       </View>
@@ -401,7 +409,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       full
       scrollRef={scrollRef}
       header={header}
-      footer={footer}
+      footer={narrow ? undefined : footer}
       closeLabel={confirmClose ? 'Keep editing' : 'Close'}
     >
       {confirmClose && saveError ? <InlineError message={saveError} style={{ marginBottom: space.md }} /> : null}
@@ -413,6 +421,12 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
         </Card>
       ) : null}
       {body}
+      {/* Always there on the writing step, whatever is typed: the same fixed sentence the detector shows, never a reading of the note. */}
+      {stage === 'capture' && !confirmClose && !signpost ? (
+        <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.lg }}>{URGENT_SIGNPOST}</Txt>
+      ) : null}
+      {/* Under ~240 pt wide a sticky footer would cover the field, so the action follows the content instead. */}
+      {narrow && footer ? <View style={{ marginTop: space.lg }}>{footer}</View> : null}
     </Sheet>
   );
 }
@@ -424,6 +438,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular, fontSize: 17, lineHeight: 24, color: colors.ink, textAlign: 'left', textAlignVertical: 'top',
   },
   transcript: { backgroundColor: colors.plumTint, minHeight: 120 },
+  lowField: { minHeight: 96 },
   typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, minHeight: 180 },
   // Plum 2px ring (padding trimmed 1 so the text does not shift); replaces RN-web's near-black outline.
   typedFocus: { borderColor: colors.plum, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },

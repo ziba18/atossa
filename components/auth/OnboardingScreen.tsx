@@ -1,15 +1,14 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { ScrollView, StyleSheet, View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, fonts, layout, space } from '../../constants/atossaUI';
+import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
 
-export const ONBOARDING_STEPS = 4;
+export const ONBOARDING_STEPS = 3;
 
 /**
- * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
- * above a gradient progress bar (the caption carries the meaning), the question in the display serif, the question as the large title, helper text in ink2, then the controls.
+ * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 3" caption
+ * above three quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
@@ -22,14 +21,10 @@ export function OnboardingScreen({
   children: React.ReactNode;
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
 }) {
+  // Under ~240 pt of layout width (200% text on a 320 phone) the 34 pt title broke words mid-letter.
+  const narrow = useWindowDimensions().width < 240;
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
-      <LinearGradient
-        colors={[colors.washTop, colors.canvas]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={[styles.wash, { pointerEvents: 'none' }]}
-      />
       <ScrollView
         ref={scrollRef as React.RefObject<ScrollViewInstance>}
         contentContainerStyle={styles.column}
@@ -40,11 +35,13 @@ export function OnboardingScreen({
       >
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
-          <View style={styles.track} aria-hidden>
-            <View style={{ width: `${(step / ONBOARDING_STEPS) * 100}%`, height: 4, borderRadius: 2, backgroundColor: colors.plum }} />
+          <View style={styles.segments} aria-hidden>
+            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
+              <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
+            ))}
           </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
-          <Txt variant="largeTitle" accessibilityRole="header" style={styles.title}>{title}</Txt>
+          <Txt variant={narrow ? 'title' : 'hero'} accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>
         {children}
@@ -60,9 +57,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: layout.gutter, paddingBottom: space.xxxl,
   },
   head: { paddingTop: space.sm, marginBottom: space.xxl },
-  wash: { position: 'absolute', top: 0, left: 0, right: 0, height: 360 },
   noBack: { height: 44 },
   step: { marginTop: space.xs, marginBottom: space.xs },
-  track: { height: 4, borderRadius: 2, backgroundColor: colors.sunken, marginTop: space.xs, overflow: 'hidden' },
-  title: { fontFamily: fonts.serif, fontSize: 36, lineHeight: 42, letterSpacing: 0 },
+  segments: { flexDirection: 'row', gap: 6, marginTop: space.xs },
+  segment: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.sunken },
+  segmentDone: { backgroundColor: colors.plum },
 });

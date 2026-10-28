@@ -20,9 +20,9 @@ export default function AuthLayout() {
       <Stack.Screen name="login" />
       <Stack.Screen name="register" />
       <Stack.Screen name="forgot-password" />
+      <Stack.Screen name="onboarding/consent" />
       <Stack.Screen name="onboarding/name" />
       <Stack.Screen name="onboarding/basics" />
-      <Stack.Screen name="onboarding/last-period" />
       <Stack.Screen name="onboarding/reminders" />
     </Stack>
   );

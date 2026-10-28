@@ -1,8 +1,10 @@
 // Red-line lint (pm/redline-words.md Block classes) over every line summary v2 writes itself: completeness, the 13 area
 // headings and texts, onset lines; Sam seed + 300 random holistic records, sensitive areas off and on. Fails on any hit.
 // Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs scripts/ai-eval/summary-v2-redline.test.mjs
-import { buildDoctorSummary, summaryToText } from '../../lib/records/summary.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { buildDoctorSummary, summaryToText } = await import('../../lib/records/summary.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 const BLOCK = /\b(diagnos\w*|risk|predict\w*|typical|atypical|normal|abnormal|irregular|heavy|insights?|pattern analysis|correlat\w*|linked to|triggers?|in range|out of range|worsening|getting (?:worse|better)|improving|trend\w*|ovulation|fertile|follicular|luteal|may match|consistent with|suggests?|likely|approved|validated|faster diagnosis|streak|well done|great job|keep it up|chronic|severe|moderate|mild|score|percent|%)/i;
 let seed = 7; const rnd = () => ((seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296);
 const pick = (a) => a[Math.floor(rnd() * a.length)];

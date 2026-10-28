@@ -15,7 +15,7 @@ const DIVIDER_INSET = ROW_PAD + GLYPH + space.md;
 export function GroupHeading({ title, style }: { title: string; style?: StyleProp<ViewStyle> }) {
   return (
     <View style={[{ marginBottom: space.xs, paddingHorizontal: space.xxs }, style]}>
-      <Txt variant="groupLabel" accessibilityRole="header">{title}</Txt>
+      <Txt variant="groupLabel" accessibilityRole="header" aria-level={2}>{title}</Txt>
     </View>
   );
 }
@@ -34,12 +34,13 @@ export function Group({
   accessibilityLabel?: string;
 }) {
   const rows = React.Children.toArray(children).filter(Boolean);
+  const tight = useWindowDimensions().width < 280; // rows drop their glyph here, so the divider starts at the row edge
   return (
     <View style={[styles.group, style]} accessibilityLabel={accessibilityLabel}>
       {edge ? <View style={styles.clayEdge} /> : null}
       {rows.map((child, i) => (
         <View key={i} style={edge ? styles.afterEdge : undefined}>
-          {i > 0 ? <View style={[styles.divider, { marginLeft: hasIcon(child) ? DIVIDER_INSET : ROW_PAD }]} /> : null}
+          {i > 0 ? <View style={[styles.divider, { marginLeft: hasIcon(child) && !tight ? DIVIDER_INSET : ROW_PAD }]} /> : null}
           {child}
         </View>
       ))}
@@ -55,7 +56,7 @@ const hasIcon = (child: React.ReactNode) =>
  * optional trailing value (ink-3) and a chevron when it navigates.
  */
 export function GroupRow({
-  icon, label, detail, quote, value, onPress, chevron = true, accessibilityLabel,
+  icon, label, detail, quote, value, onPress, chevron = true, accessibilityLabel, tint,
 }: {
   icon?: IconName;
   label: string;
@@ -66,24 +67,31 @@ export function GroupRow({
   onPress: () => void;
   chevron?: boolean;
   accessibilityLabel?: string;
+  /** Soft plum wash for the one row that matters most (e.g. the next appointment). */
+  tint?: boolean;
 }) {
   // Under ~280 px (200% zoom) the decorative icon goes and the gap closes, so words are not broken mid-word.
-  const tight = useWindowDimensions().width < 280;
+  const width = useWindowDimensions().width;
+  const tight = width < 280;
+  // Under ~220 pt the value would squeeze the label into broken words, so it moves under the label.
+  const stacked = width < 220 && !!value;
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join('. ')}
-      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, pressed && { backgroundColor: colors.canvas }]}
+      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, tint && { backgroundColor: colors.plumTint }, pressed && { backgroundColor: colors.canvas }]}
     >
       {icon && !tight ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
       <View style={styles.text}>
         <Txt variant="body">{label}</Txt>
+        {stacked ? <Txt variant="secondary" style={styles.tabular}>{value}</Txt> : null}
         {detail ? <Txt variant="secondary">{detail}</Txt> : null}
         {quote ? <Quote numberOfLines={2}>{quote}</Quote> : null}
       </View>
-      {value ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
-      {chevron ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+      {value && !stacked ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
+      {/* Under ~220 pt the chevron goes (as on the hero card): its 32 pt lets a long word fit instead of breaking mid-word. */}
+      {chevron && width >= 220 ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
     </Pressable>
   );
 }

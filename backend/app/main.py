@@ -4,13 +4,15 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from app.body_limit import BodyLimit
 from app.config import settings
 from app.database import get_db
 from app.routers import auth, profiles, connections, chat, records, legal, basket_buddy
 
 MAX_BODY_BYTES = 256 * 1024
 
-app = FastAPI(title="Atossa API", version="1.0.0")
+_docs = {"docs_url": None, "redoc_url": None, "openapi_url": None} if settings.hide_api_docs else {}
+app = FastAPI(title="Atossa API", version="1.0.0", **_docs)
 
 
 @app.exception_handler(RequestValidationError)
@@ -20,6 +22,7 @@ async def validation_error(request, exc: RequestValidationError):
     detail = [{"loc": list(e.get("loc", ())), "msg": e.get("msg", ""), "type": e.get("type", "")} for e in exc.errors()]
     return JSONResponse(status_code=422, content={"detail": detail})
 
+app.add_middleware(BodyLimit, limit=MAX_BODY_BYTES)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],

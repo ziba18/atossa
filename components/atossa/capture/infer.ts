@@ -142,7 +142,11 @@ function triedFrom(words: string): string | undefined {
   const hit = m?.[1] ?? words.match(/,\s*(tried\s+[^.!?;\n]+)/i)?.[1];
   if (!hit) return undefined;
   // Cut at "then" ("tried a hot bath, then slept") and drop "tried nothing yet" (not having tried is not a try).
-  const clause = hit.trim().split(/,?\s+then\b/i)[0].replace(/[,\s]+$/, '');
+  // Also cut before an allergy statement ("tried ibuprofen but I'm allergic to codeine"): allergies are only ever typed by her
+  // in Health history (Safety run01 ruling 3), never pre-filled from a note.
+  const clause = hit.trim().split(/,?\s+then\b/i)[0]
+    .split(/,?\s*(?:\b(?:but|and|as|because|cos|since|though)\s+)?(?:\b(?:i'?m|i’m|i am|im|i have|i'?ve|i’ve)\s+)?\b(?:allergic\b|(?:an|my) allergy to\b)/i)[0]
+    .replace(/[,\s]+$/, '');
   if (/^(?:tried|took|used|been taking|been using)\s+(?:nothing|nowt|none|no\b|not)/i.test(clause)) return undefined;
   // "took the bus home", "took ages", "used before": not a remedy.
   if (/^(?:took|used|been taking|been using)\s+(?:the |a )?(?:bus|train|tube|tram|taxi|cab|car|ages|hours|forever|a while|time|before|to\b|up\b|it\b|that\b|this\b|already|again|today)/i.test(clause)) return undefined;
@@ -151,7 +155,8 @@ function triedFrom(words: string): string | undefined {
 
 const OTHER_NOUN = '(?:sister|mum|mom|mother|dad|father|brother|friend|cousin|partner|boyfriend|girlfriend|husband|wife|colleague|daughter|son|aunt|auntie|nan|nana|gran|granny|grandma|neighbour|neighbor|boss|teacher)';
 // "My mum's pain", "Mum's had it worse": a possessive or bare relative at the start is someone else too.
-const OTHER_SUBJECT = new RegExp(`^(?:(?:my )?${OTHER_NOUN}(?:['’]s)?\\b|she\\b|he\\b|her\\b|his\\b|they\\b|their\\b)`, 'i');
+// "My partner and I are trying" is her sentence too (joint subject).
+const OTHER_SUBJECT = new RegExp(`^(?:(?:my )?${OTHER_NOUN}(?:['’]s)?\\b(?!\\s+and\\s+(?:i|me)\\b)|she\\b|he\\b|her\\b|his\\b|they\\b|their\\b)`, 'i');
 const OTHER_MENTION = new RegExp(`\\bmy ${OTHER_NOUN}\\b`, 'i');
 const THIRD_PERSON = /\b(?:she|he|her|his|hers|they|their)\b/i;
 const FIRST_PERSON = /\b(?:i|i['’]m|i['’]ve|i['’]d|me|mine|myself)\b/i;

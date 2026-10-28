@@ -11,14 +11,15 @@ import {
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
 import { AgendaField } from '../../../components/atossa/doctor/AgendaField';
-import { DocumentPreview } from '../../../components/atossa/doctor/DocumentPreview';
+import { DocumentPreview, SummaryThumb } from '../../../components/atossa/doctor/DocumentPreview';
 import { PageOneCards } from '../../../components/atossa/doctor/PageOneCards';
 import { SectionToggles } from '../../../components/atossa/doctor/SectionToggles';
 import { printSummary, shareSummaryPdf } from '../../../components/atossa/doctor/share';
 import { useDoctorBuilder, useDoctorDoc } from '../../../components/atossa/doctor/useDoctorDoc';
+import { useTimelineSession } from '../../../components/atossa/timeline/session';
 import { haptics } from '../../../lib/haptics';
 import { formatDay, joinFacts, notesLabel } from '../../../lib/records/format';
-import { todayKey } from '../../../lib/records/dates';
+import { toKey, todayKey } from '../../../lib/records/dates';
 import {
   RANGE_LABEL, VISIT_TYPES, agendaTitleFor, summaryToHtml, type RangeChoice, type VisitType,
 } from '../../../lib/records/summary';
@@ -30,7 +31,7 @@ const isCancel = (e: unknown) => /cancel|did not complete|dismiss/i.test(String(
 function Step({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={{ marginTop: space.xxl, gap: space.sm }}>
-      <Txt variant="headline" accessibilityRole="header">{title}</Txt>
+      <Txt variant="headline" accessibilityRole="header" aria-level={2}>{title}</Txt>
       {children}
     </View>
   );
@@ -44,6 +45,8 @@ export default function DoctorScreen() {
   const loading = useRecordsStore((s) => s.loading);
   const loadedFor = useRecordsStore((s) => s.loadedFor);
   const loadError = useRecordsStore((s) => s.error);
+  const offlineCopyFrom = useRecordsStore((s) => s.offlineCopyFrom);
+  const localKey = (iso: string) => { const d = new Date(iso); return toKey(d.getFullYear(), d.getMonth(), d.getDate()); };
   const load = useRecordsStore((s) => s.load);
   const savedNote = useRecordsStore((s) => s.records.doctor_note[0]?.data.text ?? '');
   const saveDoctorNote = useRecordsStore((s) => s.saveDoctorNote);
@@ -107,7 +110,7 @@ export default function DoctorScreen() {
 
   if (loadedFor === null && (loading || loadError)) {
     return (
-      <ScreenLarge wash={false} title="For my doctor" right={<HeaderAvatar />}>
+      <ScreenLarge title="For my doctor" right={<HeaderAvatar />}>
         {loadError ? (
           <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} />
         ) : (
@@ -129,16 +132,19 @@ export default function DoctorScreen() {
   // No data at all for this summary: a calm empty state instead of an empty page.
   // Web at desktop width: preview (the document) on the right, controls always open on the left.
   const desk = Platform.OS === 'web' && winWidth >= 1024;
+  // Under ~240 pt wide (200% text on a small phone) a sticky bar plus the tab bar leaves no room for the summary: the bar moves to the end of the page.
+  const inlineBar = winWidth < 240 || winHeight < 450;
   const nothingYet = doc.empty && doc.available.length === 0;
   // An appointment today: the note field sits above the Customise fold (phone layout) so it is hard to miss.
+  // Phones with notes and an appointment: page 1 itself rides the appointment card, above the fold (PRD doctor-v2 §21).
+  const thumbUp = !desk && winWidth >= 300 && winHeight >= 800 && !nothingYet && !doc.empty && !!upcoming;
   const agendaUp = !desk && !nothingYet && upcoming?.data.date === today;
   // With nothing to share, the builder steps are noise — only the range stays, and only when a
   // longer range would find something.
   const olderData = symptomRecs.some((r) => r.data.date < doc.from) || periodRecs.some((r) => r.data.date < doc.from);
   const off = doc.empty || busy !== null;
 
-  // One compact row: Save/Share PDF (primary, document icon) with Print and On screen as smaller labelled buttons.
-  const roomy = winWidth >= 380;
+  // One slim row: Share PDF (primary) + Print and Show on screen as labelled 48 icon buttons.
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
@@ -146,11 +152,11 @@ export default function DoctorScreen() {
         <Button
           label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
           accessibilityLabel={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
-          icon={roomy ? 'file-text' : undefined}
+          icon={winWidth >= 380 ? 'file-text' : undefined}
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
-          style={{ flex: 1.3, minWidth: 0, paddingHorizontal: space.sm, maxWidth: desk ? 420 : undefined }}
+          style={{ flex: 1.3, minWidth: 0, paddingHorizontal: space.sm, maxWidth: desk ? 420 : undefined, ...(short ? { minHeight: heights.minHit } : null) }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
         <Button
@@ -167,17 +173,25 @@ export default function DoctorScreen() {
   );
 
   return (
-    <ScreenLarge wash={false} wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
-      {short ? null : (
-        <Txt variant="body" color={colors.ink2}>
-          Your notes, in your words, ready to share.
-        </Txt>
+    <ScreenLarge wash={false} wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={nothingYet || inlineBar ? undefined : footer}>
+      {/* With notes the title and the Save bar already say it; the line is kept for the first run only (more room to the chart above the fold). */}
+      {short || !nothingYet ? null : (
+        <Txt variant="body" color={colors.ink2}>Your notes, in your words, for your appointment.</Txt>
       )}
 
+      {offlineCopyFrom ? (
+        <Card tone="sunken" style={{ marginTop: space.md }}>
+          <Txt accessibilityRole="alert" testID="offline-copy">
+            {`No connection. This is the copy saved on this phone. Made on ${formatDay(localKey(offlineCopyFrom), 'always')}.`}
+          </Txt>
+          {userId ? <Button label="Try again" variant="text" small onPress={() => load(userId)} /> : null}
+        </Card>
+      ) : null}
+
       {upcoming ? (
-        <Card style={{ marginTop: short ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <Card style={{ marginTop: short || thumbUp ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
           {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
-          {winWidth < 240 || short ? null : (
+          {winWidth < 240 || short || thumbUp ? null : (
           <View aria-hidden style={{
             width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
             alignItems: 'center', justifyContent: 'center',
@@ -186,15 +200,24 @@ export default function DoctorScreen() {
           </View>
           )}
           <View style={{ flex: 1 }}>
-            <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
-            <Txt variant="headline">
-              {joinFacts(upcoming.data.who.trim(), formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
-            </Txt>
+            {/* The date rides the caption so the name gets a line to itself (one line at 360). */}
+            {thumbUp || winWidth < 300 ? (
+              <>
+                <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
+                <Txt variant="caption">{formatDay(upcoming.data.date)}</Txt>
+              </>
+            ) : (
+              <Txt variant="caption">
+                {joinFacts(upcoming.data.date === today ? 'Appointment today' : 'Next appointment', formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
+              </Txt>
+            )}
+            <Txt variant="headline">{upcoming.data.who.trim() || formatDay(upcoming.data.date)}</Txt>
           </View>
+          {thumbUp ? <SummaryThumb doc={doc} width={winWidth < 340 ? 72 : 88} /> : null}
         </Card>
       ) : null}
 
-      {desk ? (
+      {desk && !nothingYet ? (
         <View style={{ flexDirection: 'row', gap: space.xxl, alignItems: 'flex-start' }}>
           <View style={{ width: 340 }}>
       {nothingYet ? null : (
@@ -225,7 +248,7 @@ export default function DoctorScreen() {
       )}
 
       {nothingYet ? null : (
-        <View style={{ marginTop: space.xxl }}>
+        <View style={{ marginTop: space.xl }}>
           <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
@@ -254,7 +277,18 @@ export default function DoctorScreen() {
             <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
           </Card>
         ) : (
-          <DocumentPreview doc={doc} tall={desk} />
+          <>
+            <DocumentPreview doc={doc} tall={desk} />
+            <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>
+              <Button
+                label="See the patterns behind this"
+                variant="text"
+                small
+                onPress={() => { useTimelineSession.getState().setMode('patterns'); router.push('/(tabs)/timeline' as any); }}
+                accessibilityHint="Opens Patterns on the Timeline tab"
+              />
+            </View>
+          </>
         )}
       </Step>
 
@@ -281,6 +315,17 @@ export default function DoctorScreen() {
         </Step>
       ) : null}
 
+      {nothingYet && !olderData ? (
+        <View style={{ marginTop: space.md }} accessible accessibilityLabel="Example summary. Made-up words, not yours.">
+        <Card tone="sunken">
+          <Txt variant="groupLabel">Example</Txt>
+          <Txt variant="secondary" style={{ marginTop: space.xxs }}>How often and how strong</Txt>
+          <Txt variant="body" style={{ marginTop: space.xs }}>Lower tummy · 12 of 28 days</Txt>
+          <Txt variant="quote" style={{ marginTop: space.sm }}>{'“Dull ache that comes and goes, worse in the evening.”'}</Txt>
+        </Card>
+        </View>
+      ) : null}
+
       {!nothingYet && !doc.empty ? (
         <>
           <PageOneCards doc={doc} showAgenda={!agendaUp} />
@@ -290,10 +335,18 @@ export default function DoctorScreen() {
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
       ) : null}
-
           <Step title="Your summary page">
-            <DocumentPreview doc={doc} tall={desk} />
+            <DocumentPreview doc={doc} tall={desk} noCard={thumbUp} />
           </Step>
+          <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>
+            <Button
+              label="See the patterns behind this"
+              variant="text"
+              small
+              onPress={() => { useTimelineSession.getState().setMode('patterns'); router.push('/(tabs)/timeline' as any); }}
+              accessibilityHint="Opens Patterns on the Timeline tab"
+            />
+          </View>
         </>
       ) : null}
 
@@ -346,7 +399,7 @@ export default function DoctorScreen() {
       )}
 
       {nothingYet || agendaUp ? null : (
-        <View style={{ marginTop: space.xxl }}>
+        <View style={{ marginTop: space.xl }}>
           <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
@@ -364,6 +417,7 @@ export default function DoctorScreen() {
       )}
 
       <SafetyLine style={{ marginTop: space.xxl }} />
+      {inlineBar ? <View style={{ marginTop: space.xl }}>{footer}</View> : null}
     </ScreenLarge>
   );
 }

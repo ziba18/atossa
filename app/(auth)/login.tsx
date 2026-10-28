@@ -7,10 +7,12 @@ import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
 import { routeAfterSignIn } from '../../lib/authRouting';
+import { usePageTitle } from '../../lib/usePageTitle';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function LoginScreen() {
+  usePageTitle('Sign in');
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
   const [email, setEmail] = useState('');
