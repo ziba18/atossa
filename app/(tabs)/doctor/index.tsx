@@ -11,7 +11,7 @@ import {
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
 import { AgendaField } from '../../../components/atossa/doctor/AgendaField';
-import { DocumentPreview } from '../../../components/atossa/doctor/DocumentPreview';
+import { DocumentPreview, SummaryThumb } from '../../../components/atossa/doctor/DocumentPreview';
 import { PageOneCards } from '../../../components/atossa/doctor/PageOneCards';
 import { SectionToggles } from '../../../components/atossa/doctor/SectionToggles';
 import { printSummary, shareSummaryPdf } from '../../../components/atossa/doctor/share';
@@ -175,6 +175,8 @@ export default function DoctorScreen() {
   const inlineBar = winWidth < 240 || winHeight < 450;
   const nothingYet = doc.empty && doc.available.length === 0;
   // An appointment today: the note field sits above the Customise fold (phone layout) so it is hard to miss.
+  // Phones with notes and an appointment: page 1 itself rides the appointment card, above the fold (PRD doctor-v2 §21).
+  const thumbUp = !desk && !nothingYet && !doc.empty && !!upcoming;
   const agendaUp = !desk && !nothingYet && upcoming?.data.date === today;
   // With nothing to share, the builder steps are noise — only the range stays, and only when a
   // longer range would find something.
@@ -224,7 +226,7 @@ export default function DoctorScreen() {
       {upcoming ? (
         <Card style={{ marginTop: short ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
           {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
-          {winWidth < 240 || short ? null : (
+          {winWidth < 240 || short || thumbUp ? null : (
           <View aria-hidden style={{
             width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
             alignItems: 'center', justifyContent: 'center',
@@ -239,6 +241,7 @@ export default function DoctorScreen() {
             </Txt>
             <Txt variant="headline">{upcoming.data.who.trim() || formatDay(upcoming.data.date)}</Txt>
           </View>
+          {thumbUp ? <SummaryThumb doc={doc} width={winWidth < 340 ? 72 : 88} /> : null}
         </Card>
       ) : null}
 
@@ -362,7 +365,7 @@ export default function DoctorScreen() {
         <>
           <PageOneCards doc={doc} showAgenda={!agendaUp} />
           <Step title="Your summary page">
-            <DocumentPreview doc={doc} tall={desk} />
+            <DocumentPreview doc={doc} tall={desk} noCard={thumbUp} />
           </Step>
           <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>
             <Button
