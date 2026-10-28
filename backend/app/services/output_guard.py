@@ -572,7 +572,11 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))", re.I | re.S)
 
 
+_WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
+
+
 def _hits_whole(rx, text: str) -> bool:
+    text = text[:_WHOLE_SCAN_CAP]
     m = rx.search(text)
     if not m:
         return False
