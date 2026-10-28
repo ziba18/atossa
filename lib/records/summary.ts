@@ -127,7 +127,8 @@ export interface DomainLine {
 
 /** Symptom groups that carry a patient-entered "When did you first notice this?" (pm/prd/onset-and-treatments.md). */
 export type OnsetGroup = 'pain' | 'bleeding' | 'bowelBladder' | 'fatigue' | 'mood' | 'skinHair';
-export interface Onset { month?: number; year?: number; notSure?: boolean }
+/** `words`: her own phrase ("since I was 15"), confirmed by her; shown verbatim, never turned into a date. */
+export interface Onset { month?: number; year?: number; notSure?: boolean; words?: string }
 export const FERTILITY_OPTIONS = ['Trying to get pregnant', 'Not now', 'Not sure', 'Prefer not to say'] as const;
 export type FertilityWish = (typeof FERTILITY_OPTIONS)[number];
 
@@ -459,6 +460,7 @@ function periodRuns(days: PeriodDayData[]): PeriodDayData[][] {
 /** "around June 2015 (as reported)" — only what she typed; never derived from note dates. */
 export function onsetText(o: Onset | undefined): string {
   if (!o) return `First noticed: ${NOT_RECORDED}`;
+  if (!o.year && o.words?.trim()) return `First noticed: “${o.words.trim()}” (her words)`;
   if (o.notSure && !o.year) return 'First noticed: not sure (as reported)';
   if (!o.year) return `First noticed: ${NOT_RECORDED}`;
   const when = o.month && o.month >= 1 && o.month <= 12 ? `${MONTH_NAMES[o.month - 1]} ${o.year}` : `${o.year}`;
