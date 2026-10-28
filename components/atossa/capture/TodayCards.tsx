@@ -25,9 +25,6 @@ import { addDays, diffDays } from '../../../lib/records/dates';
 
 const PROMPT = 'What’s been going on with your body?';
 
-/** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
-const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
-
 export function HeroCard() {
   const narrowW = useWindowDimensions().width < 360;
   return (
@@ -55,16 +52,6 @@ export function HeroCard() {
           <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
         </>
       )}
-      <View style={styles.next} accessible accessibilityLabel="After you speak, Atossa asks only for what’s missing: when, how strong, and where.">
-        <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.xs }}>Next:</Txt>
-        {NEXT_STEPS.map((label, i) => (
-          <View key={label} style={styles.nextItem}>
-            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{label}</Txt>
-            {/* Separator trails its label, so a wrapped line never starts with a stray dot. */}
-            {i < NEXT_STEPS.length - 1 ? <View style={styles.nextDot} /> : null}
-          </View>
-        ))}
-      </View>
     </Card>
   );
 }
@@ -323,12 +310,6 @@ const styles = StyleSheet.create({
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
-  next: {
-    flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start',
-    marginTop: space.sm, paddingTop: 0, 
-  },
-  nextItem: { flexDirection: 'row', alignItems: 'center' },
-  nextDot: { width: 3, height: 3, borderRadius: 2, backgroundColor: colors.ink3, marginHorizontal: 5 },
   chipsWrap: { marginHorizontal: -layout.gutter },
   chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
   fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },

@@ -42,6 +42,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
     cards.push(
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>{doc.rangeLabel}</Txt>
         {all ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-end' }}>
             <View accessible accessibilityLabel={`${all.days} of ${plural(all.total, 'day')} with a note`}>
@@ -56,6 +57,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
             ) : null}
           </View>
         ) : null}
+        {all?.worstOn ? <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`}</Txt> : null}
         <View style={{ gap: space.sm, marginTop: space.md, paddingTop: space.md, borderTopWidth: 1, borderTopColor: colors.hairline }}>
           {areas.slice(0, 3).map((b) => {
             const w = worstOf(b.strength ?? '');

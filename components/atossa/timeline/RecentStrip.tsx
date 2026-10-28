@@ -61,6 +61,7 @@ export function RecentStrip({ symptoms, flush }: { symptoms: Rec<SymptomData>[];
           );
         })}
       </View>
+      <Txt variant="caption" color={colors.ink2}>Number: strongest rating that day, out of 10. Blank: no note.</Txt>
     </Card>
   );
 }

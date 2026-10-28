@@ -191,6 +191,8 @@ export interface FreqBar {
   total: number;
   /** "usually 4–6/10, at worst 9/10" — raw values Sam gave; '' when none. */
   strength: string;
+  /** Where and when the highest rating was given: "Lower tummy centre · Thu 24 Sep"; '' when no rating. Most recent on a tie. */
+  worstOn?: string;
 }
 
 export interface HeatDay {
@@ -330,6 +332,21 @@ function spread(values: number[]): string {
   const hi = Math.max(...values);
   // Word joiners (U+2060) around the en dash: "6–9/10" never wraps as "6–" / "9/10" (review 3, #6).
   return lo === hi ? `${hi}/10` : `${lo}\u2060–\u2060${hi}/10`;
+}
+
+/** The note that carries the group's highest rating: its first area and date. Most recent when tied. */
+function worstWhen(notes: SymptomData[]): string {
+  let best: SymptomData | null = null;
+  let hi = -1;
+  for (const s of notes) {
+    const w = worstOf(s);
+    if (w == null) continue;
+    if (w > hi || (w === hi && best && s.date > best.date)) { hi = w; best = s; }
+  }
+  if (!best) return '';
+  const zone = best.zones?.[0];
+  const where = zone ? (BODY_ZONE_LABELS[zone as keyof typeof BODY_ZONE_LABELS] ?? zone) : '';
+  return joinFacts(where, formatDay(best.date));
 }
 
 /** Raw strength values for a group of notes: "usually 6/10, worst 9/10". */
@@ -626,7 +643,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const noteDays = daysWith(windowNotes, stripFrom, to);
     const bars: FreqBar[] = [];
     if (noteDays) {
-      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes) });
+      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worstOn: worstWhen(windowNotes) });
       zoneDays(windowNotes)
         .slice(0, MAX_ZONE_ROWS)
         .map(({ label, days: n }) => ({ label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(windowNotes.filter((s) => (s.zones ?? []).includes(label))) }))
