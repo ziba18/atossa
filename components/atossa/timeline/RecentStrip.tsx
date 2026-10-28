@@ -80,12 +80,12 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
 }
 
 const styles = StyleSheet.create({
-  card: { paddingHorizontal: space.md, paddingVertical: space.sm, gap: space.xs, marginTop: space.lg },
+  card: { paddingHorizontal: space.md, paddingVertical: space.sm, gap: space.xs, marginTop: space.md },
   head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   row: { flexDirection: 'row', gap: 3 },
   col: { flex: 1, alignItems: 'center', gap: 4 },
   cell: {
-    width: '100%', aspectRatio: 0.8, borderRadius: 8, borderWidth: 1,
+    width: '100%', aspectRatio: 1, borderRadius: 8, borderWidth: 1,
     borderColor: colors.hairline, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center',
   },
   digit: { fontWeight: '600', fontSize: 11 },
