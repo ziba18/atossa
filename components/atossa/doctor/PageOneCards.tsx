@@ -45,12 +45,12 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>{freq.windowLabel}</Txt>
         {all ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-end' }}>
-            <View accessible accessibilityLabel={`${all.days} of ${plural(all.total, 'day')} with a note`}>
+            <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={`${all.days} of ${plural(all.total, 'day')} with a note`}>
               <Txt variant="numeral" style={big}>{all.days}</Txt>
               <Txt variant="secondary">{`of ${plural(all.total, 'day')} with a note`}</Txt>
             </View>
             {worstAll ? (
-              <View accessible accessibilityLabel={`Worst rating ${worstAll} out of 10`}>
+              <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={`Worst rating ${worstAll} out of 10`}>
                 <Txt variant="numeral" style={big}>{`${worstAll}/10`}</Txt>
                 <Txt variant="secondary">worst rating</Txt>
               </View>
