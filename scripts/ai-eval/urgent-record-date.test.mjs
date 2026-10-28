@@ -3,7 +3,9 @@
 // Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/urgent-record-date.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { urgentSignpost } from '../../lib/urgentWording.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { urgentSignpost } = await import('../../lib/urgentWording.ts');
 
 const sam24 = {
   date: '2026-09-24', words: 'Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.',
