@@ -362,16 +362,16 @@ export function HeroChip() {
   const total = noteCount(symptoms);
   const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
   const days = next ? diffDays(today, next.data.date) : -1;
-  let label = ''; let target = '/(tabs)/timeline';
-  if (next && days === 0 && total > 0) { label = `Appointment today\u00a0· ${notesLabel(total).replace(/ /g, "\u00a0")}\u00a0ready`; target = '/(tabs)/doctor'; }
-  else if (next && days > 0 && days <= 60 && total > 0) { label = `Appointment ${formatDay(next.data.date).replace(/ /g, '\u00a0')}\u00a0· ${notesLabel(total).replace(/ /g, '\u00a0')}\u00a0ready`; target = '/(tabs)/doctor'; }
+  let label = ''; let sub = ''; let target = '/(tabs)/timeline';
+  if (next && days === 0 && total > 0) { label = 'Appointment today'; sub = `${notesLabel(total)} ready`; target = '/(tabs)/doctor'; }
+  else if (next && days > 0 && days <= 60 && total > 0) { label = `Appointment ${formatDay(next.data.date).replace(/ /g, '\u00a0')}`; sub = `${notesLabel(total)} ready`; target = '/(tabs)/doctor'; }
   else if (next && days > 0) { label = days > 60 ? `Appointment on ${parseKey(next.data.date).d} ${MONTH_NAMES[parseKey(next.data.date).m0]}` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
   else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
   if (!label) return null;
   return (
     <PressableCard
       onPress={() => router.push(target as any)}
-      accessibilityLabel={label}
+      accessibilityLabel={sub ? `${label}. ${sub}` : label}
       accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Timeline'}
       style={styles.chip}
     >
@@ -380,7 +380,10 @@ export function HeroChip() {
         {wide ? <View style={styles.ramp} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           {severityRamp.map((c, i) => <View key={c} style={{ width: 4, height: 6 + i * 3, borderRadius: 2, backgroundColor: c }} />)}
         </View> : null}
-        <Txt variant="headline" style={{ fontVariant: ['tabular-nums'], flexShrink: 1 }}>{label}</Txt>
+        <View style={{ flexShrink: 1 }}>
+          <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
+          {sub ? <Txt variant="secondary" style={{ fontVariant: ['tabular-nums'] }}>{sub}</Txt> : null}
+        </View>
       </View>
     </PressableCard>
   );
