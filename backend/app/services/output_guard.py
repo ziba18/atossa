@@ -226,7 +226,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
 
 _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|didn'?t|don'?t|doesn'?t|haven'?t|hasn'?t|"
                   r"nor|none|n'?t|not even|hardly|a bit|slightly|a little|bit of a)\b|\bn't\b", re.I)
-_PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|when i was (?:a )?(?:teen\w*|kid|child|younger))\b", re.I)
+_PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _BODY = [
     r"can'?t (?:breathe|catch my breath|get (?:any )?air)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
@@ -333,7 +333,7 @@ _EMERGENCY = re.compile(
     r"can'?t breathe?|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath|struggling to breathe|chest pain|coughing up blood|"
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
-    r"bleeding through(?! (?:a |an |my |the )?(?:\w+ )?(?:pads?|tampons?|towels?|cups?)\b(?:(?!\b(?:an hour|1 hour|one hour|half an hour|\d+ ?min\w*|every hour|dizz\w*|faint\w*|light-?headed|weak|clots?)\b)[^.!?])*\b(?:[2-9]|two|three|four|five|six|a few|several) hours?\b)|bleeding (?:heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
+    r"bleeding through(?! (?:a |an |my |the )?(?:\w+ )?(?:pads?|tampons?|towels?|cups?)\b(?:(?!\b(?:an hour|1 hour|one hour|half an hour|\d+ ?min\w*|every hour|dizz\w*|faint\w*|light-?headed|weak|clots?)\b)[^.!?])*\b(?:(?:[2-9]|two|three|four|five|six|a few|several) hours?|overnight|in the night|all night)\b(?![^.!?]*\b(?:dizz\w*|faint\w*|light-?headed|weak|clots?)\b))|bleeding (?:heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
     r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?|"
     r"worst (?:pain )?(?:i'?ve|i have) ever|pain so bad|(?:big )?clots? (?:the size of|bigger than)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)|pain (?:is |was )?unbearable|pain (?:is |was )?(?:a )?(?:10|ten)(?:/| out of )10|"
     r"sudden (?:sharp |stabbing )?pain|\bi(?:'?m| am| think i'?m)? (?:\w+ ){0,3}miscarr\w+|"
@@ -395,7 +395,7 @@ _IDIOM = re.compile(
     # everyday uses of words the lists react to: "faint" as an adjective, a blocked nose, a figure of speech,
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
     r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
-    r"|\bcan'?t breathe? through (?:my )?nose\b"
+    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? through (?:my )?nose\b"
     # wanting a baby is not being pregnant (NHS pelvic pain page: 111 if "pregnant or may be pregnant"); run 01 ruling
     r"|\b(?:get|getting|become|becoming) pregnan\w*|\btrying (?:for|to have) a (?:baby|child)\b|\btrying to conceive\b"
     r"|\bcollaps\w+ (?:on|onto|into) (?:the |my )?(?:sofa|couch|bed|settee|chair)\b"
@@ -642,6 +642,8 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"^(?=.*\b(?:miscarriage|gave birth|after the birth|postnatal|termination)\b)(?=.*\b(?:temperature|fever|rigors|shivering))(?=.*\b(?:pain|smell\w*|bleed\w*|discharge))|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup)\b)(?=.*\b(?:fever|high temperature|temperature)\b)"
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
+                    # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
+                    r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
                     # set p107 (first contact 3/10 missed): head injury with knocked out and sickness, meter reading HI with thirst and fast breathing, big tissue lumps with soaking every few minutes
                     r"^(?=.*\b(?:hit|banged|bumped|knocked) (?:my |the )?head\b)(?=.*\b(?:knocked out|lost consciousness|blacked out|passed out)\b)(?=.*\b(?:sick|vomit\w*|confus\w*|drowsy)\b)|"
                     r"^(?=.*\b(?:blood sugar|glucose|meter)\b.{0,30}\b(?:says |reads |showing |shows )?\"?hi\"?\b)(?=.*\b(?:very thirsty|breathing fast|tummy hurts|vomit\w*|drowsy)\b)|"
