@@ -31,6 +31,7 @@ export type IconName =
   | 'external-link'
   | 'eye'
   | 'eye-off'
+  | 'download'
   | 'file-text'
   | 'flower'
   | 'heart'
@@ -689,6 +690,15 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = IC
             <Circle {...shared} cx="18" cy="19" r="3" />
             <Line {...shared} x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
             <Line {...shared} x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </>
+        );
+
+      case 'download':
+        return (
+          <>
+            <Path {...shared} d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <Path {...shared} d="M7 10l5 5 5-5" />
+            <Line {...shared} x1="12" y1="15" x2="12" y2="3" />
           </>
         );
 

@@ -33,9 +33,11 @@ const isCancel = (e: unknown) => /cancel|did not complete|dismiss/i.test(String(
  * readers). Disabled: an ink-3 glyph on a sunken disc, so it can't be mistaken for an active button.
  */
 function BarIconButton({
-  icon, label, onPress, disabled, busy, compact,
-}: { icon: IconName; label: string; onPress: () => void; disabled?: boolean; busy?: boolean; compact?: boolean }) {
+  icon, label, caption, onPress, disabled, busy, compact,
+}: { icon: IconName; label: string; /** One word under the circle (hidden in the compact bar). */ caption?: string; onPress: () => void; disabled?: boolean; busy?: boolean; compact?: boolean }) {
   const size = compact ? heights.minHit : heights.secondary;
+  // The caption costs ~16 pt of bar height; on shorter screens (< 700) the glyph and its label alone stay.
+  const roomForCaption = useWindowDimensions().height >= 700;
   const inactive = disabled || busy;
   return (
     <Pressable
@@ -45,13 +47,22 @@ function BarIconButton({
       accessibilityLabel={label}
       accessibilityState={{ disabled: !!inactive, busy: !!busy }}
       hitSlop={4}
-      style={({ pressed }) => ({
-        width: size, height: size, borderRadius: radii.pill, borderWidth: 1,
-        borderColor: inactive ? colors.hairline : colors.borderStrong, alignItems: 'center', justifyContent: 'center',
-        backgroundColor: inactive || pressed ? colors.sunken : 'transparent',
-      })}
+      style={{ alignItems: 'center', gap: 2 }}
     >
-      <Icon name={icon} size={24} color={inactive ? colors.ink3 : colors.ink} />
+      {({ pressed }) => (
+        <>
+          <View
+            style={{
+              width: size, height: size, borderRadius: radii.pill, borderWidth: 1,
+              borderColor: inactive ? colors.hairline : colors.borderStrong, alignItems: 'center', justifyContent: 'center',
+              backgroundColor: inactive || pressed ? colors.sunken : 'transparent',
+            }}
+          >
+            <Icon name={icon} size={24} color={inactive ? colors.ink3 : colors.ink} />
+          </View>
+          {caption && !compact && roomForCaption ? <Txt variant="caption" color={inactive ? colors.ink3 : colors.ink2}>{caption}</Txt> : null}
+        </>
+      )}
     </Pressable>
   );
 }
@@ -185,9 +196,9 @@ export default function DoctorScreen() {
           style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120, maxWidth: desk ? 420 : undefined, ...(short ? { minHeight: heights.minHit } : null) }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
-        <BarIconButton compact={short} icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
+        <BarIconButton compact={short} icon="printer" label="Print" caption="Print" onPress={print} disabled={off} busy={busy === 'print'} />
         <BarIconButton
-          compact={short} icon="monitor" label="Show on screen" disabled={doc.empty}
+          compact={short} icon="monitor" label="Show on screen" caption="Show" disabled={doc.empty}
           onPress={() => router.push('/(tabs)/doctor/show' as any)}
         />
       </View>

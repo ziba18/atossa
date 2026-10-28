@@ -4,7 +4,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { DATA_LINES } from '../../../constants/dataLocation';
 import {
-  Button, Card, ConfirmCard, HeroNumber, SafetyLine, ScreenLarge, Txt, showToast,
+  Button, Card, ConfirmCard, HeroNumber, InlineError, TextField, SafetyLine, ScreenLarge, Txt, showToast,
 } from '../../../components/atossa/kit';
 import type { IconName } from '../../../components/ui/Icon';
 import { Group, GroupHeading, GroupRow } from '../../../components/atossa/records/GroupedRows';
@@ -21,6 +21,7 @@ import { isHumanName } from '../../../lib/humanName';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import { IS_PREVIEW } from '../../../lib/preview/flag';
 import { cancelAllScheduledNotifications } from '../../../lib/notifications';
+import { downloadAllNotes, classifyExportError, EXPORT_ERRORS } from '../../../lib/exportNotes';
 import { openLegal } from '../../../components/auth/LegalLinks';
 
 /** Visible tab title (the `from` param HeaderAvatar passes) → tab route name. */
@@ -68,6 +69,11 @@ export default function ProfileScreen() {
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportPw, setExportPw] = useState('');
+  const [exportBusy, setExportBusy] = useState(false);
+  const [exportError, setExportError] = useState('');
+  const [exportDone, setExportDone] = useState(false);
   const scrollRef = useRef<ScrollViewInstance | null>(null);
 
   const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : '';
@@ -110,6 +116,22 @@ export default function ProfileScreen() {
       clearSampleData();
       setSampleCleared(true);
       showToast('Sample data cleared.');
+    }
+  };
+
+  const onExport = async () => {
+    if (IS_PREVIEW) { setExportPw(''); setExportDone(true); return; } // preview: shows the done state, downloads nothing
+    if (exportBusy || !user?.email) return;
+    setExportBusy(true);
+    setExportError('');
+    try {
+      await downloadAllNotes(user.email, exportPw);
+      setExportPw('');
+      setExportDone(true);
+    } catch (e) {
+      setExportError(EXPORT_ERRORS[classifyExportError(e)]);
+    } finally {
+      setExportBusy(false);
     }
   };
 
@@ -199,20 +221,71 @@ export default function ProfileScreen() {
       <GroupHeading title="Account" style={{ marginTop: space.xxl }} />
       <Group>
         <GroupRow
+            icon="download"
+            label="Download all my notes"
+            detail="Everything you’ve saved, as one file"
+            chevron={false}
+            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(false); setExportDone(false); setExporting(true); }}
+          />
+        <GroupRow
           icon="log-out"
           label="Sign out"
           chevron={false}
-          onPress={() => { setConfirmingDelete(false); setConfirmingSignOut(true); }}
+          onPress={() => { setConfirmingDelete(false); setExporting(false); setConfirmingSignOut(true); }}
         />
         {IS_PREVIEW ? null : (
           <GroupRow
             icon="trash-2"
             label="Delete account"
             chevron={false}
-            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(true); }}
+            onPress={() => { setConfirmingSignOut(false); setExporting(false); setConfirmingDelete(true); }}
           />
         )}
       </Group>
+
+      {exporting ? (
+        <Card style={{ marginTop: space.xl, gap: space.md }} onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}>
+          {exportDone ? (
+            <>
+              <View accessibilityRole="alert" style={{ gap: space.xxs }}>
+                <Txt variant="headline">Your file is ready</Txt>
+                <Txt variant="secondary">
+                  It holds everything you’ve saved, in your words. It isn’t a medical record. It’s only on your phone, so delete it when you’ve finished with it.
+                </Txt>
+              </View>
+              <Button label="Done" variant="primary" onPress={() => { setExporting(false); setExportDone(false); }} />
+            </>
+          ) : (
+            <>
+            <View accessibilityRole="alert" style={{ gap: space.xxs }}>
+              <Txt variant="headline">Download all my notes</Txt>
+              <Txt variant="secondary">
+                One file with everything you’ve saved: your notes, periods, appointments, medicines and history, in your words. It goes only to your phone, to keep or share as you choose.
+              </Txt>
+            </View>
+            <TextField
+              label="Your password"
+              hint="Asked so no one else can download your notes."
+              value={exportPw}
+              onChangeText={(v) => { setExportPw(v); setExportError(''); }}
+              secret
+              autoFocus
+              autoCapitalize="none"
+              autoComplete="current-password"
+              textContentType="password"
+              returnKeyType="done"
+              onSubmitEditing={onExport}
+            />
+            {exportError ? <InlineError message={exportError} /> : null}
+            <View style={{ gap: space.xs }}>
+              <Button label={exportBusy ? 'Making your file…' : 'Download'} variant="primary" onPress={onExport} disabled={!exportPw || exportBusy} />
+              <Button label="Cancel" variant="text" onPress={() => { setExporting(false); setExportPw(''); setExportError(''); }} />
+            </View>
+
+            </>
+          )}
+        </Card>
+      ) : null}
 
       {confirmingSignOut ? (
         <ConfirmCard

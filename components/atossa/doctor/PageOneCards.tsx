@@ -40,7 +40,13 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         <Txt variant="groupLabel">{freq.title}</Txt>
         {all ? (
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.sm, marginTop: space.xxs }}>
-            <Txt variant="secondary" style={{ flex: 1, minWidth: 0 }}>{`${all.days} of ${plural(all.total, 'day')} with a note`}</Txt>
+            {/* Her count as the card's one display figure. */}
+            <View
+              style={{ flex: 1, minWidth: 0, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: space.xs }}
+            >
+              <Txt variant="numeral" style={{ fontSize: 32, lineHeight: 36 }}>{String(all.days)}</Txt>
+              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`of ${plural(all.total, 'day')} with a note`}</Txt>
+            </View>
             {/* The column header: said once here, so the rows below carry only the number. */}
             {areas.some((b) => worstOf(b.strength ?? '')) ? <Txt variant="secondary" aria-hidden>Worst</Txt> : null}
           </View>
