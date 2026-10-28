@@ -55,7 +55,7 @@ export function Button({
         styles.btnBase,
         // A 2% press-in on the filled and outlined buttons: the colour change alone is only ~1.2:1.
         pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.98 }] },
-        variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.plumPressed : colors.plum }],
+        variant === 'primary' && [styles.primary, { overflow: 'hidden', backgroundColor: inactive ? colors.sunken : colors.plum }],
         variant === 'secondary' && [styles.secondary, { borderColor: inactive ? colors.hairline : colors.borderStrong, backgroundColor: pressed ? colors.sunken : 'transparent' }],
         variant === 'destructiveOutline' && [styles.secondary, { borderColor: colors.error, backgroundColor: pressed ? colors.errorTint : 'transparent', opacity: inactive ? 0.5 : 1 }],
         (variant === 'text' || variant === 'destructive') && [styles.textBtn, { opacity: inactive ? 0.5 : pressed ? 0.6 : 1 }],
@@ -63,6 +63,14 @@ export function Button({
         style,
       ]}
     >
+      {variant === 'primary' && !inactive ? (
+        <LinearGradient
+          colors={['#6A48E8', '#A24FD8', '#E4533F']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0.4 }}
+          style={StyleSheet.absoluteFill}
+        />
+      ) : null}
       {loading ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} size={20} color={fg} /> : null}
       <Txt
         variant="headline"
