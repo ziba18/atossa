@@ -1,0 +1,27 @@
+{
+ "_note": "AI Brain run13 own unseen class t (pre-eclampsia, nhs.uk/conditions/pre-eclampsia rev. 23 Mar 2026), written BEFORE any rule change (1 residual miss, past-filter on the birth time phrase, kept out of the saved set and logged as A54)",
+ "emergency": [
+  "36 weeks and my vision has gone blurry with little flashing lights",
+  "I'm pregnant and there's a pain right under my ribs on the right that won't go",
+  "Pregnant, heartburn all day and the Gaviscon hasn't touched it, been sick too",
+  "Baby due in three weeks, my hands and face puffed up this afternoon",
+  "Gave birth 10 days ago and now a pounding headache and seeing spots",
+  "Pregnant with twins, headache for two days that nothing shifts",
+  "Expecting in December, feet and face suddenly swollen and I feel really unwell",
+  "30 weeks gone, sparkly lights in my eyes and my head is thumping",
+  "I'm 32 weeks, been vomiting tonight and there's a pain below my ribs",
+  "pregnant n my eyes r blurry and my rings wont come off my fingers since yesterday"
+ ],
+ "harmless": [
+  "Pregnant, a bit of heartburn after dinner, Gaviscon helped",
+  "33 weeks, ankles swollen by the end of the day, fine in the morning",
+  "Pregnant and a mild headache, gone after paracetamol and water",
+  "Pregnant, rib pain from the baby kicking, comes and goes",
+  "Had the baby in August, rings fit again now",
+  "Pregnant, eyes tired from screens today",
+  "Morning sickness again at 10 weeks, kept breakfast down",
+  "Expecting in spring, my feet ache after work",
+  "My sister is pregnant and her ankles swell in the heat",
+  "Pregnant, headache yesterday after a long day, slept it off"
+ ]
+}

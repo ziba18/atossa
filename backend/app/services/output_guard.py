@@ -314,7 +314,7 @@ _SELF = [
     r"end(?:ing)? my (?:own )?life", r"(?:don'?t|do not) want to be (?:alive|here)(?: anymore| any more)?", r"hurt(?:ing)? myself",
     r"cutting myself|(?:been|keep|kept|started) cutting\b|cutting again", r"(?:want|wanna) to (?:just )?disappear(?: forever)?", r"better off (?:dead|without me)", r"(?:take|taking|took|takes) my (?:own )?life",
     r"(?:took|taken|swallowed) all (?:of )?(?:my|the) (?:paracetamol|tablets|pills|painkillers|medication)", r"(?:sleep|asleep|bed).{0,25}(?:never|not) (?:wake|waking) up", r"(?:no|any) reason to (?:keep )?(?:living|live|go on)(?! (?:in|at|with|near)\b)|don'?t see any (?:reason|point) (?:to|in) (?:keep )?(?:living|live|go on|going on|carry on|carrying on)",
-    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b", r"no point (?:in )?(?:going on|living|being here)",
+    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b(?! with (?:this|that|our|work|uni|him|her|them)\b| with (?:the|my) (?:project|job|course|relationship|boyfriend|girlfriend|partner|husband|wife|band|business|degree)\b)", r"no point (?:in )?(?:going on|living|being here)",
 ]
 # run07 set v75 (first contact 20/20 missed): a plan said without die/kill/suicide. Coverage map = the three C-SSRS
 # screener classes (wish to be dead, method, preparation; cssrs.columbia.edu); Atossa never screens or asks these.
@@ -363,8 +363,8 @@ _SELF_HARM_RX = re.compile(
     r"nothing (?:left )?to live for|no reason to (?:live|go on|be here)|(?:might|going to|gonna|want to|thinking (?:of|about)) (?:harm|hurt|injure) myself|"
     r"(?:gonna|going to|about to|will) (?:take|swallow|down) (?:all|every one of|the whole lot of) (?:these|my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
     r"(?:took|taken|swallowed|had) (?:all|every one|the whole lot) (?:of )?(?:my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
-    r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds|antidepressants|sleeping (?:pills|tablets)|co-?codamol|codeine)|"
-    r"(?:thoughts?|thinking) of ending it\b|(?:thinking|thought|thoughts|keep thinking) (?:of|about) (?:jumping (?:off|from) (?:the |a |an |that )?(?:\w+ ){0,2}(?:bridge|roof|cliff|building|balcony|window|tower|flats|car park|viaduct|pier|edge)|(?:jumping|throwing myself) (?:in front of|under) (?:a |the )?(?:train|bus|car|lorry|tube))|"
+    r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds|antidepressants|sleeping (?:pills|tablets))|"
+    r"(?:thoughts?|thinking) of ending it\b(?! with (?:this|that|our|work|uni|him|her|them)\b| with (?:the|my) (?:project|job|course|relationship|boyfriend|girlfriend|partner|husband|wife|band|business|degree)\b)|(?:thinking|thought|thoughts|keep thinking) (?:of|about) (?:jumping (?:off|from) (?:the |a |an |that )?(?:\w+ ){0,2}(?:bridge|roof|cliff|building|balcony|window|tower|flats|car park|viaduct|pier|edge)|(?:jumping|throwing myself) (?:in front of|under) (?:a |the )?(?:train|bus|car|lorry|tube))|"
     r"(?:don'?t|do not|can'?t|cannot) see (?:the |any )?point (?:in |of )?(?:being alive|living|going on|carrying on|life)|no point (?:in )?(?:living|going on|being alive)|"
     r"(?:everyone|everybody|they|family|friends) (?:would|will|'d) be better off without me|wish i (?:was|were) dead|wish i (?:would|could) (?:just )?not wake up|"
     r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)|"
@@ -969,6 +969,48 @@ _PET_SIGN = (r"(?:\bheadache\b[^.!?\n]{0,50}\b(?:paracetamol|painkillers?|tablet
              r"\bheartburn\b[^.!?\n]{0,30}\b(?:won'?t|doesn'?t|not|isn'?t) (?:go|settle|shift|easing|stop|touch)\w*)")
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|in the heat|baby kicking|comes and goes|feet up|my usual migraine)\b)" + _PET_CTX
                     + r"(?=[\s\S]*" + _PET_SIGN + r")", _WHOLE.flags)
+
+# run13 (PM class t again; own v105 first contact 8/11 missed on b89e77a, 7/11 after Safety's S-247): the same NHS list as
+# general patterns - pregnancy said any way (due in, expecting, twins, N weeks gone) + a medicine that does not help a headache
+# or heartburn, lights or blur in the eyes, face/hands swelling up, rings that won't come off. Source as run12 (pre-eclampsia, 23 Mar 2026).
+_PET_CTX2 = (r"(?=[\s\S]*\b(?:\d\d ?weeks|weeks (?:pregnant|gone)|months pregnant|(?<!not )(?<!isn't )(?<!am not )pregnant|bump|baby (?:is )?due|due (?:in|on|date)|"
+             r"expecting (?:in|a baby|twins|my)|pregnant with|twins|" + _AFTERBIRTH + r"|had (?:the|my) baby)\b)")
+_PET_RELIEF = r"(?:paracetamol|painkillers?|tablets|ibuprofen|co-?codamol|medicines?|gaviscon|rennie|antacids?|nothing)"
+_PET_NOHELP = (r"(?:(?:isn'?t|aren'?t|not|won'?t|doesn'?t|don'?t|hasn'?t|haven'?t|didn'?t) (?:\w+ )?(?:touch\w*|help\w*|shift\w*|work\w*|budg\w*|fix\w*|do anything)|"
+               r"(?:does|do|did) nothing|nothing (?:helps|shifts|touches|works|fixes))")
+_PET_SIGN2 = (r"(?:\b(?:headache|head\b[^.!?\n]{0,10}\b(?:thumping|pounding|banging)|heartburn)\b[^.!?\n]{0,60}\b" + _PET_RELIEF + r"\b[^.!?\n]{0,20}\b" + _PET_NOHELP + r"|"
+              r"\b(?:headache|heartburn)\b[^.!?\n]{0,40}\b" + _PET_NOHELP + r"|\b" + _PET_RELIEF + r"\b[^.!?\n]{0,20}\b" + _PET_NOHELP + r"\b[^.!?\n]{0,30}\b(?:headache|heartburn)\b|"
+              r"\b(?:flash\w*|sparkl\w*|flicker\w*|twinkl\w*|zig-?zag) (?:\w+ )?lights?\b|\blights in my eyes\b|\beyes (?:are |r |have gone |went |gone )?(?:blurr\w*|fuzzy|funny)\b|"
+              r"\b(?:face|hands|fingers)\b[^.!?\n]{0,25}\b(?:swollen|puffed|swelled|blown) up\b|\bswollen (?:face|hands|fingers)\b|"
+              r"\b(?:face|hands|fingers)\b[^.!?\n]{0,15}\bsuddenly (?:\w+ )?(?:swollen|puffy|puffed|swelled)\b|\brings? (?:won'?t|wont|will not|don'?t|can'?t) (?:come|get|go)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|gone after|slept it off|in the heat|baby kicking|comes and goes|feet up|my usual migraine|fit again|from screens|my (?:sister|friend|mum|cousin) is pregnant)\b)" + _PET_CTX2
+                    + r"(?=[\s\S]*" + _PET_SIGN2 + r")", _WHOLE.flags)
+
+# run13 (PM class o again; own v106 first contact 4/10 missed on b89e77a): more paracetamol than the leaflet allows said as a
+# general pattern - doses closer than 4 hours apart, a second dose straight after, or a cold/flu or other paracetamol-containing
+# product taken as well. nhs.uk/medicines/paracetamol-for-adults (as run12): at least 4 hours between doses, max 4 doses in 24 hours.
+_PK_COMBO2 = r"(?:lemsip|night nurse|day nurse|beechams|cold (?:and|&) flu|co-?codamol|solpadeine|sudafed|day (?:and|&) night|max strength|panadol)"
+_OD_SIGN2 = (r"(?:\b(?:[2-9]|two|three|four|five|six) (?:doses|lots|times)\b[^.!?\n]{0,25}\bin (?:\d|one|two|three|an?) (?:hours?|hrs?)\b|"
+             r"\b(?:another|more|again)\b[^.!?\n]{0,15}\b(?:straight after|right after|soon after|straight away|an hour later|half an hour later)\b|"
+             r"\b(?:straight after|right after|an hour later)\b[^.!?\n]{0,15}\b(?:another|more|again)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK + r"\b)(?=[\s\S]*" + _OD_SIGN2 + r")"
+                    + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK_COMBO2 + r"\b)(?=[\s\S]*\bparacetamol\b)(?=[\s\S]*\b(?:plus|alongside|together|as well|on top|then (?:\w+ ){0,2}(?:more|another)|and (?:then )?(?:more )?paracetamol|with (?:my |the |some )?paracetamol|paracetamol (?:and|with|plus))\b)", _WHOLE.flags)
+
+# run13 (Safety S-249 / S-251 / S-252 classes; own v107 first contact 6/9 missed): severe OHSS after IVF or egg collection
+# (swollen belly + little wee or breathless; nhs.uk/conditions/ivf/risks), PID with a high temperature (nhs.uk/conditions/
+# pelvic-inflammatory-disease: "go to A&E" for severe lower tummy pain + high temperature), bleeding for weeks with weakness,
+# pain + a hard belly, and being sick with right-sided tummy pain and fever (nhs.uk/conditions/appendicitis).
+_FEVER_WORD = r"(?:high temperature|temperature of (?:3[89]|40)|fever(?! blister)|burning up|(?:3[89]|40)(?:\.\d)? ?(?:degrees|c)\b)"
+_WHOLE = re.compile(_WHOLE.pattern
+    + r"|^(?![\s\S]*\b(?:weeing (?:fine|normally|ok)|a bit bloated|bit bloated)\b)(?=[\s\S]*\b(?:ivf|egg (?:collection|retrieval)|fertility (?:injections?|drugs|treatment)|stimulation injections?)\b)"
+    + r"(?=[\s\S]*\b(?:belly|tummy|stomach|abdomen)\b[^.!?\n]{0,25}\b(?:huge|massive|really swollen|very swollen|so swollen|swollen|bloated|tight)\b)"
+    + r"(?=[\s\S]*\b(?:hardly|barely|can'?t|not|haven'?t) (?:\w+ )?(?:wee\w*|pee\w*)|[\s\S]*\b(?:short of breath|breathless|can'?t breathe)\b)"
+    + r"|^(?![\s\S]*\bno (?:fever|temperature)\b)(?=[\s\S]*\b" + _FEVER_WORD + r")(?=[\s\S]*\b(?:pelvic pain|pain (?:\w+ ){0,2}low|low(?:er)? (?:\w+ )?(?:tummy|belly|abdomen)|pain down below)\b)(?=[\s\S]*\bdischarge\b)"
+    + r"|^(?![\s\S]*\b(?:feel fine|on the new pill|on and off)\b)(?=[\s\S]*\b(?:(?:haven'?t|not|hasn'?t|never) stopped bleeding|bleeding (?:non[- ]stop|constantly|every day))\b[^.!?\n]{0,25}\b(?:for|in) (?:a|\d+|two|three|four|five|six) (?:weeks?|months?)\b)"
+    + r"(?=[\s\S]*\b(?:weak|pale|breathless|dizzy|faint\w*|can barely stand)\b)"
+    + r"|^(?![\s\S]*\b(?:dinner|meal|ate|eating|period pain as usual)\b)(?=[\s\S]*\b(?:constant|sharp|stabbing|severe)\b)(?=[\s\S]*\b(?:belly|tummy|stomach|abdomen)\b[^.!?\n]{0,20}\b(?:goes |is |feels |gone )?(?:hard|rigid)\b(?: (?:to (?:touch|press)|when (?:i )?press\w*))?)(?=[\s\S]*\b(?:touch|press\w*|constant)\b)"
+    + r"|^(?![\s\S]*\b(?:gym|running|run|stitch|fine now|after the curry)\b)(?=[\s\S]*\b(?:can'?t stop (?:being sick|vomiting|throwing up)|keep (?:being sick|vomiting|throwing up)|vomiting|throwing up)\b)"
+    + r"(?=[\s\S]*\b(?:right side|right[- ]hand side|lower right|bottom right|on the right)\b)(?=[\s\S]*(?:\b" + _FEVER_WORD + r"|\bi (?:feel|am|'m) (?:so |really |very )?hot\b|\bfeel hot\b))", _WHOLE.flags)
 
 # Safety run 29 (S-250, probe p143 8/10): fast or hard breathing with drowsiness and being sick (any order, any medicine) -> the one fixed line.
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:meditat\w*|yoga|exercis\w*|run|gym|stairs|walk\w*|laugh\w*|panic\w*)\b)(?=[\s\S]*\bbreath(?:ing|e|es)\b[^.!?\n]{0,15}\b(?:fast|rapid\w*|quick\w*|hard)\b|[\s\S]*\b(?:fast|rapid|deep)\b[^.!?\n]{0,10}\bbreath\w*)(?=[\s\S]*\b(?:drowsy|(?:very|so|really) sleepy)\b)(?=[\s\S]*(?<!no )(?<!not )\b(?:sick|vomit\w*|throwing up)\b)", _WHOLE.flags)
