@@ -255,6 +255,9 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
                 </View>
               ))}
             </View>
+            {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
+              <Txt variant="caption" style={{ marginTop: space.xs }}>Highest in one week: {Math.max(...m.weeks.map((w) => w.peak ?? 0))} out of 10.</Txt>
+            ) : null}
             {m.weeks.some((w) => w.peak == null) ? <Txt variant="caption" style={{ marginTop: space.xs }}>Grey = no number given that week</Txt> : null}
           </PressableCard>
         </FadeIn>
