@@ -3,13 +3,12 @@ import { View, Pressable, Keyboard, Platform, StyleSheet } from 'react-native';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, heights, type as typeScale } from '../../constants/atossaUI';
-import { Icon, type IconName } from '../ui/Icon';
 import { Txt } from './kit';
 
-const TABS: Record<string, { label: string; icon: IconName }> = {
-  today: { label: 'Today', icon: 'sun' },
-  timeline: { label: 'Timeline', icon: 'list' },
-  doctor: { label: 'For my doctor', icon: 'file-text' },
+const TABS: Record<string, { label: string }> = {
+  today: { label: 'Today' },
+  timeline: { label: 'Timeline' },
+  doctor: { label: 'For my doctor' },
 };
 export const VISIBLE_TABS = ['today', 'timeline', 'doctor'];
 
@@ -25,8 +24,8 @@ function profileOrigin(route: AnyRoute | undefined): string {
 }
 
 /**
- * Three tabs: Lucide 24 / 1.75 stroke, 11/13 500 label. Unselected ink3, selected plum on a plumTint pill.
- * Near-opaque white bar with a hairline top. Hidden while the keyboard is up.
+ * Three tabs as a floating white pill: text labels, unselected ink2, selected white on an ink pill.
+ * Hidden while the keyboard is up.
  */
 export function MainTabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
@@ -64,12 +63,13 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
 
   return (
     <View role="navigation" aria-label="Main">
-    <View style={[styles.bar, { paddingBottom: insets.bottom }]} accessibilityRole="tablist">
+    <View style={[styles.bar, { paddingBottom: insets.bottom }]}>
+    <View style={styles.pillBar} accessibilityRole="tablist">
       {routes.map((route) => {
         const focused = activeName === route.name;
         const isCurrent = active?.name === route.name;
         const tab = TABS[route.name];
-        const tint = focused ? colors.plum : colors.ink3;
+        const tint = focused ? colors.white : colors.ink2;
         return (
           <Pressable
             key={route.key}
@@ -97,25 +97,27 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
             style={styles.tab}
           >
             <View style={[styles.pill, focused && styles.pillOn]}>
-              <Icon name={tab.icon} size={24} color={tint} />
+              <Txt maxFontSizeMultiplier={1.4} numberOfLines={1} style={[typeScale.tab, { color: tint }, focused && styles.labelOn]}>{tab.label}</Txt>
             </View>
-            <Txt maxFontSizeMultiplier={1.6} style={[typeScale.tab, { color: tint }, focused && styles.labelOn]}>{tab.label}</Txt>
           </Pressable>
         );
       })}
+    </View>
     </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row', backgroundColor: colors.tabBar, borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderTopColor: colors.hairline,
+  // Floating pill (Iris round 3): the bar itself stays in flow so screens never sit under it.
+  bar: { alignItems: 'center', paddingTop: 5, backgroundColor: colors.canvas },
+  pillBar: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.94)', borderRadius: 30, padding: 5,
+    boxShadow: '0 8px 22px rgba(90,60,160,0.16)', minHeight: heights.tabBar - 10,
   },
-  // Selected = tinted pill + heavier label, so state never rests on colour alone (WCAG 1.4.1).
-  pill: { width: 56, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  pillOn: { backgroundColor: colors.plumTint },
+  // Selected = ink pill + heavier label, so state never rests on colour alone (WCAG 1.4.1).
+  pill: { minHeight: 44, paddingHorizontal: 14, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  pillOn: { backgroundColor: colors.ink },
   labelOn: { fontWeight: '700' },
-  tab: { flex: 1, height: heights.tabBar, alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 2 },
+  tab: { minHeight: 44, justifyContent: 'center' },
 });
