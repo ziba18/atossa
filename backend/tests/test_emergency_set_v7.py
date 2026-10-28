@@ -309,3 +309,11 @@ SET37 = json.loads((Path(__file__).parent / "emergency_set_v37_long_everyday.jso
 
 def test_set_v37_twenty_long_everyday_notes_stay_quiet():
     assert [t[:40] for t in SET37["harmless"] if is_emergency(t)] == []
+
+
+SET38 = json.loads((Path(__file__).parent / "emergency_set_v38_midlife_hrt.json").read_text())
+
+
+def test_set_v38_midlife_hrt_caught_and_harmless_quiet():
+    assert [t for t in SET38["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET38["harmless"] if is_emergency(t)] == []
