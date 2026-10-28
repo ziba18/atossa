@@ -7,7 +7,7 @@ import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
+import { colors, severityRamp, space } from '../../../constants/atossaUI';
 import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
 import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
@@ -160,14 +160,11 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           onAccessibilityAction={(name) => { const [, from, to] = name.split(':'); if (from && to) onOpenWeek({ from, to }); }}
         >
           <Txt variant="groupLabel">Days with a note, by week</Txt>
-          <Txt variant="secondary" style={{ marginTop: space.sm }}>
-            {noteDaysText(m)}.
-          </Txt>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
               <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
                 {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
-                <WeekBar height={Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18))} color={w.peak == null ? colors.ink2 : severityColor(w.peak).bg} />
+                <WeekBar height={Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18))} color={colors.plum} />
               </Pressable>
             ))}
           </View>
@@ -190,7 +187,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
           </View> : null}
-          <Txt variant="caption" style={{ marginTop: space.xs }}>Darker bar = a higher number that week</Txt>
+          <Txt variant="caption" style={{ marginTop: space.xs }}>Taller bar = more days with a note</Txt>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
