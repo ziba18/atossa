@@ -341,6 +341,11 @@ _SELF += [
     r"(?:won'?t|will not|not going to) be (?:here|around|alive) (?:for (?:it|that|them|christmas|her|his)|by then|next (?:week|month|year)|much longer|any ?more|for long)\b(?![^.]{0,30}\b(?:holiday|away|abroad|work|trip|hospital|course)\b)",
 ]
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
+# run 27 set p129 (first contact 4/10 missed): "everyone would be better off if I wasn't around", "nobody will notice when I'm gone", tablets lined up beside "no point"
+_SELF += [
+    r"(?:everyone|everybody|they|my (?:family|friends|kids|children|partner|husband|wife)) (?:would|will|'d) be better off if i (?:just )?(?:wasn'?t|weren'?t|was not|were not) (?:around|here|alive|there)(?: any ?more)?(?=\s*(?:[.,;!?]|$))",
+    r"(?:nobody|no one|no-one) (?:will|would|is going to) (?:even )?(?:notice|miss me|care) (?:when|if) i(?:'m| am| was|'ve| have)? (?:gone|dead|not here|not around)",
+]
 _SELF_RX = re.compile(r"(?:" + "|".join(_SELF) + r")", re.I)
 _CLAUSE = re.compile(r"[.;!?\n]+|,\s*|\bbut\b|\band\b(?=\s+(?:i|it|the|my|now|just|then)\b)", re.I)
 
@@ -801,6 +806,8 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*\b(?:rash|spots|marks|blotch\
 # v80: a wish to be dead plus having worked out how, in one sentence (C-SSRS classes 1 + 3 as a coverage map only);
 # _CLAUSE splits at "and i", so this is matched per sentence with the whole-text rule (Samaritans line).
 _SELF_WHOLE = re.compile(
+    # p129: tablets lined up said together with "no point" or "ready" (the cue may sit in another clause)
+    r"^(?=.*\b(?:tablets|pills|painkillers|meds|paracetamol)\b[^.!?;]{0,25}\blined up\b)(?=.*\b(?:no point|can'?t see the point|i'?m ready|ready now|can'?t (?:go on|keep going|do this)|tonight is the night)\b)|"
     r"(?:want(?:ed)? (?:to be|to not be|not to be) (?:dead|gone|here|alive)|wish (?:i was|i were|i'?d been) (?:dead|gone|never born)|wish i (?:wasn'?t|weren'?t) (?:alive|here)|"
     r"(?:rather|better off) (?:be )?dead(?! asleep)|don'?t want to be (?:alive|here)|want (?:it|everything|it all) to be over for good)"
     r"[^.!?\n]{0,60}\b(?:worked out|figured out|planned(?: out)?|know(?: exactly)?|decided|chosen|picked)\b[^.!?\n]{0,12}\b(?:how|the (?:way|method|how))\b"
