@@ -2,7 +2,9 @@
 // Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/urgent-history-date.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isHistoryDate, todayKey, addDays } from '../../lib/records/dates.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { isHistoryDate, todayKey, addDays } = await import('../../lib/records/dates.ts');
 
 const today = todayKey();
 test('exact dates: today and yesterday are current, older is history', () => {

@@ -3,9 +3,11 @@
 // Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/urgent-seed-sweep.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { urgentSignpost } from '../../lib/urgentWording.ts';
-import { sampleBuckets } from '../../lib/preview/seed.ts';
-import { isHistoryDate } from '../../lib/records/dates.ts';
+// Registered before any app import so extensionless TS imports resolve under the plain command.
+await import('./ts-register.mjs');
+const { urgentSignpost } = await import('../../lib/urgentWording.ts');
+const { sampleBuckets } = await import('../../lib/preview/seed.ts');
+const { isHistoryDate } = await import('../../lib/records/dates.ts');
 
 const textOf = (d) => Object.values(d).filter((v) => typeof v === 'string').join('. ');
 
