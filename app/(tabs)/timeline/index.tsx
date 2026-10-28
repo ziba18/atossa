@@ -201,7 +201,7 @@ function ListView({
   return (
     <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
-      <View style={{ marginTop: space.lg, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
+      <View style={{ marginTop: space.md, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
         <Chip
           style={{ flexShrink: 1, maxWidth: '100%' }}
           label={filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
