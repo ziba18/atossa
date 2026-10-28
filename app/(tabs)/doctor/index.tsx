@@ -21,7 +21,7 @@ import { haptics } from '../../../lib/haptics';
 import { formatDay, joinFacts, notesLabel } from '../../../lib/records/format';
 import { toKey, todayKey } from '../../../lib/records/dates';
 import {
-  RANGE_LABEL, VISIT_TYPES, agendaTitleFor, summaryToHtml, type RangeChoice, type VisitType,
+  RANGE_LABEL, VISIT_TYPES, printedRange, agendaTitleFor, summaryToHtml, type RangeChoice, type VisitType,
 } from '../../../lib/records/summary';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -243,7 +243,7 @@ export default function DoctorScreen() {
             accessibilityLabel="How far back?"
           />
           {rangeNote ? <Txt variant="secondary">{rangeNote}</Txt> : null}
-          <Txt variant="secondary">{joinFacts(doc.rangeLabel, notesLabel(doc.entries))}</Txt>
+          <Txt variant="secondary">{joinFacts(printedRange(doc).split(' · ')[0], notesLabel(doc.entries))}</Txt>
         </Step>
       )}
 
@@ -364,7 +364,7 @@ export default function DoctorScreen() {
           <Icon name="settings" size={24} color={colors.plum} />
           <View style={{ flex: 1 }}>
             <Txt variant="headline">Customise this summary</Txt>
-            <Txt variant="secondary">{joinFacts(visitType ?? 'Any visit', doc.rangeLabel)}</Txt>
+            <Txt variant="secondary">{joinFacts(visitType ?? 'Any visit', printedRange(doc).split(' · ')[0])}</Txt>
           </View>
           <Icon name={customise ? 'chevron-up' : 'chevron-down'} size={24} color={colors.ink2} />
         </Pressable>
@@ -394,7 +394,7 @@ export default function DoctorScreen() {
             accessibilityLabel="How far back?"
           />
           {rangeNote ? <Txt variant="secondary">{rangeNote}</Txt> : null}
-          <Txt variant="secondary">{joinFacts(doc.rangeLabel, notesLabel(doc.entries))}</Txt>
+          <Txt variant="secondary">{joinFacts(printedRange(doc).split(' · ')[0], notesLabel(doc.entries))}</Txt>
         </Step>
       )}
 

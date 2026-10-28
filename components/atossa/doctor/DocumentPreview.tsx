@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, layout, radii, shadows, space } from '../../../constants/atossaUI';
-import type { DoctorDoc } from '../../../lib/records/summary';
+import { printedRange, type DoctorDoc } from '../../../lib/records/summary';
 import { Icon } from '../../ui/Icon';
 import { Button, Quote, Sheet, Txt } from '../kit';
 import { A4, DocumentView } from './DocumentView';
@@ -126,7 +126,7 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
             {inner > 0 ? <PageCrop doc={doc} width={inner} height={thumbH} onHeight={setDocHeight} /> : <View style={{ height: THUMB_MAX_H }} />}
           </Pressable>
           <Txt variant="secondary" style={{ marginTop: space.sm, textAlign: 'center' }}>
-            {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
+            {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${printedRange(doc).split(' · ')[0]} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
           </Txt>
         </>
       ) : (
@@ -139,7 +139,7 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
           {noCard ? null : <Pressable
             onPress={() => setOpen(true)}
             accessibilityRole="button"
-            accessibilityLabel={`Your summary page, ${pages === 1 ? 'one page' : `about ${pages} pages`}, ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'}, ${doc.rangeLabel}`}
+            accessibilityLabel={`Your summary page, ${pages === 1 ? 'one page' : `about ${pages} pages`}, ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'}, ${printedRange(doc).split(' · ')[0]}`}
             accessibilityHint="Opens the summary at a size you can read"
             style={({ pressed }) => [{
               flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, minHeight: 72,
@@ -152,7 +152,7 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
             </View>
             <View style={{ flex: 1 }}>
               <Txt variant="headline">See the full page</Txt>
-              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel.replace(/ /g, "\u00A0")}`}</Txt>
+              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${printedRange(doc).split(' · ')[0].replace(/ /g, "\u00A0")}`}</Txt>
             </View>
             <View aria-hidden><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
           </Pressable>}
