@@ -24,6 +24,14 @@ import { useEffect, useSyncExternalStore } from 'react';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
+// Web only: a thick, high-contrast keyboard focus ring (3 px aubergine with a white gap), keyboard focus only.
+if (Platform.OS === 'web' && typeof document !== 'undefined' && !document.getElementById('atossa-focus')) {
+  const el = document.createElement('style');
+  el.id = 'atossa-focus';
+  el.textContent = ':focus-visible{outline:3px solid #2A1838 !important;outline-offset:2px;box-shadow:0 0 0 2px #fff}';
+  document.head.appendChild(el);
+}
+
 // Older builds scheduled "period coming" / "ovulation" reminders from a
 // cycle prediction. The app no longer predicts anything, so clear any that
 // are still queued on the device.
