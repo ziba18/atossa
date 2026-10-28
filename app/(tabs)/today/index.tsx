@@ -11,7 +11,7 @@ import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { PeriodCard } from '../../../components/atossa/capture/PeriodCard';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
-  GhostNoteCard, HeroCard, HeroChip, HeroNumberCard, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
+  GhostNoteCard, HeroCard, HeroChip, HeroNumberCard, LatestNoteCard, OnsetConfirmRow, QuickRows, RoughDayCard, latestNote,
 } from '../../../components/atossa/capture/TodayCards';
 import { space } from '../../../constants/atossaUI';
 import { isHumanName } from '../../../lib/humanName';
@@ -86,7 +86,7 @@ export default function TodayScreen() {
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
       ) : (
       <View style={{ marginTop: space.xl, gap: space.xl }}>
-        {latest ? <LatestNoteCard note={latest} /> : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
+        {latest ? (<><LatestNoteCard note={latest} /><OnsetConfirmRow note={latest} /></>) : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
         {loadedFor ? <AppointmentCard inviteOnly /> : null}
         <RoughDayCard />
       </View>

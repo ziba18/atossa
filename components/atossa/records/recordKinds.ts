@@ -16,6 +16,8 @@ export const HISTORY_TYPES: HistoryType[] = [
   'Told to me by a doctor', 'Test or scan', 'Procedure or surgery', 'Emergency visit',
   'Allergies (in my words)',
 ];
+/** Onset phrases (written from the Today confirm row) are not a list item she adds by hand. */
+export const PICKABLE_HISTORY_TYPES = HISTORY_TYPES.filter((t) => t !== 'When it started (in my words)');
 
 import { ALLERGY_TYPE } from '../../../lib/records/summary';
 export { ALLERGY_TYPE };

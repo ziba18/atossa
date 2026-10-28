@@ -37,7 +37,7 @@ function previewLine(kind: RecordDataKind, records: ReturnType<typeof useRecords
     if (next) return `Next: ${formatShortDate(next.data.date)}${next.data.who.trim() ? ` · ${next.data.who.trim()}` : ''}`;
   }
   // An allergy line is a standing statement, not a dated event: it never leads the 'Latest' preview.
-  const sorted = sortRecords(kind, (records[kind] as any[]).filter((r) => r.data.type !== ALLERGY_TYPE));
+  const sorted = sortRecords(kind, (records[kind] as any[]).filter((r) => r.data.type !== ALLERGY_TYPE && r.data.type !== 'When it started (in my words)'));
   // A medicine still being taken leads the row; otherwise the newest one.
   const current = kind === 'medicine' ? sorted.find((r: any) => !r.data.stopped) : undefined;
   const newest = current ?? sorted[0];

@@ -8,7 +8,7 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
 import { todayKey } from '../../../lib/records/dates';
 import {
-  SINCE_MAX_MONTHS, buildDoctorSummary, monthsBefore, sinceNote, type DoctorDoc, type RangeChoice, type SectionId, type VisitType,
+  SINCE_MAX_MONTHS, buildDoctorSummary, onsetFromHistory, monthsBefore, sinceNote, type DoctorDoc, type RangeChoice, type SectionId, type VisitType,
 } from '../../../lib/records/summary';
 import type { AppointmentData, Rec } from '../../../types/records';
 
@@ -85,6 +85,7 @@ export function useDoctorDoc(): {
         medicines: records.medicine,
         history: records.history,
         appointments: records.appointment,
+        onset: onsetFromHistory(records.history),
         name: isHumanName(rawName) ? rawName!.trim() : undefined,
       },
       { from, to: today, today, visitType, agenda, include, appointmentToday: upcoming?.data.date === today },

@@ -18,6 +18,9 @@ import {
 } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { onsetWords } from '../../../lib/records/onset';
+import { ONSET_GROUP_LABEL, ONSET_TYPE, onsetFromHistory, onsetGroupFor } from '../../../lib/records/summary';
 import { MicButton } from './MicButton';
 import { nextAppointment } from './AppointmentCard';
 import { type IconName } from '../../ui/Icon';
@@ -221,6 +224,56 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
   );
 }
 
+const ONSET_SKIP_KEY = 'atossa.onsetSkipped';
+
+/**
+ * One quiet row under the latest note when it holds a "since …" phrase. Her words, verbatim, are saved as
+ * when this started only if she says so; "Not now" is remembered on this phone and never asks again for the note.
+ */
+export function OnsetConfirmRow({ note }: { note: Rec<SymptomData> }) {
+  const create = useRecordsStore((s) => s.create);
+  const history = useRecordsStore((s) => s.records.history);
+  const [skipped, setSkipped] = useState<string[] | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    AsyncStorage.getItem(ONSET_SKIP_KEY).then((v) => setSkipped(v ? JSON.parse(v) : [])).catch(() => setSkipped([]));
+  }, []);
+  const phrase = onsetWords(note.data.words ?? '');
+  const group = onsetGroupFor(note.data);
+  if (!phrase || skipped == null || skipped.includes(note.id) || onsetFromHistory(history)[group]) return null;
+  const skip = () => {
+    const next = [...skipped, note.id].slice(-50);
+    setSkipped(next);
+    AsyncStorage.setItem(ONSET_SKIP_KEY, JSON.stringify(next)).catch(() => {});
+  };
+  const save = async () => {
+    if (saving) return;
+    setSaving(true);
+    setError('');
+    try {
+      await create('history', { type: ONSET_TYPE, date: todayKey(), datePrecision: 'exact', told: phrase, done: group, result: '' });
+      haptics.success();
+      showToast('Saved. It will show on your doctor summary in your words.');
+    } catch {
+      setError("That didn’t save. Check your connection and try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <View style={styles.onset} accessible={false}>
+      <Txt variant="body">{`Save “${phrase}” as when your ${ONSET_GROUP_LABEL[group]} started?`}</Txt>
+      <Txt variant="caption">It goes on your doctor summary in your words. You can delete it under Health history.</Txt>
+      <InlineError message={error} />
+      <View style={styles.onsetActions}>
+        <Button label="Save" small onPress={save} loading={saving} />
+        <Button label="Not now" variant="text" small onPress={skip} disabled={saving} />
+      </View>
+    </View>
+  );
+}
+
 /** Counts up to `target` once on first show (about half a second); straight to the number under Reduce Motion. */
 export function useCountUp(target: number): number {
   const reduce = useReduceMotion();
@@ -365,6 +418,8 @@ const styles = StyleSheet.create({
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
+  onset: { gap: space.xs, padding: space.md, borderRadius: radii.card, backgroundColor: colors.plumTint },
+  onsetActions: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginTop: space.xs },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
   wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },

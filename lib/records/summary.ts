@@ -282,6 +282,31 @@ export interface SummaryInput {
 
 /** The one Health history type that is a plain statement, with no date, steps or result. */
 export const ALLERGY_TYPE: HistoryData['type'] = 'Allergies (in my words)';
+/** Her confirmed onset phrase for one symptom group: `done` holds the group key, `told` her words, verbatim. */
+export const ONSET_TYPE: HistoryData['type'] = 'When it started (in my words)';
+export const ONSET_GROUP_LABEL: Record<OnsetGroup, string> = {
+  pain: 'pain', bleeding: 'bleeding', bowelBladder: 'bowel or bladder', fatigue: 'tiredness', mood: 'mood', skinHair: 'skin or hair',
+};
+
+/** Which onset group a note's words speak about; pain when nothing else clearly fits. */
+export function onsetGroupFor(s: { words?: string; worst?: number | null; zones?: string[]; bleedingBetween?: boolean; bowelPain?: boolean; urinePain?: boolean }): OnsetGroup {
+  const w = (s.words ?? '').toLowerCase();
+  if (s.bowelPain || s.urinePain || /\b(bowel|poo|toilet|bladder|wee|urine)\b/.test(w)) return 'bowelBladder';
+  if (s.bleedingBetween || /\b(bleed|bleeding|period|periods|spotting|clots?)\b/.test(w)) return 'bleeding';
+  // A note that also names a strength or a body place is about pain first; tiredness only when it is the whole note.
+  if (s.worst == null && !(s.zones ?? []).length && /\b(tired|exhausted|fatigue|fatigued|sleep)\b/.test(w)) return 'fatigue';
+  return 'pain';
+}
+
+/** The onset phrases she confirmed, newest wins per group. */
+export function onsetFromHistory(history: Rec<HistoryData>[]): Partial<Record<OnsetGroup, Onset>> {
+  const out: Partial<Record<OnsetGroup, Onset>> = {};
+  for (const r of [...history].sort((a, b) => a.createdAt.localeCompare(b.createdAt))) {
+    if (r.data.type !== ONSET_TYPE || !r.data.told.trim()) continue;
+    out[r.data.done as OnsetGroup] = { words: r.data.told.trim() };
+  }
+  return out;
+}
 export const ALLERGIES_LABEL = 'Allergies, in my words';
 export const FAMILY_HISTORY_LABEL = 'Family health history, as I was told it';
 
@@ -769,7 +794,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
 
   // 7. Health history — "Around" dates.
   const histAll = input.history.map((r) => r.data);
-  const hist = histAll.filter((h) => h.type !== ALLERGY_TYPE).sort((a, b) => b.date.localeCompare(a.date));
+  const hist = histAll.filter((h) => h.type !== ALLERGY_TYPE && h.type !== ONSET_TYPE).sort((a, b) => b.date.localeCompare(a.date));
   // The patient's own allergy words, verbatim; never ticked, validated or commented on.
   const allergyText = histAll.filter((h) => h.type === ALLERGY_TYPE).map((h) => clean(h.told)).filter(Boolean).join('; ');
   const familyText = clean(input.familyHistory);

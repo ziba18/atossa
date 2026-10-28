@@ -15,7 +15,7 @@ import { todayKey } from '../../../lib/records/dates';
 import { useScrollRef } from '../timeline/navigation';
 import { UrgentNote, textOf } from '../UrgentNote';
 import { RecordDateField } from './RecordDateField';
-import { ALLERGY_TYPE, HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
+import { ALLERGY_TYPE, PICKABLE_HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
 
 const HELPED_OPTIONS = ['Helped', 'A little', 'No', 'Not sure'] as const;
 
@@ -395,7 +395,7 @@ function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
       <View>
         <FieldLabel label="What it was" />
         <ChipGroup
-          options={HISTORY_TYPES}
+          options={PICKABLE_HISTORY_TYPES}
           ghosts={[]}
           value={d.type || null}
           onChange={(type) => set({ type: (type ?? '') as HistoryType | '' })}
