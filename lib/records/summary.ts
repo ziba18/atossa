@@ -194,6 +194,8 @@ export interface FreqBar {
   strength: string;
   /** Where and when the highest rating was given: "Lower tummy centre · Thu 24 Sep"; '' when no rating. Most recent on a tie. */
   worstOn?: string;
+  /** The day of the highest rating for this row ("Thu 24 Sep"); '' when no rating. */
+  worstDate?: string;
   /** Highest number she gave on these notes (the "Worst" column); null when she gave none. Never averaged. */
   worst: number | null;
 }
@@ -372,6 +374,17 @@ function spread(values: number[]): string {
 }
 
 /** The note that carries the group's highest rating: its first area and date. Most recent when tied. */
+function worstDateOf(notes: SymptomData[]): string {
+  let best: SymptomData | null = null;
+  let hi = -1;
+  for (const s of notes) {
+    const w = worstOf(s);
+    if (w == null) continue;
+    if (w > hi || (w === hi && best && s.date > best.date)) { hi = w; best = s; }
+  }
+  return best ? formatDay(best.date) : '';
+}
+
 function worstWhen(notes: SymptomData[]): string {
   let best: SymptomData | null = null;
   let hi = -1;
@@ -705,12 +718,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const noteDays = daysWith(windowNotes, stripFrom, to);
     const bars: FreqBar[] = [];
     if (noteDays) {
-      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes), worstOn: worstWhen(windowNotes) });
+      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes), worstOn: worstWhen(windowNotes), worstDate: worstDateOf(windowNotes) });
       zoneDays(windowNotes)
         .slice(0, MAX_ZONE_ROWS)
         .map(({ label, days: n }) => {
           const zn = windowNotes.filter((s) => (s.zones ?? []).includes(label));
-          return { label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(zn), worst: groupWorst(zn) };
+          return { label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(zn), worst: groupWorst(zn), worstDate: worstDateOf(zn) };
         })
         .forEach((b) => bars.push(b));
     }
@@ -971,7 +984,7 @@ function stripSvg(strip: HeatStripModel): string {
   const gap = 2;
   const cell = 13.5;
   const band = 3;
-  const rowH = cell + band + 9;
+  const rowH = cell + band + 11;
   const rows = stripRows(strip.days, perRow);
   const width = labelW + perRow * (cell + gap);
   const height = rows.length * rowH;
@@ -983,6 +996,7 @@ function stripSvg(strip: HeatStripModel): string {
     out += `<rect x="${labelW}" y="${y + cell + 0.75}" width="${row.length * (cell + gap) - gap}" height="0.5" fill="${C.borderStrong}"/>`;
     row.forEach((d, i) => {
       const x = labelW + i * (cell + gap);
+      if (i % 7 === 0) out += `<text x="${x + cell / 2}" y="${y + cell + band + 9}" text-anchor="middle" font-family="${SANS}" font-size="6.5" fill="${C.ink2}">${esc(formatShortDate(d.date, 'never'))}</text>`;
       if (d.logged && d.value != null) {
         const s = docSeverity(d.value);
         out += `<rect x="${x}" y="${y}" width="${cell}" height="${cell}" rx="2" fill="${s.bg}" stroke="${C.borderStrong}" stroke-width="0.4"/>`;
@@ -1049,20 +1063,17 @@ function sectionInner(s: DocSection): string {
       // A real table (area · days of the window · highest rating · usual range): counts and ratings sit in right-aligned
       // tabular columns, so a clinician can scan down them. The grey bar repeats the day count; nothing depends on colour.
       const worstIn = (t: string) => /worst (\d+)\/10/.exec(t)?.[1];
-      const usualIn = (t: string) => t.replace(/,?\s*worst \d+\/10/, '').replace(/^,\s*/, '');
       const rows = s.bars.map((b, i) => {
-        const pct = b.total ? Math.max(1.5, (b.days / b.total) * 100) : 0;
         const w = worstIn(b.strength ?? '');
-        const u = usualIn(b.strength ?? '');
-        return `<tr${i === 0 ? ' class="all"' : ''}><td class="area">${esc(b.label)}</td><td class="num">${b.days} of ${b.total} days</td><td class="num">${w ? `${w}/10` : 'Not recorded'}</td><td class="usual">${esc(u)}</td><td class="barcell"><div class="track"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div></td></tr>`;
+        return `<tr${i === 0 ? ' class="all"' : ''}><td class="area">${esc(b.label)}</td><td class="num">${b.days} of ${b.total} days</td><td class="num">${w ? `${w}/10` : 'Not recorded'}</td><td>${esc(b.worstDate ?? '')}</td></tr>`;
       }).join('');
-      const bars = `<table class="figs"><thead><tr><th>Area</th><th class="num">Days with a note</th><th class="num">Highest rating</th><th>Usual rating</th><th class="barcell"></th></tr></thead><tbody>${rows}</tbody></table>`;
+      const bars = `<table class="figs"><thead><tr><th>Area</th><th class="num">Days with a note</th><th class="num">Highest rating</th><th>Date of highest</th></tr></thead><tbody>${rows}</tbody></table>`;
       const bleedKey =
         (s.strip.days.some((d) => d.bleeding) ? ` <span class="key"></span> = ${STRIP_BLEED_KEY}.` : '') +
         (s.strip.days.some((d) => d.spotting) ? ` <span class="key spot"></span> = ${STRIP_SPOT_KEY}.` : '');
       const top = s.bars[0]?.worstOn;
       const topLine = top ? `<p class="meta" style="margin-top:3pt">Highest rating given: ${esc(top)}.</p>` : '';
-      return `<section>${head}<p class="meta">${esc(s.windowLabel)}</p>${bars}${topLine}
+      return `<section>${head}${bars}${topLine}
         <div class="strip">${stripSvg(s.strip)}</div>
         <p class="meta">${esc(STRIP_KEY)}${bleedKey}</p>
         <p class="meta">${esc(joinFacts(s.caption, s.strip.windowNote))}</p></section>`;
@@ -1113,6 +1124,26 @@ function otherAreasHtml(doc: DoctorDoc): string {
   return `<section class="keep"><h2>Other areas</h2><table class="dl areas">${rows.map(line).join('')}</table></section>`;
 }
 
+/** The document's one range: the window the counts use (first entry to the last day) when there is one, else the chosen range. */
+export function printedRange(doc: DoctorDoc): string {
+  const f = doc.sections.find((x) => x.id === 'frequency');
+  return f && f.id === 'frequency' ? f.windowLabel : doc.rangeLabel;
+}
+
+/** Two-column key/value block under the title, ruled like a record header. */
+function headBlock(doc: DoctorDoc): string {
+  const parts = doc.meta.split(' · ').slice(1);
+  const made = parts.find((x) => x.startsWith('Made '))?.slice(5) ?? '';
+  const visit = parts.find((x) => !x.startsWith('Made ')) ?? '';
+  const rows: [string, string][] = [
+    ['Period', printedRange(doc)],
+    ...(visit ? [['Visit', visit] as [string, string]] : []),
+    ['Generated', made],
+    ['Source', 'Recorded by the patient in Atossa. Not clinically verified.'],
+  ].filter(([, v]) => v) as [string, string][];
+  return `<table class="kv"><tbody>${rows.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</tbody></table>`;
+}
+
 /** The header line: the same window the counts use (first entry to the last day), then the visit type and the made-on date. */
 function headMeta(doc: DoctorDoc): string {
   const f = doc.sections.find((x) => x.id === 'frequency');
@@ -1135,7 +1166,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(doc.title)}</title>
 <style>
-  @page { size: A4; margin: 12mm 14mm 10mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8pt; color: ${C.ink2}; } }
+  @page { size: A4; margin: 10mm 14mm 9mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-family: ${SANS}; font-size: 8pt; color: ${C.ink}; } }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: ${C.white}; }
   body { font-family: ${SANS}; color: ${C.ink}; ${pt(T.body)} font-variant-numeric: tabular-nums lining-nums; }
@@ -1144,12 +1175,12 @@ export function summaryToHtml(doc: DoctorDoc): string {
   h1 { font-family: ${SANS}; font-weight: 700; letter-spacing: 0.2pt; ${pt(T.title)} margin: 0; }
   .metahead { color: ${C.ink2}; ${pt(T.meta)} margin: 3pt 0 0; padding-bottom: 8pt; border-bottom: 1pt solid ${C.ink}; }
   h2 { ${pt(T.head)} font-weight: 700; margin: 0 0 5pt; }
-  section { padding: ${T.section - 6}pt 0 ${T.section - 10}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
+  section { padding: ${T.section - 8}pt 0 ${T.section - 12}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
   h2 { break-after: avoid; page-break-after: avoid; }
   .keep { break-inside: avoid; page-break-inside: avoid; }
   section:last-child { border-bottom: 0; }
   p { margin: 0; }
-  .serif { font-family: ${SERIF}; font-style: normal; font-weight: 400; ${pt(T.quote)} }
+  .serif { font-family: ${SANS}; font-style: normal; font-weight: 400; ${pt(T.quote)} }
   .serif.lead { ${pt(T.lead)} }
   .q { margin: 0 0 ${T.item}pt; break-inside: avoid; }
   .meta { color: ${C.ink2}; ${pt(T.meta)} }
@@ -1171,11 +1202,14 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dated td:nth-child(1) { width: 66pt; } table.dated td:nth-child(2) { width: 96pt; }
   table.dated.tried td:nth-child(1) { width: 120pt; } table.dated.tried td:nth-child(2) { width: 110pt; }
   table.dated tr:last-child td { border-bottom: 0; }
-  table.notes th:nth-child(1) { width: 92pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
+  table.notes th:nth-child(1) { width: 84pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
+  table.kv { width: 100%; border-collapse: collapse; border-bottom: 1pt solid ${C.ink}; margin-top: 4pt; }
+  table.kv th { width: 70pt; text-align: left; font-weight: 600; color: ${C.ink}; ${pt(T.meta)} padding: 1pt 6pt 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
+  table.kv td { color: ${C.ink}; ${pt(T.body)} padding: 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
   .recorded { color: ${C.ink2}; ${pt(T.meta)} margin: 0; padding: 3pt 0 0; }
   table.figs { width: 100%; border-collapse: collapse; margin-top: 3pt; }
   table.figs th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
-  table.figs td { padding: 3pt 6pt 3pt 0; border-bottom: 0.5pt solid ${C.borderStrong}; vertical-align: middle; ${pt(T.body)} }
+  table.figs td { padding: 2pt 6pt 2pt 0; border-bottom: 0.5pt solid ${C.borderStrong}; vertical-align: middle; ${pt(T.body)} }
   table.figs .num { text-align: right; white-space: nowrap; font-weight: 600; }
   table.figs th.num { font-weight: 600; }
   table.figs td.usual { color: ${C.ink2}; ${pt(T.meta)} }
@@ -1194,11 +1228,10 @@ export function summaryToHtml(doc: DoctorDoc): string {
   <thead><tr><td></td></tr></thead>
   <tbody><tr><td>
     <h1>${esc(doc.title)}</h1>
-    <p class="metahead">${esc(headMeta(doc))}</p>
-    <p class="recorded">Recorded by the patient in Atossa. Not clinically verified.</p>
+    ${headBlock(doc)}
     ${body}
   </td></tr></tbody>
-  <tfoot><tr><td><div class="footer">${esc(doc.footer)}</div></td></tr></tfoot>
+  <tfoot><tr><td><div class="footer">${esc(doc.footer.replace(doc.rangeLabel, printedRange(doc).split(' · ')[0]))}</div></td></tr></tfoot>
 </table>
 </body></html>`;
 }
