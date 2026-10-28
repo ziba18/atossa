@@ -839,6 +839,21 @@ _SELF_WHOLE = re.compile(
 
 
 
+# run10 v91 (first contact 5/10 missed; A48 from the run09 probe), whole note, three NHS 999/A&E classes:
+# (1) no wee all day / for hours + a temperature or shivering (nhs.uk/conditions/sepsis, reviewed 14 May 2026);
+# (2) too many painkillers by accident (nhs.uk/medicines/paracetamol-for-adults "If you take too much": A&E, read 2026-10-28);
+# (3) sudden tummy pain with a hard or rigid belly (nhs.uk/conditions/stomach-ache 999 list, read 2026-10-28).
+_NOWEE = (r"(?:(?:haven'?t|have not|hasn'?t|not|no|didn'?t) (?:had |done |been for |passed )?(?:a |any )?(?:wee|pee|urine)\b[^.!?]{0,30}"
+          r"(?:all day|since|for (?:\d+|hours|ages)|in (?:\d+|over \d+) hours|today)|not (?:weed|peed|passed (?:any )?urine) (?:since|for|in|all day))")
+_ACC_OD = (r"(?:took|taken|had) (?:double|twice|more|too many|too much)(?: of)? (?:my |the )?(?:\w+ )?(?:painkillers|paracetamol|co-?codamol|ibuprofen|codeine|tablets|pills)\b"
+           r"[^.!?]{0,40}(?:by (?:mistake|accident)|accidentally|than i should|lost count)|accidentally (?:took|taken|had) (?:double|too many|too much|more)")
+_HARDBELLY = (r"\b(?:belly|tummy|stomach|abdomen)\b[^.!?]{0,40}\b(?:hard|rigid|board)\b|\b(?:hard|rigid)\b[^.!?]{0,20}\b(?:belly|tummy|stomach|abdomen)\b")
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?=[\s\S]*" + _NOWEE + r")(?=[\s\S]*\b(?:fever|temperature|temp|shiver\w*|shaking|burning (?:hot|up))\b)(?![\s\S]*\b(?:no (?:temperature|fever|temp)|all fine now)\b)"
+                    + r"|^(?=[\s\S]*(?:" + _ACC_OD + r"))"
+                    + r"|^(?=[\s\S]*\b(?:sudden\w*|out of nowhere|all of a sudden)\b)(?=[\s\S]*(?:" + _HARDBELLY + r"))(?![\s\S]*\b(?:every period|as usual|from the gym)\b)", _WHOLE.flags)
+
+
 # run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
 # (nhs.uk/conditions/meningitis: "get emergency medical help"). Stiff neck alone, light alone, or her usual migraine stay quiet.
 _NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
