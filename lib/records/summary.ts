@@ -229,7 +229,8 @@ export interface TriedItem {
   /** Side effects in her words; '' when none given. */
   sideEffects: string;
 }
-export interface DatedItem { date: string; title: string; lines: DocLine[] }
+/** `inline`: the lines print on one line (tests and scans, so every one of them fits). */
+export interface DatedItem { date: string; title: string; lines: DocLine[]; inline?: boolean }
 
 export type DocSection =
   | { id: 'words'; title: string; quotes: DocQuote[]; more: string }
@@ -841,6 +842,11 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   // 7. Health history — "Around" dates.
   const histAll = input.history.map((r) => r.data);
   const hist = histAll.filter((h) => h.type !== ALLERGY_TYPE && h.type !== ONSET_TYPE).sort((a, b) => b.date.localeCompare(a.date));
+  // Every earlier test or scan is always listed (one line each): they are the record of what was already done. Other items stay capped.
+  const TEST_TYPE: HistoryData['type'] = 'Test or scan';
+  const tests = hist.filter((h) => h.type === TEST_TYPE);
+  const others = hist.filter((h) => h.type !== TEST_TYPE).slice(0, Math.max(0, MAX_LISTED - tests.length));
+  const listedHistory = [...tests, ...others].sort((a, b) => b.date.localeCompare(a.date));
   // The patient's own allergy words, verbatim; never ticked, validated or commented on.
   const allergyText = histAll.filter((h) => h.type === ALLERGY_TYPE).map((h) => clean(h.told)).filter(Boolean).join('; ');
   const familyText = clean(input.familyHistory);
@@ -849,16 +855,21 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     all.push({
       id: 'history',
       title: 'Health history',
-      items: hist.slice(0, MAX_LISTED).map((h) => ({
+      items: listedHistory.map((h) => ({
         date: docDate(h.date, h.datePrecision),
         title: h.type,
-        lines: [
+        inline: h.type === TEST_TYPE,
+        lines: (h.type === TEST_TYPE ? [
+          { label: 'What was done', text: clean(h.done) },
+          { label: 'I was told', text: clean(h.told) },
+          { label: 'Result or how it went', text: clean(h.result) },
+        ] : [
           { label: 'I was told', text: clean(h.told) },
           { label: 'What was done', text: clean(h.done) },
           { label: 'Result or how it went', text: clean(h.result) },
-        ].filter((l) => l.text),
+        ]).filter((l) => l.text),
       })),
-      more: hist.length > MAX_LISTED ? `${plural(hist.length - MAX_LISTED, 'earlier item')} saved in Atossa.` : '',
+      more: hist.length > listedHistory.length ? `${plural(hist.length - listedHistory.length, 'earlier item')} saved in Atossa.` : '',
       family: familyText,
       allergies: allergyText,
     });
@@ -1041,7 +1052,8 @@ function wordsTableHtml(quotes: DocQuote[]): string {
  */
 function datedTableHtml(items: DatedItem[]): string {
   const rows = items.map((a) => {
-    const details = a.lines.map((l) => `<div><span class="muted">${esc(l.label)}:</span> ${esc(l.text)}</div>`).join('');
+    const one = (l: DocLine) => `<span class="muted">${esc(l.label)}:</span> ${esc(l.text)}`;
+    const details = a.inline ? a.lines.map(one).join('<span class="sep"> · </span>') : a.lines.map((l) => `<div>${one(l)}</div>`).join('');
     return `<tr><td>${esc(a.date)}</td><td class="strong">${esc(a.title)}</td><td>${details || '<span class="sep">–</span>'}</td></tr>`;
   }).join('');
   return `<table class="notes dated"><tbody>${rows}</tbody></table>`;
