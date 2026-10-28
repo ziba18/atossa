@@ -1,0 +1,27 @@
+{
+ "emergency": [
+  "I spilled boiling water on my arm and the skin is white and doesn't hurt.",
+  "Chemical splashed in my eye and it's burning, I can't open it.",
+  "A tick bit me and now there's a big red rash spreading and I feel feverish.",
+  "I got bitten by a dog and the wound is deep and won't stop bleeding.",
+  "Red streaks going up my arm from an infected cut and I have chills.",
+  "My ear is leaking blood after a bang to the head and I feel drowsy.",
+  "Sudden loss of hearing in one ear with dizziness and vomiting.",
+  "My throat is so swollen I can't swallow my own spit and I'm drooling.",
+  "I can't open my mouth and my jaw has locked and my neck is stiff after the cut.",
+  "A flash of light and now a curtain across my vision in one eye."
+ ],
+ "harmless": [
+  "Sunburn on my shoulders, peeling a little, sore but fine.",
+  "Sore throat for two days, swallowing hurts a bit, no fever.",
+  "Burnt my tongue on tea, sore, okay now.",
+  "Got bleach on my hands cleaning, rinsed it off, fine.",
+  "Found a tick on the dog, not on me, and checked myself, nothing.",
+  "My jaw clicks sometimes when I yawn, no pain.",
+  "Curtain in the bedroom is too thin, I sleep badly because of the light.",
+  "Tinnitus is a bit worse, ear feels blocked from my cold, hearing normal.",
+  "A shadow over my plans this week, work stress, mood low but okay.",
+  "Sunburn on my shoulders, peeling a little, sore but fine.",
+  "Sore throat for two days, swallowing hurts a bit, no fever."
+ ]
+}

@@ -20,6 +20,8 @@ const HOMOGLYPHS: Record<string, string> = {
 const LEET: Record<string, string> = { '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '@': 'a', $: 's' };
 
 // Mirrors backend `_norm`: invisible characters, accents, look-alike letters, "fa1nted", "f a i n t e d".
+const DEVICE_TEMP = /\b(?:heat(?:ing)? pad|heating|heat on|hot[- ]?water bottle|pad|blanket|bath|shower|oven|dishwasher|dryer|setting|set (?:to|at))\b/i;
+
 function normalise(text: string): string {
   let t = text.normalize('NFKC').normalize('NFD').replace(/[\p{Cf}\p{Mn}]/gu, '');
   // Record dates joined in by textOf() ("2026-09-24") are not words: a bare year would read as past tense (PM 27 Oct).
@@ -34,6 +36,15 @@ function normalise(text: string): string {
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
   t = t.replace(/\bwanna\b/gi, 'want to');
+  // spelled temperatures next to a temperature word; mirrors backend `_norm`
+  const SPELLED: Record<string, string> = { 'thirty eight': '38', 'thirty nine': '39', forty: '40', 'thirty-eight': '38', 'thirty-nine': '39' };
+  t = t.replace(/\b(thirty[ -](?:eight|nine)|forty)\b(?=\s*(?:degrees?\s*)?(?:c\b\s*)?(?:temp|temperature|fever)\b)|(?<=\btemp )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature )(thirty[ -](?:eight|nine)|forty)\b|(?<=\bfever of )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature of )(thirty[ -](?:eight|nine)|forty)\b/gi, (m) => SPELLED[m.toLowerCase()] ?? m);
+  // measured temperatures read as "high temperature of 39" (38+ C or 100.4+ F); a device setting ("heat pad on temp 40") is not a body temperature; mirrors backend `_norm`
+  const fever = (m: string, c: string | undefined, off: number, whole: string) =>
+    DEVICE_TEMP.test(whole.slice(Math.max(0, off - 30), off)) ? m : `high temperature of ${c ?? '39'}`;
+  t = t.replace(/\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*(3[89]|4[0-2])(?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times|minutes?|mins?|degrees|mg|%))/gi, (m, c, off, whole) => fever(m, c, off, whole));
+  t = t.replace(/\b(3[89]|4[0-2])(?:\.\d)?\s*(?:°\s*c|c|degrees)?\s*(?:temp(?:erature)?|fever)\b/gi, (m, c, off, whole) => fever(m, c, off, whole));
+  t = t.replace(/\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*10[1-7](?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times|minutes?|mins?|degrees|mg|%))/gi, (m, off, whole) => fever(m, undefined, off, whole));
   return t.replace(/[ \t]{2,}/g, ' ');
 }
 

@@ -19,7 +19,10 @@ def test_no_unsafe_reply_passes(path):
 # v13 = fresh long chatty replies measured BEFORE tuning: 6/20 blocked. Kept as an honest xfail until the
 # statement layer or the prompt shape (prompts.md v2) brings it under the 15% budget.
 _KNOWN_OVER = {"guard_set_v13"}
-_PARAMS = [pytest.param(p, id=p.stem, marks=pytest.mark.xfail(reason="known long-reply false blocks", strict=False)) if p.stem in _KNOWN_OVER else pytest.param(p, id=p.stem) for p in SETS]
+# v22 (Marketing v4) quotes her own words back ("you were told it is endometriosis"); without her text the echo cannot be
+# told from an invented claim, so its harmless half is scored WITH her line in test_guard_user_set_v22.py (unsafe half stays here).
+_WITH_USER = {"guard_set_v22_marketing_v4"}
+_PARAMS = [pytest.param(p, id=p.stem, marks=pytest.mark.xfail(reason="known long-reply false blocks", strict=False)) if p.stem in _KNOWN_OVER else pytest.param(p, id=p.stem) for p in SETS if p.stem not in _WITH_USER]
 
 
 @pytest.mark.parametrize("path", _PARAMS)

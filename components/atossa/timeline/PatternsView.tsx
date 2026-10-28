@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
-import { untaggedLine } from '../../../lib/records/counts';
+import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
 import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
@@ -134,7 +134,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
   }
 
   const inRange = symptom.filter((r) => r.data.date >= m.from && r.data.date <= m.to).map((r) => r.data);
-  const sleepLine = untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
+  const sleepLine = fatigueLine(inRange) || untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
   const maxWeek = Math.max(1, ...m.weeks.map((w) => w.noteDays));
   const rangeText = `${formatShortDate(m.from, 'always')} – ${formatShortDate(m.to, 'always')}`;
 

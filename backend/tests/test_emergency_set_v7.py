@@ -333,3 +333,69 @@ SET40 = json.loads((Path(__file__).parent / "emergency_set_v40_cauda_jaundice.js
 def test_set_v40_cauda_jaundice_caught_and_harmless_quiet():
     assert [t for t in SET40["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET40["harmless"] if is_emergency(t)] == []
+
+
+SET41 = json.loads((Path(__file__).parent / "emergency_set_v41_pm_blind28.json").read_text())
+
+
+def test_set_v41_pm_blind28_caught_and_harmless_quiet():
+    assert [t for t in SET41["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET41["harmless"] if is_emergency(t)] == []
+
+
+SET42 = json.loads((Path(__file__).parent / "emergency_set_v42_temperature_numbers.json").read_text())
+
+
+def test_set_v42_temperature_numbers_caught_and_harmless_quiet():
+    assert [t for t in SET42["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET42["harmless"] if is_emergency(t)] == []
+
+
+SET43 = json.loads((Path(__file__).parent / "emergency_set_v43_stroke_sepsis_vision.json").read_text())
+
+
+def test_set_v43_stroke_sepsis_vision_caught_and_harmless_quiet():
+    assert [t for t in SET43["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET43["harmless"] if is_emergency(t)] == []
+
+
+SET44 = json.loads((Path(__file__).parent / "emergency_set_v44_teen_probe3.json").read_text())
+
+
+def test_set_v44_teen_probe3_caught_and_harmless_quiet():
+    assert [t for t in SET44["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET44["harmless"] if is_emergency(t)] == []
+
+
+SET45 = json.loads((Path(__file__).parent / "emergency_set_v45_asthma_sugar_limb.json").read_text())
+
+
+def test_set_v45_asthma_sugar_limb_caught_and_harmless_quiet():
+    assert [t for t in SET45["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET45["harmless"] if is_emergency(t)] == []
+
+
+SET46 = json.loads((Path(__file__).parent / "emergency_set_v46_chest_poison_crisis.json").read_text())
+
+
+def test_set_v46_chest_poison_crisis_caught_and_harmless_quiet():
+    assert [t for t in SET46["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET46["harmless"] if is_emergency(t)] == []
+    assert emergency_kind("I haven't slept for four days and my thoughts are racing and I'm scared of what I might do.") == "self_harm"
+
+
+SET47 = json.loads((Path(__file__).parent / "emergency_set_v47_injury_eye_ear.json").read_text())
+
+
+def test_set_v47_injury_eye_ear_caught_and_harmless_quiet():
+    assert [t for t in SET47["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET47["harmless"] if is_emergency(t)] == []
+
+
+SET48 = json.loads((Path(__file__).parent / "emergency_set_v48_indirect_selfharm3.json").read_text())
+
+
+def test_set_v48_indirect_selfharm3_caught_and_harmless_quiet():
+    assert [t for t in SET48["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET48["harmless"] if is_emergency(t)] == []
+    assert emergency_kind("I've been saving up my pills just in case.") == "self_harm"
