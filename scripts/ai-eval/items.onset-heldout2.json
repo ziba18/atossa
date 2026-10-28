@@ -1,0 +1,23 @@
+{"note": "Unseen onset set 2 (ai-brain run06, 2026-10-28 05:1x UTC), written and committed BEFORE scoring onsetWords() on it. gold = the phrase she used for when it started (substring, case-insensitive), null = nothing should be offered. Not tuned on.",
+ "items": [
+  {"id": "U01", "text": "cramps have been bad ever since my first period at 12", "gold": "ever since my first period"},
+  {"id": "U02", "text": "the bloating started about six months ago and hasn't gone", "gold": "about six months ago"},
+  {"id": "U03", "text": "I've had this pelvic ache since last Christmas", "gold": "since last Christmas"},
+  {"id": "U04", "text": "spotting between periods for the past year or so", "gold": "for the past year"},
+  {"id": "U05", "text": "tired all the time since I came off the pill in 2023", "gold": "since I came off the pill"},
+  {"id": "U06", "text": "back pain on period days since my teens", "gold": "since my teens"},
+  {"id": "U07", "text": "Started getting pain when I wee around March", "gold": "around March"},
+  {"id": "U08", "text": "my skin broke out properly a few years ago and never settled", "gold": "a few years ago"},
+  {"id": "U09", "text": "heavy flow for as long as I can remember", "gold": "for as long as I can remember"},
+  {"id": "U10", "text": "painful sex since having my son", "gold": "since having my son"},
+  {"id": "U11", "text": "low mood the week before my period, been like that for ages", "gold": "for ages"},
+  {"id": "U12", "text": "sharp stabbing pain on the left side, first noticed it in the summer", "gold": "in the summer"},
+  {"id": "N01", "text": "pain 7 out of 10 today, took ibuprofen at 2pm", "gold": null},
+  {"id": "N02", "text": "period started this morning, heavy", "gold": null},
+  {"id": "N03", "text": "felt sick after lunch, better by the evening", "gold": null},
+  {"id": "N04", "text": "had my scan last week, waiting for results", "gold": null},
+  {"id": "N05", "text": "cramps since this morning", "gold": null},
+  {"id": "N06", "text": "we've been trying for a baby for two years", "gold": null},
+  {"id": "N07", "text": "on the mini pill since January", "gold": null},
+  {"id": "N08", "text": "slept badly, up three times in the night", "gold": null}
+ ]}
