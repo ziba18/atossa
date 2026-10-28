@@ -1046,15 +1046,23 @@ function sectionInner(s: DocSection): string {
       if (s.quotes.some((q) => q.parts && q.facts)) return `<section>${head}${wordsTableHtml(s.quotes)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
       return `<section>${head}${s.quotes.map(quoteHtml).join('')}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
     case 'frequency': {
-      const bars = s.bars.map((b) => {
+      // A real table (area · days of the window · highest rating · usual range): counts and ratings sit in right-aligned
+      // tabular columns, so a clinician can scan down them. The grey bar repeats the day count; nothing depends on colour.
+      const worstIn = (t: string) => /worst (\d+)\/10/.exec(t)?.[1];
+      const usualIn = (t: string) => t.replace(/,?\s*worst \d+\/10/, '').replace(/^,\s*/, '');
+      const rows = s.bars.map((b, i) => {
         const pct = b.total ? Math.max(1.5, (b.days / b.total) * 100) : 0;
-        return `<div class="bar"><p><span class="strong">${esc(barText(b))}</span>${b.strength ? `<span class="muted"> · ${esc(b.strength)}</span>` : ''}</p>
-          <div class="track"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div></div>`;
+        const w = worstIn(b.strength ?? '');
+        const u = usualIn(b.strength ?? '');
+        return `<tr${i === 0 ? ' class="all"' : ''}><td class="area">${esc(b.label)}</td><td class="num">${b.days} of ${b.total} days</td><td class="num">${w ? `${w}/10` : 'Not recorded'}</td><td class="usual">${esc(u)}</td><td class="barcell"><div class="track"><div class="fill" style="width:${pct.toFixed(1)}%"></div></div></td></tr>`;
       }).join('');
+      const bars = `<table class="figs"><thead><tr><th>Area</th><th class="num">Days with a note</th><th class="num">Highest rating</th><th>Usual rating</th><th class="barcell"></th></tr></thead><tbody>${rows}</tbody></table>`;
       const bleedKey =
         (s.strip.days.some((d) => d.bleeding) ? ` <span class="key"></span> = ${STRIP_BLEED_KEY}.` : '') +
         (s.strip.days.some((d) => d.spotting) ? ` <span class="key spot"></span> = ${STRIP_SPOT_KEY}.` : '');
-      return `<section>${head}<p class="meta">${esc(s.windowLabel)}</p>${bars}
+      const top = s.bars[0]?.worstOn;
+      const topLine = top ? `<p class="meta" style="margin-top:3pt">Highest rating given: ${esc(top)}.</p>` : '';
+      return `<section>${head}<p class="meta">${esc(s.windowLabel)}</p>${bars}${topLine}
         <div class="strip">${stripSvg(s.strip)}</div>
         <p class="meta">${esc(STRIP_KEY)}${bleedKey}</p>
         <p class="meta">${esc(joinFacts(s.caption, s.strip.windowNote))}</p></section>`;
@@ -1103,6 +1111,13 @@ function otherAreasHtml(doc: DoctorDoc): string {
   if (!rows.length) return '';
   const line = (r: { label: string; text: string; muted: boolean }) => `<tr><th>${esc(r.label)}</th><td${r.muted ? ' class="muted"' : ''}>${esc(r.text)}</td></tr>`;
   return `<section class="keep"><h2>Other areas</h2><table class="dl areas">${rows.map(line).join('')}</table></section>`;
+}
+
+/** The header line: the same window the counts use (first entry to the last day), then the visit type and the made-on date. */
+function headMeta(doc: DoctorDoc): string {
+  const f = doc.sections.find((x) => x.id === 'frequency');
+  const rest = doc.meta.split(' · ').slice(1);
+  return f && f.id === 'frequency' ? [f.windowLabel, ...rest].join(' · ') : doc.meta;
 }
 
 export function summaryToHtml(doc: DoctorDoc): string {
@@ -1157,6 +1172,15 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dated.tried td:nth-child(1) { width: 120pt; } table.dated.tried td:nth-child(2) { width: 110pt; }
   table.dated tr:last-child td { border-bottom: 0; }
   table.notes th:nth-child(1) { width: 80pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
+  .recorded { color: ${C.ink2}; ${pt(T.meta)} margin: 0; padding: 3pt 0 0; }
+  table.figs { width: 100%; border-collapse: collapse; margin-top: 3pt; }
+  table.figs th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
+  table.figs td { padding: 3pt 6pt 3pt 0; border-bottom: 0.5pt solid ${C.borderStrong}; vertical-align: middle; ${pt(T.body)} }
+  table.figs .num { text-align: right; white-space: nowrap; font-weight: 600; }
+  table.figs th.num { font-weight: 600; }
+  table.figs td.usual { color: ${C.ink2}; ${pt(T.meta)} }
+  table.figs td.area { font-weight: 400; } table.figs tr.all td.area { font-weight: 700; }
+  table.figs .barcell { width: 64pt; padding-right: 0; }
   .bar { margin: 3pt 0 6pt; }
   .track { height: 5pt; background: ${C.track}; border: 0.5pt solid ${C.borderStrong}; margin-top: 2pt; }
   .fill { height: 100%; background: ${C.ink}; }
@@ -1170,7 +1194,8 @@ export function summaryToHtml(doc: DoctorDoc): string {
   <thead><tr><td></td></tr></thead>
   <tbody><tr><td>
     <h1>${esc(doc.title)}</h1>
-    <p class="metahead">${esc(doc.meta)}</p>
+    <p class="metahead">${esc(headMeta(doc))}</p>
+    <p class="recorded">Recorded by the patient in Atossa. Not clinically verified.</p>
     ${body}
   </td></tr></tbody>
   <tfoot><tr><td><div class="footer">${esc(doc.footer)}</div></td></tr></tfoot>
