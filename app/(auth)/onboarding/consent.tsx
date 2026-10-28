@@ -36,7 +36,7 @@ export default function OnboardingConsentScreen() {
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
-      <Txt variant="largeTitle" accessibilityRole="header" style={styles.title}>Before you start</Txt>
+      <Txt variant="hero" accessibilityRole="header" style={styles.title}>Before you start</Txt>
       <Card>
         <Txt variant="body">Atossa saves what you tell it so you can show your doctor a clear summary.</Txt>
         <Txt variant="body" style={{ marginTop: space.md }}>What you save is health information. It is stored on our server and linked to your account.</Txt>
