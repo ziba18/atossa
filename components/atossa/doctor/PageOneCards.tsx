@@ -4,10 +4,30 @@
 import React from 'react';
 import { View } from 'react-native';
 import { colors, radii, space } from '../../../constants/atossaUI';
+import { addDays } from '../../../lib/records/dates';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
 import { Card, Txt } from '../kit';
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
+
+/** Three counts from the frequency section, at the top of page 1: what she recorded, in numbers. Same figures as the card below. */
+function ProofStrip({ all, top, worst }: { all: { days: number; total: number }; top?: { label: string; days: number }; worst?: string }) {
+  const tiles = [
+    { big: String(all.days), small: `of ${plural(all.total, 'day')} with a note` },
+    ...(top ? [{ big: String(top.days), small: `days: ${top.label.toLowerCase()}` }] : []),
+    ...(worst ? [{ big: `${worst}/10`, small: 'worst, out of 10' }] : []),
+  ];
+  return (
+    <View style={{ flexDirection: 'row', gap: space.xs }} accessible accessibilityLabel={tiles.map((t) => `${t.big} ${t.small}`).join('. ')}>
+      {tiles.map((t) => (
+        <View key={t.small} aria-hidden style={{ flex: 1, minWidth: 0, backgroundColor: colors.ink, borderRadius: radii.input, padding: space.sm }}>
+          <Txt variant="numeral" numberOfLines={1} style={{ fontSize: 24, lineHeight: 30, color: colors.white }}>{t.big}</Txt>
+          <Txt variant="caption" style={{ color: colors.white, marginTop: space.xxs }}>{t.small}</Txt>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 /** `showAgenda` is false when the editable agenda field already sits above the cards. */
 export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showAgenda?: boolean }) {
@@ -30,6 +50,18 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
   }
 
   if (freq && freq.id === 'frequency') {
+    const [first, ...rest] = freq.bars;
+    if (first) {
+      const worstNums = rest.map((b) => Number(/worst (\d+)\/10/.exec(b.strength ?? '')?.[1])).filter((n) => !Number.isNaN(n));
+      cards.push(
+        <ProofStrip
+          key="proof"
+          all={first}
+          top={rest[0]}
+          worst={worstNums.length ? String(Math.max(...worstNums)) : undefined}
+        />,
+      );
+    }
     // The first bar is "Days with a note": it becomes the card subtitle; the rest are area rows with
     // the count on the left and one right-aligned "Worst" column (no "worst 9/10" repeated in text).
     const [all, ...areas] = freq.bars;
@@ -44,8 +76,8 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
             <View
               style={{ flex: 1, minWidth: 0, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: space.xs }}
             >
-              <Txt variant="numeral" style={{ fontSize: 32, lineHeight: 36 }}>{String(all.days)}</Txt>
-              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`of ${plural(all.total, 'day')} with a note`}</Txt>
+              {/* The count itself sits in the proof strip above; here it is only said once, in words. */}
+              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`Days by area, of ${plural(all.total, 'day')}`}</Txt>
             </View>
             {/* The column header: said once here, so the rows below carry only the number. */}
             {areas.some((b) => worstOf(b.strength ?? '')) ? <Txt variant="secondary" aria-hidden>Worst</Txt> : null}
@@ -76,6 +108,35 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         </View>
       </Card>,
     );
+  }
+  if (freq && freq.id === 'frequency' && freq.strip.days.length >= 15) {
+    // Strongest number in each 7-day block of the same window as the card above (same days, same numbers).
+    const days = freq.strip.days;
+    const start = days[0].date;
+    const blocks: { from: string; peak: number | null }[] = [];
+    for (let i = 0; i * 7 < days.length; i++) {
+      const from = addDays(start, i * 7);
+      const to = addDays(from, 6);
+      const peak = days.reduce<number | null>((hi, d) => (d.date >= from && d.date <= to && d.value != null && (hi == null || d.value > hi) ? d.value : hi), null);
+      blocks.push({ from, peak });
+    }
+    if (blocks.some((w) => w.peak != null) && blocks.length <= 16) {
+      const hi = Math.max(...blocks.map((w) => w.peak ?? 0));
+      cards.push(
+        <Card key="weekly">
+          <Txt variant="groupLabel">Strongest note each week, out of 10</Txt>
+          <View role="img" accessibilityLabel={`Strongest number in each week, out of 10. ${blocks.map((w, i) => `Week ${i + 1}, ${w.peak ?? 'no number'}`).join('; ')}.`} style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 72, marginTop: space.sm }}>
+            {blocks.map((w) => (
+              <View key={w.from} style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 }}>
+                {w.peak != null && blocks.length <= 12 ? <Txt variant="caption" style={{ fontSize: 11 }}>{w.peak}</Txt> : null}
+                <View style={{ width: '100%', maxWidth: 28, height: w.peak == null ? 3 : Math.max(3, (w.peak / 10) * 54), borderRadius: 4, backgroundColor: w.peak == null ? colors.hairline : colors.plum }} />
+              </View>
+            ))}
+          </View>
+          <Txt variant="caption" style={{ marginTop: space.xs }}>Highest in one week: {hi} out of 10.</Txt>
+        </Card>,
+      );
+    }
   }
   if (periods && periods.id === 'periods' && periods.runs.length) {
     cards.push(

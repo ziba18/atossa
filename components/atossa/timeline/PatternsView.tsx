@@ -240,6 +240,29 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       </FadeIn>
       )}
 
+      {m.weeks.some((w) => w.peak != null) ? (
+        <FadeIn index={2}>
+          <PressableCard
+            onPress={() => onOpen('Symptoms')}
+            accessibilityLabel={`Strongest number each week, out of 10. ${m.weeks.filter((w) => w.peak != null).map((w) => `Week of ${formatShortDate(w.from, 'always')}, ${w.peak}`).join('; ')}. Opens your notes.`}
+          >
+            <Txt variant="groupLabel">Strongest note each week, out of 10</Txt>
+            <View style={styles.chart} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              {m.weeks.map((w) => (
+                <View key={w.from} style={styles.weekCol}>
+                  {w.peak != null && (chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL) ? <Txt variant="caption" style={styles.weekNum}>{w.peak}</Txt> : null}
+                  <WeekBar height={w.peak == null ? 3 : Math.max(3, (w.peak / 10) * (BAR_AREA - 18))} color={w.peak == null ? colors.hairline : colors.plum} />
+                </View>
+              ))}
+            </View>
+            {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
+              <Txt variant="caption" style={{ marginTop: space.xs }}>Highest in one week: {Math.max(...m.weeks.map((w) => w.peak ?? 0))} out of 10.</Txt>
+            ) : null}
+            {m.weeks.some((w) => w.peak == null) ? <Txt variant="caption" style={{ marginTop: space.xs }}>Grey = no number given that week</Txt> : null}
+          </PressableCard>
+        </FadeIn>
+      ) : null}
+
       {m.zones.length ? (
         <FadeIn index={2}>
           <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${z.days} of ${plural(m.totalDays, 'day')}`).join('; ')}. Opens your notes.`}>
