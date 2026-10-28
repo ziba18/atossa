@@ -317,3 +317,11 @@ SET38 = json.loads((Path(__file__).parent / "emergency_set_v38_midlife_hrt.json"
 def test_set_v38_midlife_hrt_caught_and_harmless_quiet():
     assert [t for t in SET38["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET38["harmless"] if is_emergency(t)] == []
+
+
+SET39 = json.loads((Path(__file__).parent / "emergency_set_v39_breathing_abdomen_head.json").read_text())
+
+
+def test_set_v39_breathing_abdomen_head_caught_and_harmless_quiet():
+    assert [t for t in SET39["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET39["harmless"] if is_emergency(t)] == []
