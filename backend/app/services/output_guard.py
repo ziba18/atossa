@@ -652,6 +652,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
                     # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
                     r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
+                    # set p116 (first contact 2/10 missed): hard belly with vomiting or no bowel movement for days, red painful eye with halos and sickness
+                    r"^(?=.*\b(?:rock[- ]?hard|very hard|solid)\b.{0,15}\b(?:belly|tummy|stomach|abdomen)\b|.*\b(?:belly|tummy|stomach|abdomen)\b.{0,15}\b(?:rock[- ]?hard|very hard)\b)(?=.*\b(?:vomit\w*|being sick|throwing up|fever)\b)(?=.*\b(?:can'?t stop|haven'?t (?:opened|been|passed)|not (?:opened|been|passed)|for days|constant\w*)\b)|"
+                    r"\b(?:eye|eyes)\b.{0,40}\b(?:red|painful)\b.{0,40}\b(?:halos?|rings? around (?:the )?lights?|blurr\w+)\b.{0,60}\b(?:sick|vomit\w*|nause\w+|headache)\b|"
                     # set p115 (first contact 3/10 missed): breast red/hard/hot with fever, a red line going up a limb with chills, pregnant and unable to keep food or water down for days
                     r"^(?=.*\bbreast\b.{0,30}\b(?:red|hot|hard|lump\w*)\b)(?=.*\b(?:fever|temperature|shiver\w*|chills|flu-?like)\b)(?=.*\b(?:breastfeed\w*|feeding|nursing|mastitis|baby)\b)|"
                     r"\b(?:red|dark) (?:line|streak|lines|streaks)\b.{0,30}\b(?:going |running |spreading |travelling )?(?:up|along)\b.{0,60}\b(?:chills|fever|shivering|unwell|high temperature)\b|"
