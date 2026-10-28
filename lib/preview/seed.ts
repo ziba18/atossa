@@ -82,6 +82,8 @@ const HISTORY: HistoryData[] = [
   { type: 'Emergency visit', date: '2019-04-01', datePrecision: 'month', told: '', done: 'Cortisone injection and pain medication', result: 'Some relief for a few days, then the pain came back.' },
   { type: 'Told to me by a doctor', date: '2020-03-01', datePrecision: 'month', told: 'I have fibroids and another problem with my bowel.', done: '', result: 'I was told these could be part of it.' },
   { type: 'Procedure or surgery', date: '2020-06-01', datePrecision: 'month', told: '', done: 'A procedure for the fibroids', result: 'The pain eased for a while, then it came back.' },
+  // One allergy line in her words (PM data 05:00 task 6): printed as written, never checked. Date = the day she wrote it.
+  { type: 'Allergies (in my words)', date: '2026-09-02', datePrecision: 'exact', told: 'Penicillin, I came out in a rash when I took it around 2012.', done: '', result: '' },
 ];
 
 type Buckets = { [K in RecordKind]: Rec<DataMap[K]>[] };

@@ -9,18 +9,27 @@ const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const RANGE = { from: '2026-06-25', to: '2026-09-24', today: '2026-09-24' };
 const WORDS = 'Penicillin: a rash.';
+// Sam's seed has her own allergy line (data agent, 2026-10-28); the 'no allergy' cases drop it.
+const SAM_WORDS = 'Penicillin, I came out in a rash when I took it around 2012.';
+const noAllergy = () => sampleBuckets().history.filter((h) => h.data.type !== ALLERGY_TYPE);
 const sam = (history) => {
   const b = sampleBuckets();
-  return { symptoms: b.symptom, periodDays: b.period_day, medicines: b.medicine, history: history ?? b.history, appointments: b.appointment };
+  return { symptoms: b.symptom, periodDays: b.period_day, medicines: b.medicine, history: history ?? noAllergy(), appointments: b.appointment };
 };
 const allergy = { id: 'a1', createdAt: '2026-09-24T10:00:00Z', data: { type: ALLERGY_TYPE, date: '2026-09-24', datePrecision: 'exact', told: WORDS, done: '', result: '' } };
 
 test('her allergy words print verbatim and are not a history row', () => {
-  const doc = buildDoctorSummary(sam([...sampleBuckets().history, allergy]), RANGE);
+  const doc = buildDoctorSummary(sam([...noAllergy(), allergy]), RANGE);
   assert.ok(summaryToText(doc).includes(`${ALLERGIES_LABEL}: "${WORDS}"`));
   assert.ok(summaryToHtml(doc).includes(WORDS));
   const h = doc.sections.find((s) => s.id === 'history');
   assert.ok(!h.items.some((i) => i.title === ALLERGY_TYPE));
+});
+
+test("Sam's seed allergy line prints verbatim on the A4 and in the text export", () => {
+  const doc = buildDoctorSummary(sam(sampleBuckets().history), RANGE);
+  assert.ok(summaryToText(doc).includes(`${ALLERGIES_LABEL}: "${SAM_WORDS}"`));
+  assert.ok(summaryToHtml(doc).includes(SAM_WORDS));
 });
 
 test("with notes but no allergy line the A4 says 'not recorded'", () => {
