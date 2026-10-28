@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
@@ -23,7 +23,9 @@ export default function OnboardingOnset() {
   const create = useRecordsStore((s) => s.create);
   const list = useMemo(() => ORDER.filter((g) => (groups ?? '').split(',').includes(g)), [groups]);
   const [i, setI] = useState(0);
-  const [year, setYear] = useState<string | null>(null);
+  // Years picked so far, by area, so Back and Next never lose an answer.
+  const [years, setYears] = useState<Record<string, string | null>>({});
+  const saved = useRef<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const thisYear = new Date().getFullYear();
@@ -34,12 +36,13 @@ export default function OnboardingOnset() {
 
   const group = list[i];
   if (!group) return null;
+  const year = years[group] ?? null;
+  const setYear = (v: string | null) => setYears((y) => ({ ...y, [group]: v }));
   const area = ONSET_GROUP_LABEL[group];
   const last = i === list.length - 1;
 
   const advance = () => {
     setError('');
-    setYear(null);
     if (last) { track('Onboarding Step Completed', { step: 'onset' }); router.push('/(auth)/onboarding/reminders'); }
     else setI(i + 1);
   };
@@ -48,7 +51,9 @@ export default function OnboardingOnset() {
     setBusy(true);
     setError('');
     try {
-      await create('history', { type: ONSET_TYPE, date: todayKey(), datePrecision: 'exact', told: year, done: group, result: '' });
+      // Back then Next on an answer already saved does not file it twice.
+      if (saved.current[group] !== year) await create('history', { type: ONSET_TYPE, date: todayKey(), datePrecision: 'exact', told: year, done: group, result: '' });
+      saved.current[group] = year;
       advance();
     } catch {
       setError('That didn’t save. Check your connection and try again, or skip this one.');
@@ -60,7 +65,7 @@ export default function OnboardingOnset() {
   return (
     <OnboardingScreen
       step={4}
-      back={{ label: 'Back', onPress: () => (i > 0 ? (setYear(null), setI(i - 1)) : router.back()) }}
+      back={{ label: 'Back', onPress: () => (i > 0 ? setI(i - 1) : router.back()) }}
       title="When did you first notice this?"
       helper={`${area[0].toUpperCase()}${area.slice(1)}. Pick the year. A rough answer is fine, and so is “Not sure”.`}
     >
