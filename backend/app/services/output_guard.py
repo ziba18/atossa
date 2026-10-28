@@ -76,7 +76,7 @@ _ADVICE_MODAL = re.compile(
 # or a pointer to the GP; every other statement (explanations, tips, reassurance in new words) is
 # swapped for the fallback, so a paraphrase the regexes above never saw still cannot get through.
 _ACK_OPENER = re.compile(
-    r"^(?:what i can do is (?:write|turn|put|note|keep|add|record|help)|it makes sense to (?:mention|tell me|bring up|note|add)|if (?:it helps|you want|you(?:'d| would) like|you tell me [^,]{1,40}),? i(?:'ll| will| can) (?:add|note|put|write|keep|record|help)|i believe (?:you|what you)|no,? i can'?t\b|i(?:'m| am) not going to (?:read|guess|judge|say)|that sounds like (?:a |an )?(?:\w+ ){0,2}wait|noted:|there(?:'s| is) no (?:right answer|need to (?:decide|rush|answer|explain|have it all))|"
+    r"^(?:what i can do is (?:write|turn|put|note|keep|add|record|help)|it makes sense to (?:mention|tell me|bring up|note|add)|if (?:it helps|you want|you(?:'d| would) like|you tell me [^,]{1,40}),? i(?:'ll| will| can) (?:add|note|put|write|keep|record|help)|i believe (?:you|what you)(?!'re right|'re correct| are right| are correct)|no,? i can'?t\b|i(?:'m| am) not going to (?:read|guess|judge|say)|that sounds like (?:a |an )?(?:\w+ ){0,2}wait|noted:|there(?:'s| is) no (?:right answer|need to (?:decide|rush|answer|explain|have it all))|"
     r"what an? (?:\w+ ){1,2}(?:week|day|time|night|month)|good,? (?:that'?s|to know)|so (?:it'?s|you(?:'ve|'re)?|that'?s)\b|that(?:'s| is) (?:a )?(?:helpful|useful|clear|good|really helpful)|that detail|try describing|"
     r"(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:you|your)\b|it sounds like (?:you(?:'ve| have|'re| are)?|your|the \w+(?: \w+)? (?:has|have|is|are|was|were)|it(?:'s| has) been)|for now,? i(?:'m| am) (?:just )?here|i can help you|thanks|thank you|noted|got it|okay|ok|understood|alright|sure|i see|makes sense|i hear you|i understand|i'?m sorry|sorry|no worries|no rush|no problem|take your time|"
     r"if you(?:'d| would) like,? you could (?:bring|show|share|take) (?:this|the|your) (?:summary|notes?|log)\b|"
@@ -93,7 +93,7 @@ _MAX_ACK_WORDS = 24
 # Phrases an acknowledgement may contain although they hold a claim word.
 _ACK_SAFE = re.compile(r"\b(?:your (?:doctor|gp) (?:may|might|will|could) find (?:it|this|that|the \w+) (?:useful|helpful)|your (?:doctor|gp) can say whether [^,.]*|(?:a )?cycle of (?:about |around |roughly )?\d+ days|(?:one|two|three|\d+) tablets?|what it means|not (?:quite )?sure|not be sure|(?:won'?t )?try to (?:explain|guess)(?: it)?(?:, as that'?s for your (?:doctor|gp))?|(?:(?:i hear|i understand|i can see) )?(?:that )?you(?:'re| are) worried|mostly (?:on the (?:left|right)|in the (?:evenings?|mornings?|night)|at night)|help with that|(?:starts?|eases?|stops?) (?:on|by) day (?:one|two|three|four|five|\d)|guess at anything|(?:at|for|from|off|to) (?:work|school|uni)\b|can help you get (?:your )?(?:symptoms|things|it) down(?: clearly)?|make sure|won'?t guess(?: at anything)?|stressful (?:week|day|time|night)|made (?:a|no) difference|the best person to (?:\w+ ){0,3}(?:into|about|with)(?: why it'?s happening| that)?|why it'?s happening|may be useful for your (?:appointment|gp|doctor)|will be useful for your (?:appointment|gp|doctor)|no need to (?:decide|rush|answer|explain)|to help you (?:describe|put|write|note|capture|explain)\b[^.]*|(?:your gp|your doctor) can (?:help|look|advise|assess|check)(?: with that)?|(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:your|you)\b[^.]*|if you(?:'re| are) worried|ready for (?:them|your gp|your doctor)|worth (?:noting|jotting|writing|adding)|your cycle|could be useful|can help you|may help your gp|would help your gp|(?:leave|left|leaving|miss(?:ed|ing)?|off) work(?: early)?|under what it affected|(?:the |your )?(?:heat pad|hot water bottle|bath)\b|didn'?t help(?: much)?|how often (?:this|it) happens|(?:logging|tracking) it is worth it|(?:since|in|from|until|till|by|last|early|late|mid|end of) may\b)\b", re.I)
 # Signposting to real services and "I won't guess" are safe in any statement (independent set v2, 2026-10-26).
-_PLAIN_SAFE = re.compile(r"\b(?:if (?![^.]*\b(?:likel\w*|probabl\w*|usually|just|normal|nothing|hormon\w*|stress)\b)[a-z ,'&]{0,80}?\b(?:severe|sudden|faint|frightened|scared|unwell|dizzy|sick|worse|act on (?:these|those) (?:feelings|thoughts))\b[a-z ,']{0,30}?,? (?:please )?(?=(?:call|ring|go to) )|if you might act on (?:these|those|the) (?:feelings|thoughts)|(?:please get support right now: )?call samaritans(?: free)?(?: on 116 123)?|(?:if (?:it'?s|it is|it gets|the pain (?:is|gets)) (?:very |really )?(?:severe|sudden|unbearable|worse)(?:,? (?:or )?(?:sudden|severe))?(?:,? or you(?:'re| are) (?:frightened|scared|worried)(?: right now)?)?,? |if you(?:'re| are) (?:worried|unsure|frightened|scared),? )?(?:please )?(?:call 999|go to a&e|call 111|ring 111|speak to your gp|see your gp|contact your gp)|(?:a |your )?(?:pharmacist|gp|doctor)(?: or (?:a |your )?(?:pharmacist|gp|doctor))? can help|if you(?:'re| are) unsure about what to take,? |(?:it'?s |it is |it (?:may|might|could) be |(?:may|might|could) be )?worth (?:telling|mentioning|showing|asking)(?: (?:it|this|that))?(?: to)? (?:your |a )?(?:doctor|gp|pharmacist|nurse)|(?:don'?t|wouldn'?t) want to guess|(?:wouldn'?t|isn'?t) (?:be )?right for me to guess)", re.I)
+_PLAIN_SAFE = re.compile(r"\b(?:if (?![^.]*\b(?:likel\w*|probabl\w*|usually|just|normal|nothing|hormon\w*|stress)\b)[a-z ,'&]{0,80}?\b(?:severe|sudden|faint|frightened|scared|unwell|dizzy|sick|worse|act on (?:these|those) (?:feelings|thoughts))\b[a-z ,']{0,30}?,? (?:please )?(?=(?:call|ring|go to) )|if you (?:(?:think|feel) (?:like )?you )?might act on (?:these|those|the) (?:feelings|thoughts)|(?:,? )?if (?:that|it) would help(?: later| you)?(?=[.!]|$)|(?:please get support right now: )?call samaritans(?: free)?(?: on 116 123)?|(?:if (?:it'?s|it is|it gets|the pain (?:is|gets)) (?:very |really )?(?:severe|sudden|unbearable|worse)(?:,? (?:or )?(?:sudden|severe))?(?:,? or you(?:'re| are) (?:frightened|scared|worried)(?: right now)?)?,? |if you(?:'re| are) (?:worried|unsure|frightened|scared),? )?(?:please )?(?:call 999|go to a&e|call 111|ring 111|speak to your gp|see your gp|contact your gp)|(?:a |your )?(?:pharmacist|gp|doctor)(?: or (?:a |your )?(?:pharmacist|gp|doctor))? can help|if you(?:'re| are) unsure about what to take,? |(?:it'?s |it is |it (?:may|might|could) be |(?:may|might|could) be )?worth (?:telling|mentioning|showing|asking)(?: (?:it|this|that))?(?: to)? (?:your |a )?(?:doctor|gp|pharmacist|nurse)|(?:don'?t|wouldn'?t) want to guess|(?:wouldn'?t|isn'?t) (?:be )?right for me to guess)", re.I)
 # A whole sentence that only points to a real service ("If you think you need help now, call NHS 111 or go to 111.online",
 # "If you feel you might hurt yourself, call 999 or go to A&E now, or call Samaritans on 116 123") is safe, as long as
 # it carries no cause, verdict, hedge or condition word (NHS set v20, 2026-10-27: 4 of 8 first-contact blocks).
@@ -115,8 +115,8 @@ _CLAIM = re.compile(
     r"will (?:pass|go|clear|settle|resolve)|go away|clear up|settle|sort (?:it|this)|guess|bet|likel\w*|probabl\w*|chances?|"
     r"usually|typical\w*|frequent\w*|tends? to|often|rarely|always|mostly|typical|signals?|indicat\w*|linked|reason|because|due|culprit|cause\w*|"
     r"signs?|suggest\w*|sounds? (?:as though|like)|reads? like|looks? like|means|comes? with|should|would|could|might|may|"
-    r"can help|improves?|works?|wonders?|normal\w*|heat\w*|compress\w*|packs?|lie down|better|baths?|reduces?|reaction|take care|painkillers?|antibiotics?|tablets?|pills?|frequently|commonly|complaint|reliev\w*|swear|heal\w*|ease|treat\w*|cure|explanation|benefit|down to|worth|no need|end up|i'?d say|nothing at all|by itself|"
-    r"noticeable|difference|normally|calm\w*|helps?|\d+\s?%|\d+ in \d+|definitely|certainly|absolutely|safely|ignore|scores?|risks?|caus\w+|confident|sure|certain|convinced|believe|reckon|think|fairly|you(?:'re| are) (?:fine|ok|okay|alright|safe))\b|^(?:yes|no|nope|yep|try|avoid|take|use|eat|drink|consider|cut|stop|start|apply|rest)\b|%",
+    r"can help|improves?|works?|wonders?|normal\w*|heat\w*|compress\w*|packs?|lie down|better|baths?|reduces?|reaction|take care|painkillers?|antibiotics?|tablets?|pills?|frequently|commonly|complaint|reliev\w*|swear|ease|treat\w*|cure|explanation|benefit|down to|worth|no need|end up|i'?d say|nothing at all|by itself|"
+    r"noticeable|difference|normally|calm\w*|helps?|\d+\s?%|\d+ in \d+|definitely|certainly|absolutely|safely|ignore|scores?|risks?|caus\w+|confident|sure|certain|convinced|believe|reckon|think|fairly|you(?:'re| are) (?:fine|ok|okay|alright|safe)|you(?:'re| are) (?:probably |quite |absolutely )?(?:right|correct) (?:that|about|it)|heal(?:s|ed|ing)?(?=\W|$))\b|^(?:yes|no|nope|yep|try|avoid|take|use|eat|drink|consider|cut|stop|start|apply|rest)\b|%",
     re.I,
 )
 _MAX_PLAIN_WORDS = 14
@@ -166,9 +166,25 @@ def _claims(text: str, user_low: str) -> bool:
     return False
 
 
+# Empathy about her feelings, not a verdict on her body: "That sounds serious." / "That's a worry to carry" /
+# "I believe what you're telling me" (Marketing v22, 2026-10-28). A negation or hedge in between does not match.
+_EMPATHY = re.compile(r"\bthat(?: sounds|'s| is)(?: really| very| so)? (?:serious|scary|frightening|a (?:real )?worry(?: to carry)?)(?=[.,!]|$)|"
+                      r"\bi believe (?:what )?you(?:(?:'re| are) telling me| say(?:ing)?)?(?=[.,!]|$)", re.I)
+# Text she asked to have on the page, in quotes after add/note/put ('I can add "asked about the pill" to your summary'):
+# the quoted words are her note, so they are excused only when every claim word in them is one she wrote.
+_NOTE_QUOTE = re.compile(r"\b(?:add|note|put|write)\s+\"([^\"]{1,80})\"", re.I)
+
+
+def _strip_note_quotes(sent: str, user_low: str) -> str:
+    if not user_low:
+        return sent
+    return _NOTE_QUOTE.sub(lambda m: m.group(0)[: m.start(1) - m.start(0)] + '""' if not _claims(m.group(1), user_low) else m.group(0), sent)
+
+
 def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
     reasons = []
     for sent in _sentences(model_text):
+        sent = _EMPATHY.sub("that", _strip_note_quotes(sent, user_low))
         if sent.rstrip("'\"").endswith("?"):  # "...such as 'what could we try next?'" (NHS set v20)
             continue
         if _SIGNPOST_SENT.search(sent) and not _SIGNPOST_BAD.search(sent):
@@ -182,7 +198,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
             sent = rest[:1].upper() + rest[1:]
         # Only a sentence that restates the user ("So it's a dull ache...") may reuse their claim words.
         # ...and so does a logging line ("Noted: on the pill", "I've added ibuprofen 400 mg").
-        ul = user_low if re.match(r"(?:so|you)\b|noted\b|i(?:'ve| have) (?:noted|added|recorded|logged|put)\b", sent, re.I) else ""
+        ul = user_low if re.match(r"(?:so|you)\b|noted\b|i(?:'ve| have) (?:noted|added|recorded|logged|put)\b|i can (?:note|add|log|record)\b", sent, re.I) else ""
         if _ADVICE_MODAL.search(sent):
             reasons.append("advice")
         # Words only: a refusal cut out of the middle leaves stray ", ," tokens that must not count (blind set v3 H02).
