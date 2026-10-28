@@ -2,8 +2,9 @@
 // "at worst" score (severity ramp, digit always shown so colour is never the only signal).
 // Days with a note but no score show a dot; days with nothing stay empty. Descriptive only.
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Button, Card, Txt } from '../kit';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Card, Txt } from '../kit';
+import { Icon } from '../../ui/Icon';
 import { colors, severityColor, space } from '../../../constants/atossaUI';
 import { addDays, parseKey, todayKey } from '../../../lib/records/dates';
 import { worstOf } from '../../../lib/records/format';
@@ -62,9 +63,17 @@ export function RecentStrip({ symptoms, flush, onPatterns }: { symptoms: Rec<Sym
         })}
       </View>
       {onPatterns ? (
-        <View style={{ marginLeft: -space.xs, alignItems: 'flex-start' }}>
-          <Button label="See your patterns" variant="text" small onPress={onPatterns} accessibilityHint="Opens Patterns on the Timeline tab" />
-        </View>
+        <Pressable
+          onPress={onPatterns}
+          accessibilityRole="button"
+          accessibilityLabel="See your patterns"
+          accessibilityHint="Opens Patterns on the Timeline tab"
+          style={({ pressed }) => [styles.patterns, pressed && { backgroundColor: colors.canvas }]}
+        >
+          <Icon name="bar-chart" size={20} color={colors.ink} />
+          <Txt variant="body" style={{ flex: 1, color: colors.plum }}>See your patterns</Txt>
+          <Icon name="chevron-right" size={20} color={colors.ink3} />
+        </Pressable>
       ) : null}
     </Card>
   );
@@ -82,4 +91,8 @@ const styles = StyleSheet.create({
   digit: { fontWeight: '600', fontSize: 11 },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.ink2 },
   letter: { fontSize: 11 },
+  patterns: {
+    flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44,
+    borderTopWidth: 1, borderTopColor: colors.hairline, marginTop: space.xs, paddingTop: space.xs,
+  },
 });
