@@ -488,6 +488,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
                     r"^(?=.*\b(?:stopped eating (?:completely|altogether|anything)|not eaten|haven'?t eaten)\b)(?=.*\b(?:too weak|can'?t stand|faint\w*|dizzy)\b)|"
+                    # PM blind set 0028: positive test (either order) with sharp or one-sided pain, and a number-form temperature with a tampon that is stuck
+                    r"^(?=.*\b(?:(?:pregnancy )?test (?:was |came back |is |showed )?positive|positive (?:pregnancy )?test)\b)(?=.*\b(?:sharp|stabbing|severe)\b.{0,30}\bpain\b|.*\bpain\b.{0,30}\b(?:on (?:the|my) (?:right|left)|one side)\b)(?=.*\b(?:shoulder|dizzy|faint\w*|bleed\w*))|"
+                    r"^(?=.*\b(?:tampons?|menstrual cups?|cup)\b)(?=.*\b(?:can'?t|cannot|couldn'?t|could not|unable to) (?:get|take|pull|reach)\b.{0,15}\b(?:out|it out)\b|.*\bstuck\b)(?=.*\b(?:temperature|temp) (?:of |is |was |at )?(?:3[89]|4\d)\b)|"
                     # set p99 (cauda equina and jaundice wording; first contact 2/8 missed)
                     r"\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b.{0,60}\b(?:legs?|feet|foot|numb\w*|weak\w*)\b|\b(?:legs?|feet|foot|numb\w*|weak\w*)\b.{0,60}\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b|"
                     r"^(?=.*\byellow (?:skin|eyes)\b)(?=.*(?<!no )\b(?:fever|temperature|stabbing pain|severe pain|sharp pain)\b)|"
