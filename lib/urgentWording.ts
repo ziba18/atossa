@@ -38,6 +38,16 @@ function normalise(text: string): string {
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
   t = t.replace(/\bwanna\b/gi, 'want to');
+  // dictated number words (S-223); mirrors backend `_norm`
+  const UNITS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
+  const TENS: Record<string, number> = { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
+  t = t.replace(/\b(twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[ -](one|two|three|four|five|six|seven|eight|nine))?(?: point (one|two|three|four|five|six|seven|eight|nine))?\b/gi,
+    (_m, tens: string, unit?: string, frac?: string) => {
+      const n = TENS[tens.toLowerCase()] + (unit ? UNITS[unit.toLowerCase()] : 0);
+      return frac ? `${n}.${UNITS[frac.toLowerCase()]}` : String(n);
+    });
+  t = t.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten) (?=(?:\w+ )?(?:pads?|tampons?|towels?|tablets?|pills?|paracetamol|ibuprofen)\b)/gi,
+    (_m, w: string) => `${w.toLowerCase() === 'ten' ? 10 : UNITS[w.toLowerCase()]} `);
   // spelled temperatures next to a temperature word; mirrors backend `_norm`
   const SPELLED: Record<string, string> = { 'thirty eight': '38', 'thirty nine': '39', forty: '40', 'thirty-eight': '38', 'thirty-nine': '39' };
   t = t.replace(/\b(thirty[ -](?:eight|nine)|forty)\b(?=\s*(?:degrees?\s*)?(?:c\b\s*)?(?:temp|temperature|fever)\b)|(?<=\btemp )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature )(thirty[ -](?:eight|nine)|forty)\b|(?<=\bfever of )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature of )(thirty[ -](?:eight|nine)|forty)\b/gi, (m) => SPELLED[m.toLowerCase()] ?? m);
