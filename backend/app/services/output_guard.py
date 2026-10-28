@@ -1015,6 +1015,38 @@ _WHOLE = re.compile(_WHOLE.pattern
 # Safety run 29 (S-250, probe p143 8/10): fast or hard breathing with drowsiness and being sick (any order, any medicine) -> the one fixed line.
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:meditat\w*|yoga|exercis\w*|run|gym|stairs|walk\w*|laugh\w*|panic\w*)\b)(?=[\s\S]*\bbreath(?:ing|e|es)\b[^.!?\n]{0,15}\b(?:fast|rapid\w*|quick\w*|hard)\b|[\s\S]*\b(?:fast|rapid|deep)\b[^.!?\n]{0,10}\bbreath\w*)(?=[\s\S]*\b(?:drowsy|(?:very|so|really) sleepy)\b)(?=[\s\S]*(?<!no )(?<!not )\b(?:sick|vomit\w*|throwing up)\b)", _WHOLE.flags)
 
+# run14 A59 (class t, concept matcher instead of phrase templates): pregnancy or after-birth CONTEXT anywhere in the note x
+# one NHS pre-eclampsia SIGN anywhere (nhs.uk/conditions/pre-eclampsia/symptoms, read 28 Oct 2026: severe headache, vision
+# problems such as blurring or flashing, pain just below the ribs, vomiting, sudden swelling of the face, hands or feet;
+# it can start after the birth). Quiet when the note says it went / helped / felt better, or is about someone else.
+# Unseen t-unseen5 (written before this rule): 2/20 missed, 0/20 false (run13 10/20, 1/20); 0 false on 1505 saved quiet lines.
+_T_CTX = (r"\b(?:pregnan\w*|\d\d ?(?:weeks?|wks?)|weeks? \d\d|(?:first|second|third) trimester|postnatal|post-natal|delivered|"
+          r"(?:had|have) (?:a|the|my) (?:baby|daughter|son|boy|girl)|(?:baby|daughter|son) (?:is|was born) [\w ]{0,12}(?:days?|weeks?)|"
+          r"weeks (?:pregnant|gone)|due (?:in|date)|expecting|twins|bump|newborn|gave birth|given birth|since the birth|postpartum|c-section|caesarean)\b")
+_T_NOT = r"\bmy (?:friend|sister|mum|cousin) is\b|\bnot pregnant\b"
+_T_HEAD = (r"\b(?:headache|migraine|(?:bad|awful|horrible|terrible|sore) head\b|head\w*\b[^.!?\n]{0,20}\b(?:pound\w*|thump\w*|bang\w*|"
+           r"ache\w*|aches|pain\w*|hurt\w*|splitting|throbb\w*|killing))")
+_T_SEVERE = r"\b(?:worst|severe|crushing|splitting|killing|banging|pounding|thumping|throbbing|horrible|terrible|really bad|so much)\b"
+_T_PERSIST = (r"\b(?:won'?t (?:go|shift|help)|did nothing|(?:has|have|haven'?t|hasn'?t)\b[^.!?\n]{0,12}touched|nothing touches|for hours|"
+              r"since (?:yesterday|this morning)|not going|all day|for (?:two|2|three|3) days|nothing (?:helps|shifts|works)|"
+              r"(?:aren'?t|isn'?t|not|hasn'?t|haven'?t|won'?t|didn'?t) (?:\w+ )?(?:help\w*|work\w*|touch\w*|shift\w*|fix\w*))\b")
+_T_VISION = (r"\b(?:zig-?zags?|flash\w*|sparkl\w*|flicker\w*|seeing (?:spots|stars)|blurr\w*|blurry|fuzzy|hazy|"
+             r"lights (?:in|at the edge of) my eyes?|bright lights|(?:can'?t|cannot) see properly|"
+             r"(?:vision|sight|eyes|eyesight)\b[^.!?\n]{0,15}\b(?:gone|went|going|keeps going) (?:funny|dark|weird|strange|blurry|black))\b")
+_T_SWELL = (r"\b(?:face|hands?|fingers?|rings?)\b[^.!?\n]{0,40}\b(?:swell\w*|swollen|puff\w*|balloon\w*|like sausages|won'?t come off|(?:are|is) stuck)|"
+            r"\b(?:swell\w*|swollen|puff\w*)\b[^.!?\n]{0,15}\b(?:face|hands?|fingers?)\b")
+_T_SICK = r"\b(?:vomit\w*|being sick|been sick|keep being sick|throw\w* up|thrown up|feel sick)\b"
+_T_RES = (r"\b(?:gone (?:by|after|now)|went (?:after|down)|fine (?:by|after|now)|(?<!n't )(?<!not )(?<!never )(?:helped|works)|sorted|"
+          r"slept it off|(?:felt|feel|feeling) better|feet up|by evening|after standing|all gone)\b")
+_A = r"[\s\S]*"
+_T_SIGNS = "|".join([
+    f"(?={_A}{_T_HEAD}{_A[:-1]}{{0,60}}{_T_PERSIST})", f"(?={_A}{_T_VISION})",
+    rf"(?!{_A}\bankles?\b)(?!{_A}\bfeet\b(?!{_A}\b(?:face|hands)\b))(?={_A}{_T_SWELL})",
+    rf"(?={_A}\b(?:under|below) (?:my |the )?(?:right )?ribs\b)(?={_A}\b(?:pain|ache|sharp|stabbing|terrible|severe)\b)",
+    f"(?={_A}\\bheartburn\\b[^.!?\\n]{{0,60}}{_T_PERSIST})", f"(?={_A}{_T_HEAD})(?={_A}{_T_SEVERE})",
+    f"(?={_A}{_T_HEAD})(?={_A}{_T_SICK})", rf"(?={_A}\bsick (?:\d+|three|four|five) times)(?={_A}{_T_SWELL})"])
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}(?:{_T_NOT}))(?!{_A}{_T_RES})(?={_A}{_T_CTX})(?:{_T_SIGNS})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
