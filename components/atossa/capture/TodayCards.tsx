@@ -28,22 +28,9 @@ import { MONTH_NAMES, addDays, diffDays, parseKey } from '../../../lib/records/d
 
 const PROMPT = 'What’s been going on with your body?';
 
-/** The brand waveform, still and decorative: the same bars as the recording indicator, as a quiet header for the hero. */
-const WAVE = [0.25, 0.4, 0.65, 0.35, 0.8, 1, 0.55, 0.9, 0.45, 0.7, 0.3, 0.55, 0.35, 0.2];
-function WaveMotif() {
-  return (
-    <View aria-hidden style={styles.wave}>
-      {WAVE.map((h, i) => (
-        <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-      ))}
-    </View>
-  );
-}
-
 export function HeroCard() {
   return (
     <Card tone="hero" style={styles.hero}>
-      {null}
       <Txt variant="hero" style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT}
       </Txt>
@@ -395,7 +382,6 @@ const styles = StyleSheet.create({
   onset: { gap: space.xs, padding: space.md, borderRadius: radii.card, backgroundColor: colors.plumTint },
   onsetActions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm, marginTop: space.xs },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
-  wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
   chipsWrap: { marginHorizontal: -layout.gutter },
