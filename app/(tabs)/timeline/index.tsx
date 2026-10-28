@@ -313,7 +313,7 @@ function MonthView({
 
   return (
     <View style={{ marginTop: space.lg, gap: space.lg }}>
-      <Button variant="secondary" label="Log a period" onPress={onLogPeriod} />
+      <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: -space.sm }} />
       <MonthCalendar
         year={month.y}
         month0={month.m0}
