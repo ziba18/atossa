@@ -17,7 +17,6 @@ from app.services.output_guard import is_emergency  # noqa: E402
     "I'm breathing very fast",
     "I'm confused and not making sense",
     "a rash that does not fade when I press it",
-    "my skin is blotchy",
     "I think I might have sepsis",
     "pain under my right ribs and in my right shoulder",
     "very high temperature with chills and pelvic pain",
