@@ -35,3 +35,9 @@ test('capture only ever creates symptom records (no allergy kind from a note)', 
   const kinds = [...src.matchAll(/createRecord\(\s*'(\w+)'/g)].map((m) => m[1]);
   assert.deepEqual([...new Set(kinds)], ['symptom']);
 });
+
+test('urgent line: a reaction still raises it, a plain allergy mention does not', async () => {
+  const { urgentSignpost } = await import('../../lib/urgentWording.ts');
+  assert.ok(urgentSignpost("I'm allergic to penicillin and my throat is swelling up"));
+  assert.equal(urgentSignpost('allergic to latex, cramps 4/10') ?? null, null);
+});
