@@ -234,3 +234,15 @@ the BackChevron names the screen it came from.
 - **Web honesty rule**: where the web build cannot do something (reminders, social sign-in, voice), the control is hidden or replaced by one plain sentence; never a switch that does nothing.
 - **Narrow widths (under 260 pt, about 200% text):** ScreenLarge titles drop to 21 pt so long titles ('Appointments') never break mid-word; ConfirmCard's destructive row wraps rather than squeezing Delete; Welcome tightens spacing on phones under 700 pt high so both buttons sit above the fold at 320x568.
 - **On-screen strip key (reader/large):** two parts: the number/dot sentence, then a row of the line marks. The printed page keeps the single-sentence key.
+
+## Iris round 2 (design-iris, 2026-10-28, owner session: authority and restraint)
+- **One solid primary:** `colors.plum` is `#4C31B5` (white on it 8.7:1), no gradient anywhere (button, onboarding segments). Canvas `#FAF9FD`; `washTop` equals canvas (no visible header wash); `sunken` is neutral `#EFEEF3`.
+- **Type floor:** `secondary` 16/22, `caption` 14/19, `groupLabel` 16/22; body 17. Counts, ratings and dates use `tabular-nums lining-nums`; the card's key number uses the `numeral` style. No italics in the app (Fraunces is upright); PDF quotes are upright sans.
+- **Left-aligned** everywhere (NHS: centre only with a clear need): capture card, Welcome steps and notice.
+- **Today:** chip (label + "N notes ready for your appointment") → left-aligned capture card (no waveform, no "Next" line) → 14-day strip in its card with a key ("Number: strongest rating that day, out of 10. Blank: no note.") and "See your patterns" → quick rows with outline icons (no tinted circles).
+- **For my doctor (phone):** counts card first: window ("26 Jun–24 Sep 2026 · 91 days"), numerals "25 of 91 days with a note" and "9/10 worst rating", "Worst: Lower tummy centre · Thu 24 Sep" (`FreqBar.worstOn`), per-area counts with denominators and a Worst column. Share bar is one row: Save PDF (document icon) + Print + On screen as labelled buttons ("Screen" under 340 pt).
+- **One range per document:** `printedRange(doc)` is the counted window; header, tables, footer, on-screen header and the builder all use it (test `summary-one-range`).
+- **Month:** the strongest rating is printed under each day; bleeding is a solid clay bar under the day (dashed for spotting) that joins across a run, the same marker as the PDF strip. No red discs.
+- **Patterns weekly chart:** y axis 0..max with a gridline, one bar colour, a strongest-rating number row under the weeks, title states the range ("Days with a note each week: 1 to 4").
+- **PDF (A4):** key/value header (Period, Generated, Source), frequency as a table (Area | Days with a note | Highest rating | Date of highest), 8 pt day ticks under the strip, one sans family, upright quotes, "Page x of y" in ink; still 2 pages for the Sam seed.
+- **Web focus ring:** `:focus-visible:not([tabindex="-1"])` so the programmatically focused page title never paints a ring.
