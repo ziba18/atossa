@@ -1056,6 +1056,21 @@ function sectionInner(s: DocSection): string {
  * if the device has them, else the system sans + a serif italic (they can't be embedded here).
  * Type (pt): body 10.5/14.5, quotes 12/16, meta 9/12, heads 12/16 — see PAGE_TYPE.
  */
+// Areas with no section of their own on the page (tiredness, bowel and bladder, sex, mood, skin and hair, eating,
+// pregnancy plans): one quiet line each so a clinic sees what she logged and what she did not ('Not recorded').
+const AREAS_WITH_SECTION: DomainId[] = ['agenda', 'pain', 'bleeding', 'impact', 'tried', 'history'];
+function otherAreasHtml(doc: DoctorDoc): string {
+  const rows = doc.domains.filter((d) => !AREAS_WITH_SECTION.includes(d.id));
+  if (!rows.length) return '';
+  const line = (label: string, text: string, muted: boolean) => `<tr><th>${esc(label)}</th><td${muted ? ' class="muted"' : ''}>${esc(text)}</td></tr>`;
+  const names = (state: DomainState) => rows.filter((d) => d.state === state).map((d) => d.heading).join(', ');
+  const recorded = rows.filter((d) => d.state === 'recorded').map((d) => line(d.heading, d.text.replace(/\u2060/g, ''), false));
+  // Areas with nothing to say share one line each, so every area still names itself without a row apiece.
+  const rest = (['not-recorded', 'not-included'] as DomainState[]).filter((st) => names(st))
+    .map((st) => line(st === 'not-recorded' ? NOT_RECORDED : NOT_INCLUDED, names(st), true));
+  return `<section class="keep"><h2>Other areas</h2><table class="dl areas">${[...recorded, ...rest].join('')}</table></section>`;
+}
+
 export function summaryToHtml(doc: DoctorDoc): string {
   const C = DOC_COLORS;
   const T = PAGE_TYPE;
@@ -1066,6 +1081,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
         doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`
       : '',
     ...doc.sections.map(sectionHtml),
+    otherAreasHtml(doc),
   ].join('');
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(doc.title)}</title>
@@ -1079,7 +1095,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   h1 { font-family: ${SERIF}; font-style: italic; font-weight: 400; ${pt(T.title)} margin: 0; }
   .metahead { color: ${C.ink2}; ${pt(T.meta)} margin: 3pt 0 0; padding-bottom: 8pt; border-bottom: 1pt solid ${C.ink}; }
   h2 { ${pt(T.head)} font-weight: 600; margin: 0 0 5pt; }
-  section { padding: ${T.section - 5}pt 0 ${T.section - 9}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
+  section { padding: ${T.section - 6}pt 0 ${T.section - 10}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
   h2 { break-after: avoid; page-break-after: avoid; }
   .keep { break-inside: avoid; page-break-inside: avoid; }
   section:last-child { border-bottom: 0; }
@@ -1096,16 +1112,17 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dl { border-collapse: collapse; margin-top: 1pt; width: 100%; }
   table.dl th { width: 112pt; padding: 0 8pt 1pt 0; text-align: left; vertical-align: baseline; font-weight: 400; color: ${C.ink2}; ${pt(T.label)} }
   table.dl td { padding: 0 0 1pt; vertical-align: baseline; }
+  table.areas th { ${pt(T.meta)} width: 132pt; white-space: nowrap; } table.areas td { ${pt(T.meta)} color: ${C.ink}; } table.areas td.muted { color: ${C.ink2}; }
   table.notes { width: 100%; border-collapse: collapse; table-layout: fixed; }
   table.notes th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
-  table.notes td { padding: 4pt 6pt 4pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
+  table.notes td { padding: 3pt 6pt 3pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
   table.notes td.serif { ${pt(T.body)} }
   table.notes td.nw { white-space: nowrap; }
   table.dated td { padding: 3pt 6pt 3pt 0; }
   table.dated td:nth-child(1) { width: 66pt; } table.dated td:nth-child(2) { width: 96pt; }
   table.dated.tried td:nth-child(1) { width: 120pt; } table.dated.tried td:nth-child(2) { width: 110pt; }
   table.dated tr:last-child td { border-bottom: 0; }
-  table.notes th:nth-child(1) { width: 86pt; } table.notes th:nth-child(2) { width: 78pt; } table.notes th:nth-child(3) { width: 74pt; } table.notes th:nth-child(4) { width: 64pt; }
+  table.notes th:nth-child(1) { width: 80pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
   .bar { margin: 3pt 0 6pt; }
   .track { height: 5pt; background: ${C.track}; border: 0.5pt solid ${C.borderStrong}; margin-top: 2pt; }
   .fill { height: 100%; background: ${C.ink}; }
