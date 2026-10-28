@@ -820,6 +820,15 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|mig
                     + r")(?=[\s\S]*(?:" + _LIGHT + r"|" + _FEVER + r"))", _WHOLE.flags)
 
 
+# run09 v85 (first contact 9/10 missed): a head injury plus being sick, very drowsy or confused, whole note
+# (nhs.uk/conditions/head-injury-and-concussion: go to A&E). A bump alone, or sickness without a head injury, stays quiet.
+_HEADHIT = r"(?:(?:hit|banged|bumped|knocked|whacked|smacked) my head|head hit the (?:floor|ground|wall|table)|(?:fell|slipped)[^.!?]{0,40}\bon my head)"
+_HEADSIGN = (r"(?:(?<!no )(?:been |being |keep |kept )?(?:sick|vomit\w*|throwing up|threw up)|(?:really|very|so) (?:drowsy|sleepy)|"
+             r"can'?t stay awake|(?:barely|can'?t) keep my eyes open|confused)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:all fine now|fine now|feel fine|laughed it off|last (?:week|month))\b)(?=[\s\S]*\b" + _HEADHIT
+                    + r")(?=[\s\S]*\b" + _HEADSIGN + r")", _WHOLE.flags)
+
+
 _THIRD_NOW = re.compile(
     r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
     r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
