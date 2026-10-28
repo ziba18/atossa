@@ -41,12 +41,7 @@ export function OnboardingScreen({
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
           <View style={styles.track} aria-hidden>
-            <LinearGradient
-              colors={['#6A48E8', '#A24FD8', '#E4533F']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ width: `${(step / ONBOARDING_STEPS) * 100}%`, height: 4, borderRadius: 2 }}
-            />
+            <View style={{ width: `${(step / ONBOARDING_STEPS) * 100}%`, height: 4, borderRadius: 2, backgroundColor: colors.plum }} />
           </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
           <Txt variant="largeTitle" accessibilityRole="header" style={styles.title}>{title}</Txt>

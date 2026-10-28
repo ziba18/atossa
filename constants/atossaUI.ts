@@ -4,18 +4,18 @@ import type { TextStyle, ViewStyle } from 'react-native';
 
 /** The palette. Every colour on screen comes from here. */
 export const colors = {
-  canvas: '#F7F4FD', // app background
+  canvas: '#FAF9FD', // app background
   surface: '#FFFFFF', // cards, sheets, PDF
-  washTop: '#EAE2FC', // lavender light behind screen headers (plum link text on it 4.53:1, ink3 4.98:1)
+  washTop: '#F3F0FB', // faint lavender behind screen headers (restraint: near-white; plum links and ink3 stay above 4.5:1)
   sunken: '#ECE6F8', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
   hairline: '#DCD2EE', // card borders, dividers — decorative only
   borderStrong: '#7F7292', // input + chip outlines (3:1 UI contrast)
   ink: '#2A1838', // body text, Sam's words
   ink2: '#5E4F70', // secondary text, Atossa's tidy values
   ink3: '#6B5A7A', // labels, "why I'm asking", timestamps, chevrons
-  plum: '#6A48E8', // ACTION ONLY: primary buttons, mic, selected tab, links, selection
-  plumPressed: '#5636C9',
-  plumTint: '#ECE6FD', // selected chips / segments, user bubble
+  plum: '#4C31B5', // ACTION ONLY: primary buttons, mic, selected tab, links, selection
+  plumPressed: '#3D2594',
+  plumTint: '#EFEBFA', // selected chips / segments, user bubble
   clay: '#C23B4E', // BLEEDING ONLY: calendar fill, entry edge, droplet icon, PDF band
   clayTint: '#FBE1E5', // period-day band in charts
   saved: '#2E6A4F', // system "saved" status — never describes a body

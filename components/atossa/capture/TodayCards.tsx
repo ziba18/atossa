@@ -23,47 +23,20 @@ import { nextAppointment } from './AppointmentCard';
 import { type IconName } from '../../ui/Icon';
 import { addDays, diffDays } from '../../../lib/records/dates';
 
-// Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
-// then white — the hero is never cooler than the paper around it. Top 40% only.
-const WASH = [`${colors.plumTint}80`, `${colors.canvas}CC`, `${colors.surface}00`] as const;
-const WASH_STOPS = [0, 0.18, 0.4] as const;
-
 const PROMPT = 'What’s been going on with your body?';
-/** Broken evenly at every width: unforced it either rags ("…with / your body?") or leaves "body?" alone on line 2 (V29). */
-const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 
 /** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
-/** The brand waveform, still and decorative: the same bars as the recording indicator, as a quiet header for the hero. */
-const WAVE = [0.25, 0.4, 0.65, 0.35, 0.8, 1, 0.55, 0.9, 0.45, 0.7, 0.3, 0.55, 0.35, 0.2];
-function WaveMotif() {
-  return (
-    <View aria-hidden style={styles.wave}>
-      {WAVE.map((h, i) => (
-        <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-      ))}
-    </View>
-  );
-}
-
 export function HeroCard() {
   return (
     <Card tone="hero" style={styles.hero}>
-      <LinearGradient
-        colors={WASH}
-        locations={WASH_STOPS}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
-      />
-      <WaveMotif />
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
-        {PROMPT_BALANCED}
+        {PROMPT}
       </Txt>
       {Platform.OS === 'web' ? (
         // Browsers have no voice capture here: lead with the typed note instead of a mic that opens the Type tab.
-        <Button label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md }} />
+        <Button label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md, alignSelf: 'stretch' }} />
       ) : (
         <>
           <View style={styles.heroMic}>
@@ -299,7 +272,7 @@ export function HeroChip() {
   const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
   const days = next ? diffDays(today, next.data.date) : -1;
   let label = ''; let target = '/(tabs)/timeline';
-  if (next && days === 0 && total > 0) { label = `${notesLabel(total)} ready · today`; target = '/(tabs)/doctor'; }
+  if (next && days === 0 && total > 0) { label = `${notesLabel(total)} ready for your appointment today`; target = '/(tabs)/doctor'; }
   else if (next && days > 0) { label = days > 60 ? `${Math.round(days / 7)} weeks to your appointment` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
   else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
   if (!label) return null;
@@ -344,15 +317,14 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 const styles = StyleSheet.create({
   chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: 'center', marginBottom: space.sm },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
-  center: { textAlign: 'center' },
+  hero: { paddingTop: space.lg, paddingBottom: space.lg, paddingHorizontal: space.lg, alignItems: 'flex-start' },
+  center: { textAlign: 'left' },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
-  wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
   next: {
-    flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center',
-    marginTop: space.md, paddingTop: space.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.hairline,
+    flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-start',
+    marginTop: space.sm, paddingTop: 0, 
   },
   nextItem: { flexDirection: 'row', alignItems: 'center' },
   nextDot: { width: 3, height: 3, borderRadius: 2, backgroundColor: colors.ink3, marginHorizontal: 5 },

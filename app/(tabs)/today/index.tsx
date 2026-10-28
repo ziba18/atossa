@@ -43,6 +43,7 @@ export default function TodayScreen() {
   const capture = (
     <>
       <HeroCard />
+      {loadedFor && symptoms.length > 0 ? <View style={{ marginTop: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
@@ -59,7 +60,6 @@ export default function TodayScreen() {
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
       {loadedFor ? (symptoms.length > 0 ? null : <View style={{ marginTop: space.xl, marginBottom: space.md }}><HeroNumberCard /></View>)
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
-      {loadedFor && symptoms.length > 0 ? <View style={{ marginTop: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
       ) : (

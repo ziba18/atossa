@@ -63,14 +63,6 @@ export function Button({
         style,
       ]}
     >
-      {variant === 'primary' && !inactive ? (
-        <LinearGradient
-          colors={['#6A48E8', '#A24FD8', '#E4533F']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0.4 }}
-          style={StyleSheet.absoluteFill}
-        />
-      ) : null}
       {loading ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} size={20} color={fg} /> : null}
       <Txt
         variant="headline"

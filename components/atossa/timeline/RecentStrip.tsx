@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     width: '100%', aspectRatio: 0.8, borderRadius: 8, borderWidth: 1,
     borderColor: colors.hairline, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center',
   },
-  digit: { fontWeight: '600', fontSize: 11 },
+  digit: { fontWeight: '700', fontSize: 13, fontVariant: ['tabular-nums', 'lining-nums'] },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.ink2 },
   letter: { fontSize: 11 },
 });
