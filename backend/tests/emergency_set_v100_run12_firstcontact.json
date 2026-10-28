@@ -1,5 +1,5 @@
 {
- "_note": "AI Brain run12 second own set, written ~19:17 UTC (committed 19:20 in 25f3dea) AFTER the run12 rules (classes o, n, m, l) and scored once as first contact; any later fix is recorded in the log as tuned.",
+ "_note": "AI Brain run12 second own set, written ~19:17 UTC (committed 19:20 in 25f3dea) AFTER the run12 rules (classes o, n, m, l) and scored once as first contact; any later fix is recorded in the log as tuned. Last 2 emergency + last 2 harmless added 19:37 UTC (tuned, from the S-246 class test in agents/ai-brain/sets).",
  "emergency": [
   "Not sure how many co-codamol I've had, I kept taking them through the night",
   "Took paracetamol at 8, 9, 10 and 11 this morning, 2 each time",
@@ -12,7 +12,9 @@
   "My lower back is killing me and I can't feel my legs properly, both feel weird and weak",
   "Two hours after starting the new antibiotic my lips and throat are swelling",
   "New tablets from the chemist and my tongue has gone swollen and tingly",
-  "After the first dose of the new medicine I'm wheezing and my face is puffy"
+  "After the first dose of the new medicine I'm wheezing and my face is puffy",
+  "Took a whole box of co-codamol earlier, feel weird",
+  "Had fifteen paracetamol today because of the pain"
  ],
  "harmless": [
   "Two paracetamol at 8am and two at 2pm, that's all today",
@@ -26,6 +28,8 @@
   "Back pain, numb bum from sitting on a hard chair at the match, fine after standing",
   "Started new vitamins, no problems",
   "Dentist numbing made my lip feel fat, gone by dinner",
-  "Face a bit puffy in the morning before my period"
+  "Face a bit puffy in the morning before my period",
+  "Bought a whole box of paracetamol to keep in the drawer",
+  "Twenty tablets in a box of co-codamol, took two"
  ]
 }

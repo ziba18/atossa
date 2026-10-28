@@ -898,6 +898,8 @@ _OD_SIGN = (r"(?:(?:lost (?:track|count) of|not sure|no idea|can'?t remember) ho
             r"\b(?:[3-9]|three|four|five|six) (?:\w+ )?(?:paracetamol|painkillers|co-?codamol|tablets|pills) (?:at once|at a time|in one go)\b|"
             r"\b(?:finished|took|had|taken|swallowed) (?:off )?the rest of (?:the |my )?(?:packet|box|strip)\b|"
             r"\bdoubl(?:ed|ing) up on\b|\bdouble (?:doses?|dosing)\b|"
+            r"\b(?:took|taken|had|swallowed|finished) (?:a |the )?(?:whole|entire|full) (?:box|packet|strip|bottle|pack)\b|"
+            r"\b(?:ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty\w*|thirty\w*) (?:\w+ )?(?:paracetamol|painkillers|co-?codamol|tablets|pills)\b|"
             r"\b(?:probably|about|around|maybe|like|nearly|over) (?:9|1\d|2\d)(?: or (?:1\d|2\d))? (?:since|today|so far|in total|now)\b|"
             r"\b(?:9|1\d|2\d) (?:paracetamol|painkillers|co-?codamol) (?:today|since|so far|in total)\b)")
 _OD_QUIET = (r"(?![\s\S]*\b(?:as the (?:packet|leaflet) says|within the (?:leaflet|packet|dose|limit)|no other paracetamol|"
