@@ -843,6 +843,12 @@ _SELF_WHOLE = re.compile(
 # (1) no wee all day / for hours + a temperature or shivering (nhs.uk/conditions/sepsis, reviewed 14 May 2026);
 # (2) too many painkillers by accident (nhs.uk/medicines/paracetamol-for-adults "If you take too much": A&E, read 2026-10-28);
 # (3) sudden tummy pain with a hard or rigid belly (nhs.uk/conditions/stomach-ache 999 list, read 2026-10-28).
+# run12 (Safety run28 ruling Q2: "took a lot of paracetamol on purpose" keeps the Samaritans line; it got NO line on run11):
+# her own tablets taken on purpose / deliberately, whole note.
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + r"|\b(?:took|taken|taking|swallowed|had)\b[^.!?\n,]{0,40}\b" + _MEDS
+                         + r"\b[^.!?\n,]{0,20}\b(?:on purpose|deliberately|intentionally|to hurt myself)\b|\b(?:deliberately|intentionally) (?:took|taken|swallowed|had)\b[^.!?\n,]{0,40}\b" + _MEDS + r"\b", _SELF_WHOLE.flags)
+
+
 _NOWEE = (r"(?:(?:haven'?t|have not|hasn'?t|not|no|didn'?t) (?:had |done |been for |passed )?(?:a |any )?(?:wee|pee|urine)\b[^.!?]{0,30}"
           r"(?:all day|since|for (?:\d+|hours|ages)|in (?:\d+|over \d+) hours|today)|not (?:weed|peed|passed (?:any )?urine) (?:since|for|in|all day))")
 _ACC_OD = (r"(?:took|taken|had) (?:double|twice|more|too many|too much)(?: of)? (?:my |the )?(?:\w+ )?(?:painkillers|paracetamol|co-?codamol|ibuprofen|codeine|tablets|pills)\b"
