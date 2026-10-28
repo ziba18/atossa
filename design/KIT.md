@@ -13,7 +13,7 @@ No raw hex, font names or magic numbers in screens.
 - **Plum = action only** (buttons, mic, links, selection, selected tab). **Clay = bleeding only**
   (calendar fill, 4 px card edge `edge="clay"`, droplet icon). **saved/error = system status only**,
   never describing a body. Severity = the single-hue ramp, **always with the digit**.
-- **No `Alert.alert`** — use `ConfirmCard` in-page. **No 700 weight** (Inter 400/500/600 only; never
+- **No `Alert.alert`** — use `ConfirmCard` in-page. **No 700 weight** (Plus Jakarta Sans 400/500/600 only; never
   pass `fontWeight`; the serif never takes a weight).
 - Cards: white, hairline, radius 20, soft two-layer `shadows.card` (owner approved 2026-10-20); hero keeps its own shadow.
 - Dates only via `lib/records/format.ts`; "today" only via `todayKey()` (preview pins it).
@@ -50,7 +50,7 @@ No raw hex, font names or magic numbers in screens.
 | `colors` | canvas `#F7F3EE` · surface `#FFF` · sunken `#EFE9E1` · hairline `#E2DAD0` · borderStrong `#8F867C` · ink `#1F1B18` · ink2 `#5A534D` · ink3 `#756C64` (not on sunken — use ink2) · plum `#4A2C4F` · plumPressed `#3A2140` · plumTint `#EFE6EF` · clay `#A6452E` · clayTint `#F3DED6` · saved `#2E6A4F` / savedTint `#E2EEE6` · error `#A12A2A` / errorTint `#F6E0DE` · scrim · tabBar |
 | `severityRamp`, `severityStep(n)`, `severityColor(n)` | 0–2,3–4,5–6,7–8,9–10 → `{bg, fg}` (fg ink on steps 0–1, white on 2–4) |
 | `type` (`Txt` variants) | largeTitle 34/41 600 −0.17 · hero 30/36 serif · title 24/30 600 · quote 20/28 serif · headline 17/24 600 · body 17/24 · secondary 15/20 ink2 · caption 13/18 500 +0.26 ink3 · numeral 44/48 500 tabular · tab 11/13 500 · **fieldLabel** 17/24 600 ink · **groupLabel** 15/20 600 ink2 |
-| `fonts` | regular/medium/semibold = Inter 400/500/600, serif = `InstrumentSerif_400Regular_Italic` |
+| `fonts` | regular/medium/semibold = Plus Jakarta Sans 400/500/600, serif = `Fraunces_400Regular` (upright; both OFL, see agents/design/iris-fonts-licence.md in the team workspace) |
 | `space` | xxs 4 · xs 8 · sm 12 · md 16 · lg 20 · xl 24 · xxl 32 · xxxl 40 · huge 56 |
 | `layout` | gutter 20 · maxContentWidth 600 |
 | `radii` | input 14 · card 20 · sheet 28 · pill 999 |
@@ -105,7 +105,7 @@ Shared screens/components already built:
   `onSaved?`. Status Started today / Still going / Ended / Spotting (none pre-selected for a new day;
   an already-logged day opens with its values), optional flow None–Heavy (no default), DatePill +
   DayChooser, Save disabled until a status is chosen, saves via `savePeriodDays`, success haptic + toast.
-- `components/atossa/MainTabBar.tsx` — Today (sun) · Timeline (list) · For my doctor (file-text). Every tab press lands on the
+- `components/atossa/MainTabBar.tsx` — floating white pill, text labels only (Iris round 3): Today · Timeline · For my doctor, selected = ink pill with white label. Every tab press lands on the
   tab's root with ONE mechanism (N2): if the tab's stack isn't at its `index` root, the bar `preventDefault`s the `tabPress`
   (so the native stack's own pop-to-top doesn't also fire) and RESETs the stack; otherwise it leaves the stack alone.
 - `components/ui/Icon.tsx` — Lucide set incl. mic, square, pen-line, droplet, calendar, calendar-days,
