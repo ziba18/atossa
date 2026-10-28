@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   // Full-bleed band: the column's gutter is cancelled so the wash runs to the screen edges.
   band: { marginHorizontal: -layout.gutter, paddingHorizontal: layout.gutter, paddingTop: space.md, paddingBottom: space.sm, gap: space.xs },
   wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
-  heroLine: { fontSize: 36, lineHeight: 42 },
+  heroLine: { fontSize: 34, lineHeight: 40 },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'flex-start', gap: 4 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },

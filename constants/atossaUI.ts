@@ -7,7 +7,7 @@ export const colors = {
   canvas: '#FAF9FD', // app background
   surface: '#FFFFFF', // cards, sheets, PDF
   washTop: '#F3F0FB', // faint lavender behind screen headers (restraint: near-white; plum links and ink3 stay above 4.5:1)
-  sunken: '#ECE6F8', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
+  sunken: '#EFEEF3', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
   hairline: '#DCD2EE', // card borders, dividers — decorative only
   borderStrong: '#7F7292', // input + chip outlines (3:1 UI contrast)
   ink: '#2A1838', // body text, Sam's words
