@@ -479,8 +479,8 @@ _IDIOM = re.compile(
 _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left |right )?(?:jaw|arm)\b|"
                     # blind set v11 (2026-10-27): NHS 111/999 wording for DVT/PE, meningitis, stroke, cauda equina, acute abdomen
                     r"\b(?:stomach|belly|tummy|abdomen)\b.{0,15}\brock[- ]hard\b|"
-                    r"\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling)\b.{0,80}\b(?:breathless|short of breath|can'?t breathe)|"
-                    r"\b(?:breathless|short of breath)\b.{0,80}\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling)\b|"
+                    r"\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b.{0,80}\b(?:breathless|short of breath|can'?t breathe)|"
+                    r"\b(?:breathless|short of breath)\b.{0,80}\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b|"
                     r"\bhalf (?:of )?my face\b.{0,30}\bnumb|\bwords\b.{0,25}\b(?:coming out|came out|are|were) (?:wrong|jumbled|garbled)|"
                     r"\bcan'?t feel my (?:legs?|feet|arms?)\b|"
                     r"\bblood\b.{0,30}\b(?:coming out|pouring|rushing)\b.{0,40}\b(?:fast|quickly|so much)\b|\bgoing (?:grey|gray|white)\b|"
@@ -750,7 +750,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup|cup)\b)(?=.*\b(?:shiver\w*|hot and cold|burning hot|flu-?like|sandpaper)\b)(?=.*\b(?:rash|sunburn\w*|sandpaper|awful|unwell|weak|dizz\w*|dreadful|so ill|vomit\w*|diarrh\w*|aches?)\b)|"
                     # run 26 held-out set v58 (first contact 12/20 missed): heavy bleeding said in plain words together with a faint/dizzy sign (NHS vaginal-bleeding page: bleeding + faint or dizzy = 999; heavy-periods page has no urgent box), and one swollen/hot/painful leg together with pain on breathing in (NHS DVT page: DVT signs + chest pain or breathlessness = 999). The output stays the one fixed urgent line.
                     r"^(?=.*\b(?<!no )(?<!not )(?<!without )(?:flooding|gushing|pouring(?: out)?|bleeding (?:so |really |very |extremely |incredibly )?(?:heavily|badly)|heavy bleeding|bleeding is (?:very |really |so )?heavy|(?:bleeding|it|blood)\b.{0,15}\b(?:won'?t|will not|isn'?t going to|not going to) (?:ease|slow|stop|let up)|(?:soaking|soaked|saturated|drenched|full)\b.{0,25}\b(?:pads?|tampons?|jeans|trousers|leggings)\b.{0,20}\b(?:in (?:\d+|a few|ten|twenty|fifteen|thirty) ?(?:minutes?|mins?)|within minutes|in minutes|every (?:half (?:an )?hour|quarter of an hour|hour)))\b)(?=.*(?<!no )(?<!not )(?<!without )(?<!no feeling )\b(?:dizz\w*|light ?headed|woozy|faint\w*|pass(?:ing)? out|black(?:ed|ing) out|room (?:is |was )?spinning|seeing stars|clammy)\b)(?!.*\b(?:a bit|a little|slightly)\b.{0,20}\b(?:flooding|heavy)\b)|"
-                    r"^(?=.*(?:\b(?:calf|leg|thigh|ankle)\b[^.!?;]{0,70}\b(?:swollen|swelling|puffy|bigger than the other|hot|warm)\b|\b(?:swollen|puffy)\b[^.!?;]{0,25}\b(?:calf|leg|thigh|ankle)\b))(?=.*(?:\b(?:hurts?|pain\w*|stab\w*|catch\w*|sharp|sore|tight)\b[^.!?;]{0,40}\b(?:breath(?:e|ing|es) in|inhal\w*|deep breath|breathing deeply|breathe deeply)\b|\b(?:breath(?:e|ing|es) in|inhal\w*|deep breath)\b[^.!?;]{0,25}\b(?:hurts?|painful|pain|catch\w*)\b))(?!.*\b(?:laugh\w*|no leg)\b)|"
+                    r"^(?=.*(?:\b(?:calf|leg|thigh|ankle|knee)\b[^.!?;]{0,70}\b(?:swollen|swelling|puffy|bigger|twice the size|ballooned|enlarged|hot|warm)\b|\b(?:swollen|puffy|ballooned)\b[^.!?;]{0,25}\b(?:calf|leg|thigh|ankle|knee)\b))(?=.*(?:\b(?:hurts?|pain\w*|stab\w*|catch\w*|sharp|sore|tight)\b[^.!?;]{0,40}\b(?:breath(?:e|ing|es)(?: in)?|inhal\w*|deep breath|breathing deeply|breathe deeply)\b|\b(?:breath(?:e|ing|es) in|inhal\w*|deep breath)\b[^.!?;]{0,25}\b(?:hurts?|painful|pain|catch\w*)\b))(?!.*\b(?:laugh\w*|no leg)\b)|"
                     # set v71 (first contact 2/5 missed): severe upper tummy pain going through to the back with vomiting (NHS pancreatitis page: A&E/111), and deep fast breathing with drowsiness or vomiting (NHS diabetic ketoacidosis page)
                     r"^(?=.*\b(?:terrible|severe|awful|agonising|unbearable|constant|really bad|very bad|excruciating)\b[^.!?;]{0,30}\b(?:stomach|tummy|belly|abdominal|abdomen)\b[^.!?;]{0,15}\bpain\b|.*\b(?:stomach|tummy|belly|abdominal|abdomen) pain\b[^.!?;]{0,30}\b(?:terrible|severe|awful|agonising|unbearable|constant|really bad|very bad|excruciating)\b)(?=.*\b(?:through|spread\w*|going|radiat\w*|shoot\w*) (?:to|into|through) (?:my )?(?:back|shoulder)\b)(?=.*(?<!no )(?<!not )(?<!without )\b(?:vomit\w*|being sick|throwing up)\b)|"
                     r"^(?=.*\bbreath(?:ing|e|es)\b[^.!?;]{0,20}\b(?:deep|deeply)\b[^.!?;]{0,12}\b(?:and|but)? ?(?:fast|quick\w*|heavy|heavily)?\b|.*\bdeep (?:and|,) ?fast breath\w*)(?=.*(?<!no )(?<!not )\b(?:drows\w*|very sick|vomit\w*|being sick|confus\w*|very thirsty|awful)\b)(?!.*\b(?:meditat\w*|yoga|exercis\w*|run|gym)\b)", re.I | re.S)
@@ -832,9 +832,16 @@ def _hits_whole(rx, text: str) -> bool:
 _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:tonight|today|now)|urge is back|urges? (?:are|is) back|(?:cut|cutting|hurt|hurting) myself again|thinking about (?:doing )?it again|want to do it again)\b", re.I)
 
 
+_LEG_BREATH = re.compile(r"\b(?:leg|calf|thigh)\b[^.!?;]{0,60}\b(?:swollen|swelling|ballooned|twice the size|puffy)\b[^.!?;]{0,100}\b(?:short(?:ness)? of breath|breathless)|\b(?:short(?:ness)? of breath|breathless)\b[^.!?;]{0,100}\b(?:leg|calf|thigh)\b[^.!?;]{0,60}\b(?:swollen|swelling|ballooned|twice the size|puffy)", re.I)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
-    user_text = _LEADIN.sub(". ", _IDIOM.sub(" ", _norm(user_text)))
+    user_text = _norm(user_text)
+    # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
+    if not _LEG_BREATH.search(user_text):
+        user_text = _IDIOM.sub(" ", user_text)
+    user_text = _LEADIN.sub(". ", user_text)
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text):
         return "self_harm"
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
