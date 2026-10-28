@@ -84,6 +84,9 @@ function isPast(clause: string): boolean {
 const WHOLE = new RegExp(P.WHOLE_SRC, 'is');
 // run08 v80: wish to be dead + worked out how, one sentence (same past/negation checks as WHOLE).
 const SELFW = new RegExp(P.SELFW_SRC, 'i');
+// run13 (A54, backend _BIRTH_TIME): the birth and its time phrase are context, not the symptom's time.
+const BIRTH_TIME = /\b(?:had (?:the|my) baby|gave birth|given birth|(?:the |my )?baby (?:was )?born)\b(?: (?:\w+ ){0,2}(?:ago|last (?:week|month)|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day))?/gi;
+
 function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
   const m = rx.exec(text);
   if (!m) return false;
@@ -91,7 +94,7 @@ function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
   const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
   const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
   const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
-  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence) || OTHER.test(text.slice(0, m.index)));
+  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence.replace(BIRTH_TIME, ' ')) || OTHER.test(text.slice(0, m.index)));
 }
 
 const THIRD = new RegExp(P.THIRD_SRC, 'is');

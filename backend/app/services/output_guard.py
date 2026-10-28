@@ -983,7 +983,7 @@ _PET_SIGN2 = (r"(?:\b(?:headache|head\b[^.!?\n]{0,10}\b(?:thumping|pounding|bang
               r"\b(?:flash\w*|sparkl\w*|flicker\w*|twinkl\w*|zig-?zag) (?:\w+ )?lights?\b|\blights in my eyes\b|\beyes (?:are |r |have gone |went |gone )?(?:blurr\w*|fuzzy|funny)\b|"
               r"\b(?:face|hands|fingers)\b[^.!?\n]{0,25}\b(?:swollen|puffed|swelled|blown) up\b|\bswollen (?:face|hands|fingers)\b|"
               r"\b(?:face|hands|fingers)\b[^.!?\n]{0,15}\bsuddenly (?:\w+ )?(?:swollen|puffy|puffed|swelled)\b|\brings? (?:won'?t|wont|will not|don'?t|can'?t) (?:come|get|go)\b)")
-_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|gone after|slept it off|in the heat|baby kicking|comes and goes|feet up|my usual migraine|fit again|from screens|my (?:sister|friend|mum|cousin) is pregnant)\b)" + _PET_CTX2
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|gone after|slept it off|in the heat|baby kicking|comes and goes|feet up|my usual migraine|fit again|from screens|(?:all )?gone now|went down|settled now|my (?:sister|friend|mum|cousin) is pregnant)\b)" + _PET_CTX2
                     + r"(?=[\s\S]*" + _PET_SIGN2 + r")", _WHOLE.flags)
 
 # run13 (PM class o again; own v106 first contact 4/10 missed on b89e77a): more paracetamol than the leaflet allows said as a
@@ -1041,6 +1041,11 @@ _NEG_WINDOW = re.compile(r"[.;:!?\n,]|\bbut\b")  # a negation only counts inside
 _HEDGE = re.compile(r"\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b", re.I)  # "probably nothing but ..." is a hedge, not a negation
 
 
+# run13 (A54): "Had my baby two weeks ago, swollen face ..." - the birth and its time phrase are context, not the symptom's time,
+# so the sentence past check skips them (same in lib/urgentWording.ts hitWhole).
+_BIRTH_TIME = re.compile(r"\b(?:had (?:the|my) baby|gave birth|given birth|(?:the |my )?baby (?:was )?born)\b(?: (?:\w+ ){0,2}(?:ago|last (?:week|month)|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day))?", re.I)
+
+
 def _hits_whole(rx, text: str) -> bool:
     text = text[:_WHOLE_SCAN_CAP]
     m = rx.search(text)
@@ -1051,7 +1056,7 @@ def _hits_whole(rx, text: str) -> bool:
     start = starts[-1] + 1 if starts else 0
     ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
     end = m.end() + ends[0] if ends else len(text)
-    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
+    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(_BIRTH_TIME.sub(' ', text[start:end])) or _OTHER.search(text[:m.start()]))
 
 
 _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:tonight|today|now)|urge is back|urges? (?:are|is) back|(?:cut|cutting|hurt|hurting) myself again|thinking about (?:doing )?it again|want to do it again)\b", re.I)
