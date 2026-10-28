@@ -221,7 +221,7 @@ export default function ProfileScreen() {
       <GroupHeading title="Account" style={{ marginTop: space.xxl }} />
       <Group>
         <GroupRow
-            icon="file-text"
+            icon="download"
             label="Download all my notes"
             detail="Everything you’ve saved, as one file"
             chevron={false}
