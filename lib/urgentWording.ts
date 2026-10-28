@@ -32,6 +32,7 @@ function normalise(text: string): string {
   t = t.replace(/\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b/g, (m) => m.replace(/[ .\-]/g, ''));
   // stretched letters ("sooo heavily") and doubled spaces ("chest  pain"); mirrors backend `_norm`
   t = t.replace(/([A-Za-z])\1{2,}/g, '$1');
+  t = t.replace(/[^\S\n]+/g, ' ');
   // dictation fillers ("um i cant like breathe") and "wanna"; mirrors backend `_norm`
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
