@@ -163,7 +163,9 @@ function DayCell({
               </Txt>
             </View>
           </View>
-          <View style={[styles.dot, !mark?.notes && { opacity: 0 }]} />
+          {mark?.worst != null
+            ? <Txt maxFontSizeMultiplier={1.2} style={styles.rating}>{mark.worst}</Txt>
+            : <View style={[styles.dot, !mark?.notes && { opacity: 0 }]} />}
         </>
       )}
     </Pressable>
@@ -212,5 +214,6 @@ const styles = StyleSheet.create({
   todayRingOuter: { width: DISC + 6, height: DISC + 6, top: -3, left: -3 },
   num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
   numOnClay: { fontFamily: fonts.semibold, color: colors.white },
+  rating: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 14, color: colors.ink, fontVariant: ['tabular-nums', 'lining-nums'], marginTop: 1 },
   dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.plum, marginTop: space.xxs },
 });
