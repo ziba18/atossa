@@ -343,6 +343,7 @@ _SELF += [
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
 # run 27 set p129 (first contact 4/10 missed): "everyone would be better off if I wasn't around", "nobody will notice when I'm gone", tablets lined up beside "no point"
 _SELF += [
+    r"\b(?:slash\w*|slit|sliced|cut|cutting) (?:both )?(?:of )?my (?:wrists?|veins)\b",
     r"(?:everyone|everybody|they|my (?:family|friends|kids|children|partner|husband|wife)) (?:would|will|'d) be better off if i (?:just )?(?:wasn'?t|weren'?t|was not|were not) (?:around|here|alive|there)(?: any ?more)?(?=\s*(?:[.,;!?]|$))",
     r"(?:nobody|no one|no-one) (?:will|would|is going to) (?:even )?(?:notice|miss me|care) (?:when|if) i(?:'m| am| was|'ve| have)? (?:gone|dead|not here|not around)",
 ]
@@ -458,7 +459,8 @@ _IDIOM = re.compile(
     # everyday uses of words the lists react to: "faint" as an adjective, a blocked nose, a figure of speech,
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
     r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
-    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?through (?:my )?nose\b"
+    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?(?:through|thru) (?:my )?nose\b"
+    r"|\b(?:legs?|arms?|feet|foot|hands?)\b[^.!?;]{0,12}\b(?:fell|gone|went|going) (?:to )?(?:asleep|sleep|dead)\b|\bpins and needles\b|\bcan'?t (?:stand|get) up from (?:the )?(?:sofa|couch|chair)\b"
     r"|\bagony\b[^.!?]{0,25}\bfrom (?:the |my )?(?:gym|running|a run|workout|lifting|exercise|squats)\b"
     r"|\b(?:exams?|homework|revision|work|my job|school|the heat|traffic|this (?:weather|heat|queue|wait|essay))\b[^.!?]{0,15}\bkill(?:ing|s)? me\b"
     r"|\b(?:die|dying|dead) (?:of|from) (?:embarrassment|laughter|boredom|shame|cringe)\b|\b(?:want|wanted) to die of (?:embarrassment|shame|cringe)\b"
