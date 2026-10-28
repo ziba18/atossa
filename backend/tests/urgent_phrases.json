@@ -1046,5 +1046,441 @@ false
 [
 "got a cough and a fever last week but it is gone now",
 false
+],
+[
+"i cut myself last night after the pain",
+true
+],
+[
+"not sure i want to carry on living",
+true
+],
+[
+"unsure whether i want to keep going",
+true
+],
+[
+"i cut myself shaving this morning",
+false
+],
+[
+"Pain during sex again and we've been trying to get pregnant since March.",
+false
+],
+[
+"we are trying to conceive and my period pain is bad",
+false
+],
+[
+"my belly's been killing me since lunch",
+false
+],
+[
+"ovary on the left is killing me",
+false
+],
+[
+"I'm pregnant and have sharp pain on one side",
+true
+],
+[
+"can't do this anymore, wanna be gone",
+true
+],
+[
+"what's the point of going on",
+true
+],
+[
+"i took a few too many painkillers on purpose",
+true
+],
+[
+"i keep thinking about not existing",
+true
+],
+[
+"dying for a cuppa after that appointment",
+false
+],
+[
+"so tired im dead on my feet",
+false
+],
+[
+"what's the point of the food diary if nobody reads it",
+false
+],
+[
+"blood is soaking thru my jeans and i feel so dizzy",
+true
+],
+[
+"left arm is numb and my jaw hurts and im sweating",
+true
+],
+[
+"im so done w everything i just wanna not exist",
+true
+],
+[
+"wheezing a bit after sports, used my inhaler, ok",
+false
+],
+[
+"wheezing and my inhaler isn't helping",
+true
+],
+[
+"my arm went numb from sleeping on it",
+false
+],
+[
+"im 7 weeks pregnant and have a sharp pain low on the left",
+true
+],
+[
+"pain in the tip of my shoulder and i think im pregnant",
+true
+],
+[
+"31 weeks and having tight regular pains every few minutes",
+true
+],
+[
+"pregnant with a bad headache and blurry vision",
+true
+],
+[
+"may be pregnant, pelvic pain getting worse tonight",
+true
+],
+[
+"positive test yesterday and now cramps with spotting",
+true
+],
+[
+"pelvic pain with a temperature of 39 and shivering",
+true
+],
+[
+"hurts when i touch my lower tummy and it is getting worse",
+true
+],
+[
+"pelvic pain and i feel confused and sick",
+true
+],
+[
+"booked a pregnancy scan for next week, feeling well",
+false
+],
+[
+"trying for a baby, cycles are 34 days, ovulation tests negative",
+false
+],
+[
+"pelvic floor exercises from the physio, no pain",
+false
+],
+[
+"my sister is pregnant and has been sick, i went to see her",
+false
+],
+[
+"took my first dose of the new tablets and my face is puffing up and my throat feels tight",
+true
+],
+[
+"hives all over and wheezy after the antibiotic",
+true
+],
+[
+"my tongue feels huge since I took the capsule",
+true
+],
+[
+"I think I'm having an allergic reaction, can't swallow properly",
+true
+],
+[
+"feel really floppy and my lips are tingling after the injection",
+true
+],
+[
+"I took double my dose by mistake and now I'm very sleepy and sick",
+true
+],
+[
+"allergic to penicillin, rash as a child",
+false
+],
+[
+"allergies: nuts, latex (told by my GP)",
+false
+],
+[
+"mild hay fever today, sneezing, took a tablet",
+false
+],
+[
+"itchy rash on my arm from the new soap, faded by tea time",
+false
+],
+[
+"blood is going through my trousers even with a tampon and a pad together",
+true
+],
+[
+"soaked the bed with blood overnight and feel weak",
+true
+],
+[
+"i uh took a lot of my sleeping tablets earlier and now i feel really strange",
+true
+],
+[
+"the pain is so bad I was sick and shaking",
+true
+],
+[
+"vision went blurry in one eye suddenly and my head is pounding",
+true
+],
+[
+"legs feel numb and I can't tell when I need a wee",
+true
+],
+[
+"fits - my whole body was shaking and I bit my tongue",
+true
+],
+[
+"I'm confused and keep forgetting where I am, with a high temperature",
+true
+],
+[
+"waters broke at 30 weeks",
+true
+],
+[
+"I've taken 12 paracetamol today because the pain wouldn't stop",
+true
+],
+[
+"took ibuprofen on an empty stomach and now I'm vomiting what looks like coffee grounds",
+true
+],
+[
+"black tarry poo since yesterday after all the ibuprofen",
+true
+],
+[
+"I doubled up on my codeine and I can barely keep my eyes open",
+true
+],
+[
+"took naproxen and co-codamol together and my breathing feels slow",
+true
+],
+[
+"i drank half a bottle of wine with my tramadol and feel weird and floaty",
+true
+],
+[
+"vomited and the vomit was bright red after taking aspirin",
+true
+],
+[
+"took the whole strip of tablets by accident",
+true
+],
+[
+"rash and swollen lips after taking ibuprofen",
+true
+],
+[
+"I had a fit of giggles at work",
+false
+],
+[
+"took two paracetamol and a hot water bottle, helped a bit",
+false
+],
+[
+"ibuprofen with food as the pharmacist said, fine",
+false
+],
+[
+"forgot my pill yesterday, took two today as the leaflet says",
+false
+],
+[
+"codeine makes me a bit sleepy, expected, fine",
+false
+],
+[
+"a glass of wine on saturday, pain was ok",
+false
+],
+[
+"started the new iron tablets, constipated but ok",
+false
+],
+[
+"pain started round my belly button and has moved to the lower right and I feel sick with a temperature",
+true
+],
+[
+"sudden twisting pain on one side with vomiting, can't get comfortable",
+true
+],
+[
+"pain in my back under the ribs with fever and shaking chills and pain when I wee",
+true
+],
+[
+"my tummy is hard and swollen and I keep being sick and haven't passed wind in a day",
+true
+],
+[
+"burning when I wee and now a high fever and pain in my side",
+true
+],
+[
+"sharp pain low down, I'm pale, sweaty and my heart is racing",
+true
+],
+[
+"I've been sick all day and can't keep even water down, dizzy when I stand",
+true
+],
+[
+"lump in my groin that is suddenly very painful and I'm vomiting",
+true
+],
+[
+"slight burning when I wee, drinking lots of water, no fever",
+false
+],
+[
+"mild nausea in the morning, ate toast, fine",
+false
+],
+[
+"my tummy is bloated and a bit swollen after dinner, normal for me",
+false
+],
+[
+"one episode of vomiting after a curry, fine now",
+false
+],
+[
+"period pain on one side, 5/10, usual",
+false
+],
+[
+"i feel like i might hurt my baby",
+true
+],
+[
+"I keep having thoughts of driving my car into a wall",
+true
+],
+[
+"I haven't slept for four days and I'm seeing things that aren't there",
+true
+],
+[
+"hearing voices telling me to hurt myself",
+true
+],
+[
+"feeling low this week with the pain, talking to my friend about it",
+false
+],
+[
+"I feel like a burden sometimes when I cancel plans, but I'm ok",
+false
+],
+[
+"stressed at work, headache, took paracetamol",
+false
+],
+[
+"my baby is sleeping through now and I'm so tired",
+false
+],
+[
+"slow breathing exercises helped with the cramps",
+false
+],
+[
+"my breath was a bit shallow when I ran for the bus",
+false
+],
+[
+"had 9 tablets left in the strip, ordered more",
+false
+],
+[
+"blurry vision when I forget my glasses, suddenly noticed at the cinema",
+false
+],
+[
+"I ate coffee grounds cake for a joke",
+false
+],
+[
+"I'm confused about my appointment date and my fever has gone",
+false
+],
+[
+"driving my car into the garage was hard with my back pain",
+false
+],
+[
+"the black pen leaked and my hands looked black, poo bags in the car",
+false
+],
+[
+"my breathing feels really slow and I'm drowsy",
+true
+],
+[
+"black tarry poo this morning",
+true
+],
+[
+"I want to drive my car into a wall",
+true
+],
+[
+"I cut myself a slice of cake and sat down with the heat pack",
+false
+],
+[
+"cut myself some slack today, rested",
+false
+],
+[
+"can't do this anymore without a break, going to rest this weekend, pain at 4",
+false
+],
+[
+"my face puffing up from crying at the film",
+false
+],
+[
+"I'm 28 weeks pregnant and feeling well, regular scan booked",
+false
+],
+[
+"fever and chills last week, gone now, confused about my dates",
+false
+],
+[
+"can't swallow big pills so asked for liquid",
+false
 ]
 ]
