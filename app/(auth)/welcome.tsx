@@ -90,6 +90,8 @@ export default function WelcomeScreen() {
           ))}
         </View>}
 
+        <View style={{ flexGrow: 1 }} />
+
         {short ? null : <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
           Atossa never diagnoses. It keeps your notes in your words.
         </Txt>}
@@ -122,9 +124,9 @@ const styles = StyleSheet.create({
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'center', gap: 4 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
-  // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
-  // anchored actions (not above the headline).
-  hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.lg },
+  // Top-weighted: the promise and the three steps sit together under the headline; the spare room falls
+  // between them and the anchored actions (a spacer, not a gap inside the story).
+  hero: { justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.xl },
   heroShort: { paddingTop: 0, paddingBottom: space.sm, gap: space.xs },
   example: { gap: space.xs, marginTop: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
