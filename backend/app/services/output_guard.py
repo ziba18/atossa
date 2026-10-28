@@ -811,6 +811,15 @@ _SELF_WHOLE = re.compile(_SELF_WISH +
 
 
 
+# run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
+# (nhs.uk/conditions/meningitis: "get emergency medical help"). Stiff neck alone, light alone, or her usual migraine stay quiet.
+_NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
+_LIGHT = (r"(?:light (?:is )?(?:\w+ ){0,2}(?:hurt\w*|painful|unbearable)|(?:can'?t (?:stand|bear|look at)|sensitive to|hurt by) (?:the )?(?:bright )?lights?|"
+          r"(?:bright )?lights? (?:are|is) (?:unbearable|painful)|bright light is painful)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|migraine|all fine now|not a (?:fever|temperature)|from (?:sleeping|the gym|my desk|sitting|the laptop|my laptop|work|the drive|driving))\b)(?=[\s\S]*" + _NECK
+                    + r")(?=[\s\S]*(?:" + _LIGHT + r"|" + _FEVER + r"))", _WHOLE.flags)
+
+
 _THIRD_NOW = re.compile(
     r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
     r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
