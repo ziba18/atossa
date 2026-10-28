@@ -122,6 +122,8 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
     <View style={{ gap: space.md, marginTop: space.lg }}>
       {toggle}
       <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
+      {/* One sentence of proof, counts only (Iris dashboard headline): the same words the chart card speaks. */}
+      <Txt variant="hero" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 28, lineHeight: 34 }}>{noteDaysText(m)}.</Txt>
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
@@ -140,9 +142,6 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           onAccessibilityAction={(name) => { const [, from, to] = name.split(':'); if (from && to) onOpenWeek({ from, to }); }}
         >
           <Txt variant="groupLabel">Days with a note, by week</Txt>
-          <Txt variant="secondary" style={{ marginTop: space.sm }}>
-            {noteDaysText(m)}.
-          </Txt>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
               <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
