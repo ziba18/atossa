@@ -222,7 +222,7 @@ _BODY = [
     r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
     r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop (?:the )?bleeding", r"bleeding .{0,30}(?:won'?t|will not) stop", r"losing (?:a lot of|so much|too much) blood", r"breathing (?:very|really|so) (?:fast|quickly|rapidly)|(?:not|n[o']t|isn[o']t) making (?:any )?sense|(?:rash|spots|marks)[^.]{0,30}(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) fade[^.]{0,20}press|blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy|\bsepsis\b|septic", r"(?:rash|spots?|marks?) (?:that )?(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) (?:fade|go|disappear)[^.]{0,30}glass|glass test|sandpaper[- ]?(?:like )?rash|bright red (?:palms|soles|tongue)", r"(?:toilet|bowl)(?: water| bowl)? (?:turned|went|was|is|looked|looks) (?:bright |dark )?red|red (?:toilet|bowl) water|(?:toilet|bowl) (?:was |is )?(?:full of|filled with|covered in) blood|blood (?:filled|filling|covered) the (?:toilet|bowl)|(?:lots?|loads) of blood in the (?:toilet|bowl)",
     r"(?:trouble|difficulty|hard to|struggling to) breath\w*", r"pressure in (?:my )?chest", r"(?:gonna|going to|about to) (?:be sick and )?pass(?:ing)? out", r"(?:non[- ]?stop|constant\w*) bleeding|bleeding (?:non[- ]?stop|constantly|for (?:\d+|three|four|a few) weeks)",
-    r"seizure|convuls\w+|fitting\b", r"(?:feel|feels|feeling) like (?:i'?m |i am )?(?:dying|i'?m going to die)", r"can'?t (?:wake|rouse) (?:my|him|her|them|the)\b",
+    r"seizure|convuls\w+|(?<!wig )(?<!bra )(?<!dress )(?<!shoe )(?<!coil )(?<!implant )(?<!ring )fitting\b(?! (?:room|appointment))", r"(?:feel|feels|feeling) like (?:i'?m |i am )?(?:dying|i'?m going to die)", r"can'?t (?:wake|rouse) (?:my|him|her|them|the)\b",
     r"(?:stabbing|knife).{0,40}(?:curled up|on the floor)|(?:curled up|on the floor).{0,40}(?:stabbing|agony)",
     r"(?:took|taken|swallowed|downed) a load of\b.{0,30}",
     r"lips (?:are |turning |gone |going )?blue", r"struggling to (?:get )?(?:air|breath\w*)",
@@ -292,7 +292,10 @@ _SELF_HARM_RX = re.compile(
     r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds)|"
     r"(?:don'?t|do not|can'?t|cannot) see (?:the |any )?point (?:in |of )?(?:being alive|living|going on|carrying on|life)|no point (?:in )?(?:living|going on|being alive)|"
     r"(?:everyone|everybody|they|family|friends) (?:would|will|'d) be better off without me|wish i (?:was|were) dead|wish i (?:would|could) (?:just )?not wake up|"
-    r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers))\b",
+    r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)|"
+    # set p83 (hormone/diagnosis distress; first contact 3/12 self-harm lines missed)
+    r"(?:i would|i'?d|would) be better off (?:not alive|not here|not living)|(?:thinking|thought|thoughts) (?:of|about) ways to (?:not wake up|end it)|"
+    r"(?:ways|way) to not wake up)\b",
     re.I,
 )
 _EMERGENCY = re.compile(
@@ -397,7 +400,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood\b.{0,30}\b(?:coming out|pouring|rushing)\b.{0,40}\b(?:fast|quickly|so much)\b|\bgoing (?:grey|gray|white)\b|"
                     r"\b(?:whole bottle|bottle of (?:wine|vodka|gin))\b.{0,40}\b(?:tablets|pills|medication)\b|"
                     r"\bnumb(?:ness)?\b.{0,30}\bface\b.{0,40}\b(?:arm|leg)\b.{0,15}\b(?:weak|limp)|\bface\b.{0,20}\bnumb(?:ness)?\b.{0,40}\b(?:arm|leg)\b.{0,15}\b(?:weak|limp)|"
-                    r"\bcough\w*\b.{0,40}\bblood\b|\bblood\b.{0,40}\bcough\w*\b|"
+                    r"\bcough\w*\b.{0,40}(?<!no )(?<!without )(?<!any )\bblood\b|(?<!no )(?<!without )\bblood\b.{0,40}\bcough\w*\b|"
                     r"\b(?:arm|leg)\b.{0,15}\b(?:went|gone|is|feels?) (?:limp|dead|weak)\b.{0,40}\bcan'?t (?:hold|lift|move)|"
                     r"\b(?:tongue|lips?|throat)\b.{0,40}\b(?:swollen|swelling|closing)\b|"
                     r"\b(?:(?:swollen|bloated) (?:belly|stomach|tummy)|(?:belly|stomach|tummy)\b.{0,15}\b(?:swollen|bloated))\b.{0,60}\b(?:vomit\w*|being sick)\b.{0,60}\bcan'?t (?:pass wind|poo|go to the toilet)|"
@@ -429,7 +432,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:took|taken|swallowed|taking) (?:over |about |around )?(?:9|1\d|[2-9]\d) (?:paracetamol|co-?codamol|ibuprofen|codeine|naproxen|tablets|pills)\b|"
                     r"\b(?:like|looks like|look like|resembl\w+) coffee grounds\b|\bvomit\w*\b.{0,40}\b(?:blood|bright red)\b|\b(?:blood|bright red)\b.{0,20}\bvomit\w*\b|\bblack,? tarry\b|\btarry (?:poo|poos|stools?)\b|\bblack (?:poo|poos|stools?|motions?)\b(?! bags)|"
                     r"\b(?:doubled|double|extra)\b.{0,30}\b(?:codeine|tramadol|morphine|co-?codamol)\b.{0,60}\b(?:keep my eyes open|can'?t stay awake|drowsy|very sleepy)\b|"
-                    r"\bmy breathing\b.{0,15}\b(?:slow|shallow|slowed)\b|\bbreathing (?:is|feels|has gone) (?:very |really )?(?:slow|shallow)\b|\bbreathing (?:slowed|is slowing)\b|"
+                    r"\bmy breathing\b.{0,15}\b(?:slow|shallow|slowed)\b|\bbreathing (?:is|feels|has gone) (?:very |really )?(?:slow|shallow)\b|\bbreathing (?:slowed|is slowing)\b(?! (?:with|using|down with|after|exercise|app))|"
                     r"\b(?:wine|vodka|alcohol|drank|drinking)\b.{0,50}\b(?:tramadol|codeine|morphine|co-?codamol)\b.{0,60}\b(?:weird|floaty|drowsy|dizzy|sick)\b|\b(?:tramadol|codeine|morphine|co-?codamol)\b.{0,50}\b(?:wine|vodka|alcohol)\b.{0,60}\b(?:weird|floaty|drowsy|dizzy|sick)\b|"
                     r"\b(?:took|taken|swallowed) (?:the )?(?:whole|entire) (?:strip|packet|box|bottle) of (?:\w+ )?(?:tablets|pills)\b|"
                     r"\b(?:shaking|heart (?:is )?(?:pounding|racing))\b.{0,50}\b(?:too many|too much)\b.{0,40}\b(?:painkillers|tablets|pills|energy drinks)\b|\bswollen (?:lips?|tongue|throat)\b|"
@@ -469,7 +472,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:lips|face|tongue|throat)\b.{0,15}\bswell\w*|\bswelling (?:up )?(?:of )?(?:my )?(?:lips|face|tongue)\b|"
                     r"\b(?:can'?t|cannot|unable to) (?:pee|wee|pass (?:any )?urine)\b(?: at all| for (?:hours|\d+ hours)| all day)|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?)\b)(?=.*\b(?:left in|forgot|forgotten|stuck)\b)(?=.*\b(?:rash|sunburn|fever|high temperature|unwell|dreadful|burning up)\b)|"
-                    r"^(?=.*\b(?:laparoscop\w*|operation|surgery|wound)\b)(?=.*\b(?:fever|high temperature|leaking|pus|oozing)\b)(?=.*\b(?:worse|unwell|vomit\w*|swollen)\b)|"
+                    r"^(?=.*\b(?:laparoscop\w*|operation|surgery|wound)\b)(?=.*(?<!no )(?<!without )(?<!not )(?<!no sign of )\b(?:fever|high temperature|leaking|pus|oozing)\b)(?=.*\b(?:worse|unwell|vomit\w*|swollen)\b)|"
                     r"\b(?:vomit\w*|being sick|throwing up)\b.{0,15}\b(?:non[- ]?stop|constantly|all night)\b.{0,60}\b(?:swollen|bloated|tender|hard)\b|"
                     r"^(?=.*\b(?:period (?:is |was )?(?:\w+ ){0,3}late|late period|missed (?:a |my )?period|overdue)\b)(?=.*\b(?:one[- ]sided|one side|sharp|stabbing)\b)(?=.*\b(?:dizz\w*|faint\w*))|"
                     # sharp / severe pain together with dizzy or light-headed, and not managing without help (NHS 999 signs); any clause
@@ -484,6 +487,75 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    r"^(?=.*\b(?:stopped eating (?:completely|altogether|anything)|not eaten|haven'?t eaten)\b)(?=.*\b(?:too weak|can'?t stand|faint\w*|dizzy)\b)|"
+                    # set p99 (cauda equina and jaundice wording; first contact 2/8 missed)
+                    r"\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b.{0,60}\b(?:legs?|feet|foot|numb\w*|weak\w*)\b|\b(?:legs?|feet|foot|numb\w*|weak\w*)\b.{0,60}\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b|"
+                    r"^(?=.*\byellow (?:skin|eyes)\b)(?=.*(?<!no )\b(?:fever|temperature|stabbing pain|severe pain|sharp pain)\b)|"
+                    # set p98 (abdomen, head, mixing alcohol, young baby; first contact 4/12 missed)
+                    r"\b(?:board[- ]like|hard as a board)\b.{0,20}\b(?:stomach|abdomen|tummy|belly)\b|\b(?:stomach|abdomen|tummy|belly)\b.{0,20}\b(?:board[- ]like|hard as a board|rigid (?:and|,) (?:tender|painful|hard))\b|"
+                    r"\b(?:sudden|crushing)\b.{0,20}\bheadache\b.{0,40}\b(?:vomit\w*|sick)\b.{0,40}\b(?:sleepy|drowsy|confus\w*)\b|"
+                    r"\b(?:drank|had)\b.{0,30}\b(?:vodka|alcohol|wine|whisky)\b.{0,40}\b(?:took|and took)\b.{0,20}\b(?:sleeping|pills|tablets)\b.{0,60}\b(?:stay awake|struggling|drowsy|slurr\w+)\b|"
+                    r"\bbaby\b.{0,30}\b(?:under|less than) (?:3|three|2|two|1|one) months?\b.{0,40}\b(?:fever|high temperature)\b|"
+                    # set p97 (midlife, HRT; first contact 2/12 missed)
+                    r"^(?=.*\b(?:calf|leg)\b.{0,20}\b(?:swollen|swelling)\b)(?=.*\b(?:hot|warm)\b)(?=.*\b(?:painful|tender|sore)\b)|\bbleeding like a tap\b|"
+                    # set p95 (retained tampon, assault with bleeding, genital infection, prolapse, early labour; first contact 7/12 missed)
+                    r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature|rash|unwell)\b)|"
+                    r"\b(?:raped|sexually assaulted|sexual assault|forced me)\b.{0,80}\b(?:bleed\w*|in a lot of pain|hurts? so)\b|"
+                    r"^(?=.*\bdischarge\b)(?=.*(?<!no )\b(?:fever|temperature)\b)(?=.*\b(?:terrible|severe|awful|unbearable)\b.{0,15}\bpain\b|.*\bpain\b.{0,15}\b(?:terrible|severe|awful|unbearable)\b)|"
+                    r"^(?=.*\b(?:vulva|labia)\b)(?=.*\b(?:huge|swollen|swelling|lump)\b)(?=.*(?<!no )\b(?:temperature|fever)\b)(?=.*\bpain\w*\b)|"
+                    r"^(?=.*\b(?:insides? (?:are |is )?falling out|something (?:is )?(?:bulging|coming out))\b)(?=.*\bbleed\w*\b)|"
+                    r"\bwater (?:has |have )?broke(?:n)?\b.{0,30}\b(?:\d{2}) weeks\b|"
+                    r"^(?=.*\bcontractions?\b)(?=.*\b(?:2\d|3[0-6]) weeks\b)(?=.*\bevery \d+ min)|"
+                    # set p90 (teen register, lower case and no apostrophes; first contact 6/12 missed)
+                    r"\bbleeding (?:like crazy|like mad|loads)\b.{0,60}(?<!not )(?<!no )\b(?:dizzy|faint\w*|weak|through (?:my|the) (?:skirt|trousers|jeans|clothes|sheets|bed))\b|(?<!not )\b(?:dizzy|faint\w*)\b.{0,60}\bbleeding (?:like crazy|like mad|loads)\b|"
+                    r"\btook (?:like |about |around |roughly )?(?:1[0-9]|[2-9]\d) (?:paracetamol|ibuprofen|tablets|pills|painkillers|co-?codamol|codeine)\b|"
+                    r"^(?=.*\b(?:throwing up|vomit\w*|been sick)\b)(?=.*\bpain\b.{0,25}\b(?:right|left) side\b)(?=.*\b(?:can'?t|cant) (?:even )?(?:stand|walk|move)\b)|"
+                    r"^(?=.*\b(?:shaking|trembling)\b)(?=.*\bheart\b.{0,15}\b(?:going mad|racing|pounding|going crazy)\b)(?=.*\bpain\b)|"
+                    r"\bappendix\b.{0,20}\b(?:burst|ruptured)\b|\bpain\b.{0,60}\b(?:belly button|tummy button|navel)\b.{0,50}\bsuddenly stopped\b|"
+                    r"^(?=.*\bhead\b.{0,15}\b(?:pounding|splitting)\b)(?=.*\b(?:can'?t|cant) see (?:properly|right|clearly)\b)|"
+                    # set p84 (implant, injection and coil complications; first contact 5/12 missed)
+                    r"^(?=.*\b(?:implant|injection site|depo|coil|iud|ius)\b)(?=.*\b(?:hot|oozing|pus|spreading red)\b)(?=.*(?<!no )(?<!without )\b(?:temperature|fever|chills|shivering|shaking)\b)|"
+                    r"^(?=.*\bimplant\b)(?=.*\b(?:numb|tingling)\b)(?=.*\b(?:badly|severe\w*|spreading|whole arm)\b)|"
+                    r"^(?=.*\b(?:zig-?zag|flashing|flickering)\b.{0,15}\b(?:lights?|lines)\b)(?=.*\b(?:numb|weak\w*|slurr\w*)\b.{0,15}\b(?:face|arm|speech)\b|.*\b(?:face|arm)\b.{0,15}\b(?:numb|weak)\b)|"
+                    r"^(?=.*\b(?:coil|iud|ius)\b)(?=.*(?<!no )\b(?:shaking|chills|shiver\w*|fever|high temperature)\b)(?=.*\bpain\b)|"
+                    # set p81 (high sugar, kidney infection, spreading skin infection, no wee, very high blood pressure; first contact 10/12 missed)
+                    r"^(?=.*\b(?:thirsty|thirst)\b)(?=.*\b(?:weeing (?:loads|a lot|lots)|passing (?:huge|lots|loads)|wee loads|peeing (?:loads|a lot))\b)(?=.*\b(?:fruity|losing weight|vomit\w*|drowsy|sleepy)\b)|"
+                    r"^(?=.*\b(?:blood sugar|blood glucose|sugar (?:meter|reading|level)|glucose (?:meter|reading|level)|my meter|meter says|reading (?:says|was|is))\b[^.?]{0,25}?\b(?:2\d|[3-9]\d)(?:\.\d)?\b(?!\s*(?:%|percent|minutes|mins|hours|days|g\b)))(?=.*\b(?:sick|sleepy|drowsy|vomit\w*|confus\w*|breathing fast)\b)|"
+                    r"^(?=.*\b(?:sugar|glucose)\b.{0,20}\b(?:really|very|extremely) high\b)(?=.*\b(?:confus\w*|sleepy|drowsy|vomit\w*))|"
+                    r"^(?=.*\b(?:kidney|under (?:my |the )?ribs|loin)\b)(?=.*(?<!no )(?<!without )\b(?:fever|chills|shaking|shiver\w*|high temperature)\b)(?=.*\b(?:wee|urine|pee|vomit\w*|burning)\b)|"
+                    r"\bred streaks?\b.{0,40}\b(?:up|spreading|leg|arm)\b.{0,60}(?<!no )\b(?:fever|temperature|unwell)\b|"
+                    r"\b(?:haven'?t|not) (?:peed|weed|passed (?:any )?(?:wee|urine))\b.{0,25}\b(?:\d{2} hours|all day|since yesterday|twelve hours)\b.{0,60}\b(?:dizzy|faint\w*|drowsy|weak|thirsty)\b|"
+                    r"\b(?:blood pressure|bp)\b.{0,40}\b(?:1[89]\d|2\d\d) ?(?:/| over )(?:11\d|1[2-9]\d)\b(?=.{0,80}\b(?:headache|vision|chest|confus\w*|swollen|pregnan\w*|dizzy)\b)|"
+                    r"\b(?:blood pressure|bp)\b.{0,40}\b(?:1[89]\d|2\d\d) ?(?:/| over )(?:11\d|1[2-9]\d)\b|"
+                    # set p80 (cyst, torsion, egg collection, after surgery, heart signs; first contact 5/12 missed)
+                    r"^(?=.*\b(?:sudden\w*|out of nowhere|came on (?:suddenly|fast))\b)(?=.*\b(?:terrible|severe|awful|worst|agonising|agonizing|excruciating|sharp|stabbing)\b.{0,25}\bpain\b|.*\bpain\b.{0,25}\b(?:terrible|severe|awful|worst|agonising|excruciating)\b)(?=.*\b(?:threw up|throwing up|vomit\w*|(?<!not )being sick|was sick)\b)|"
+                    r"^(?=.*\b(?:hardly|barely|not) (?:weeing|passing (?:any )?(?:wee|urine|pee))\b)(?=.*\b(?:swollen|bloated|tight|very thirsty)\b)(?=.*\b(?:sick|nausea|vomit\w*|breath\w*|thirsty)\b)|"
+                    r"^(?=.*\b(?:laparoscopy|surgery|operation|egg collection|hysteroscopy)\b)(?=.*\b(?:pain\b.{0,30}\bgetting worse|getting worse)\b)(?=.*(?<!no )(?<!without )\b(?:feverish|fever|high temperature)\b)|"
+                    r"^(?=.*\bpain\b)(?=.*\bclammy\b)(?=.*\b(?:pale|sweating|sweaty)\b)(?=.*\b(?:so strong|so bad|severe|terrible|unbearable|sharp)\b)|"
+                    r"^(?=.*\bjaw\b.{0,25}\b(?:ach\w+|pain\w*|tight\w*)\b)(?=.*\bsweat\w*\b)(?=.*\b(?:chest|arm|heart|short of breath|breathless|back)\b)|"
+                    # set p75 (medicine reactions and mixing; first contact 4/12 missed)
+                    r"^(?=.*\brash\b.{0,30}\bspreading\b)(?=.*\b(?:lips?|tongue|face|eyelids?)\b.{0,20}\b(?:puffy|swollen|swelling)\b)|"
+                    r"\b(?:took|taken|had) (?:double|twice|too many|an extra|two lots)\b.{0,50}\b(?:dose|tablets?|pills?|medication)\b.{0,60}\b(?:heart (?:is )?(?:pounding|racing)|shaking(?!\?)|drowsy|can'?t stay awake)\b|"
+                    r"\bwheez\w*\b.{0,30}\bitch\w*\b.{0,15}\ball over\b|\bitch\w*\b.{0,15}\ball over\b.{0,40}(?<!no )\bwheez\w*\b|"
+                    r"\b(?:sleeping|tablets?|pills?|codeine|tramadol|diazepam)\b.{0,30}\b(?:with|and) (?:wine|alcohol|vodka|beer|a few drinks)\b.{0,70}\b(?:out of it|can'?t stay awake|very drowsy|slurr\w+|passing out)\b|"
+                    # set p76 (after birth, section or miscarriage; first contact 3/12 missed)
+                    r"^(?=.*\b(?:stitches|wound|scar|section|tear)\b)(?=.*(?:\bhot and swollen\b|\bswollen\b|\bpus\b|\bleaking\b|\boozing\b|(?<!no )\bsmell(?:s|y)\b|\bred and (?:hot|swollen|painful)\b))(?=.*(?<!no )(?<!without )(?<!normal )\b(?:got a temperature|high temperature|fever|shivery|shaky|feel (?:very )?unwell|feeling (?:very )?unwell)\b)|"
+                    r"^(?=.*\b(?:headache|head hurts)\b)(?=.*(?<!no )(?:\bblurr\w+|\bflashing\b|\bspots (?:in|before) my\b|\bvision (?:is |went |gone )?(?:blurry|blurred|double|odd|strange)\b))(?=.*\b(?:after (?:the )?(?:birth|delivery|having (?:the|my) baby|giving birth)|postnatal|postpartum)\b)|"
+                    # set p72 (heavy bleeding wording, NHS heavy periods page; first contact 3/12 missed)
+                    r"\bbled through\b.{0,25}\b(?:mattress|sheets?|bed)\b.{0,60}\b(?:barely stand|can'?t stand|dizz\w+|faint\w*|weak|collaps\w+)\b|"
+                    r"\bclots?\b.{0,15}\b(?:golf ball|egg|lemon|fist)s?\b(?! pip| seed| sized? pip)|"
+                    r"\bbleed\w* after sex\b.{0,30}\b(?:heavy|heavily|not stopping|won'?t stop|hasn'?t stopped)\b|"
+                    # set p73 (bladder, bowel and infection signs, NHS 111 lists; first contact 7/12 missed)
+                    r"^(?=.*\b(?:blood in (?:my )?(?:wee|urine|pee)|(?:wee|urine|pee)\b.{0,25}\b(?:bloody|blood))\b)(?=.*\b(?:fever|temperature|shiver\w*|shak\w+|pain in my (?:side|back)|bad pain)\b)|"
+                    r"\b(?:can'?t|cannot|unable to|haven'?t been able to) (?:pass|do) (?:any )?(?:wee|urine|pee)\b(?: at all| since| for (?:hours|\d+))\b.{0,60}\b(?:swollen|painful|pain)\b|"
+                    r"\blost (?:the )?feeling (?:between|in) (?:my )?(?:legs|thighs|bottom)\b|\bnumb(?:ness)?\b(?: and \w+)? (?:between|in the area between) my legs\b|"
+                    r"^(?=.*\b(?:fever|high temperature|shaking|shivering)\b)(?=.*\bpain\b.{0,25}\b(?:belly|tummy|pelvi\w+|abdomen)\b)(?=.*\b(?:smelly|foul)\b.{0,15}\bdischarge\b)|"
+                    r"^(?=.*\bpain\b.{0,30}\b(?:left|right) side\b|.*\b(?:left|right) side\b.{0,30}\bpain\b)(?=.*(?<!no )(?<!without )\b(?:high temperature|fever)\b)(?=.*(?:\bkeep being sick|\bbeen sick|\bvomiting|\bthrowing up|(?<!not )\bbeing sick)\b)|"
+                    r"\b(?:bleed\w*|blood)\b.{0,25}\bback passage\b.{0,60}\b(?:heavy|heavily|faint\w*|pass out|collapse)\b|\b(?:heavy|heavily)\b.{0,25}\bbleed\w*\b.{0,25}\bback passage\b|"
+                    # set p47 (pain in pregnancy, NHS pelvic pain page; first contact 3/12 missed)
+                    r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:can'?t|cannot|unable to) (?:put (?:any )?weight|walk|stand)\b)(?=.*\b(?:pelvi\w+|hip|groin)\b)|"
+                    r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:bump|belly|tummy|stomach)\b.{0,20}\b(?:tight|hard)\b)(?=.*\bconstant pain\b)|"
+                    r"^(?=.*\b(?:pregnancy test positive|positive (?:pregnancy )?test)\b)(?=.*\bpain\b)(?=.*\b(?:dizz\w+|faint\w*|light-?headed)\b)|"
                     # set v22 (voice-style notes; first contact 4/12 missed)
                     r"\btook (?:a lot|loads|lots)\b.{0,15}\b(?:tablets|pills)\b.{0,40}\b(?:strange|drowsy|sleepy|sick|weird)\b|"
                     r"\bwon'?t wake up\b|\bcan'?t wake\b.{0,20}\b(?:up|her|him|them)\b|"
@@ -505,7 +577,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:been |keep |keeps )?having fits\b|"
                     # set v18 (medicines, late pregnancy, urinary infection with fever; first contact 8/15 missed)
                     r"\b(?:pill|contraceptive|hrt|patch)\b.{0,60}\b(?:swollen|swelling|painful)\b.{0,15}\b(?:leg|calf)\b|\b(?:swollen|swelling|painful)\b.{0,15}\b(?:leg|calf)\b.{0,60}\b(?:on the pill|the pill|hrt)\b|"
-                    r"\bthroat\b.{0,20}\b(?:tight|closing)\b.{0,40}\b(?:rash|hives|swell\w*|breath\w*|antibiotic|tablet\w*)\b|^(?=.*\b(?:rash|hives)\b)(?=.*\b(?:breath\w*|swell\w*|tongue|throat (?:is |feels? )?(?:tight|closing)))|"
+                    r"\bthroat\b.{0,20}\b(?:tight|closing)\b.{0,40}\b(?:rash|hives|swell\w*|breath\w*|antibiotic|tablet\w*)\b|^(?=.*(?<!no )(?<!without )(?<!any )\b(?:rash|hives)\b)(?=.*(?<!no )(?<!without )(?<!any )\b(?:breath\w*|swell\w*|tongue|throat (?:is |feels? )?(?:tight|closing)))|"
                     r"\b(?:haven\'?t|hasn\'?t|not|stopped)\b.{0,25}\b(?:felt|feel|feeling)?\s*(?:the |my )?(?:baby|bump)\b.{0,20}\bmov\w+|\b(?:baby|bump)\b.{0,20}\b(?:not moving|stopped moving|hasn\'?t moved|isn\'?t moving)\b|"
                     r"\bwaters (?:have |had )?(?:broke|gone|broken)\b.{0,60}\b(?:green|brown|blood|smell\w*)\b|"
                     r"\b(?:swelling|swollen)\b.{0,30}\b(?:face|hands)\b.{0,60}(?<!no )(?<!without )\bheadache\b|(?<!no )(?<!without )\bheadache\b.{0,60}\b(?:face|hands)\b.{0,15}\b(?:swell\w*|swollen)\b|"
@@ -525,7 +597,11 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))", re.I | re.S)
 
 
+_WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
+
+
 def _hits_whole(rx, text: str) -> bool:
+    text = text[:_WHOLE_SCAN_CAP]
     m = rx.search(text)
     if not m:
         return False

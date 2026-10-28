@@ -214,3 +214,122 @@ SET25 = json.loads((Path(__file__).parent / "emergency_set_v25_blind_nhs_third.j
 def test_set_v25_emergencies_caught_and_harmless_quiet():
     assert [t for t in SET25["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET25["harmless"] if is_emergency(t)] == []
+
+
+SET26 = json.loads((Path(__file__).parent / "emergency_set_v26_pregnancy_pelvic.json").read_text())
+
+
+def test_set_v26_pregnancy_pelvic_caught_and_harmless_quiet():
+    assert [t for t in SET26["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET26["harmless"] if is_emergency(t)] == []
+
+
+SET27 = json.loads((Path(__file__).parent / "emergency_set_v27_bladder_bowel_infection.json").read_text())
+
+
+def test_set_v27_bladder_bowel_infection_caught_and_harmless_quiet():
+    assert [t for t in SET27["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET27["harmless"] if is_emergency(t)] == []
+
+
+SET28 = json.loads((Path(__file__).parent / "emergency_set_v28_heavy_bleeding.json").read_text())
+
+
+def test_set_v28_heavy_bleeding_caught_and_harmless_quiet():
+    assert [t for t in SET28["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET28["harmless"] if is_emergency(t)] == []
+
+
+SET29 = json.loads((Path(__file__).parent / "emergency_set_v29_postnatal.json").read_text())
+
+
+def test_set_v29_postnatal_caught_and_harmless_quiet():
+    assert [t for t in SET29["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET29["harmless"] if is_emergency(t)] == []
+
+
+SET30 = json.loads((Path(__file__).parent / "emergency_set_v30_medicine_reactions.json").read_text())
+
+
+def test_set_v30_medicine_reactions_caught_and_harmless_quiet():
+    assert [t for t in SET30["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET30["harmless"] if is_emergency(t)] == []
+
+
+SET31 = json.loads((Path(__file__).parent / "emergency_set_v31_cyst_torsion_surgery.json").read_text())
+
+
+def test_set_v31_cyst_torsion_surgery_caught_and_harmless_quiet():
+    assert [t for t in SET31["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET31["harmless"] if is_emergency(t)] == []
+
+
+SET32 = json.loads((Path(__file__).parent / "emergency_set_v32_sugar_kidney_bp.json").read_text())
+
+
+def test_set_v32_sugar_kidney_bp_caught_and_harmless_quiet():
+    assert [t for t in SET32["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET32["harmless"] if is_emergency(t)] == []
+
+
+SET33 = json.loads((Path(__file__).parent / "emergency_set_v33_contraception.json").read_text())
+
+
+def test_set_v33_contraception_caught_and_harmless_quiet():
+    assert [t for t in SET33["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET33["harmless"] if is_emergency(t)] == []
+
+
+SET34 = json.loads((Path(__file__).parent / "emergency_set_v34_hormone_distress.json").read_text())
+
+
+def test_set_v34_hormone_distress_caught_and_harmless_quiet():
+    assert [t for t in SET34["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET34["harmless"] if is_emergency(t)] == []
+
+
+SET35 = json.loads((Path(__file__).parent / "emergency_set_v35_teen_register2.json").read_text())
+
+
+def test_set_v35_teen_register2_caught_and_harmless_quiet():
+    assert [t for t in SET35["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET35["harmless"] if is_emergency(t)] == []
+
+
+SET36 = json.loads((Path(__file__).parent / "emergency_set_v36_genital_labour_assault.json").read_text())
+
+
+def test_set_v36_genital_labour_assault_caught_and_harmless_quiet():
+    assert [t for t in SET36["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET36["harmless"] if is_emergency(t)] == []
+
+
+SET37 = json.loads((Path(__file__).parent / "emergency_set_v37_long_everyday.json").read_text())
+
+
+def test_set_v37_twenty_long_everyday_notes_stay_quiet():
+    assert [t[:40] for t in SET37["harmless"] if is_emergency(t)] == []
+
+
+SET38 = json.loads((Path(__file__).parent / "emergency_set_v38_midlife_hrt.json").read_text())
+
+
+def test_set_v38_midlife_hrt_caught_and_harmless_quiet():
+    assert [t for t in SET38["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET38["harmless"] if is_emergency(t)] == []
+
+
+SET39 = json.loads((Path(__file__).parent / "emergency_set_v39_breathing_abdomen_head.json").read_text())
+
+
+def test_set_v39_breathing_abdomen_head_caught_and_harmless_quiet():
+    assert [t for t in SET39["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET39["harmless"] if is_emergency(t)] == []
+
+
+SET40 = json.loads((Path(__file__).parent / "emergency_set_v40_cauda_jaundice.json").read_text())
+
+
+def test_set_v40_cauda_jaundice_caught_and_harmless_quiet():
+    assert [t for t in SET40["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET40["harmless"] if is_emergency(t)] == []
