@@ -484,6 +484,10 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set p47 (pain in pregnancy, NHS pelvic pain page; first contact 3/12 missed)
+                    r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:can'?t|cannot|unable to) (?:put (?:any )?weight|walk|stand)\b)(?=.*\b(?:pelvi\w+|hip|groin)\b)|"
+                    r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:bump|belly|tummy|stomach)\b.{0,20}\b(?:tight|hard)\b)(?=.*\bconstant pain\b)|"
+                    r"^(?=.*\b(?:pregnancy test positive|positive (?:pregnancy )?test)\b)(?=.*\bpain\b)(?=.*\b(?:dizz\w+|faint\w*|light-?headed)\b)|"
                     # set v22 (voice-style notes; first contact 4/12 missed)
                     r"\btook (?:a lot|loads|lots)\b.{0,15}\b(?:tablets|pills)\b.{0,40}\b(?:strange|drowsy|sleepy|sick|weird)\b|"
                     r"\bwon'?t wake up\b|\bcan'?t wake\b.{0,20}\b(?:up|her|him|them)\b|"
