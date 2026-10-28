@@ -363,7 +363,7 @@ export function HeroChip() {
   const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
   const days = next ? diffDays(today, next.data.date) : -1;
   let label = ''; let target = '/(tabs)/timeline';
-  if (next && days === 0 && total > 0) { label = `${notesLabel(total)} ready · today`; target = '/(tabs)/doctor'; }
+  if (next && days === 0 && total > 0) { label = `Appointment today · ${notesLabel(total).replace(/ /g, "\u00a0")}\u00a0ready`; target = '/(tabs)/doctor'; }
   else if (next && days > 0) { label = days > 60 ? `Appointment on ${parseKey(next.data.date).d} ${MONTH_NAMES[parseKey(next.data.date).m0]}` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
   else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
   if (!label) return null;
