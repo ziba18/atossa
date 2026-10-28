@@ -133,6 +133,16 @@
       "hasOnset": false
     }
   ],
+  "printedHeadings": [
+    "Symptom summary",
+    "How often and how strong",
+    "Periods logged",
+    "What it got in the way of",
+    "What I’ve tried",
+    "Health history",
+    "Appointments",
+    "Symptoms in my words"
+  ],
   "completeness": "9 of 13 areas recorded",
   "entries": 25,
   "agendaTitle": "What I’d like from this appointment",

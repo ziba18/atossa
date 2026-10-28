@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 await import('./ts-register.mjs');
-const { buildDoctorSummary, NOT_RECORDED, NOT_INCLUDED } = await import('../../lib/records/summary.ts');
+const { buildDoctorSummary, summaryToHtml, NOT_RECORDED, NOT_INCLUDED } = await import('../../lib/records/summary.ts');
 const { sampleBuckets } = await import('../../lib/preview/seed.ts');
 
 const GOLDEN = new URL('./summary-golden.json', import.meta.url);
@@ -20,6 +20,8 @@ const shape = {
   domains: doc.domains.map((d) => ({
     id: d.id, heading: d.heading, recorded: d.text !== NOT_RECORDED && d.text !== NOT_INCLUDED, hasOnset: Boolean(d.onset),
   })),
+  // The printed page's headings, in order (what the clinic actually reads).
+  printedHeadings: [...summaryToHtml(doc).matchAll(/<h[12][^>]*>(.*?)<\/h[12]>/g)].map((m) => m[1].replace(/<[^>]+>/g, '')),
   completeness: doc.completeness,
   entries: doc.entries,
   agendaTitle: doc.agendaTitle,
