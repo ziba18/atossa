@@ -984,7 +984,7 @@ function stripSvg(strip: HeatStripModel): string {
   const gap = 2;
   const cell = 13.5;
   const band = 3;
-  const rowH = cell + band + 11;
+  const rowH = cell + band + 12.5;
   const rows = stripRows(strip.days, perRow);
   const width = labelW + perRow * (cell + gap);
   const height = rows.length * rowH;
@@ -996,7 +996,7 @@ function stripSvg(strip: HeatStripModel): string {
     out += `<rect x="${labelW}" y="${y + cell + 0.75}" width="${row.length * (cell + gap) - gap}" height="0.5" fill="${C.borderStrong}"/>`;
     row.forEach((d, i) => {
       const x = labelW + i * (cell + gap);
-      if (i % 7 === 0) out += `<text x="${x + cell / 2}" y="${y + cell + band + 9}" text-anchor="middle" font-family="${SANS}" font-size="6.5" fill="${C.ink2}">${esc(formatShortDate(d.date, 'never'))}</text>`;
+      if (i > 0 && i % 7 === 0) out += `<text x="${x + cell / 2}" y="${y + cell + band + 9.5}" text-anchor="middle" font-family="${SANS}" font-size="8" fill="${C.ink}">${esc(formatShortDate(d.date, 'never'))}</text>`;
       if (d.logged && d.value != null) {
         const s = docSeverity(d.value);
         out += `<rect x="${x}" y="${y}" width="${cell}" height="${cell}" rx="2" fill="${s.bg}" stroke="${C.borderStrong}" stroke-width="0.4"/>`;
