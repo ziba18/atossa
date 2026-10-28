@@ -131,6 +131,9 @@ _QUOTES = str.maketrans({"\u2018": "'", "\u2019": "'", "\u02bc": "'", "\u2032": 
 _LEET = {"0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "@": "a", "$": "s"}
 
 
+_DEVICE_TEMP = re.compile(r"\b(?:heat(?:ing)? pad|heating|heat on|hot[- ]?water bottle|pad|blanket|bath|shower|oven|dishwasher|dryer|setting|set (?:to|at))\b", re.I)
+
+
 def _norm(text: str) -> str:
     """Undo cheap evasions before any pattern runs: width/zero-width/soft-hyphen characters, accents,
     Cyrillic/Greek look-alikes, spaced or dotted letters ("P C O S", "p.c.o.s") and digits inside words ("fa1nted")."""
@@ -145,10 +148,17 @@ def _norm(text: str) -> str:
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
     t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
-    # measured temperatures: "temp 39.5", "38.9 temp", "thermometer says 102" read as "high temperature of 39" (38+ C or 100.4+ F)
-    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*(3[89]|4[0-2])(?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times))", r"high temperature of \1", t, flags=re.I)
-    t = re.sub(r"\b(3[89]|4[0-2])(?:\.\d)?\s*(?:°\s*c|c|degrees)?\s*(?:temp(?:erature)?|fever)\b", r"high temperature of \1", t, flags=re.I)
-    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*10[1-7](?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times))", "high temperature of 39", t, flags=re.I)
+    # measured temperatures: "temp 39.5", "38.9 temp", "thermometer says 102" read as "high temperature of 39" (38+ C or 100.4+ F);
+    # a device setting ("heat pad on temp 40", "bath at 40 degrees") is not a body temperature
+    def _fever(m: "re.Match[str]") -> str:
+        before = m.string[max(0, m.start() - 30):m.start()]
+        if _DEVICE_TEMP.search(before):
+            return m.group(0)
+        n = m.groupdict().get("c") or "39"
+        return f"high temperature of {n}"
+    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*(?P<c>3[89]|4[0-2])(?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times|minutes?|mins?|degrees|mg|%))", _fever, t, flags=re.I)
+    t = re.sub(r"\b(?P<c>3[89]|4[0-2])(?:\.\d)?\s*(?:°\s*c|c|degrees)?\s*(?:temp(?:erature)?|fever)\b", _fever, t, flags=re.I)
+    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*10[1-7](?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times|minutes?|mins?|degrees|mg|%))", _fever, t, flags=re.I)
     return re.sub(r"[ \t]{2,}", " ", t)
 
 
