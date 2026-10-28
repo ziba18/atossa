@@ -1,0 +1,166 @@
+{
+ "completeness": "9 of 13 areas recorded",
+ "sections": [
+  {
+   "id": "frequency",
+   "title": "How often and how strong",
+   "rows": {
+    "bars": 4
+   }
+  },
+  {
+   "id": "periods",
+   "title": "Periods logged",
+   "rows": {
+    "runs": 4
+   }
+  },
+  {
+   "id": "impacts",
+   "title": "What it got in the way of",
+   "rows": {
+    "items": 1,
+    "quotes": 3
+   }
+  },
+  {
+   "id": "tried",
+   "title": "What I’ve tried",
+   "rows": {
+    "items": 3,
+    "quotes": 0
+   }
+  },
+  {
+   "id": "history",
+   "title": "Health history",
+   "rows": {
+    "items": 3
+   }
+  },
+  {
+   "id": "appointments",
+   "title": "Appointments",
+   "rows": {
+    "upcoming": 1,
+    "items": 3
+   }
+  },
+  {
+   "id": "words",
+   "title": "Symptoms in my words",
+   "rows": {
+    "quotes": 5
+   }
+  }
+ ],
+ "domains": [
+  {
+   "id": "agenda",
+   "heading": "Appointments and what I want from them",
+   "state": "recorded",
+   "text": "4 appointments saved",
+   "onset": ""
+  },
+  {
+   "id": "pain",
+   "heading": "Pain",
+   "state": "recorded",
+   "text": "Notes on 25 of 92 days · numbers given 1⁠–⁠9/10",
+   "onset": "First noticed: Not recorded"
+  },
+  {
+   "id": "fatigue",
+   "heading": "Tiredness and sleep",
+   "state": "recorded",
+   "text": "Tiredness given on 8 of 92 days (3⁠–⁠7/10)",
+   "onset": "First noticed: Not recorded"
+  },
+  {
+   "id": "bleeding",
+   "heading": "Bleeding and periods",
+   "state": "recorded",
+   "text": "4 periods logged (25 bleeding days)",
+   "onset": "First noticed: Not recorded"
+  },
+  {
+   "id": "bowelBladder",
+   "heading": "Bowel and bladder",
+   "state": "recorded",
+   "text": "pain opening bowels on 1 day · pain passing urine on 1 day",
+   "onset": "First noticed: Not recorded"
+  },
+  {
+   "id": "sexPain",
+   "heading": "Pain with sex",
+   "state": "not-included",
+   "text": "Not included in this summary",
+   "onset": ""
+  },
+  {
+   "id": "mood",
+   "heading": "Mood",
+   "state": "not-included",
+   "text": "Not included in this summary",
+   "onset": ""
+  },
+  {
+   "id": "skinHair",
+   "heading": "Skin and hair",
+   "state": "recorded",
+   "text": "Hair loss · 1 day · Spots or acne · 1 day · Extra hair · 1 day",
+   "onset": "First noticed: Not recorded"
+  },
+  {
+   "id": "eating",
+   "heading": "Weight and eating",
+   "state": "not-included",
+   "text": "Not included in this summary",
+   "onset": ""
+  },
+  {
+   "id": "impact",
+   "heading": "What it got in the way of",
+   "state": "recorded",
+   "text": "Stopped me doing things · 12 days",
+   "onset": ""
+  },
+  {
+   "id": "tried",
+   "heading": "What I’ve tried",
+   "state": "recorded",
+   "text": "3 things listed",
+   "onset": ""
+  },
+  {
+   "id": "history",
+   "heading": "Health history",
+   "state": "recorded",
+   "text": "5 items saved",
+   "onset": ""
+  },
+  {
+   "id": "fertility",
+   "heading": "Plans for pregnancy",
+   "state": "not-recorded",
+   "text": "Not recorded",
+   "onset": ""
+  }
+ ],
+ "textHeadings": [
+  "Appointments and what I want from them",
+  "Pain",
+  "Tiredness and sleep",
+  "Bleeding and periods",
+  "Bowel and bladder",
+  "Pain with sex",
+  "Mood",
+  "Skin and hair",
+  "Weight and eating",
+  "What it got in the way of",
+  "What I’ve tried",
+  "Health history",
+  "Plans for pregnancy"
+ ],
+ "textLines": 29
+}
