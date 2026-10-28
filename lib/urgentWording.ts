@@ -80,6 +80,7 @@ function hitWhole(text: string): boolean {
 }
 
 const THIRD = new RegExp(P.THIRD_SRC, 'is');
+const THIRDC = new RegExp(P.THIRDC_SRC, 'i');
 
 const PREG = /\bpregnan\w+\b/i;
 const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b/i;
@@ -107,7 +108,7 @@ export function urgentSignpost(text: string): string | null {
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
-  if (THIRD.test(t.slice(0, 20000)) && !isPast(t)) return URGENT_SIGNPOST;
+  if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
   if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
   return null;
 }

@@ -226,7 +226,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
 
 _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|didn'?t|don'?t|doesn'?t|haven'?t|hasn'?t|"
                   r"nor|none|n'?t|not even|hardly|a bit|slightly|a little|bit of a)\b|\bn't\b", re.I)
-_PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger))\b", re.I)
+_PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|not urgent|booked (?:bloods|a scan|an appointment)|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _BODY = [
     r"can'?t (?:breathe|catch my breath|get (?:any )?air)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
@@ -361,6 +361,13 @@ _RESOLVED = re.compile(r"(?<!n't )(?<!not )(?<!never )\b(?:stopped|settled|eased
 # "last week" often dates the cause, not the symptom: with a present-tense word in the clause it is not past tense.
 _LASTREL = re.compile(r"(?<!since )last (?:year|decade|month|week)", re.I)
 _PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today)\b", re.I)
+
+
+# A baby or young child described as limp/floppy/not waking/with a rash that stays under pressure, or not feeding with a fever (NHS 999 lists for children; p110, first contact 2/2 missed)
+_THIRD_CHILD = re.compile(
+    r"(?:\b(?:my |our |the )?newborn|\bmy (?:baby|toddler|\d{1,2} (?:month|year)s? old|\d{1,2}[- ]?(?:month|year)[- ]old|little (?:girl|boy)|son|daughter|child))\b"
+    r"(?=[^.!?\n]{0,80}\b(?:limp|floppy|won'?t wake|can'?t wake|not waking|unresponsive|blue lips|purple rash|rash that (?:doesn'?t|won'?t) fade|not feeding|struggling to breathe)\b)"
+    r"(?![^.!?\n]{0,100}\b(?:fine now|ok now|okay now|was fine|recovered)\b)", re.I)
 
 
 def _is_past(clause: str) -> bool:
@@ -694,7 +701,7 @@ def emergency_kind(user_text: str):
         return "self_harm"
     if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text) or _hits_whole(_WHOLE, user_text):
         return "medical"
-    if _THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) and not _is_past(user_text):
+    if (_THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) or _THIRD_CHILD.search(user_text[:_WHOLE_SCAN_CAP])) and not _is_past(user_text):
         return "medical"
     if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
         return "medical"
