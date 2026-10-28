@@ -122,10 +122,14 @@ function Bars({ bars, st }: { bars: FreqBar[]; st: St }) {
     <View style={{ gap: st.s.gap * 3, marginTop: st.s.gap * 2 }}>
       {bars.map((b) => (
         <View key={b.label} accessible accessibilityLabel={joinFacts(barText(b), b.strength)}>
-          {/* Two blocks that wrap as wholes: a middot between them used to end a line ('… days ·'). */}
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: st.s.gap * 3 }}>
-            <Txt style={[st.body, st.strong]}>{barText(b)}</Txt>
-            {b.strength ? <Txt style={[st.body, st.muted]}>{b.strength}</Txt> : null}
+          {/* Name + days on the left, 'worst x/10' in its own right-aligned column so every row lines up and no middot dangles. */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', columnGap: st.s.gap * 3 }}>
+            {/* The label and the count wrap as whole blocks (no '·' that could end a line); the count never splits. */}
+            <View style={{ flexShrink: 1, flexDirection: 'row', flexWrap: 'wrap', columnGap: st.s.gap * 3 }}>
+              <Txt style={[st.body, st.strong]}>{b.label}</Txt>
+              <Txt style={[st.body, st.strong]}>{`${b.days}\u00a0of\u00a0${b.total}\u00a0${b.total === 1 ? 'day' : 'days'}`}</Txt>
+            </View>
+            {b.strength ? <Txt style={[st.body, st.muted, { flexShrink: 0 }]}>{b.strength}</Txt> : null}
           </View>
           <View style={{ height: st.s.track, backgroundColor: C.track, borderWidth: 0.5, borderColor: C.borderStrong, marginTop: st.s.gap }}>
             <View style={{ height: '100%', width: `${Math.max(1.5, (b.days / Math.max(1, b.total)) * 100)}%`, backgroundColor: C.ink }} />
