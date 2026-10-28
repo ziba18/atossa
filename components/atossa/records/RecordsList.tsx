@@ -107,8 +107,9 @@ export function RecordsList({
     <ScreenLarge
       title={info.listTitle}
       subtitle={sorted.length ? savedLabel(sorted.length) : undefined}
+      /* The + shows only once the list is long enough to push the Add row off screen (short lists show one add control). */
       back={{ label: 'Profile', onPress: onBack }}
-      right={sorted.length ? <AddButton label={info.addLabel} onPress={onAdd} /> : null}
+      right={sorted.length > 5 ? <AddButton label={info.addLabel} onPress={onAdd} /> : null}
     >
       {loadError && !loadedFor ? <InlineError message={loadError} /> : null}
       {sorted.length === 0 && loadedFor ? (
