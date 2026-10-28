@@ -1,11 +1,11 @@
-// "Last 14 days" strip above the Timeline list: one cell per day, shaded by that day's strongest
-// "at worst" score (severity ramp, digit always shown so colour is never the only signal).
-// Days with a note but no score show a dot; days with nothing stay empty. Descriptive only.
+// "Last 14 days" strip above the Timeline list: one cell per day, the same grammar as the Month view:
+// a day with a note gets one neutral outline and its strongest "at worst" score printed in ink (no shade
+// carries meaning). Days with a note but no score show a dot; days with nothing stay faint. Descriptive only.
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Card, Txt } from '../kit';
 import { Icon } from '../../ui/Icon';
-import { colors, severityColor, space } from '../../../constants/atossaUI';
+import { colors, space } from '../../../constants/atossaUI';
 import { addDays, parseKey, todayKey } from '../../../lib/records/dates';
 import { worstOf } from '../../../lib/records/format';
 import type { Rec, SymptomData } from '../../../types/records';
@@ -49,12 +49,11 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
       </View>
       <View style={styles.row} onLayout={(e) => setInner(e.nativeEvent.layout.width)} accessible accessibilityRole="image" accessibilityLabel={label}>
         {cells.map((c) => {
-          const sev = c.worst != null ? severityColor(c.worst) : null;
           return (
             <View key={c.key} style={styles.col}>
-              <View style={[styles.cell, sev ? { backgroundColor: sev.bg, borderColor: sev.bg } : null]}>
-                {sev ? (
-                  <Txt variant="caption" color={sev.fg} style={styles.digit}>{c.worst}</Txt>
+              <View style={[styles.cell, c.noted ? styles.cellNoted : null]}>
+                {c.worst != null ? (
+                  <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
                 ) : c.noted ? <View style={styles.dot} /> : null}
               </View>
               <Txt variant="caption" color={colors.ink3} style={styles.letter}>{c.letter}</Txt>
@@ -89,6 +88,7 @@ const styles = StyleSheet.create({
     width: '100%', aspectRatio: 1, borderRadius: 8, borderWidth: 1,
     borderColor: colors.hairline, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center',
   },
+  cellNoted: { borderColor: colors.ink2, backgroundColor: colors.surface },
   digit: { fontWeight: '700', fontSize: 13, fontVariant: ['tabular-nums', 'lining-nums'] },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.ink2 },
   letter: { fontSize: 11 },
