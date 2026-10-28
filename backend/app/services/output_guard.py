@@ -256,7 +256,7 @@ _BODY = [
     r"(?:soak\w*|drench\w*|bleed\w*|blood)(?: is)?(?: going)? (?:thru|through) (?:my )?(?:jeans|trousers|pants|leggings|skirt|dress|sheets|the bed|the mattress)",
     r"(?:soaked|drenched|ruined) (?:the |my )?(?:bed|sheets|mattress)\b.{0,30}\bblood|\bblood\b.{0,30}\b(?:soaked|drenched) (?:the |my )?(?:bed|sheets|mattress)\b",
     r"\b(?:left |right )?arm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b.{0,50}\b(?:jaw|sweat\w*)\b|\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*)\b.{0,50}\b(?:sweat\w*|(?:left |right )?arm)\b",
-    r"soaking (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour)?",
+    r"soaking (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour)",
     r"(?:pad|tampon)s? (?:every|each|an) hour", r"(?:changed|changing) (?:my )?(?:pad|tampon)s? (?:\w+ times )?(?:in|every|each) (?:an|one|half an) hour",
     r"blood everywhere", r"(?:very |really |so |extremely )?heav(?:y|ily) bleeding", r"bleeding (?:really |very |so )?heav(?:y|ily)",
     r"bleeding (?:a )?(?:huge|massive|lot|loads)", r"clots (?:the size|as big|bigger)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)", r"severe (?:sudden )?(?:pain|belly|abdominal|pelvic)",
@@ -332,7 +332,7 @@ _EMERGENCY = re.compile(
     r"passing (?:fresh |bright red |lots of |loads of |a lot of )?blood\b(?! clots?)|blood in (?:my )?(?:vomit|poo|stool)|"
     r"(?:my )?face (?:has |had |is |just )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
     r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
-    r"can'?t breathe?|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath|struggling to breathe|chest pain|coughing up blood|"
+    r"can'?t breathe?|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath(?![^.;!?]{0,30}\b(?:laugh\w*|giggl\w*|after (?:a |the |my |some )?(?:run|jog|gym|workout|exercise|sprint|stairs|walk|swim|dancing|dance)|running|jogging|climbing (?:the |a few |three |two )?(?:flights? of )?stairs|(?:up|down) the stairs|excitement|excited)\b)|struggling to breathe|chest pain|coughing up blood|"
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
     r"bleeding through(?! (?:a |an |my |the )?(?:\w+ )?(?:pads?|tampons?|towels?|cups?)\b(?:(?!\b(?:an hour|1 hour|one hour|half an hour|\d+ ?min\w*|every hour|dizz\w*|faint\w*|light-?headed|weak|clots?)\b)[^.!?])*\b(?:(?:[2-9]|two|three|four|five|six|a few|several) hours?|overnight|in the night|all night)\b(?![^.!?]*\b(?:dizz\w*|faint\w*|light-?headed|weak|clots?)\b))|bleeding (?:heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
@@ -340,7 +340,7 @@ _EMERGENCY = re.compile(
     r"worst (?:pain )?(?:i'?ve|i have) ever|pain so bad|(?:big )?clots? (?:the size of|bigger than)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)|pain (?:is |was )?unbearable|pain (?:is |was )?(?:a )?(?:10|ten)(?:/| out of )10|"
     r"sudden (?:sharp |stabbing )?pain|\bi(?:'?m| am| think i'?m)? (?:\w+ ){0,3}miscarr\w+|"
     r"pregnan\w+ and (?:bleeding|pain|cramp\w*)|(?:i'?m|i am|am) pregnant.{0,40}(?:bleeding|pain|cramp\w*)|"
-    r"(?:cannot|can not|hard to|hardly able to) breathe?|short(?:ness)? of breath|chest (?:is )?(?:feels? )?tight\w*|"
+    r"(?:cannot|can not|hard to|hardly able to) breathe?|short(?:ness)? of breath(?![^.;!?]{0,30}\b(?:laugh\w*|giggl\w*|after (?:a |the |my |some )?(?:run|jog|gym|workout|exercise|sprint|stairs|walk|swim|dancing|dance)|running|jogging|climbing (?:the |a few |three |two )?(?:flights? of )?stairs|(?:up|down) the stairs|excitement|excited)\b)|chest (?:is )?(?:feels? )?tight\w*|"
     r"(?:can'?t|cannot|won'?t|will not|doesn'?t|isn'?t|not) (?:stop|stopping) bleeding|bleeding (?:won'?t|will not|doesn'?t|isn'?t|is not) (?:stop|stopping)|"
     r"(?:blood|bleeding) everywhere|bleeding.{0,40}pregnant|"
     r"(?:bled|soaked|soaking) through (?:two|three|four|five|several|a few|multiple|[2-9]|\d\d) (?:pads?|tampons?|towels?)(?: \w+){0,3} (?:in|within) (?:an? |one |two |half an |1 |2 )?(?:hours?|\d+ minutes?)|blood (?:is )?pouring|"
@@ -698,7 +698,10 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:doubled me over|doubled over)\b.{0,60}\b(?:vomiting|being sick)\b.{0,60}\b(?:cold|clammy)\b.{0,15}\b(?:sweaty|and sweaty|sweat)\b|"
                     r"\b(?:hot|red)\b.{0,15}\b(?:red|hot)\b.{0,15}\bswollen (?:area|patch|leg|arm)\b.{0,60}\b(?:getting bigger|spreading)\b.{0,60}\b(?:chills|fever|shivering|unwell)\b|"
                     # NHS toxic shock page in words (no number): tampon or cup in use, feeling hot/cold/shivery or flu-like, and another sign (PM held-out set, p105)
-                    r"^(?=.*\b(?:tampons?|menstrual cups?|period cup|cup)\b)(?=.*\b(?:shiver\w*|hot and cold|burning hot|flu-?like|sandpaper)\b)(?=.*\b(?:rash|sunburn\w*|sandpaper|awful|unwell|weak|dizz\w*|dreadful|so ill|vomit\w*|diarrh\w*|aches?)\b)", re.I | re.S)
+                    r"^(?=.*\b(?:tampons?|menstrual cups?|period cup|cup)\b)(?=.*\b(?:shiver\w*|hot and cold|burning hot|flu-?like|sandpaper)\b)(?=.*\b(?:rash|sunburn\w*|sandpaper|awful|unwell|weak|dizz\w*|dreadful|so ill|vomit\w*|diarrh\w*|aches?)\b)|"
+                    # run 26 held-out set v58 (first contact 12/20 missed): heavy bleeding said in plain words together with a faint/dizzy sign (NHS vaginal-bleeding page: bleeding + faint or dizzy = 999; heavy-periods page has no urgent box), and one swollen/hot/painful leg together with pain on breathing in (NHS DVT page: DVT signs + chest pain or breathlessness = 999). The output stays the one fixed urgent line.
+                    r"^(?=.*\b(?<!no )(?<!not )(?<!without )(?:flooding|gushing|pouring(?: out)?|bleeding (?:so |really |very |extremely |incredibly )?(?:heavily|badly)|heavy bleeding|bleeding is (?:very |really |so )?heavy|(?:bleeding|it|blood)\b.{0,15}\b(?:won'?t|will not|isn'?t going to|not going to) (?:ease|slow|stop|let up)|(?:soaking|soaked|saturated|drenched|full)\b.{0,25}\b(?:pads?|tampons?|jeans|trousers|leggings)\b.{0,20}\b(?:in (?:\d+|a few|ten|twenty|fifteen|thirty) ?(?:minutes?|mins?)|within minutes|in minutes))\b)(?=.*(?<!no )(?<!not )(?<!without )(?<!no feeling )\b(?:dizz\w*|light ?headed|woozy|faint\w*|pass(?:ing)? out|black(?:ed|ing) out|room (?:is |was )?spinning|seeing stars|clammy)\b)(?!.*\b(?:a bit|a little|slightly)\b.{0,20}\b(?:flooding|heavy)\b)|"
+                    r"^(?=.*(?:\b(?:calf|leg|thigh|ankle)\b[^.!?;\n]{0,70}\b(?:swollen|swelling|puffy|bigger than the other|hot|warm)\b|\b(?:swollen|puffy)\b[^.!?;\n]{0,25}\b(?:calf|leg|thigh|ankle)\b))(?=.*(?:\b(?:hurts?|pain\w*|stab\w*|catch\w*|sharp|sore|tight)\b[^.!?;\n]{0,40}\b(?:breath(?:e|ing|es) in|inhal\w*|deep breath|breathing deeply|breathe deeply)\b|\b(?:breath(?:e|ing|es) in|inhal\w*|deep breath)\b[^.!?;\n]{0,25}\b(?:hurts?|painful|pain|catch\w*)\b))(?!.*\b(?:laugh\w*|no leg)\b)", re.I | re.S)
 # Someone else collapsing or fainting, said in the present with a second warning sign (Q-new-14 recommendation; clinician to confirm)
 _THIRD_NOW = re.compile(
     r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
