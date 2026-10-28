@@ -6,6 +6,7 @@ import type { TextStyle, ViewStyle } from 'react-native';
 export const colors = {
   canvas: '#F7F4FD', // app background
   surface: '#FFFFFF', // cards, sheets, PDF
+  washTop: '#EAE2FC', // lavender light behind screen headers (plum link text on it 4.53:1, ink3 4.98:1)
   sunken: '#ECE6F8', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
   hairline: '#DCD2EE', // card borders, dividers — decorative only
   borderStrong: '#7F7292', // input + chip outlines (3:1 UI contrast)

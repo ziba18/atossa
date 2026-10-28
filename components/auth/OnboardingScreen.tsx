@@ -25,7 +25,7 @@ export function OnboardingScreen({
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <LinearGradient
-        colors={['#E6DCFB', colors.canvas]}
+        colors={[colors.washTop, colors.canvas]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={[styles.wash, { pointerEvents: 'none' }]}
