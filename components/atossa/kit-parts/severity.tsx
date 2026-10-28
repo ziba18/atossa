@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Pressable, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle,
+  Platform, Pressable, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle,
 } from 'react-native';
 import { colors, fonts, heights, radii, severityColor, space } from '../../../constants/atossaUI';
 import { haptics } from '../../../lib/haptics';
@@ -42,6 +42,21 @@ export function SeverityRow({
     if (w !== width) setWidth(w);
   };
 
+  // Web: the 11 discs are one Tab stop (the chosen one, else 0); arrow keys move and choose, as in a native radio group.
+  const tabbable = value ?? 0;
+  const onArrow = (e: any) => {
+    const k = e.key as string;
+    const dir = k === 'ArrowRight' || k === 'ArrowUp' ? 1 : k === 'ArrowLeft' || k === 'ArrowDown' ? -1 : 0;
+    if (!dir) return;
+    const radios: HTMLElement[] = Array.from(e.currentTarget.querySelectorAll('[role="radio"]'));
+    const at = radios.indexOf(document.activeElement as HTMLElement);
+    const next = radios[at + dir];
+    if (at < 0 || !next) return;
+    e.preventDefault();
+    next.focus();
+    next.click();
+  };
+
   const oneRow = width >= ONE_ROW_MIN;
   // 6 per row needs 6 x MIN_CELL; under that (200% text on a small phone) use 4 (rows 4, 4, 3).
   const perRow = oneRow ? 11 : width && width < 6 * MIN_CELL ? 4 : 6;
@@ -64,6 +79,7 @@ export function SeverityRow({
         accessibilityRole="radiogroup"
         accessibilityLabel={label ?? 'Strength from 0 to 10'}
         style={{ gap: space.xxs }}
+        {...(Platform.OS === 'web' ? { onKeyDown: onArrow } : null)}
       >
         {rows.map((row, r) => (
           <View key={r} style={[styles.row, cell ? { justifyContent: 'center', columnGap: gap } : null]}>
@@ -77,6 +93,7 @@ export function SeverityRow({
                   accessibilityLabel={`${n} out of 10`}
                   accessibilityState={{ checked: selected }}
                   aria-checked={selected}
+                  {...(Platform.OS === 'web' ? { tabIndex: n === tabbable ? 0 : -1 } : null)}
                   // Below 44 (320 pt in a card) the cell itself widens to 44 with negative margins,
                   // so the target is ≥ 44 on web too (hitSlop is native-only) — UX #20.
                   style={[styles.cell, cell ? { width: cell + 2 * slop, marginHorizontal: -slop } : { flex: 1 }]}
