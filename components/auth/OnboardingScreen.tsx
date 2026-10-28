@@ -1,14 +1,15 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, layout, space } from '../../constants/atossaUI';
+import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
 
 export const ONBOARDING_STEPS = 4;
 
 /**
  * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
- * above four quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
+ * above a gradient progress bar (the caption carries the meaning), the question in the display serif, the question as the large title, helper text in ink2, then the controls.
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
@@ -33,13 +34,16 @@ export function OnboardingScreen({
       >
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
-          <View style={styles.segments} aria-hidden>
-            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
-              <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
-            ))}
+          <View style={styles.track} aria-hidden>
+            <LinearGradient
+              colors={['#6A48E8', '#A24FD8', '#E4533F']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{ width: `${(step / ONBOARDING_STEPS) * 100}%`, height: 4, borderRadius: 2 }}
+            />
           </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
-          <Txt variant="largeTitle" accessibilityRole="header">{title}</Txt>
+          <Txt variant="largeTitle" accessibilityRole="header" style={styles.title}>{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>
         {children}
@@ -57,7 +61,6 @@ const styles = StyleSheet.create({
   head: { paddingTop: space.sm, marginBottom: space.xxl },
   noBack: { height: 44 },
   step: { marginTop: space.xs, marginBottom: space.xs },
-  segments: { flexDirection: 'row', gap: 6, marginTop: space.xs },
-  segment: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.sunken },
-  segmentDone: { backgroundColor: colors.plum },
+  track: { height: 4, borderRadius: 2, backgroundColor: colors.sunken, marginTop: space.xs, overflow: 'hidden' },
+  title: { fontFamily: fonts.serif, fontSize: 36, lineHeight: 42, letterSpacing: 0 },
 });
