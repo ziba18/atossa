@@ -652,6 +652,10 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
                     # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
                     r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
+                    # set p114 (medicine reactions; first contact 3/10 missed): yellow skin or eyes with stomach pain, fruity breath with thirst and sickness, agitation with rigid muscles and sweating
+                    r"^(?=.*\b(?:yellow(?:ish)? (?:skin|eyes)|skin (?:looks |is |has gone |went )?yellow|eyes (?:look |are |went )?yellow|jaundice\w*)\b)(?=.*\b(?:stomach|tummy|belly|abdom\w+) pain\b|.*\bpain\b.{0,25}\b(?:stomach|tummy|belly|abdomen|back)\b)|"
+                    r"\b(?:breath|wee|pee)\b.{0,15}\b(?:smells?|smelling) (?:fruity|of pear[- ]?drops?|like nail varnish)\b.{0,80}\b(?:sick|vomit\w*|thirsty|drowsy|breathing fast)\b|\b(?:sick|vomit\w*|thirsty|drowsy)\b.{0,80}\bbreath\b.{0,15}\bsmells? fruity\b|"
+                    r"^(?=.*\b(?:agitated|restless)\b)(?=.*\b(?:muscles? (?:are |is )?(?:rigid|stiff|twitching)|rigid muscles|twitching)\b)(?=.*\b(?:sweat\w*|racing|shaking|fever|temperature)\b)|"
                     # set p112 (voice-style notes; first contact 2/10 missed): chest tightness with arm numbness and sweating, spelled-out fever with not knowing where she is
                     r"^(?=.*\bchest\b.{0,30}\b(?:tight|heavy|pressure|pain)\b)(?=.*\b(?:left |right )?arm\b.{0,25}\b(?:numb|tingl\w+|heavy|aching)\b)(?=.*\b(?:sweat\w*|clammy|sick|breathless)\b)|"
                     r"^(?=.*\b(?:temperature|fever)\b.{0,25}\b(?:thirty|forty)[- ](?:eight|nine|one|two)\b)(?=.*\b(?:don'?t know where i am|do not know where i am|confus\w*|shaking)\b)|"
