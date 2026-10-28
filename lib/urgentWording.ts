@@ -98,6 +98,24 @@ const THIRD = new RegExp(P.THIRD_SRC, 'is');
 const LEADIN = new RegExp(P.LEADIN_SRC, 'gi');
 const THIRDC = new RegExp(P.THIRDC_SRC, 'i');
 
+// run28 S-244 (backend emergency_kind): procedure + fever sign; the past check looks only at the clause holding the fever sign,
+// so "coil fitted last week, shivering and a racing heart" is current. Exertion / "only" / weekday clauses stay quiet.
+const PROCFEVER = new RegExp(P.PROCFEVER_SRC, 'i');
+function procFever(seg: string): boolean {
+  if (!PROCFEVER.test(seg)) return false;
+  const re = new RegExp(P.FEVER_SRC, 'gi');
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(seg)) !== null) {
+    const s0 = m.index, e0 = m.index + m[0].length;
+    const a = Math.max(-1, ...['.', ';', '!', '?', '\n', ','].map((c) => seg.lastIndexOf(c, s0 - 1))) + 1;
+    const ends = ['.', ';', '!', '?', '\n', ','].map((c) => seg.indexOf(c, e0)).filter((i) => i >= 0);
+    const clause = seg.slice(a, ends.length ? Math.min(...ends) : seg.length);
+    if (!isPast(clause) && !/\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b/i.test(clause)) return true;
+    if (m[0].length === 0) re.lastIndex++;
+  }
+  return false;
+}
+
 const PREG = /\bpregnan\w+\b/i;
 const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b/i;
 
@@ -121,10 +139,12 @@ function hit(pattern: RegExp, text: string): boolean {
 export function urgentSignpost(text: string): string | null {
   const n0 = normalise(text);
   const t = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ');
-  if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW)) return SELF_HARM_SIGNPOST;
+  // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
+  if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
+  if (procFever(t.slice(0, 20000))) return URGENT_SIGNPOST;
   if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
   if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
   return null;

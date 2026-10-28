@@ -472,9 +472,9 @@ _IDIOM = re.compile(
     r"|\bfell over (?:at|in|during|while) (?:the )?(?:gym|running|jogging|skating|netball|football|dance|class)\b"
     r"|\b(?:short(?:ness)? of breath|can'?t (?:get|catch) my breath|out of breath)\b[^.;!?]{0,30}\b(?:after|when|while|during)\b[^.;!?]{0,25}\b(?:run\w*|climb\w*|stairs|exercis\w*|walk\w*|gym|workout|jog\w*|sprint\w*)\b"
     r"|\bagony (?:waiting|of waiting)\b"
-    r"|\bdon'?t want to be here (?:at|in) (?:this |the |my )?(?:appointment|waiting room|work|office|meeting|clinic|surgery|queue|shop|class|school|party|job)\b"
+    r"|\bdon'?t want to be here (?:at|in) (?:this |the |my )?(?:appointment|waiting room|work|office|meeting|clinic|surgery|queue|shop|class|school|party|job)\b(?![^.!?\n]{0,60}\b(?:anywhere|any ?more|at all|(?:got|made|have|had|make) (?:a|my) plan\b(?! (?:for|to) (?:what|how|the|my|when|swap|ask))|sorted the details(?! (?:for|of|with))|how to end|end it|plan for tonight))"
     r"|\bstop existing in (?:this|the|a) (?:cycle|loop|limbo)\b"
-    r"|\bbetter off without me (?:on|at|in|for) (?:the |my |their |this )?(?:rota|team|shift|project|work|meeting|call|squad|match)\b"
+    r"|\bbetter off without me (?:on|at|in|for) (?:the |my |their |this )?(?:rota|team|shift|project|work|meeting|call|squad|match)\b(?![^.!?\n]{0,60}\b(?:anywhere|any ?more|at all|(?:got|made|have|had|make) (?:a|my) plan\b(?! (?:for|to) (?:what|how|the|my|when|swap|ask))|sorted the details(?! (?:for|of|with))|how to end|end it|plan for tonight))"
     r"|\bhurt(?:ing)? myself on (?:the |my |a )"
     r"|\boverdos\w* on (?:caffeine|coffee|sugar|chocolate|tea|netflix|screens?|social media)\b"
     r"|\bdisappear (?:into|under) (?:my |the |a )?(?:bed|duvet|covers|blanket|sofa)\b"
@@ -707,7 +707,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set v17 (typed fast): pad counts with abbreviations, very hot + confused, sudden headache with stiff neck
                     r"\b(?:soaked|soaking|filled|gone through|went through|used)\b.{0,12}\b\d+ (?:pads?|tampons?)\b.{0,15}\b(?:in|within) (?:\d+|an?|one|two|three|four) (?:hrs?|hours?)\b|"
                     r"^(?=.*\b(?:very hot|burning up|fever|high temperature)\b)(?=.*\bconfus\w*)(?=.*\b(?:shak\w+|shiver\w*))|\bconfus\w*\b.{0,40}\b(?:don'?t|do not|dont) know (?:what day|where i am|who)\b|"
-                    r"\b(?:sudden|terrible|worst|awful)\b.{0,15}\bheadache\b.{0,60}\b(?:neck (?:is )?stiff|stiff neck|hit (?:w|with)|like being hit)\b|"
+                    r"\b(?:sudden|terrible|worst|awful|explosive)\b.{0,15}\bheadache\b.{0,60}\b(?:neck (?:is |feels |has gone )?stiff|stiff neck|hit (?:w|with)|like being hit)\b|"
                     # sepsis / DKA / stroke / postnatal-infection wording (set v15, first contact 4/20 missed)
                     r"^(?=.*\b(?:burning up|rigors?|temperature (?:of )?(?:3[89]|4\d))\b)(?=.*\b(?:heart (?:racing|pounding)|(?:haven'?t|not) (?:peed|passed (?:any )?urine|had a wee)|tummy pain|confus\w*))|"
                     r"^(?=.*\b(?:type 1|diabet\w+)\b)(?=.*\b(?:fruity|pear[- ]?drops?|breathing fast|very thirsty))(?=.*\b(?:sick|vomit\w*|drowsy))|"
@@ -793,9 +793,9 @@ _SHOULDER = (r"(?:shoulder[- ]?tip|tip of (?:my |the )?shoulder|(?:end|top) of (
 _FEVER = (r"(?:(?<!no )(?<!not )(?<!without )(?<!any )fever\w*|high temperature|(?<!no )(?:a|running a) (?:temperature|temp)\b|temperature of|burning up|boiling hot|"
           r"(?<!a bit )(?<!a little )(?<!slightly )shiver\w*|the shivers|(?<!from the cold, )shaking|(?<!a bit )(?<!a little )(?<!slightly )shaky|rigou?rs|heart (?:is |'s )?(?:\w+ ){0,2}(?:racing|pounding)|heart(?:'s| is)? going (?:really |so )?fast|heart won'?t slow|\b(?:38|39|40)(?:\.\d)?\b)")
 # run09: Data's near-miss (d) 2/10 at first contact: "no surgery recently" and "my sister had a fever after her C-section".
-_PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?:coil (?:was )?(?:fitted|put in|in)\b|got my coil in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
+_PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?<!her )(?<!his )(?<!their )(?<!mum's )(?<!mom's )(?<!sister's )(?<!friend's )(?:coil (?:was )?(?:fitted|put in|in)\b|got my coil in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
          r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b)\b")
-_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|from the cold|gone by|went away|settled|family history|(?:her|his|their) (?:c-?section|caesarean|op|operation|surgery|procedure|biopsy|laparoscopy|hysteroscopy|coil))\b)"
+_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|from the cold|gone by|went away|settled|family history)\b)"
 _BACK = r"(?:back(?:'s| is| has)? (?:\w+ ){0,3}(?:pain|ache|hurts?|agony|bad|gone|killing|went)|back pain|bad back|my back went|lower back|sciatica)"
 _SADDLE = (r"(?:numb\w* (?:around|in|down|under) (?:my )?(?:bottom|bum|genitals|vagina|down there|privates|groin|anus)|numb\w* between my legs|"
            r"(?:bottom|bum|genitals|groin|saddle|down there)(?: area)? (?:feels? |is |has gone |gone |going )?numb|can'?t (?:really )?feel (?:it |anything )?(?:when i wipe|between my legs|down there))")
@@ -859,17 +859,34 @@ _WHOLE = re.compile(_WHOLE.pattern
 _NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
 _LIGHT = (r"(?:light (?:is )?(?:\w+ ){0,2}(?:hurt\w*|painful|unbearable)|(?:can'?t (?:stand|bear|look at)|sensitive to|hurt by) (?:the )?(?:bright )?lights?|"
           r"(?:bright )?lights? (?:are|is) (?:unbearable|painful)|bright light is painful)")
-_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|migraine|all fine now|not a (?:fever|temperature)|from (?:sleeping|the gym|my desk|sitting|the laptop|my laptop|work|the drive|driving))\b)(?=[\s\S]*" + _NECK
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|migraine|all fine now|not a (?:fever|temperature)|no (?:fever|temperature)|without (?:a )?(?:fever|temperature)|after the gym|high temperature room|temperature of the (?:heating|room|house|office)|heating is too (?:high|hot)|from (?:sleeping|the gym|my desk|sitting|the laptop|my laptop|work|the drive|driving))\b)(?=[\s\S]*" + _NECK
                     + r")(?=[\s\S]*(?:" + _LIGHT + r"|" + _FEVER + r"))", _WHOLE.flags)
 
 
 # run09 v85 (first contact 9/10 missed): a head injury plus being sick, very drowsy or confused, whole note
 # (nhs.uk/conditions/head-injury-and-concussion: go to A&E). A bump alone, or sickness without a head injury, stays quiet.
 _HEADHIT = r"(?:(?:hit|banged|bumped|knocked|whacked|smacked) my head|head hit the (?:floor|ground|wall|table)|(?:fell|slipped)[^.!?]{0,40}\bon my head)"
-_HEADSIGN = (r"(?:(?<!no )(?:been |being |keep |kept )?(?:sick|vomit\w*|throwing up|threw up)|(?:really|very|so) (?:drowsy|sleepy)|"
+_HEADSIGN = (r"(?:(?<!no )(?<!not )(?<!isn't )(?<!wasn't )(?:been |being |keep |kept )?(?:sick|vomit\w*|throwing up|threw up)|(?:really|very|so) (?:drowsy|sleepy)|"
              r"can'?t stay awake|(?:barely|can'?t) keep my eyes open|confused)")
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:all fine now|fine now|feel fine|laughed it off|last (?:week|month))\b)(?=[\s\S]*\b" + _HEADHIT
                     + r")(?=[\s\S]*\b" + _HEADSIGN + r")", _WHOLE.flags)
+
+
+# run28 (Safety p137, first contact 4/10 missed): late pregnancy. Reduced baby movements ("Call your midwife or maternity unit
+# immediately", nhs.uk/pregnancy/keeping-well/your-babys-movements, reviewed 8 Jul 2024); something felt between the legs with
+# contractions; right-sided pain under the ribs with being sick. Whole note; the one fixed line shows.
+_PREG_CTX = r"(?=[\s\S]*\b(?:\d\d ?weeks|weeks pregnant|months pregnant|pregnant|bump)\b)"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:kicked a lot|wriggly|moving (?:lots|well|normally|as usual)|moves as usual|kicks? as usual)\b)" + _PREG_CTX
+                    + r"(?=[\s\S]*(?:\bbaby\b[^.!?\n]{0,40}\b(?:hardly|barely|not|isn'?t|hasn'?t|stopped|less)\b[^.!?\n]{0,15}\b(?:mov\w+|kick\w+)"
+                    + r"|\b(?:haven'?t|can'?t|didn'?t|not|no longer) (?:felt|feel) (?:the |my )?baby (?:kick|mov)\w*))", _WHOLE.flags)
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PREG_CTX + r"(?=[\s\S]*\b(?:contractions?|labour)\b)(?=[\s\S]*\b(?:feel|felt|see|saw) something (?:between my legs|coming out|hanging|bulging)\b)"
+                    + r"|^" + _PREG_CTX + r"(?=[\s\S]*\bpain\b[^.!?\n]{0,15}\b(?:under|below) (?:my )?(?:right )?ribs\b)(?=[\s\S]*\b(?:keep being sick|vomiting|been sick|throwing up)\b)", _WHOLE.flags)
+
+# run28 (Safety p138, first contact 1/10 missed): green vomit with a swollen/bloated belly (blocked bowel wording), whole note.
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:no|not|haven'?t been|isn'?t) (?:vomit\w*|sick)\b)(?=[\s\S]*\b(?:vomit\w*|sick|throwing up|threw up)\b[^.!?\n]{0,15}\bgreen\b(?! (?:tea|smoothie|juice|salad|veg\w*|beans|light))|[\s\S]*\bgreen (?:sick|vomit|bile)\b)"
+                    + r"(?=[\s\S]*\b(?:bloated|swollen|distended|hard belly|rigid)\b)", _WHOLE.flags)
+
+_PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
 
 _THIRD_NOW = re.compile(
@@ -920,7 +937,7 @@ def emergency_kind(user_text: str):
     if not _LEG_BREATH.search(user_text):
         user_text = _IDIOM.sub(" ", user_text)
     user_text = _LEADIN.sub(". ", user_text)
-    if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text):
+    if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
         return "self_harm"
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
     # ("i tried to kill myself last year and i want to do it again") is the highest-risk case, not history.
@@ -928,6 +945,17 @@ def emergency_kind(user_text: str):
         return "self_harm"
     if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text) or _hits_whole(_WHOLE, user_text):
         return "medical"
+    # run28 S-244: "coil fitted last week, shivering and a racing heart": the procedure's own time phrase must not make the
+    # present fever signs past. The past check looks at the fever clause only.
+    if _PROC_FEVER.search(user_text[:_WHOLE_SCAN_CAP]):
+        for fm in re.finditer(_FEVER, user_text[:_WHOLE_SCAN_CAP], re.I):
+            seg = user_text[:_WHOLE_SCAN_CAP]
+            a = max([seg.rfind(c, 0, fm.start()) for c in ".;!?\n,"] + [-1]) + 1
+            ends = [i for i in (seg.find(c, fm.end()) for c in ".;!?\n,") if i >= 0]
+            b = min(ends) if ends else len(seg)
+            clause = seg[a:b]
+            if not _is_past(clause) and not re.search(r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b", clause, re.I):
+                return "medical"
     if (_THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) or _THIRD_CHILD.search(user_text[:_WHOLE_SCAN_CAP])) and not _is_past(user_text):
         return "medical"
     if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
