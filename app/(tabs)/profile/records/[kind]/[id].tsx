@@ -3,9 +3,11 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { RecordDetail } from '../../../../../components/atossa/records/RecordDetail';
 import { safeBackLabel } from '../../../../../components/atossa/timeline/navigation';
 import { KIND_INFO, firstParam, toDataKind } from '../../../../../components/atossa/records/recordKinds';
+import { usePageTitle } from '../../../../../lib/usePageTitle';
 
 /** /(tabs)/profile/records/[kind]/[id] (id or `new`). Back label = `from`, else the list name. */
 export default function ProfileRecordScreen() {
+  usePageTitle('Record');
   const router = useRouter();
   const params = useLocalSearchParams<{ kind: string; id: string; from?: string }>();
   const kind = toDataKind(params.kind);

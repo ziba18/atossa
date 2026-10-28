@@ -11,6 +11,7 @@ import { colors, layout, space } from '../../../constants/atossaUI';
 import { Button, EmptyState } from '../../../components/atossa/kit';
 import { DocumentView } from '../../../components/atossa/doctor/DocumentView';
 import { useDoctorDoc } from '../../../components/atossa/doctor/useDoctorDoc';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 /** Web: hand focus back to the page so the next tap after closing isn't swallowed. */
 function releaseWebFocus() {
@@ -19,6 +20,7 @@ function releaseWebFocus() {
 }
 
 export default function ShowOnScreen() {
+  usePageTitle('Summary on screen');
   useKeepAwake(undefined, { suppressDeactivateWarnings: true });
   const router = useRouter();
   const { width } = useWindowDimensions();

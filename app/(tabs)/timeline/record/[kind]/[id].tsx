@@ -3,12 +3,14 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { RecordDetail } from '../../../../../components/atossa/records/RecordDetail';
 import { safeBackLabel } from '../../../../../components/atossa/timeline/navigation';
 import { firstParam, toDataKind } from '../../../../../components/atossa/records/recordKinds';
+import { usePageTitle } from '../../../../../lib/usePageTitle';
 
 /**
  * Appointment / medicine / health-history detail opened from Timeline (owned by Profile+Records;
  * Timeline links here via recordHref). Back — and Save / Delete — return to Timeline.
  */
 export default function TimelineRecordScreen() {
+  usePageTitle('Record');
   const router = useRouter();
   const params = useLocalSearchParams<{ kind: string; id: string; from?: string }>();
   const kind = toDataKind(params.kind);

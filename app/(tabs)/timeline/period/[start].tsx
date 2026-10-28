@@ -3,8 +3,10 @@ import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { PeriodRun } from '../../../../components/atossa/timeline/PeriodRun';
 import { fromLabel } from '../../../../components/atossa/timeline/navigation';
+import { usePageTitle } from '../../../../lib/usePageTitle';
 
 export default function PeriodScreen() {
+  usePageTitle('Period');
   const { start, from } = useLocalSearchParams<{ start: string; from?: string }>();
   return <PeriodRun key={String(start)} start={String(start)} from={fromLabel(from)} />;
 }

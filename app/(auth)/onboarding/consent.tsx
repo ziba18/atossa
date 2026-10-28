@@ -8,10 +8,12 @@ import { openLegal } from '../../../components/auth/LegalLinks';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { CONSENT_VERSION, routeAfterSignIn } from '../../../lib/authRouting';
+import { usePageTitle } from '../../../lib/usePageTitle';
 
 // Explicit consent for health information (UK GDPR art. 9(2)(a)). Wording: agents/safety/consent-copy-draft.md,
 // owner/lawyer review pending. Change the text => raise CONSENT_VERSION so people are asked again.
 export default function OnboardingConsentScreen() {
+  usePageTitle('Your consent');
   const router = useRouter();
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
   const [agreed, setAgreed] = useState(false);

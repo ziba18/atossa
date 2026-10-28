@@ -2,6 +2,7 @@ import React from 'react';
 import { Linking, Platform } from 'react-native';
 import { space } from '../../constants/atossaUI';
 import { Button, Card, ScreenLarge, Txt } from '../../components/atossa/kit';
+import { usePageTitle } from '../../lib/usePageTitle';
 
 const SUPPORT_EMAIL = 'zamaniziba18@gmail.com';
 
@@ -12,6 +13,7 @@ const BODY = (Platform.OS === 'web'
   + 'For your privacy we can’t give anyone access to saved notes by email.';
 
 export default function ForgotPasswordScreen() {
+  usePageTitle('Forgot password');
   return (
     <ScreenLarge title="Forgot password?" back={{ label: 'Sign in' }}>
       <Card style={{ gap: space.sm }}>

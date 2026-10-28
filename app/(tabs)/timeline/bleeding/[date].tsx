@@ -3,8 +3,10 @@ import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { BleedingDetail } from '../../../../components/atossa/timeline/BleedingDetail';
 import { fromLabel } from '../../../../components/atossa/timeline/navigation';
+import { usePageTitle } from '../../../../lib/usePageTitle';
 
 export default function BleedingScreen() {
+  usePageTitle('Bleeding');
   const { date, from } = useLocalSearchParams<{ date: string; from?: string }>();
   return <BleedingDetail key={String(date)} date={String(date)} from={fromLabel(from)} />;
 }

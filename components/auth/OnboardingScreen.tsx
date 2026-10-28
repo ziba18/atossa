@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View, useWindowDimensions, type ScrollViewInsta
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
+import { usePageTitle } from '../../lib/usePageTitle';
 
 export const ONBOARDING_STEPS = 5;
 
@@ -24,6 +25,7 @@ export function OnboardingScreen({
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
 }) {
   // Under ~240 pt of layout width (200% text on a 320 phone) the 34 pt title broke words mid-letter.
+  usePageTitle(`Step ${step} of ${ONBOARDING_STEPS}`);
   const narrow = useWindowDimensions().width < 240;
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
