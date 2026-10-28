@@ -913,7 +913,7 @@ _HA_SUDDEN = r"(?:sudden\w*|out of nowhere|all at once|in seconds|like a light s
 _HA_SEVERE = r"(?:worst|most painful|excruciating|agonis\w+|agony|blinding|thunderclap|never had (?:pain|a headache|anything) like|horrendous|severe|unbearable)"
 _HA_SIGN = (r"(?:(?<!no )(?<!not )(?:been |being |keep |kept )?(?:sick|vomit\w*|throwing up|threw up)|drowsy|(?:very|so|really) sleepy|can'?t (?:stay awake|keep my eyes open)|"
             r"confused|stiff neck|" + _LIGHT + r")")
-_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|migraine|my normal|went (?:in|after) a few|hangover|tension|last year)\b)(?![\s\S]*\bmy (?:sister|mum|friend|brother|dad|partner)\b[^.!?\n]{0,30}\bheadache)"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?:(?=[\s\S]*\b(?:not like|unlike|different (?:from|to)|nothing like|worse than)\b)|(?![\s\S]*\b(?:usual|same as always|migraine|my normal|went (?:in|after) a few|hangover|tension|last year)\b))(?![\s\S]*\bmy (?:sister|mum|friend|brother|dad|partner)\b[^.!?\n]{0,30}\bheadache)"
                     + r"(?=[\s\S]*\b" + _HA_SUDDEN + r")(?=[\s\S]*\b" + _HA_SEVERE + r")(?=[\s\S]*\bheadache|[\s\S]*\bpain at the back of my head)(?=[\s\S]*\b" + _HA_SIGN + r")", _WHOLE.flags)
 
 

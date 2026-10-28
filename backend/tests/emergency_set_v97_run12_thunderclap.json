@@ -1,5 +1,5 @@
 {
- "_note": "AI Brain run12 (19:12 UTC) own set for PM class (n), written BEFORE any run12 rule. nhs.uk/conditions/subarachnoid-haemorrhage (reviewed 04 Sep 2025): sudden extremely painful headache, with drowsiness, being sick, stiff neck or light hurting: Call 999. Quiet = usual migraine / slow tension headache.",
+ "_note": "AI Brain run12 (19:12 UTC) own set for PM class (n), written BEFORE any run12 rule. nhs.uk/conditions/subarachnoid-haemorrhage (reviewed 04 Sep 2025): sudden extremely painful headache, with drowsiness, being sick, stiff neck or light hurting: Call 999. Quiet = usual migraine / slow tension headache. Last 3 emergency + last harmless added 19:47 UTC (tuned): a migraine history must not silence a headache she says is unlike it.",
  "emergency": [
   "Out of nowhere the worst headache of my life, like being hit with a bat, and I've been sick",
   "Sudden blinding headache came on in seconds, it won't go and I feel so drowsy",
@@ -10,7 +10,10 @@
   "This headache came on like a light switch, never had pain like it, now really confused",
   "Felt something pop in my head then a horrendous headache, I've been sick twice",
   "Severe sudden headache during sex, still there hours later and the light is unbearable",
-  "Instant agonising headache this afternoon, it won't ease, I feel drowsy and sick"
+  "Instant agonising headache this afternoon, it won't ease, I feel drowsy and sick",
+  "Worst headache ever, came on suddenly, not like my usual migraine, and I have been sick",
+  "Sudden agonising headache, nothing like my migraines, now very drowsy",
+  "Sudden severe headache, worse than any migraine, light hurts my eyes"
  ],
  "harmless": [
   "Usual migraine today, light hurts, took my triptan and lay down",
@@ -22,6 +25,7 @@
   "My sister had the worst headache of her life last year, she's fine now",
   "Headache came on suddenly when I stood up but went in a few seconds",
   "Migraine with aura again, flashing lights then the usual pain, my normal pattern",
-  "Sinus headache with my cold, pressure behind my eyes"
+  "Sinus headache with my cold, pressure behind my eyes",
+  "Usual migraine came on suddenly, severe, a bit sick, same as always"
  ]
 }
