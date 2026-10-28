@@ -4,35 +4,14 @@
 import { Platform } from 'react-native';
 import * as Sharing from 'expo-sharing';
 import { api, ApiError } from './api';
+import { EXPORT_ERRORS, buildExportFile, classifyExportStatus, exportFileName, type ExportFailure } from './exportFormat';
 
-export const EXPORT_HEADING = 'Everything you saved in Atossa. Notes in your words. Not a medical record.';
-
-export type ExportFailure = 'password' | 'network' | 'limit' | 'other';
-
-export function exportFileName(now = new Date()): string {
-  return `atossa-notes-${now.toISOString().slice(0, 10)}.json`;
-}
-
-/** The file body: the heading first, then the server's export untouched. */
-export function buildExportFile(body: unknown): string {
-  return JSON.stringify({ about: EXPORT_HEADING, ...(body as object) }, null, 2);
-}
+export { EXPORT_ERRORS };
+export type { ExportFailure };
 
 export function classifyExportError(e: unknown): ExportFailure {
-  if (e instanceof ApiError) {
-    if (e.status === 0) return 'network';
-    if (e.status === 429) return 'limit';
-    if (e.status === 400 || e.status === 401 || e.status === 403) return 'password';
-  }
-  return 'other';
+  return classifyExportStatus(e instanceof ApiError ? e.status : undefined);
 }
-
-export const EXPORT_ERRORS: Record<ExportFailure, string> = {
-  password: 'That password didn’t match. Try again.',
-  network: 'No connection. Check it and try again.',
-  limit: 'You’ve asked for this a few times already. Try again in an hour.',
-  other: 'We couldn’t make your file. Try again in a moment.',
-};
 
 let lastUri: string | null = null;
 
