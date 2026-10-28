@@ -148,6 +148,9 @@ def _norm(text: str) -> str:
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
     t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
+    # spelled temperatures next to a temperature word ("thirty nine degrees temperature", "fever of thirty-nine", "forty")
+    _words = {"thirty eight": "38", "thirty nine": "39", "forty": "40", "thirty-eight": "38", "thirty-nine": "39"}
+    t = re.sub(r"\b(thirty[ -](?:eight|nine)|forty)\b(?=\s*(?:degrees?\s*)?(?:c\b\s*)?(?:temp|temperature|fever)\b)|(?<=\btemp )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature )(thirty[ -](?:eight|nine)|forty)\b|(?<=\bfever of )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature of )(thirty[ -](?:eight|nine)|forty)\b", lambda m: _words[next(g for g in m.groups() if g).lower()], t, flags=re.I)
     # measured temperatures: "temp 39.5", "38.9 temp", "thermometer says 102" read as "high temperature of 39" (38+ C or 100.4+ F);
     # a device setting ("heat pad on temp 40", "bath at 40 degrees") is not a body temperature
     def _fever(m: "re.Match[str]") -> str:

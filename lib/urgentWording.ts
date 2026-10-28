@@ -36,6 +36,9 @@ function normalise(text: string): string {
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
   t = t.replace(/\bwanna\b/gi, 'want to');
+  // spelled temperatures next to a temperature word; mirrors backend `_norm`
+  const SPELLED: Record<string, string> = { 'thirty eight': '38', 'thirty nine': '39', forty: '40', 'thirty-eight': '38', 'thirty-nine': '39' };
+  t = t.replace(/\b(thirty[ -](?:eight|nine)|forty)\b(?=\s*(?:degrees?\s*)?(?:c\b\s*)?(?:temp|temperature|fever)\b)|(?<=\btemp )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature )(thirty[ -](?:eight|nine)|forty)\b|(?<=\bfever of )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature of )(thirty[ -](?:eight|nine)|forty)\b/gi, (m) => SPELLED[m.toLowerCase()] ?? m);
   // measured temperatures read as "high temperature of 39" (38+ C or 100.4+ F); a device setting ("heat pad on temp 40") is not a body temperature; mirrors backend `_norm`
   const fever = (m: string, c: string | undefined, off: number, whole: string) =>
     DEVICE_TEMP.test(whole.slice(Math.max(0, off - 30), off)) ? m : `high temperature of ${c ?? '39'}`;
