@@ -32,6 +32,8 @@ function normalise(text: string): string {
   t = t.replace(/\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b/g, (m) => m.replace(/[ .\-]/g, ''));
   // stretched letters ("sooo heavily") and doubled spaces ("chest  pain"); mirrors backend `_norm`
   t = t.replace(/([A-Za-z])\1{2,}/g, '$1');
+  t = t.replace(/\b(ive|im|cant|dont|doesnt|didnt|isnt|wasnt|havent|hasnt|couldnt|wouldnt|shouldnt|arent|wont)\b/gi, (m) => { const l = m.toLowerCase(); return l === 'ive' ? "i've" : l === 'im' ? "i'm" : m.slice(0, -1) + "'" + m.slice(-1); });
+  t = t.replace(/[^\S\n]+/g, ' ');
   // dictation fillers ("um i cant like breathe") and "wanna"; mirrors backend `_norm`
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
@@ -76,8 +78,12 @@ function hitWhole(text: string): boolean {
   const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
   const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
   const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
-  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index)) || isPast(sentence) || OTHER.test(text.slice(0, m.index)));
+  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence) || OTHER.test(text.slice(0, m.index)));
 }
+
+const THIRD = new RegExp(P.THIRD_SRC, 'is');
+const LEADIN = new RegExp(P.LEADIN_SRC, 'gi');
+const THIRDC = new RegExp(P.THIRDC_SRC, 'i');
 
 const PREG = /\bpregnan\w+\b/i;
 const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b/i;
@@ -91,7 +97,7 @@ function hit(pattern: RegExp, text: string): boolean {
     while ((m = re.exec(clause)) !== null) {
       const before = clause.slice(0, m.index);
       const after = clause.slice(m.index + m[0].length);
-      if (!(NEG.test(before.slice(-40)) || isPast(clause) || OTHER.test(before) || RES.test(after))) return true;
+      if (!(NEG.test(before.slice(-40).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(clause) || OTHER.test(before) || RES.test(after))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }
   }
@@ -100,11 +106,12 @@ function hit(pattern: RegExp, text: string): boolean {
 
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
-  const t = normalise(text).replace(IDIOM, ' ');
+  const t = normalise(text).replace(IDIOM, ' ').replace(LEADIN, '. ');
   if (hit(SELF, t) || hit(SELF2, t)) return SELF_HARM_SIGNPOST;
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
+  if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
   if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
   return null;
 }

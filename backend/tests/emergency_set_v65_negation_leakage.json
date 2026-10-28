@@ -1,0 +1,26 @@
+{
+ "emergency": [
+  "I don't know what to do, I'm bleeding through my trousers and dizzy",
+  "I can't believe it, my chest is crushing and my arm is numb and I'm sweating",
+  "no idea why, but I just collapsed and now my left side is weak and my speech is slurred",
+  "I'm not sure what's happening, I took a whole strip of tablets",
+  "nobody is home and I can't stop bleeding, soaking a pad every 10 minutes",
+  "I haven't felt right all day and now I've got a temperature of 39 with a stiff neck and a rash",
+  "never had this before: worst headache of my life, sudden, with vomiting",
+  "I don't think I can keep going, I've been saving up my pills",
+  "it doesn't stop, the bleeding, I'm soaking a pad every 15 minutes and I feel faint",
+  "I don't think I can keep going"
+ ],
+ "harmless": [
+  "I don't know what to do about my skin, GP suggested a cream.",
+  "Can't believe how tired I am this week, sleeping 10 hours.",
+  "No idea why, but my period is two days early.",
+  "Not sure what's happening with my cycle, tracking it now.",
+  "Nobody at work knows about my condition, thinking of telling my manager.",
+  "I haven't felt right all week, low mood and tired.",
+  "Never had this before: spotting after my smear, booked the GP.",
+  "I don't think I can keep going to the gym five days a week, too tired.",
+  "It doesn't stop, the itching, cream isn't helping.",
+  "I won't be able to make my appointment, need to rebook."
+ ]
+}

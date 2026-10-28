@@ -144,6 +144,8 @@ def _norm(text: str) -> str:
     t = re.sub(r"\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b", lambda m: re.sub(r"[ .\-]", "", m.group(0)), t)
     # stretched letters ("sooo heavily") and doubled spaces ("chest  pain")
     t = re.sub(r"([A-Za-z])\1{2,}", r"\1", t)
+    t = re.sub(r"\b(ive|im|cant|dont|doesnt|didnt|isnt|wasnt|havent|hasnt|couldnt|wouldnt|shouldnt|arent|wont)\b", lambda m: {"ive": "i've", "im": "i'm"}.get(m.group(1).lower(), m.group(1)[:-1] + "'" + m.group(1)[-1:]), t, flags=re.I)  # typed without apostrophes
+    t = re.sub(r"[^\S\n]+", " ", t)  # tabs and runs of spaces become one space (newlines stay: they end a clause)
     # dictation fillers ("um i cant like breathe") and "wanna"/"gonna"
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
@@ -242,7 +244,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
 
 _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|didn'?t|don'?t|doesn'?t|haven'?t|hasn'?t|"
                   r"nor|none|n'?t|not even|hardly|a bit|slightly|a little|bit of a)\b|\bn't\b", re.I)
-_PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|when i was (?:a )?(?:teen\w*|kid|child|younger))\b", re.I)
+_PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|in year \d{1,2}\b(?![^.]*\b(?:today|now|just|this (?:morning|afternoon)|tonight)\b)|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _BODY = [
     r"can'?t (?:breathe|catch my breath|get (?:any )?air)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
@@ -253,7 +255,7 @@ _BODY = [
     r"can'?t get enough air|wheez\w+.{0,30}(?:panic|air|breath)", r"off the scale|pain.{0,30}(?:ten|10) out of (?:ten|10)", r"lost (?:so |a lot of |too )?much blood|lost a lot of blood", r"can'?t get my breath|gasping|heart is (?:pounding|racing).{0,40}breath",
     r"agoni[sz]ing|doubled over", r"soaked .{0,15}(?:pads?|tampons?).{0,25}(?:half an hour|an hour|\d+ minutes)",
     r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
-    r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop (?:the )?bleeding", r"bleeding .{0,30}(?:won'?t|will not) stop", r"losing (?:a lot of|so much|too much) blood", r"breathing (?:very|really|so) (?:fast|quickly|rapidly)|(?:not|n[o']t|isn[o']t) making (?:any )?sense|(?:rash|spots|marks)[^.]{0,30}(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) fade[^.]{0,20}press|blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy|\bsepsis\b|septic", r"(?:rash|spots?|marks?) (?:that )?(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) (?:fade|go|disappear)[^.]{0,30}glass|glass test|sandpaper[- ]?(?:like )?rash|bright red (?:palms|soles|tongue)", r"(?:toilet|bowl)(?: water| bowl)? (?:turned|went|was|is|looked|looks) (?:bright |dark )?red|red (?:toilet|bowl) water|(?:toilet|bowl) (?:was |is )?(?:full of|filled with|covered in) blood|blood (?:filled|filling|covered) the (?:toilet|bowl)|(?:lots?|loads) of blood in the (?:toilet|bowl)",
+    r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop (?:the )?bleeding", r"bleeding .{0,30}(?:won'?t|will not) stop", r"losing (?:a lot of|so much|too much) blood", r"breathing (?:very|really|so) (?:fast|quickly|rapidly)|(?:not|n[o']t|isn[o']t) making (?:any )?sense|(?:rash|spots|marks)[^.]{0,30}(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) fade[^.]{0,20}press|(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)(?=[^.]{0,80}\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b)|\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|cold|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b[^.]{0,80}(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)|\bsepsis\b|septic", r"(?:rash|spots?|marks?) (?:that )?(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) (?:fade|go|disappear)[^.]{0,30}glass|glass test|sandpaper[- ]?(?:like )?rash|bright red (?:palms|soles|tongue)", r"(?:toilet|bowl)(?: water| bowl)? (?:turned|went|was|is|looked|looks) (?:bright |dark )?red|red (?:toilet|bowl) water|(?:toilet|bowl) (?:was |is )?(?:full of|filled with|covered in) blood|blood (?:filled|filling|covered) the (?:toilet|bowl)|(?:lots?|loads) of blood in the (?:toilet|bowl)",
     r"(?:trouble|difficulty|hard to|struggling to) breath\w*", r"pressure in (?:my )?chest", r"(?:gonna|going to|about to) (?:be sick and )?pass(?:ing)? out", r"(?:non[- ]?stop|constant\w*) bleeding|bleeding (?:non[- ]?stop|constantly|for (?:\d+|three|four|a few) weeks)",
     r"seizure|convuls\w+|(?<!wig )(?<!bra )(?<!dress )(?<!shoe )(?<!coil )(?<!implant )(?<!ring )fitting\b(?! (?:room|appointment))", r"(?:feel|feels|feeling) like (?:i'?m |i am )?(?:dying|i'?m going to die)", r"can'?t (?:wake|rouse) (?:my|him|her|them|the)\b",
     r"(?:stabbing|knife).{0,40}(?:curled up|on the floor)|(?:curled up|on the floor).{0,40}(?:stabbing|agony)",
@@ -303,7 +305,7 @@ _SELF = [
     r"end(?:ing)? my (?:own )?life", r"(?:don'?t|do not) want to be (?:alive|here)(?: anymore| any more)?", r"hurt(?:ing)? myself",
     r"cutting myself|(?:been|keep|kept|started) cutting\b|cutting again", r"(?:want|wanna) to (?:just )?disappear(?: forever)?", r"better off (?:dead|without me)", r"(?:take|taking|took|takes) my (?:own )?life",
     r"(?:took|taken|swallowed) all (?:of )?(?:my|the) (?:paracetamol|tablets|pills|painkillers|medication)", r"(?:sleep|asleep|bed).{0,25}(?:never|not) (?:wake|waking) up", r"(?:no|any) reason to (?:keep )?(?:living|live|go on)(?! (?:in|at|with|near)\b)|don'?t see any (?:reason|point) (?:to|in) (?:keep )?(?:living|live|go on|going on|carry on|carrying on)",
-    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b", r"no point (?:in )?(?:going on|living|being here)",
+    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b", r"no point (?:in )?(?:going on|living|being here)",
 ]
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
 _SELF_RX = re.compile(r"(?:" + "|".join(_SELF) + r")", re.I)
@@ -349,7 +351,7 @@ _EMERGENCY = re.compile(
     r"can'?t breathe?|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath|struggling to breathe|chest pain|coughing up blood|"
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
-    r"bleeding (?:through|heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
+    r"bleeding through(?! (?:a |an |my |the )?(?:\w+ )?(?:pads?|tampons?|towels?|cups?)\b(?:(?!\b(?:an hour|1 hour|one hour|half an hour|\d+ ?min\w*|every hour|dizz\w*|faint\w*|light-?headed|weak|clots?)\b)[^.!?])*\b(?:(?:[2-9]|two|three|four|five|six|a few|several) hours?|overnight|in the night|all night)\b(?![^.!?]*\b(?:dizz\w*|faint\w*|light-?headed|weak|clots?)\b))|bleeding (?:heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
     r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?|"
     r"worst (?:pain )?(?:i'?ve|i have) ever|pain so bad|(?:big )?clots? (?:the size of|bigger than)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)|pain (?:is |was )?unbearable|pain (?:is |was )?(?:a )?(?:10|ten)(?:/| out of )10|"
     r"sudden (?:sharp |stabbing )?pain|\bi(?:'?m| am| think i'?m)? (?:\w+ ){0,3}miscarr\w+|"
@@ -379,6 +381,13 @@ _LASTREL = re.compile(r"(?<!since )last (?:year|decade|month|week)", re.I)
 _PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today)\b", re.I)
 
 
+# A baby or young child described as limp/floppy/not waking/with a rash that stays under pressure, or not feeding with a fever (NHS 999 lists for children; p110, first contact 2/2 missed)
+_THIRD_CHILD = re.compile(
+    r"(?:\b(?:my |our |the )?newborn|\bmy (?:baby|toddler|\d{1,2} (?:month|year)s? old|\d{1,2}[- ]?(?:month|year)[- ]old|little (?:girl|boy)|son|daughter|child))\b"
+    r"(?=[^.!?\n]{0,80}\b(?:limp|floppy|won'?t wake|can'?t wake|not waking|unresponsive|blue lips|purple rash|rash that (?:doesn'?t|won'?t) fade|not feeding|struggling to breathe)\b)"
+    r"(?![^.!?\n]{0,100}\b(?:fine now|ok now|okay now|was fine|recovered)\b)", re.I)
+
+
 def _is_past(clause: str) -> bool:
     for m in _PAST.finditer(clause):
         if _LASTREL.fullmatch(m.group(0)) and _PRESENT.search(clause):
@@ -393,7 +402,7 @@ def _hits(rx, text: str) -> bool:
         for m in rx.finditer(clause):
             before = clause[: m.start()]
             after = clause[m.end():]
-            if _NEG.search(before[-40:]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
+            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
                 continue
             return True
     return False
@@ -411,7 +420,12 @@ _IDIOM = re.compile(
     # everyday uses of words the lists react to: "faint" as an adjective, a blocked nose, a figure of speech,
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
     r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
-    r"|\bcan'?t breathe? through (?:my )?nose\b"
+    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?through (?:my )?nose\b"
+    r"|\bagony\b[^.!?]{0,25}\bfrom (?:the |my )?(?:gym|running|a run|workout|lifting|exercise|squats)\b"
+    r"|\b(?:exams?|homework|revision|work|my job|school|the heat|traffic|this (?:weather|heat|queue|wait|essay))\b[^.!?]{0,15}\bkill(?:ing|s)? me\b"
+    r"|\b(?:die|dying|dead) (?:of|from) (?:embarrassment|laughter|boredom|shame|cringe)\b|\b(?:want|wanted) to die of (?:embarrassment|shame|cringe)\b"
+    r"|\b(?:don'?t|do not) want to wake up (?:early|for|at|in time)\b|\bwant it to stop (?:raining|snowing|buzzing|ringing|beeping)\b"
+    r"|\b(?:passed|dozed|zonked|crashed|flaked) out on (?:the |my )?(?:sofa|couch|bed|settee)\b"
     # wanting a baby is not being pregnant (NHS pelvic pain page: 111 if "pregnant or may be pregnant"); run 01 ruling
     r"|\b(?:get|getting|become|becoming) pregnan\w*|\btrying (?:for|to have) a (?:baby|child)\b|\btrying to conceive\b"
     r"|\bcollaps\w+ (?:on|onto|into) (?:the |my )?(?:sofa|couch|bed|settee|chair)\b"
@@ -547,6 +561,8 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:see(?:ing)?|vision (?:is|went)|eyes? (?:are|went)) double\b.{0,80}\b(?:head(?:ache)?|pounding|worst|never had|sick|vomit\w*|stiff neck)\b|\b(?:head(?:ache)?|pounding|worst|never had|stiff neck)\b.{0,80}\b(?:see(?:ing)?|vision (?:is|went)) double\b|\bdouble vision\b.{0,60}\b(?:sudden\w*|all at once|head(?:ache)?|pounding)\b|"
                     # set p100 (NHS stroke, sepsis skin signs, sudden one-sided numbness or vision loss; first contact 3/12 missed)
                     r"\b(?:face|mouth|smile)\b.{0,30}\b(?:droop\w*|dropp\w*|fallen|sagg\w*)\b.{0,80}\b(?:speak|speech|talk|words?|slurr\w*|arm|smile)\b|\b(?:can'?t|cannot|couldn'?t) smile\b.{0,60}\b(?:droop\w*|dropp\w*|speak|speech|slurr\w*)\b|"
+                    # S-182: blotchy skin counts only with a systemic sign in the same note
+                    r"(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy).{0,80}\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b|\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b.{0,80}(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)|"
                     r"\b(?:skin|lips|tongue|hands|feet|fingers)\b.{0,30}\b(?:mottled|blotchy|bluish|blue|grey|ashen)\b.{0,80}\b(?:might die|going to die|dying|confus\w*|fever|infection|breath\w*|very ill|unwell|drowsy|sleepy)\b|"
                     r"\bsudden(?:ly)?\b.{0,30}\b(?:numb\w*|weak\w*)\b.{0,30}\b(?:one side|left side|right side|face|arm|leg)\b|\b(?:can'?t|cannot|couldn'?t) see (?:out of|from) (?:one|my (?:left|right)) eye\b|\bsudden(?:ly)? (?:lost|loss of) (?:my )?(?:vision|sight)\b|"
                     # set p99 (cauda equina and jaundice wording; first contact 2/8 missed)
@@ -620,7 +636,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set v22 (voice-style notes; first contact 4/12 missed)
                     r"\btook (?:a lot|loads|lots)\b.{0,15}\b(?:tablets|pills)\b.{0,40}\b(?:strange|drowsy|sleepy|sick|weird)\b|"
                     r"\bwon'?t wake up\b|\bcan'?t wake\b.{0,20}\b(?:up|her|him|them)\b|"
-                    r"\b(?:don'?t|do not|dont) think i can (?:keep going|go on|carry on)\b|"
+                    r"\b(?:don'?t|do not|dont) think i can (?:keep going(?! (?:to|at) )|go on|carry on)\b|"
                     r"\b(?:can'?t|cannot|cant|no) (?:control|feel)\b.{0,15}\b(?:bladder|bowel)\b|\bno feeling in my (?:(?:right|left) )?(?:legs?|feet)\b|"
                     # set v21 (long notes with the emergency in the middle; first contact 4/12 missed)
                     r"\b(?:filling|soaking|changing)\b.{0,12}\b(?:a |my )?(?:pad|tampon)s?\b.{0,15}\bevery (?:\d+|few|ten|twenty|fifteen|thirty) (?:min\w*)\b|"
@@ -655,10 +671,67 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:arm|leg|hand|face)\b.{0,25}\bnumb\b.{0,60}\b(?:vision|blurr\w+|speech|slurr\w+|weak\w*)\b|\b(?:vision|blurr\w+|slurr\w+)\b.{0,60}\b(?:arm|leg|hand|face)\b.{0,25}\bnumb\b|"
                     r"^(?=.*\b(?:miscarriage|gave birth|after the birth|postnatal|termination)\b)(?=.*\b(?:temperature|fever|rigors|shivering))(?=.*\b(?:pain|smell\w*|bleed\w*|discharge))|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup)\b)(?=.*\b(?:fever|high temperature|temperature)\b)"
-                    r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))", re.I | re.S)
+                    r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
+                    # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
+                    r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
+                    # set p119 (hedged wording; first contact 2/10 missed): blood from the ears after a fall or knock, blue lips on a baby or child
+                    r"\bblood\b.{0,20}\b(?:coming |running |leaking |dripping )?(?:out of|from) (?:both |my )?(?:ears?|nose and ears?)\b.{0,40}\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b|\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b.{0,40}\bblood\b.{0,20}\b(?:out of|from) (?:both |my )?ears?\b|"
+                    r"\b(?:baby|toddler|child|son|daughter|newborn)(?:'s|s'| has| have)?\b.{0,25}\b(?:lips|face|skin)\b.{0,20}\b(?:gone |turned |going |look\w* |are |is )?(?:a bit |slightly |very )?(?:blue|grey|gray)\b|"
+                    # arm numbness with jaw pain and sweating, split across clauses ("... and i'm sweating" starts a new clause; found by the apostrophe variant test)
+                    r"^(?=.*\barm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b)(?=.*\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*|tight|clench\w*)\b)(?=.*\b(?:sweat\w*|clammy|breathless|feel sick|nausea\w*)\b)|"
+                    # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
+                    r"\b(?:i(?:'ve| have)? called|calling|called|waiting for|need|needs) (?:an |the )?ambulance\b|\bcalled 999\b|\bringing 999\b|"
+                    r"\bpain\b.{0,80}\bgetting worse(?: and worse)?\b.{0,60}\b(?:not stopping|won'?t stop|doesn'?t stop|isn'?t stopping|scared|frightened)\b|"
+                    r"^(?=.*\b(?:rock[- ]?hard|very hard)\b.{0,15}\b(?:belly|tummy|stomach|abdomen)\b|.*\b(?:belly|tummy|stomach|abdomen)\b.{0,15}\b(?:rock[- ]?hard|very hard)\b)(?=.*\b(?:vomit\w*|being sick|throwing up)\b)(?=.*\b(?:fever|high temperature|temperature of (?:3[89]|4\d))\b)|"
+                    # set p116 (first contact 2/10 missed): hard belly with vomiting or no bowel movement for days, red painful eye with halos and sickness
+                    r"^(?=.*\b(?:rock[- ]?hard|very hard|solid)\b.{0,15}\b(?:belly|tummy|stomach|abdomen)\b|.*\b(?:belly|tummy|stomach|abdomen)\b.{0,15}\b(?:rock[- ]?hard|very hard)\b)(?=.*\b(?:vomit\w*|being sick|throwing up|fever)\b)(?=.*\b(?:can'?t stop|haven'?t (?:opened|been|passed)|not (?:opened|been|passed)|for days|constant\w*)\b)|"
+                    r"\b(?:eye|eyes)\b.{0,40}\b(?:red|painful)\b.{0,40}\b(?:halos?|rings? around (?:the )?lights?|blurr\w+)\b.{0,60}\b(?:sick|vomit\w*|nause\w+|headache)\b|"
+                    # set p115 (first contact 3/10 missed): breast red/hard/hot with fever, a red line going up a limb with chills, pregnant and unable to keep food or water down for days
+                    r"^(?=.*\bbreast\b.{0,30}\b(?:red|hot|hard|lump\w*)\b)(?=.*\b(?:fever|temperature|shiver\w*|chills|flu-?like)\b)(?=.*\b(?:breastfeed\w*|feeding|nursing|mastitis|baby)\b)|"
+                    r"\b(?:red|dark) (?:line|streak|lines|streaks)\b.{0,30}\b(?:going |running |spreading |travelling )?(?:up|along)\b.{0,60}\b(?:chills|fever|shivering|unwell|high temperature)\b|"
+                    r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:can'?t|cannot|unable to|haven'?t been able to) keep (?:any |anything |even )?(?:food|water|fluids|anything)\b.{0,25}\bdown\b)(?=.*\b(?:\d+ days|days|dizz\w*|lost weight|weak)\b)|"
+                    # set p114 (medicine reactions; first contact 3/10 missed): yellow skin or eyes with stomach pain, fruity breath with thirst and sickness, agitation with rigid muscles and sweating
+                    r"^(?=.*\b(?:yellow(?:ish)? (?:skin|eyes)|skin (?:looks |is |has gone |went )?yellow|eyes (?:look |are |went )?yellow|jaundice\w*)\b)(?=.*\b(?:stomach|tummy|belly|abdom\w+) pain\b|.*\bpain\b.{0,25}\b(?:stomach|tummy|belly|abdomen|back)\b)|"
+                    r"\b(?:breath|wee|pee)\b.{0,15}\b(?:smells?|smelling) (?:fruity|of pear[- ]?drops?|like nail varnish)\b.{0,80}\b(?:sick|vomit\w*|thirsty|drowsy|breathing fast)\b|\b(?:sick|vomit\w*|thirsty|drowsy)\b.{0,80}\bbreath\b.{0,15}\bsmells? fruity\b|"
+                    r"^(?=.*\b(?:agitated|restless)\b)(?=.*\b(?:muscles? (?:are |is )?(?:rigid|stiff|twitching)|rigid muscles|twitching)\b)(?=.*\b(?:sweat\w*|racing|shaking|fever|temperature)\b)|"
+                    # set p112 (voice-style notes; first contact 2/10 missed): chest tightness with arm numbness and sweating, spelled-out fever with not knowing where she is
+                    r"^(?=.*\bchest\b.{0,30}\b(?:tight|heavy|pressure|pain)\b)(?=.*\b(?:left |right )?arm\b.{0,25}\b(?:numb|tingl\w+|heavy|aching)\b)(?=.*\b(?:sweat\w*|clammy|sick|breathless)\b)|"
+                    r"^(?=.*\b(?:temperature|fever)\b.{0,25}\b(?:thirty|forty)[- ](?:eight|nine|one|two)\b)(?=.*\b(?:don'?t know where i am|do not know where i am|confus\w*|shaking)\b)|"
+                    # set p111 (first contact 5/10 missed): carbon monoxide, heat stroke, choking, electric shock, swallowed battery
+                    r"^(?=.*\b(?:boiler|carbon monoxide|co alarm|gas fire|co detector)\b)(?=.*\b(?:headache|dizz\w*|sick|drowsy|confus\w*)\b)(?=.*\b(?:alarm|every time|since|keeps)\b)|"
+                    r"^(?=.*\b(?:stopped sweating|hot and dry|hot dry skin)\b)(?=.*\b(?:confus\w*|dizz\w*|faint\w*|drowsy)\b)|"
+                    r"\b(?:stuck in my throat|choking)\b.{0,40}\b(?:can'?t (?:speak|breathe|talk)|cannot (?:speak|breathe))\b|\bcan'?t (?:speak|breathe|talk)\b.{0,40}\b(?:stuck in my throat|choking)\b|"
+                    r"\belectric(?:al)? shock\b.{0,80}\b(?:chest|heart|palpitations?|weird|faint\w*|numb\w*|burn\w*)\b|"
+                    r"\b(?:swallowed|swallow|ate|eaten) (?:a |an |the )?(?:button |coin |lithium |watch )?batter(?:y|ies)\b(?! of (?:tests|questions))|\bbutton battery\b.{0,40}\b(?:swallow\w*|ate|eaten|down)\b|"
+                    # set p107 (first contact 3/10 missed): head injury with knocked out and sickness, meter reading HI with thirst and fast breathing, big tissue lumps with soaking every few minutes
+                    r"^(?=.*\b(?:hit|banged|bumped|knocked) (?:my |the )?head\b)(?=.*\b(?:knocked out|lost consciousness|blacked out|passed out)\b)(?=.*\b(?:sick|vomit\w*|confus\w*|drowsy)\b)|"
+                    r"^(?=.*\b(?:blood sugar|glucose|meter)\b.{0,30}\b(?:says |reads |showing |shows )?\"?hi\"?\b)(?=.*\b(?:very thirsty|breathing fast|tummy hurts|vomit\w*|drowsy)\b)|"
+                    r"\b(?:size of (?:an? )?(?:orange|grapefruit|fist|lemon)|big lumps?)\b.{0,60}\b(?:soaking|soaked)\b.{0,60}\bevery (?:\d+|few|ten|twenty|fifteen|thirty) ?(?:min\w*)\b|"
+                    # set p106 (first contact 5/10 missed): fertility treatment swelling with breathlessness, pregnancy headache with flashing lights, bladder numbness in words, double-over pain with cold sweat, spreading hot red leg with chills
+                    r"^(?=.*\b(?:egg collection|egg retrieval|ivf|stimulation|injections?)\b)(?=.*\b(?:belly|tummy|abdomen|stomach)\b.{0,25}\b(?:huge|tight|swollen|bloated|hard)\b)(?=.*\b(?:can'?t breathe|barely breathe|short of breath|breathless\w*|struggling to breathe)\b)|"
+                    r"^(?=.*\b(?:\d{2} weeks|pregnan\w+)\b)(?=.*\b(?:headache|head (?:is )?pounding|head hurts)\b)(?=.*\b(?:flashing lights?|flashes|seeing spots|blurr\w+ vision)\b)|"
+                    r"\bcan'?t feel when i'?m (?:peeing|weeing|pooing|going)\b|\bcan'?t feel (?:myself )?(?:peeing|weeing)\b|"
+                    r"\b(?:doubled me over|doubled over)\b.{0,60}\b(?:vomiting|being sick)\b.{0,60}\b(?:cold|clammy)\b.{0,15}\b(?:sweaty|and sweaty|sweat)\b|"
+                    r"\b(?:hot|red)\b.{0,15}\b(?:red|hot)\b.{0,15}\bswollen (?:area|patch|leg|arm)\b.{0,60}\b(?:getting bigger|spreading)\b.{0,60}\b(?:chills|fever|shivering|unwell)\b|"
+                    # NHS toxic shock page in words (no number): tampon or cup in use, feeling hot/cold/shivery or flu-like, and another sign (PM held-out set, p105)
+                    r"^(?=.*\b(?:tampons?|menstrual cups?|period cup|cup)\b)(?=.*\b(?:shiver\w*|hot and cold|burning hot|flu-?like|sandpaper)\b)(?=.*\b(?:rash|sunburn\w*|sandpaper|awful|unwell|weak|dizz\w*|dreadful|so ill|vomit\w*|diarrh\w*|aches?)\b)", re.I | re.S)
+# Someone else collapsing or fainting, said in the present with a second warning sign (Q-new-14 recommendation; clinician to confirm)
+_THIRD_NOW = re.compile(
+    r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
+    r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
+    r"(?!.*\b(?:fine|ok|okay|recovered|better)\b (?:now|after|since|again|once|when)|.*\b(?:was|is|been) (?:fine|ok|okay)\b)", re.I | re.S)
 
 
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
+
+
+# A lead-in like "I don't know what to do," / "Not sure what's going on:" / "No idea why, but" is not a negation of what follows;
+# it is turned into a sentence break before detection (measured: such lead-ins silenced 14-37% of caught emergency lines).
+_LEADIN = re.compile(r"\b(?:i(?:'m| am) )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))", re.I)
+
+
+_NEG_WINDOW = re.compile(r"[.;:!?\n,]|\bbut\b")  # a negation only counts inside the same clause as the match
+_HEDGE = re.compile(r"\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b", re.I)  # "probably nothing but ..." is a hedge, not a negation
 
 
 def _hits_whole(rx, text: str) -> bool:
@@ -671,7 +744,7 @@ def _hits_whole(rx, text: str) -> bool:
     start = starts[-1] + 1 if starts else 0
     ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
     end = m.end() + ends[0] if ends else len(text)
-    return not (_NEG.search(text[max(0, m.start() - 40):m.start()]) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
+    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
 
 
 _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:tonight|today|now)|urge is back|urges? (?:are|is) back|(?:cut|cutting|hurt|hurting) myself again|thinking about (?:doing )?it again|want to do it again)\b", re.I)
@@ -679,7 +752,7 @@ _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:to
 
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
-    user_text = _IDIOM.sub(" ", _norm(user_text))
+    user_text = _LEADIN.sub(". ", _IDIOM.sub(" ", _norm(user_text)))
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text):
         return "self_harm"
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
@@ -687,6 +760,8 @@ def emergency_kind(user_text: str):
     if (_SELF_RX.search(user_text) or _SELF_HARM_RX.search(user_text)) and _AGAIN.search(user_text):
         return "self_harm"
     if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text) or _hits_whole(_WHOLE, user_text):
+        return "medical"
+    if (_THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) or _THIRD_CHILD.search(user_text[:_WHOLE_SCAN_CAP])) and not _is_past(user_text):
         return "medical"
     if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
         return "medical"
