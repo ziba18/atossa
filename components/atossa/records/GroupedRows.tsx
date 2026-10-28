@@ -90,7 +90,8 @@ export function GroupRow({
         {quote ? <Quote numberOfLines={2}>{quote}</Quote> : null}
       </View>
       {value && !stacked ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
-      {chevron ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+      {/* Under ~220 pt the chevron goes (as on the hero card): its 32 pt lets a long word fit instead of breaking mid-word. */}
+      {chevron && width >= 220 ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
     </Pressable>
   );
 }
