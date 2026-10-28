@@ -152,6 +152,11 @@ export function RecordsList({
           <Group>{sorted.map((r) => renderRow(r))}</Group>
         )
       ) : null}
+      {sorted.length ? (
+        <Group style={{ marginTop: space.xl }}>
+          <GroupRow icon="plus" label={info.addLabel} chevron={false} onPress={onAdd} />
+        </Group>
+      ) : null}
     </ScreenLarge>
   );
 }
