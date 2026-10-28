@@ -170,6 +170,7 @@ export default function ProfileScreen() {
         <GroupRow
           icon="bell"
           label="Reminders and notifications"
+          detail="Your daily reminder and its time"
           onPress={() => router.push('/(tabs)/profile/settings' as any)}
         />
         <GroupRow
