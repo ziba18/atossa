@@ -639,7 +639,14 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:arm|leg|hand|face)\b.{0,25}\bnumb\b.{0,60}\b(?:vision|blurr\w+|speech|slurr\w+|weak\w*)\b|\b(?:vision|blurr\w+|slurr\w+)\b.{0,60}\b(?:arm|leg|hand|face)\b.{0,25}\bnumb\b|"
                     r"^(?=.*\b(?:miscarriage|gave birth|after the birth|postnatal|termination)\b)(?=.*\b(?:temperature|fever|rigors|shivering))(?=.*\b(?:pain|smell\w*|bleed\w*|discharge))|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|period cup)\b)(?=.*\b(?:fever|high temperature|temperature)\b)"
-                    r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))", re.I | re.S)
+                    r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
+                    # NHS toxic shock page in words (no number): tampon or cup in use, feeling hot/cold/shivery or flu-like, and another sign (PM held-out set, p105)
+                    r"^(?=.*\b(?:tampons?|menstrual cups?|period cup|cup)\b)(?=.*\b(?:shiver\w*|hot and cold|burning hot|flu-?like|sandpaper)\b)(?=.*\b(?:rash|sunburn\w*|sandpaper|awful|unwell|weak|dizz\w*|dreadful|so ill|vomit\w*|diarrh\w*|aches?)\b)", re.I | re.S)
+# Someone else collapsing or fainting, said in the present with a second warning sign (Q-new-14 recommendation; clinician to confirm)
+_THIRD_NOW = re.compile(
+    r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
+    r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
+    r"(?!.*\b(?:fine|ok|okay|recovered|better)\b (?:now|after|since|again|once|when)|.*\b(?:was|is|been) (?:fine|ok|okay)\b)", re.I | re.S)
 
 
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
@@ -671,6 +678,8 @@ def emergency_kind(user_text: str):
     if (_SELF_RX.search(user_text) or _SELF_HARM_RX.search(user_text)) and _AGAIN.search(user_text):
         return "self_harm"
     if _hits(_BODY_RX, user_text) or _hits(_EMERGENCY, user_text) or _hits_whole(_WHOLE, user_text):
+        return "medical"
+    if _THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) and not _is_past(user_text):
         return "medical"
     if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
         return "medical"
