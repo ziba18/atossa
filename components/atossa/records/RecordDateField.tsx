@@ -74,6 +74,9 @@ export function RecordDateField({
     }
   };
 
+  // A date already set: tapping its chip again shows or hides the picker, so say so.
+  const toggleHint = (m: Mode) => (value && mode === m ? (open ? 'Hides the date picker' : 'Shows the date picker') : undefined);
+
   const shown = value ? formatRecordDate(value, precision) : '';
   const status = shown
     || (mode === 'ongoing' && ongoingLabel ? ongoingLabel
@@ -127,8 +130,8 @@ export function RecordDateField({
         {ongoingLabel ? (
           <Chip label={ongoingLabel} selected={mode === 'ongoing'} accessibilityRole="radio" onPress={() => choose('ongoing')} />
         ) : null}
-        <Chip label="Exact day" selected={mode === 'exact'} accessibilityRole="radio" onPress={() => choose('exact')} />
-        <Chip label="Around" selected={mode === 'around'} accessibilityRole="radio" onPress={() => choose('around')} />
+        <Chip label="Exact day" selected={mode === 'exact'} accessibilityRole="radio" accessibilityHint={toggleHint('exact')} onPress={() => choose('exact')} />
+        <Chip label="Around" selected={mode === 'around'} accessibilityRole="radio" accessibilityHint={toggleHint('around')} onPress={() => choose('around')} />
       </View>
 
       {open && mode === 'around' ? (
