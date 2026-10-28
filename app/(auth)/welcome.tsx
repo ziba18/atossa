@@ -7,10 +7,11 @@ import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
+import { isVoiceCaptureSupported } from '../../lib/transcription';
 
 const WAVE = [0.3, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.8, 0.55, 0.9, 0.35, 0.6, 0.25];
-const STEPS = [
-  { word: 'Say it', line: 'Speak or type' },
+const stepsFor = (voice: boolean) => [
+  { word: 'Say it', line: voice ? 'Speak or type' : 'Type it in your own words' },
   { word: 'See it', line: 'Notes line up by date' },
   { word: 'Show it', line: 'A summary for your doctor' },
 ];
@@ -25,6 +26,7 @@ export default function WelcomeScreen() {
   const win = useWindowDimensions();
   const short = win.height < 700;
   const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
+  const voice = isVoiceCaptureSupported();
   useEffect(() => track('Welcome Viewed'), []);
 
   return (
@@ -46,10 +48,14 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.hero}>
-          <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
-          <Txt variant="body" color={colors.ink2}>
-            Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
+          <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>
+            Say how it feels.{'\n'}
+            <Txt variant="hero" color={colors.plum} style={short || win.width < 380 ? undefined : styles.heroLine}>Walk in with a record.</Txt>
           </Txt>
+          <Txt variant="body" color={colors.ink2}>
+            {voice ? 'Talk or type' : 'Type'} about your symptoms in your own words. Atossa turns them into a short summary for your doctor.
+          </Txt>
+          {short ? null : (
           <Card style={styles.example}>
             <Txt variant="caption" color={colors.ink2}>What you say</Txt>
             <Quote>Sharp low belly pain since Tuesday, worse in the evening, missed work.</Quote>
@@ -62,10 +68,11 @@ export default function WelcomeScreen() {
               ))}
             </View>
           </Card>
+          )}
         </View>
 
         {short || narrow ? null : <View style={styles.steps} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
-          {STEPS.map((st, i) => (
+          {stepsFor(voice).map((st, i) => (
             <View key={st.word} style={styles.step}>
               <View style={styles.stepNum}><Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt></View>
               <Txt variant="headline">{st.word}</Txt>
@@ -75,7 +82,7 @@ export default function WelcomeScreen() {
         </View>}
 
         {short ? null : <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
-          Atossa never diagnoses. It keeps your notes in your words.
+          Atossa doesn’t diagnose or give medical advice.
         </Txt>}
 
         <View style={styles.actions}>
