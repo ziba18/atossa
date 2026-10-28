@@ -438,12 +438,12 @@ export function ConfirmCard({
  * `variant="secondary"` for the old 15 ink2 look.
  */
 export function GlyphLine({
-  icon, text, clay, variant = 'caption',
+  icon, text, clay, variant = 'secondary',
 }: { icon: IconName; text: string; clay?: boolean; variant?: 'caption' | 'secondary' }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
       <Icon name={icon} size={20} color={clay ? colors.clay : colors.ink} />
-      <Txt variant={variant} style={{ flexShrink: 1 }}>{text}</Txt>
+      <Txt variant={variant} color={colors.ink} style={{ flexShrink: 1, fontFamily: fonts.medium, fontVariant: ['tabular-nums', 'lining-nums'] }}>{text}</Txt>
     </View>
   );
 }

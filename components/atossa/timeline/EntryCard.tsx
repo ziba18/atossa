@@ -241,5 +241,5 @@ const styles = StyleSheet.create({
   // N11: the 4 pt clay edge sits inside the card's own padding, so bleeding content lines up
   // with every other card (x 41, not 45).
   clayInset: { paddingLeft: space.lg },
-  appointment: { backgroundColor: colors.plumTint, borderColor: colors.plumTint },
+  appointment: { backgroundColor: colors.surface, borderColor: colors.borderStrong },
 });
