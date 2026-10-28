@@ -11,6 +11,9 @@ test('group: pain first when the note has a strength or place', () => {
   assert.equal(onsetGroupFor({ words: 'So tired all the time' }), 'fatigue');
   assert.equal(onsetGroupFor({ words: 'Heavy period again' }), 'bleeding');
   assert.equal(onsetGroupFor({ words: 'It hurts when I go for a wee', worst: 5 }), 'bowelBladder');
+  assert.equal(onsetGroupFor({ words: 'cramps have been bad ever since my first period' }), 'pain');
+  assert.equal(onsetGroupFor({ words: 'my skin broke out properly a few years ago' }), 'skinHair');
+  assert.equal(onsetGroupFor({ words: 'low mood the week before my period' }), 'mood');
 });
 
 test('confirmed phrase is her words, per group, and prints verbatim', () => {
