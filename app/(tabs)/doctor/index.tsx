@@ -224,7 +224,7 @@ export default function DoctorScreen() {
       ) : null}
 
       {upcoming ? (
-        <Card style={{ marginTop: short ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <Card style={{ marginTop: short || thumbUp ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
           {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
           {winWidth < 240 || short || thumbUp ? null : (
           <View aria-hidden style={{
@@ -236,9 +236,16 @@ export default function DoctorScreen() {
           )}
           <View style={{ flex: 1 }}>
             {/* The date rides the caption so the name gets a line to itself (one line at 360). */}
-            <Txt variant="caption">
-              {joinFacts(upcoming.data.date === today ? 'Appointment today' : 'Next appointment', formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
-            </Txt>
+            {thumbUp ? (
+              <>
+                <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
+                <Txt variant="caption">{formatDay(upcoming.data.date)}</Txt>
+              </>
+            ) : (
+              <Txt variant="caption">
+                {joinFacts(upcoming.data.date === today ? 'Appointment today' : 'Next appointment', formatDay(upcoming.data.date).replace(/ /g, '\u00A0'))}
+              </Txt>
+            )}
             <Txt variant="headline">{upcoming.data.who.trim() || formatDay(upcoming.data.date)}</Txt>
           </View>
           {thumbUp ? <SummaryThumb doc={doc} width={winWidth < 340 ? 72 : 88} /> : null}
