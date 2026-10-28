@@ -69,7 +69,7 @@ export default function WelcomeScreen() {
             {WEB ? 'Write it' : 'Say it'} the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
           </Txt>
           <Card style={[styles.example, tall && styles.exampleTall]}>
-            <Txt variant="caption" color={colors.ink2}>{WEB ? 'What you write' : 'What you say'}</Txt>
+            {short ? null : <Txt variant="caption" color={colors.ink2}>{WEB ? 'What you write' : 'What you say'}</Txt>}
             <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>
             <Txt variant="caption" color={colors.ink2}>What your doctor sees</Txt>
             <View style={styles.tags}>
@@ -94,9 +94,9 @@ export default function WelcomeScreen() {
 
         <View style={{ flexGrow: 1 }} />
 
-        {short ? null : <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
-          Atossa never diagnoses. It keeps your notes in your words.
-        </Txt>}
+        <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
+          {short ? 'Atossa never diagnoses.' : 'Atossa never diagnoses. It keeps your notes in your words.'}
+        </Txt>
 
         <View style={[styles.actions, short && { marginTop: 0 }]}>
           <Button label="Create an account" onPress={() => router.push('/(auth)/register')} />
