@@ -18,7 +18,7 @@ const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 interface Cell { key: string; letter: string; worst: number | null; noted: boolean }
 
-export function RecentStrip({ symptoms, flush, onPatterns }: { symptoms: Rec<SymptomData>[]; flush?: boolean; onPatterns?: () => void }) {
+export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; onPatterns?: () => void; onMonth?: () => void }) {
   const [inner, setInner] = useState(0);
   // Narrow screens / big text: show the last 7 days instead of squeezing 14 cells.
   const days = inner > 0 && inner < MAX_DAYS * MIN_CELL ? MIN_DAYS : MAX_DAYS;
@@ -62,16 +62,16 @@ export function RecentStrip({ symptoms, flush, onPatterns }: { symptoms: Rec<Sym
           );
         })}
       </View>
-      {onPatterns ? (
+      {onPatterns || onMonth ? (
         <Pressable
-          onPress={onPatterns}
+          onPress={onPatterns ?? onMonth}
           accessibilityRole="button"
-          accessibilityLabel="See your patterns"
-          accessibilityHint="Opens Patterns on the Timeline tab"
+          accessibilityLabel={onPatterns ? 'See your patterns' : 'See the month'}
+          accessibilityHint={onPatterns ? 'Opens Patterns on the Timeline tab' : 'Opens the Month view'}
           style={({ pressed }) => [styles.patterns, pressed && { backgroundColor: colors.canvas }]}
         >
-          <Icon name="bar-chart" size={20} color={colors.ink} />
-          <Txt variant="body" style={{ flex: 1, color: colors.plum }}>See your patterns</Txt>
+          <Icon name={onPatterns ? 'bar-chart' : 'calendar'} size={20} color={colors.ink} />
+          <Txt variant="body" style={{ flex: 1, color: colors.plum }}>{onPatterns ? 'See your patterns' : 'See the month'}</Txt>
           <Icon name="chevron-right" size={20} color={colors.ink3} />
         </Pressable>
       ) : null}

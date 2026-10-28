@@ -159,6 +159,7 @@ function ListView({
   const short = win.height < 640;
   const tiny = win.width < 280; // 200% text on a small phone: the week summary drops under the label
   const [filterOpen, setFilterOpen] = useState(false);
+  const { setMode } = useTimelineSession();
   const options = useMemo(
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
     [feed],
@@ -219,7 +220,7 @@ function ListView({
       </Sheet>
       {/* The strip counts symptom notes, so it only shows where those are on the list. */}
       {(filter === 'All' || filter === 'Symptoms') && !short ? (
-        <RecentStrip symptoms={symptoms} />
+        <RecentStrip symptoms={symptoms} onMonth={() => setMode('month')} />
       ) : null}
       {groups.length === 0 && filter !== 'All' ? (
         <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.xxxl }}>
