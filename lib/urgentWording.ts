@@ -34,6 +34,10 @@ function normalise(text: string): string {
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
   t = t.replace(/\bwanna\b/gi, 'want to');
+  // measured temperatures read as "high temperature of 39" (38+ C or 100.4+ F); mirrors backend `_norm`
+  t = t.replace(/\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*(3[89]|4[0-2])(?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times))/gi, 'high temperature of $1');
+  t = t.replace(/\b(3[89]|4[0-2])(?:\.\d)?\s*(?:°\s*c|c|degrees)?\s*(?:temp(?:erature)?|fever)\b/gi, 'high temperature of $1');
+  t = t.replace(/\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*10[1-7](?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times))/gi, 'high temperature of 39');
   return t.replace(/[ \t]{2,}/g, ' ');
 }
 

@@ -145,6 +145,10 @@ def _norm(text: str) -> str:
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
     t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
+    # measured temperatures: "temp 39.5", "38.9 temp", "thermometer says 102" read as "high temperature of 39" (38+ C or 100.4+ F)
+    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*(3[89]|4[0-2])(?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times))", r"high temperature of \1", t, flags=re.I)
+    t = re.sub(r"\b(3[89]|4[0-2])(?:\.\d)?\s*(?:°\s*c|c|degrees)?\s*(?:temp(?:erature)?|fever)\b", r"high temperature of \1", t, flags=re.I)
+    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*10[1-7](?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times))", "high temperature of 39", t, flags=re.I)
     return re.sub(r"[ \t]{2,}", " ", t)
 
 
