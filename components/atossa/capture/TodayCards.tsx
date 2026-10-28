@@ -60,7 +60,7 @@ export function HeroCard() {
         end={{ x: 0.5, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
-      <WaveMotif />
+      {Platform.OS === 'web' ? null : <WaveMotif />}
       <Txt variant="hero" style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT_BALANCED}
       </Txt>
