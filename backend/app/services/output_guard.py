@@ -652,6 +652,12 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
                     # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
                     r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
+                    # set p111 (first contact 5/10 missed): carbon monoxide, heat stroke, choking, electric shock, swallowed battery
+                    r"^(?=.*\b(?:boiler|carbon monoxide|co alarm|gas fire|co detector)\b)(?=.*\b(?:headache|dizz\w*|sick|drowsy|confus\w*)\b)(?=.*\b(?:alarm|every time|since|keeps)\b)|"
+                    r"^(?=.*\b(?:stopped sweating|hot and dry|hot dry skin)\b)(?=.*\b(?:confus\w*|dizz\w*|faint\w*|drowsy)\b)|"
+                    r"\b(?:stuck in my throat|choking)\b.{0,40}\b(?:can'?t (?:speak|breathe|talk)|cannot (?:speak|breathe))\b|\bcan'?t (?:speak|breathe|talk)\b.{0,40}\b(?:stuck in my throat|choking)\b|"
+                    r"\belectric(?:al)? shock\b.{0,80}\b(?:chest|heart|palpitations?|weird|faint\w*|numb\w*|burn\w*)\b|"
+                    r"\b(?:swallowed|swallow|ate|eaten) (?:a |an |the )?(?:button |coin |lithium |watch )?batter(?:y|ies)\b(?! of (?:tests|questions))|\bbutton battery\b.{0,40}\b(?:swallow\w*|ate|eaten|down)\b|"
                     # set p107 (first contact 3/10 missed): head injury with knocked out and sickness, meter reading HI with thirst and fast breathing, big tissue lumps with soaking every few minutes
                     r"^(?=.*\b(?:hit|banged|bumped|knocked) (?:my |the )?head\b)(?=.*\b(?:knocked out|lost consciousness|blacked out|passed out)\b)(?=.*\b(?:sick|vomit\w*|confus\w*|drowsy)\b)|"
                     r"^(?=.*\b(?:blood sugar|glucose|meter)\b.{0,30}\b(?:says |reads |showing |shows )?\"?hi\"?\b)(?=.*\b(?:very thirsty|breathing fast|tummy hurts|vomit\w*|drowsy)\b)|"
