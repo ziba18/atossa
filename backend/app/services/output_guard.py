@@ -826,7 +826,9 @@ _SELF_WISH = (
     r"wish i'?d never been born|(?:(?:they|everyone|everybody)(?:'?d| would)(?: all)? be )?better off (?:without me|if i (?:wasn'?t|weren'?t|was not|were not) (?:around|here))|(?:like|want) to (?:not|never) wake up)")
 # run09 v82: the plan said without "how" (got a plan, know what I'd take, thought it all through, got everything ready)
 _SELF_PLAN = (r"\b(?:(?:got|made|have) (?:a|the) plan(?! (?:for|to))|got (?:it|everything) (?:all )?(?:planned|ready)|planned (?:it )?(?:all )?out|thought (?:it|this) (?:all )?through"
-              r"|know what i'?d (?:use|take|do)\b(?![^.!?\n]{0,20}\b(?:for|next time|usual|cramps|pain|period|flare))|sorted (?:out )?the (?:details|plan)|got the plan sorted)(?! for\b)")
+              r"|know what i'?d (?:use|take|do)\b(?![^.!?\n]{0,20}\b(?:for|next time|usual|cramps|pain|period|flare))|sorted (?:out )?the (?:details|plan)|got the plan sorted"
+              # run10 v90: the means to hand said without a plan word (pills ready, know where to go, got everything I need)
+              r"|got (?:the |my |all (?:the |my )?)?(?:pills|tablets|painkillers|meds|paracetamol) (?:ready|here|with me|in my (?:bag|room|drawer))|know where to go|got everything i need)(?! for\b)")
 _SELF_WHOLE = re.compile(
     # p129 (Safety ab08711): tablets lined up said together with "no point" or "ready" (the cue may sit in another clause)
     r"^(?=.*\b(?:tablets|pills|painkillers|meds|paracetamol)\b[^.!?;]{0,25}\blined up\b)(?=.*\b(?:no point|can'?t see the point|i'?m ready|ready now|can'?t (?:go on|keep going|do this)|tonight is the night)\b)|"
