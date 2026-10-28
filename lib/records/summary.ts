@@ -582,8 +582,8 @@ export function summaryToText(doc: DoctorDoc): string {
     if (d.onset) lines.push(`  ${d.onset}`);
     if (d.id === 'history' && d.state === 'recorded') {
       const h = doc.sections.find((x) => x.id === 'history');
-      if (h && h.id === 'history') lines.push(`  ${ALLERGIES_LABEL}: ${h.allergies ? `"${h.allergies}"` : 'not recorded'}`);
       if (h && h.id === 'history' && h.family) lines.push(`  ${FAMILY_HISTORY_LABEL}: "${h.family}"`);
+      if (h && h.id === 'history' && h.allergies) lines.push(`  ${ALLERGIES_LABEL}: ${h.allergies ? `"${h.allergies}"` : 'not recorded'}`);
     }
   }
   const words = doc.sections.find((s) => s.id === 'words');
@@ -770,7 +770,8 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   // The patient's own allergy words, verbatim; never ticked, validated or commented on.
   const allergyText = histAll.filter((h) => h.type === ALLERGY_TYPE).map((h) => clean(h.told)).filter(Boolean).join('; ');
   const familyText = clean(input.familyHistory);
-  {
+  // With any notes saved the page always says something about allergies, even if only 'not recorded'.
+  if (hist.length || familyText || allergyText || notes.length) {
     all.push({
       id: 'history',
       title: 'Health history',
