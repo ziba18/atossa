@@ -198,7 +198,7 @@ export default function DoctorScreen() {
     <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={nothingYet || inlineBar ? undefined : footer}>
       {short ? null : (
         <Txt variant="body" color={colors.ink2}>
-          Your notes, in your words, ready to share.
+          {nothingYet ? 'Your notes, in your words, for your appointment.' : 'Your notes, in your words, ready to share.'}
         </Txt>
       )}
 
