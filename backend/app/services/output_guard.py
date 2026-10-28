@@ -484,6 +484,11 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set p75 (medicine reactions and mixing; first contact 4/12 missed)
+                    r"^(?=.*\brash\b.{0,30}\bspreading\b)(?=.*\b(?:lips?|tongue|face|eyelids?)\b.{0,20}\b(?:puffy|swollen|swelling)\b)|"
+                    r"\b(?:took|taken|had) (?:double|twice|too many|an extra|two lots)\b.{0,50}\b(?:dose|tablets?|pills?|medication)\b.{0,60}\b(?:heart (?:is )?(?:pounding|racing)|shaking(?!\?)|drowsy|can'?t stay awake)\b|"
+                    r"\bwheez\w*\b.{0,30}\bitch\w*\b.{0,15}\ball over\b|\bitch\w*\b.{0,15}\ball over\b.{0,40}(?<!no )\bwheez\w*\b|"
+                    r"\b(?:sleeping|tablets?|pills?|codeine|tramadol|diazepam)\b.{0,30}\b(?:with|and) (?:wine|alcohol|vodka|beer|a few drinks)\b.{0,70}\b(?:out of it|can'?t stay awake|very drowsy|slurr\w+|passing out)\b|"
                     # set p76 (after birth, section or miscarriage; first contact 3/12 missed)
                     r"^(?=.*\b(?:stitches|wound|scar|section|tear)\b)(?=.*(?:\bhot and swollen\b|\bswollen\b|\bpus\b|\bleaking\b|\boozing\b|(?<!no )\bsmell(?:s|y)\b|\bred and (?:hot|swollen|painful)\b))(?=.*(?<!no )(?<!without )(?<!normal )\b(?:got a temperature|high temperature|fever|shivery|shaky|feel (?:very )?unwell|feeling (?:very )?unwell)\b)|"
                     r"^(?=.*\b(?:headache|head hurts)\b)(?=.*(?<!no )(?:\bblurr\w+|\bflashing\b|\bspots (?:in|before) my\b|\bvision (?:is |went |gone )?(?:blurry|blurred|double|odd|strange)\b))(?=.*\b(?:after (?:the )?(?:birth|delivery|having (?:the|my) baby|giving birth)|postnatal|postpartum)\b)|"
