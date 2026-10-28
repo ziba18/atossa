@@ -100,7 +100,7 @@ const THIRDC = new RegExp(P.THIRDC_SRC, 'i');
 
 // run28 S-244 (backend emergency_kind): procedure + fever sign; the past check looks only at the clause holding the fever sign,
 // so "coil fitted last week, shivering and a racing heart" is current. Exertion / "only" / weekday clauses stay quiet.
-const PROCFEVER = new RegExp(P.PROCFEVER_SRC, 'i');
+const PROCFEVER = new RegExp(P.PROCFEVER_SRC, 'i'), PROCFQ = new RegExp(P.PROCFQ_SRC, 'i');
 function procFever(seg: string): boolean {
   if (!PROCFEVER.test(seg)) return false;
   const re = new RegExp(P.FEVER_SRC, 'gi');
@@ -109,11 +109,29 @@ function procFever(seg: string): boolean {
     const s0 = m.index, e0 = m.index + m[0].length;
     const a = Math.max(-1, ...['.', ';', '!', '?', '\n', ','].map((c) => seg.lastIndexOf(c, s0 - 1))) + 1;
     const ends = ['.', ';', '!', '?', '\n', ','].map((c) => seg.indexOf(c, e0)).filter((i) => i >= 0);
-    const clause = seg.slice(a, ends.length ? Math.min(...ends) : seg.length);
-    if (!isPast(clause) && !/\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b/i.test(clause)) return true;
+    let clause = seg.slice(a, ends.length ? Math.min(...ends) : seg.length);
+    // unpunctuated note: the clause starts after the procedure's own time phrase when it sits before the fever sign
+    const tp = new RegExp(P.PROCTIME_SRC, 'i').exec(clause);
+    if (tp && tp.index + tp[0].length <= s0 - a) clause = clause.slice(tp.index + tp[0].length);
+    if (!isPast(clause) && !PROCFQ.test(clause)) return true;
     if (m[0].length === 0) re.lastIndex++;
   }
   return false;
+}
+
+// run11 (S-236 second example): a sentence about someone else's / a family procedure history is dropped, "mine" names its
+// procedure, and the medical checks re-run on the rest (backend `_other_hist_rescue`).
+const PROCWORD = new RegExp(P.PROCWORD_SRC, 'i');
+function otherHistRescue(text: string): boolean {
+  const parts = text.slice(0, 20000).split(/(?<=[.;!?\n])/);
+  const isOther = (x: string) => new RegExp(P.OTHERHIST_SRC, 'i').test(x);
+  const sents = parts.filter(isOther);
+  if (!sents.length) return false;
+  let rest = parts.filter((x) => !isOther(x)).join(' ');
+  const pw = sents.map((x) => x.match(PROCWORD)?.[0]).find((x) => x);
+  if (pw) rest = rest.replace(/\b(?:mine|my own one|my own)\b(?! (?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|coil))/gi, 'my ' + pw);
+  if (!PROCWORD.test(rest)) return false;
+  return hitWhole(rest) || procFever(rest);
 }
 
 const PREG = /\bpregnan\w+\b/i;
@@ -137,14 +155,21 @@ function hit(pattern: RegExp, text: string): boolean {
 
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
+  const line = signpostOnce(text);
+  // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
+  if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
+  return line;
+}
+
+function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
-  const t = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ');
+  const t = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
   if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
-  if (procFever(t.slice(0, 20000))) return URGENT_SIGNPOST;
+  if (procFever(t.slice(0, 20000)) || otherHistRescue(t)) return URGENT_SIGNPOST;
   if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
   if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
   return null;

@@ -793,9 +793,9 @@ _SHOULDER = (r"(?:shoulder[- ]?tip|tip of (?:my |the )?shoulder|(?:end|top) of (
 _FEVER = (r"(?:(?<!no )(?<!not )(?<!without )(?<!any )fever\w*|high temperature|(?<!no )(?:a|running a) (?:temperature|temp)\b|temperature of|burning up|boiling hot|"
           r"(?<!a bit )(?<!a little )(?<!slightly )shiver\w*|the shivers|(?<!from the cold, )shaking|(?<!a bit )(?<!a little )(?<!slightly )shaky|rigou?rs|heart (?:is |'s )?(?:\w+ ){0,2}(?:racing|pounding)|heart(?:'s| is)? going (?:really |so )?fast|heart won'?t slow|\b(?:38|39|40)(?:\.\d)?\b)")
 # run09: Data's near-miss (d) 2/10 at first contact: "no surgery recently" and "my sister had a fever after her C-section".
-_PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?<!her )(?<!his )(?<!their )(?<!mum's )(?<!mom's )(?<!sister's )(?<!friend's )(?:coil (?:was )?(?:fitted|put in|in)\b|got my coil in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
+_PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?<!her )(?<!his )(?<!their )(?<!mum's )(?<!mom's )(?<!sister's )(?<!friend's )(?:(?:coil|iud|ius|mirena) (?:was )?(?:fitted|put in|inserted|in)\b|got my (?:coil|iud) in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
          r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b)\b")
-_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|from the cold|gone by|went away|settled|family history)\b)"
+_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|fine since|from the cold|gone by|went away|settled|family history|(?:friend|sister|mum|mom|mother|partner|daughter|cousin|colleague) (?:had|has had|is having) (?:a|an|her)\b[^.!?\n]{0,20}(?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|c-?section))\b)"
 _BACK = r"(?:back(?:'s| is| has)? (?:\w+ ){0,3}(?:pain|ache|hurts?|agony|bad|gone|killing|went)|back pain|bad back|my back went|lower back|sciatica)"
 _SADDLE = (r"(?:numb\w* (?:around|in|down|under) (?:my )?(?:bottom|bum|genitals|vagina|down there|privates|groin|anus)|numb\w* between my legs|"
            r"(?:bottom|bum|genitals|groin|saddle|down there)(?: area)? (?:feels? |is |has gone |gone |going )?numb|can'?t (?:really )?feel (?:it |anything )?(?:when i wipe|between my legs|down there))")
@@ -886,6 +886,7 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PREG_CTX + r"(?=[\s\S]*\b(?:contra
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:no|not|haven'?t been|isn'?t) (?:vomit\w*|sick)\b)(?=[\s\S]*\b(?:vomit\w*|sick|throwing up|threw up)\b[^.!?\n]{0,15}\bgreen\b(?! (?:tea|smoothie|juice|salad|veg\w*|beans|light))|[\s\S]*\bgreen (?:sick|vomit|bile)\b)"
                     + r"(?=[\s\S]*\b(?:bloated|swollen|distended|hard belly|rigid)\b)", _WHOLE.flags)
 
+_PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
 
@@ -930,13 +931,65 @@ _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:to
 _LEG_BREATH = re.compile(r"\b(?:leg|calf|thigh)\b[^.!?;]{0,60}\b(?:swollen|swelling|ballooned|twice the size|puffy)\b[^.!?;]{0,100}\b(?:short(?:ness)? of breath|breathless)|\b(?:short(?:ness)? of breath|breathless)\b[^.!?;]{0,100}\b(?:leg|calf|thigh)\b[^.!?;]{0,60}\b(?:swollen|swelling|ballooned|twice the size|puffy)", re.I)
 
 
+def _proc_fever_hit(text: str) -> bool:
+    """S-244: procedure + fever sign; the past check looks only at the clause holding the fever sign."""
+    seg = text[:_WHOLE_SCAN_CAP]
+    if not _PROC_FEVER.search(seg):
+        return False
+    for fm in re.finditer(_FEVER, seg, re.I):
+        a = max([seg.rfind(c, 0, fm.start()) for c in ".;!?\n,"] + [-1]) + 1
+        ends = [i for i in (seg.find(c, fm.end()) for c in ".;!?\n,") if i >= 0]
+        clause = seg[a:(min(ends) if ends else len(seg))]
+        # no punctuation after the procedure ("Coil fitted last week shivering and a racing heart"): the clause starts after
+        # the procedure's own time phrase when that phrase sits before the fever sign
+        tp = re.search(_PROC + r"[^.;!?\n,]{0,30}?\b(?:last (?:week|night|month)|(?:\w+ ){1,2}(?:days?|weeks?) ago|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day)\b",
+                       clause, re.I)
+        if tp and tp.end() <= fm.start() - a:
+            clause = clause[tp.end():]
+        if not _is_past(clause) and not re.search(_PROC_FEVER_QUIET, clause, re.I):
+            return True
+    return False
+
+
+# run11 (S-236 second example, clause-local): a sentence about someone else's or an old family procedure ("My mum's C-section
+# was years ago.") no longer silences her own recent one in another sentence. Such sentences are dropped and the medical
+# checks re-run; "mine" / "my own one" then names the dropped sentence's procedure.
+_OTHER_HIST_SENT = re.compile(r"\b(?:my (?:mum|mom|mother|sister|friend|aunt|nan|gran\w*|cousin|partner)(?:'s)?|mum's|sister's|friend's)\b"
+                              r"[\s\S]*\b(?:(?:years?|months?) ago|history of)\b|\bfamily history\b", re.I)
+_PROC_WORD = re.compile(r"\b(?:laparoscopy|hysteroscopy|surgery|operation|op|c-?section|caesarean|biopsy|procedure|ablation|coil|iud)\b", re.I)
+
+
+def _other_hist_rescue(text: str) -> bool:
+    parts = re.split(r"(?<=[.;!?\n])", text[:_WHOLE_SCAN_CAP])   # sentences, each keeping its end mark
+    sents = [x for x in parts if _OTHER_HIST_SENT.search(x)]
+    if not sents:
+        return False
+    rest = " ".join(x for x in parts if not _OTHER_HIST_SENT.search(x))
+    pw = next((m.group(0) for s_ in sents for m in [_PROC_WORD.search(s_)] if m), None)
+    if pw:
+        rest = re.sub(r"\b(?:mine|my own one|my own)\b(?! (?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|coil))", "my " + pw, rest, flags=re.I)
+    if not _PROC_WORD.search(rest):
+        return False
+    return _hits_whole(_WHOLE, rest) or _proc_fever_hit(rest)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
+    kind = _emergency_kind(user_text)
+    # run11 (S-240 follow-up): a line break between clauses must not hide a self-harm plan ("Better off without me on the
+    # team,\nand I've got a plan for tonight"): the note is re-read with line breaks as commas, for self-harm only.
+    if kind is None and "\n" in user_text and _emergency_kind(user_text.replace("\n", ", ")) == "self_harm":
+        return "self_harm"
+    return kind
+
+
+def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
     # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
     if not _LEG_BREATH.search(user_text):
         user_text = _IDIOM.sub(" ", user_text)
-    user_text = _LEADIN.sub(". ", user_text)
+    # a lead-in at the very start leaves ". " there; strip it so a whole-note rule anchored at ^ still sees her first sentence
+    user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
         return "self_harm"
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
@@ -947,15 +1000,8 @@ def emergency_kind(user_text: str):
         return "medical"
     # run28 S-244: "coil fitted last week, shivering and a racing heart": the procedure's own time phrase must not make the
     # present fever signs past. The past check looks at the fever clause only.
-    if _PROC_FEVER.search(user_text[:_WHOLE_SCAN_CAP]):
-        for fm in re.finditer(_FEVER, user_text[:_WHOLE_SCAN_CAP], re.I):
-            seg = user_text[:_WHOLE_SCAN_CAP]
-            a = max([seg.rfind(c, 0, fm.start()) for c in ".;!?\n,"] + [-1]) + 1
-            ends = [i for i in (seg.find(c, fm.end()) for c in ".;!?\n,") if i >= 0]
-            b = min(ends) if ends else len(seg)
-            clause = seg[a:b]
-            if not _is_past(clause) and not re.search(r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b", clause, re.I):
-                return "medical"
+    if _proc_fever_hit(user_text) or _other_hist_rescue(user_text):
+        return "medical"
     if (_THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) or _THIRD_CHILD.search(user_text[:_WHOLE_SCAN_CAP])) and not _is_past(user_text):
         return "medical"
     if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
