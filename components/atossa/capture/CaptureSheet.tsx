@@ -54,7 +54,10 @@ const joinWords = (prefix: string, more: string) => {
 
 function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureOptions }) {
   // Under ~240 pt wide (200% text on a small phone) the forced line break and helper line push the field off screen.
-  const narrow = useWindowDimensions().width < 240;
+  const win = useWindowDimensions();
+  const narrow = win.width < 240;
+  // Under ~520 pt tall (keyboard up on a small window) the field starts smaller so the Continue bar and the safety box stay reachable.
+  const lowH = win.height < 520;
   const createRecord = useRecordsStore((s) => s.create);
   const tag = options.tag;
 
@@ -331,7 +334,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 placeholderTextColor={colors.ink2}
                 accessibilityLabel="Your words"
                 accessibilityHint="You can edit these before you continue"
-                style={[styles.box, styles.transcript]}
+                style={[styles.box, styles.transcript, lowH && styles.lowField]}
               />
             ) : null}
             <View style={[styles.micArea, idleSpeak && styles.micAreaIdle]}>
@@ -358,7 +361,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
             accessibilityLabel="Your words"
             onFocus={() => setTypedFocus(true)}
             onBlur={() => setTypedFocus(false)}
-            style={[styles.box, styles.typed, typedFocus && styles.typedFocus]}
+            style={[styles.box, styles.typed, lowH && styles.lowField, typedFocus && styles.typedFocus]}
           />
         )}
       </View>
@@ -435,6 +438,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular, fontSize: 17, lineHeight: 24, color: colors.ink, textAlign: 'left', textAlignVertical: 'top',
   },
   transcript: { backgroundColor: colors.plumTint, minHeight: 120 },
+  lowField: { minHeight: 96 },
   typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, minHeight: 180 },
   // Plum 2px ring (padding trimmed 1 so the text does not shift); replaces RN-web's near-black outline.
   typedFocus: { borderColor: colors.plum, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
