@@ -164,7 +164,7 @@ export default function DoctorScreen() {
           style={{ flex: 0.8, minWidth: 0, paddingHorizontal: space.sm }} accessibilityHint="Sends the summary to a printer"
         />
         <Button
-          label="On screen" variant="secondary" small disabled={doc.empty}
+          label={winWidth < 340 ? "Screen" : "On screen"} variant="secondary" small disabled={doc.empty}
           onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ flex: 1, minWidth: 0, paddingHorizontal: space.sm }}
           accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
         />
