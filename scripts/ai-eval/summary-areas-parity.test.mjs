@@ -24,3 +24,11 @@ test('every area Sam logged has a printed line; the rest say Not recorded', () =
     assert.ok(plain.includes(printedAs) || plain.includes(probe), `${d.heading} is printed`);
   }
 });
+
+test('a saved "first noticed" phrase is printed in her words, nothing is invented when none is saved', () => {
+  const range = { from: '2026-06-25', to: TODAY, today: TODAY };
+  const none = summaryToHtml(buildDoctorSummary(input, range));
+  assert.ok(!none.includes('First noticed'), 'no phrase saved, no row');
+  const withOnset = summaryToHtml(buildDoctorSummary({ ...input, onset: { pain: { words: 'since I was fourteen' } } }, range));
+  assert.ok(withOnset.includes('First noticed · Pain') && withOnset.includes('since I was fourteen'));
+});

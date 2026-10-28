@@ -1067,7 +1067,10 @@ export function otherAreaRows(doc: DoctorDoc): { label: string; text: string; mu
   const recorded = rows.filter((d) => d.state === 'recorded').map((d) => ({ label: d.heading, text: d.text.replace(/\u2060/g, ''), muted: false }));
   const rest = (['not-recorded', 'not-included'] as DomainState[]).filter((st) => names(st))
     .map((st) => ({ label: st === 'not-recorded' ? NOT_RECORDED : NOT_INCLUDED, text: names(st), muted: true }));
-  return [...recorded, ...rest];
+  // 'First noticed' as she told it, per area, only where she saved one (the plain-text copy already carries these).
+  const first = doc.domains.filter((d) => d.onset && !d.onset.endsWith(NOT_RECORDED))
+    .map((d) => ({ label: `First noticed · ${d.heading}`, text: d.onset.replace(/^First noticed: /, ''), muted: false }));
+  return [...first, ...recorded, ...rest];
 }
 
 function otherAreasHtml(doc: DoctorDoc): string {
