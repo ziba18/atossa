@@ -11,7 +11,7 @@ import Svg, { Line } from 'react-native-svg';
 import { fonts } from '../../../constants/atossaUI';
 import { joinFacts } from '../../../lib/records/format';
 import {
-  otherAreaRows,
+  otherAreaRows, printedFooter, printedMeta,
   APPT_AHEAD, APPT_PAST, DOC_COLORS, PAGE_TYPE, SPOT_DASH, SPOT_STROKE, STRIP_BLEED_KEY, STRIP_KEY, STRIP_SPOT_KEY,
   FAMILY_HISTORY_LABEL, barText, countText, curly, daysText,
   type DatedItem, type DocQuote, type DocSection, type DoctorDoc, type FreqBar,
@@ -370,7 +370,7 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
     >
       <Txt style={st.title} accessibilityRole="header">{doc.title}</Txt>
       <Txt style={[st.meta, { marginTop: st.s.gap, paddingBottom: st.s.gap * 4, borderBottomWidth: st.s.rule, borderBottomColor: C.ink }]}>
-        {keepYear(doc.meta, st)}
+        {keepYear(printedMeta(doc), st)}
       </Txt>
       {blocks.map((b, i) => block(b.key, b.title, b.body, i === 0))}
       {areas.length ? block('areas', 'Other areas', (
@@ -385,7 +385,7 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
       ), false) : null}
       <View style={{ flexGrow: 1 }} />
       <View style={{ marginTop: st.s.section, paddingTop: st.s.gap * 2, borderTopWidth: 0.5, borderTopColor: C.borderStrong }}>
-        <Txt style={isPage ? { ...st.meta, fontSize: PAGE_TYPE.footer[0], lineHeight: PAGE_TYPE.footer[1] } : st.meta}>{doc.footer}</Txt>
+        <Txt style={isPage ? { ...st.meta, fontSize: PAGE_TYPE.footer[0], lineHeight: PAGE_TYPE.footer[1] } : st.meta}>{printedFooter(doc)}</Txt>
       </View>
     </View>
   );

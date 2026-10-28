@@ -1144,11 +1144,13 @@ function headBlock(doc: DoctorDoc): string {
   return `<table class="kv"><tbody>${rows.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</tbody></table>`;
 }
 
-/** The header line: the same window the counts use (first entry to the last day), then the visit type and the made-on date. */
-function headMeta(doc: DoctorDoc): string {
-  const f = doc.sections.find((x) => x.id === 'frequency');
+/** Header line and footer with the one printed range (screen and PDF agree). */
+export function printedMeta(doc: DoctorDoc): string {
   const rest = doc.meta.split(' · ').slice(1);
-  return f && f.id === 'frequency' ? [f.windowLabel, ...rest].join(' · ') : doc.meta;
+  return [printedRange(doc), ...rest].join(' · ');
+}
+export function printedFooter(doc: DoctorDoc): string {
+  return doc.footer.replace(doc.rangeLabel, printedRange(doc).split(' · ')[0]);
 }
 
 export function summaryToHtml(doc: DoctorDoc): string {
@@ -1231,7 +1233,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
     ${headBlock(doc)}
     ${body}
   </td></tr></tbody>
-  <tfoot><tr><td><div class="footer">${esc(doc.footer.replace(doc.rangeLabel, printedRange(doc).split(' · ')[0]))}</div></td></tr></tfoot>
+  <tfoot><tr><td><div class="footer">${esc(printedFooter(doc))}</div></td></tr></tfoot>
 </table>
 </body></html>`;
 }
