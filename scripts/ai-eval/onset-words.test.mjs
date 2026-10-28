@@ -3,6 +3,8 @@
 // extractor (items.onset-heldout.json): first contact 13/15 found, 0/10 false; after 2 fixes 15/15, 0/10
 // (tuned on it now). Sweep over 762 earlier notes: 27 fires (5 wrong: trying to conceive x4, a medicine)
 // -> 22 after excluding those (tuned).
+// Unseen set 2 (items.onset-heldout2.json, run06, gold committed first in a70cae8): first contact 5/12 found, 0/8 false;
+// after 7 shape fixes 12/12, 0/8 (tuned on it now). Sweep over 3300 earlier texts: 50 -> 52 fires, both new ones right.
 // Run: node --experimental-strip-types --test scripts/ai-eval/onset-words.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,7 +13,8 @@ await import('./ts-register.mjs');
 const { onsetWords } = await import('../../lib/records/onset.ts');
 const { onsetText, buildDoctorSummary } = await import('../../lib/records/summary.ts');
 
-const { items } = JSON.parse(readFileSync(new URL('./items.onset-heldout.json', import.meta.url), 'utf8'));
+const load = (f) => JSON.parse(readFileSync(new URL(f, import.meta.url), 'utf8')).items;
+const items = [...load('./items.onset-heldout.json'), ...load('./items.onset-heldout2.json')];
 
 test('held-out set: every phrase found verbatim, nothing from the 10 negatives', () => {
   for (const it of items) {
