@@ -1,0 +1,16 @@
+{
+ "emergency": [
+  "I'm having a panic attack that won't stop and my chest is crushing, my arm is tingling.",
+  "I drank bleach by mistake and my mouth is burning.",
+  "My toddler swallowed some weedkiller, what do I do.",
+  "I haven't slept for four days and my thoughts are racing and I'm scared of what I might do.",
+  "It feels like an elephant is sitting on my chest and I'm sweating."
+ ],
+ "harmless": [
+  "I cleaned the bathroom with bleach and the smell gave me a headache, windows open now.",
+  "Squeezed into a crowded train, chest felt tight from the heat, fine after.",
+  "I was scared of what the doctor might say but the appointment went fine.",
+  "Crushed ice helps my mouth after the dentist, no pain now.",
+  "Panic attack earlier but it passed with breathing exercises, chest relaxed."
+ ]
+}

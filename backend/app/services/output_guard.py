@@ -312,7 +312,7 @@ _SELF_HARM_RX = re.compile(
     r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)|"
     # set p83 (hormone/diagnosis distress; first contact 3/12 self-harm lines missed)
     r"(?:i would|i'?d|would) be better off (?:not alive|not here|not living)|(?:thinking|thought|thoughts) (?:of|about) ways to (?:not wake up|end it)|"
-    r"(?:ways|way) to not wake up)\b",
+    r"(?:ways|way) to not wake up|scared (?:of )?what i (?:might|could|will) do|afraid (?:of )?what i (?:might|could|will) do)\b",
     re.I,
 )
 _EMERGENCY = re.compile(
@@ -508,6 +508,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # PM blind set 0028: positive test (either order) with sharp or one-sided pain, and a number-form temperature with a tampon that is stuck
                     r"^(?=.*\b(?:(?:pregnancy )?test (?:was |came back |is |showed )?positive|positive (?:pregnancy )?test)\b)(?=.*\b(?:sharp|stabbing|severe)\b.{0,30}\bpain\b|.*\bpain\b.{0,30}\b(?:on (?:the|my) (?:right|left)|one side)\b)(?=.*\b(?:shoulder|dizzy|faint\w*|bleed\w*))|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?|cup)\b)(?=.*\b(?:can'?t|cannot|couldn'?t|could not|unable to) (?:get|take|pull|reach)\b.{0,15}\b(?:out|it out)\b|.*\bstuck\b)(?=.*\b(?:temperature|temp) (?:of |is |was |at )?(?:3[89]|4\d)\b)|"
+                    # set p103 (crushing chest with tingling arm, swallowing bleach or similar; first contact 2/10 missed)
+                    r"\bchest\b.{0,20}\b(?:crush\w*|squeez\w*|vice|elephant)\b|\b(?:crush\w*|squeez\w*)\b.{0,15}\bchest\b|"
+                    r"\b(?:drank|drink(?:ing)?|swallowed|ate)\b.{0,25}\b(?:bleach|antifreeze|weed ?killer|white spirit|dishwasher tablet|cleaning (?:fluid|product|spray))\b|\b(?:bleach|antifreeze|weed ?killer)\b.{0,30}\b(?:by mistake|by accident|swallowed|drank)\b.{0,60}\b(?:burning|mouth|throat|sick|vomit\w*)\b|"
                     # set p102 (asthma with blue lips, low blood sugar not responding, cold pale numb limb; first contact 3/11 missed)
                     r"\b(?:lips?|fingers?|skin)\b.{0,20}\b(?:blue|bluish|grey)\b.{0,60}\b(?:wheez\w*|inhaler|asthma|breath\w*)\b|\b(?:wheez\w*|inhaler|asthma|breath\w*)\b.{0,80}\b(?:lips?|fingers?)\b.{0,20}\b(?:blue|bluish|grey)\b|"
                     r"\b(?:sugar|glucose|blood sugar)\b.{0,30}\b(?:very low|too low|dropping|crashed|hypo\w*)\b.{0,80}\b(?:confus\w*|not working|isn'?t working|aren'?t working|faint\w*|pass\w* out|can'?t (?:talk|think))\b|\b(?:confus\w*|shaky and sweaty)\b.{0,60}\b(?:sugar|glucose)\b.{0,30}\b(?:very low|too low|hypo\w*)\b|"

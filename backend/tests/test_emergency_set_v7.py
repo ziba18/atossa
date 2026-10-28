@@ -373,3 +373,12 @@ SET45 = json.loads((Path(__file__).parent / "emergency_set_v45_asthma_sugar_limb
 def test_set_v45_asthma_sugar_limb_caught_and_harmless_quiet():
     assert [t for t in SET45["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET45["harmless"] if is_emergency(t)] == []
+
+
+SET46 = json.loads((Path(__file__).parent / "emergency_set_v46_chest_poison_crisis.json").read_text())
+
+
+def test_set_v46_chest_poison_crisis_caught_and_harmless_quiet():
+    assert [t for t in SET46["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET46["harmless"] if is_emergency(t)] == []
+    assert emergency_kind("I haven't slept for four days and my thoughts are racing and I'm scared of what I might do.") == "self_harm"
