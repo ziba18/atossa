@@ -99,6 +99,16 @@ export function wordMentions(notes: SymptomData[], cue: WordCue): { notes: numbe
   return { notes: worded.filter((s) => hit(s.words)).length, total: worded.length };
 }
 
+/** Her own tiredness ratings, as days + lowest–highest (never an average): 'Tiredness rated on 8 days (3–7 out of 10)'. */
+export function fatigueLine(notes: SymptomData[]): string {
+  const rated = notes.filter((s) => s.fatigue != null);
+  if (!rated.length) return '';
+  const days = new Set(rated.map((s) => s.date)).size;
+  const vals = rated.map((s) => s.fatigue as number);
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  return `Tiredness rated on ${days} ${days === 1 ? 'day' : 'days'} (${lo === hi ? lo : `${lo}–${hi}`} out of 10)`;
+}
+
 /** Empty-area copy when her words mention it: 'Not tagged yet — “tired” appears in 5 of 16 notes'. '' when no mention. */
 export function untaggedLine(notes: SymptomData[], cue: WordCue): string {
   const { notes: n, total } = wordMentions(notes, cue);

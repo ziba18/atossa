@@ -33,3 +33,11 @@ test('copy stays a count of her words: no label, no cause', () => {
   const line = untaggedLine(notes(), 'tired');
   assert.doesNotMatch(line, /fatigue|anaemi|iron|because|due to|sign of|likely|suggest|%/i);
 });
+
+test('Sleep and mood shows her own tiredness ratings (days + range, no average) before the word count', async () => {
+  const { fatigueLine } = await import('../../lib/records/counts.ts');
+  const n = (date, fatigue) => ({ date, words: 'very tired', source: 'text', fatigue });
+  assert.equal(fatigueLine([n('2026-09-01', 3), n('2026-09-02', 7), n('2026-09-02', 6)]), 'Tiredness rated on 2 days (3–7 out of 10)');
+  assert.equal(fatigueLine([n('2026-09-01', 4)]), 'Tiredness rated on 1 day (4 out of 10)');
+  assert.equal(fatigueLine([{ date: '2026-09-01', words: 'very tired', source: 'text' }]), '');
+});
