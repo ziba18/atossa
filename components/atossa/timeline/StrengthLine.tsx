@@ -10,9 +10,9 @@ import type { WeekBucket } from '../../../lib/records/patterns';
 import { Card, Txt } from '../kit';
 
 const H = 96;
-const TOP = 14;
+const TOP = 24;
 const BOTTOM = 8;
-const LEFT = 18;
+const LEFT = 22;
 
 /** Spoken equivalent: every week that has a number. */
 export function strengthLineLabel(weeks: WeekBucket[]): string {
@@ -27,7 +27,14 @@ export function StrengthLine({ weeks }: { weeks: WeekBucket[] }) {
   const given = pts.filter((p): p is { i: number; peak: number; from: string } => p.peak != null);
   if (given.length < 2) return null;
   const hi = given.reduce((a, b) => (b.peak > a.peak ? b : a));
-  const x = (i: number) => LEFT + (weeks.length === 1 ? 0 : (i / (weeks.length - 1)) * Math.max(0, w - LEFT - 8));
+  const x = (i: number) => LEFT + (i / (weeks.length - 1)) * Math.max(0, w - LEFT - 8);
+  // A week with no number breaks the line: nothing is drawn across weeks she gave no figure.
+  const runs: { i: number; peak: number }[][] = [];
+  pts.forEach((p) => {
+    if (p.peak == null) { runs.push([]); return; }
+    if (!runs.length) runs.push([]);
+    runs[runs.length - 1].push({ i: p.i, peak: p.peak });
+  });
   const y = (v: number) => TOP + (1 - v / 10) * (H - TOP - BOTTOM);
   return (
     <Card>
@@ -39,18 +46,21 @@ export function StrengthLine({ weeks }: { weeks: WeekBucket[] }) {
             {[0, 5, 10].map((g) => (
               <React.Fragment key={g}>
                 <Line x1={LEFT} x2={w} y1={y(g)} y2={y(g)} stroke={colors.hairline} strokeWidth={1} />
-                <SvgText x={0} y={y(g) + 3} fontSize={10} fontFamily={fonts.regular} fill={colors.ink3}>{String(g)}</SvgText>
+                <SvgText x={0} y={y(g) + 3} fontSize={11} fontFamily={fonts.regular} fill={colors.ink3}>{String(g)}</SvgText>
               </React.Fragment>
             ))}
-            <Polyline
-              points={given.map((p) => `${x(p.i)},${y(p.peak)}`).join(' ')}
-              fill="none" stroke={colors.plum} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round"
-            />
+            {runs.filter((r) => r.length > 1).map((r) => (
+              <Polyline
+                key={r[0].i}
+                points={r.map((p) => `${x(p.i)},${y(p.peak)}`).join(' ')}
+                fill="none" stroke={colors.ink2} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round"
+              />
+            ))}
             {given.map((p) => (
-              <Circle key={p.from} cx={x(p.i)} cy={y(p.peak)} r={p === hi ? 5 : 3} fill={p === hi ? colors.ink : colors.plum} />
+              <Circle key={p.from} cx={x(p.i)} cy={y(p.peak)} r={p === hi ? 5 : 3} fill={p === hi ? colors.ink : colors.ink2} />
             ))}
             <SvgText
-              x={Math.min(Math.max(x(hi.i), LEFT + 34), w - 34)} y={Math.max(10, y(hi.peak) - 9)} fontSize={11}
+              x={Math.min(Math.max(x(hi.i), LEFT + 34), w - 34)} y={y(hi.peak) - 10} fontSize={11}
               fontFamily={fonts.semibold} fill={colors.ink} textAnchor="middle"
             >
               {`${hi.peak}/10`}

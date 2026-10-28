@@ -242,7 +242,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       )}
 
       {range === '12w' ? (
-        <FadeIn index={1}>
+        <FadeIn index={2}>
           <StrengthLine weeks={m.weeks} />
         </FadeIn>
       ) : null}

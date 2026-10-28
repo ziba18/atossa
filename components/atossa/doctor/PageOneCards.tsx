@@ -13,13 +13,13 @@ const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 function ProofStrip({ all, top, worst }: { all: { days: number; total: number }; top?: { label: string; days: number }; worst?: string }) {
   const tiles = [
     { big: String(all.days), small: `of ${plural(all.total, 'day')} with a note` },
-    ...(top ? [{ big: String(top.days), small: `days: ${top.label.toLowerCase()}` }] : []),
+    ...(top ? [{ big: String(top.days), small: `days · ${top.label.toLowerCase()}` }] : []),
     ...(worst ? [{ big: `${worst}/10`, small: 'worst, out of 10' }] : []),
   ];
   return (
     <View style={{ flexDirection: 'row', gap: space.xs }} accessible accessibilityLabel={tiles.map((t) => `${t.big} ${t.small}`).join('. ')}>
       {tiles.map((t) => (
-        <View key={t.small} aria-hidden style={{ flex: 1, minWidth: 0, backgroundColor: colors.ink, borderRadius: radii.input, padding: space.sm }}>
+        <View key={t.big + t.small} aria-hidden style={{ flex: 1, minWidth: 0, backgroundColor: colors.ink, borderRadius: radii.input, padding: space.sm }}>
           <Txt variant="numeral" numberOfLines={1} style={{ fontSize: 24, lineHeight: 30, color: colors.white }}>{t.big}</Txt>
           <Txt variant="caption" style={{ color: colors.white, marginTop: space.xxs }}>{t.small}</Txt>
         </View>
@@ -50,8 +50,9 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
 
   if (freq && freq.id === 'frequency') {
     const [first, ...rest] = freq.bars;
-    if (first) {
-      const worstNums = rest.map((b) => Number(/worst (\d+)\/10/.exec(b.strength ?? '')?.[1])).filter((n) => !Number.isNaN(n));
+    if (first && first.days > 0) {
+      // Same three area rows as the card below, so the strip never shows a number the card does not.
+      const worstNums = rest.slice(0, 3).map((b) => Number(/worst (\d+)\/10/.exec(b.strength ?? '')?.[1])).filter((n) => !Number.isNaN(n));
       cards.push(
         <ProofStrip
           key="proof"
