@@ -29,6 +29,7 @@ export default function WelcomeScreen() {
   const win = useWindowDimensions();
   const short = win.height < 700;
   const tall = win.height >= 800; // spare height goes into the story (card, steps), not one empty band above the buttons
+  const extra = tall ? Math.min(100, win.height - 844 > 0 ? win.height - 844 : 0) : 0; // phones taller than 844 spread the story a little more
   const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
   useEffect(() => track('Welcome Viewed'), []);
   // One 400 ms rise of the waveform on first paint; nothing moves under Reduce Motion.
@@ -62,7 +63,7 @@ export default function WelcomeScreen() {
           </View>}
         </View>
 
-        <View style={[styles.hero, short && styles.heroShort, tall && styles.heroTall]}>
+        <View style={[styles.hero, short && styles.heroShort, tall && styles.heroTall, extra > 0 && { paddingTop: space.md + extra * 0.5 }]}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
             {WEB ? 'Write it' : 'Say it'} the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
