@@ -68,3 +68,26 @@ def test_export_covers_every_table():
     db.commit()
     out = export_my_data(current_user=me, db=db)
     assert {t.name for t in Base.metadata.sorted_tables} <= set(out["tables"])
+
+
+def test_export_includes_every_record_kind_and_history_rows():
+    from app.schemas.record import RecordKind
+    kinds = list(RecordKind.__args__)
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    db = sessionmaker(bind=engine)()
+    me = User(email="me@example.com", hashed_password="$2b$x")
+    other = User(email="other@example.com", hashed_password="$2b$y")
+    db.add_all([me, other])
+    db.commit()
+    for k in kinds:
+        db.add(HealthRecord(user_id=me.id, kind=k, data=json.dumps({"note": f"mine-{k}"})))
+        db.add(HealthRecord(user_id=other.id, kind=k, data=json.dumps({"note": f"theirs-{k}"})))
+    db.add(HealthRecord(user_id=me.id, kind="history", data=json.dumps({"type": "Allergies (in my words)", "told": "mine-allergy-words"})))
+    db.commit()
+
+    out = export_my_data(current_user=me, db=db)
+    rows = out["tables"]["health_records"]
+    assert sorted(r["kind"] for r in rows if r["data"].get("note")) == sorted(kinds)
+    assert any(r["data"].get("told") == "mine-allergy-words" for r in rows)
+    assert "theirs-" not in json.dumps(out)

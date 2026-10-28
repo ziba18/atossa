@@ -76,7 +76,7 @@ _ADVICE_MODAL = re.compile(
 # or a pointer to the GP; every other statement (explanations, tips, reassurance in new words) is
 # swapped for the fallback, so a paraphrase the regexes above never saw still cannot get through.
 _ACK_OPENER = re.compile(
-    r"^(?:what i can do is (?:write|turn|put|note|keep|add|record|help)|it makes sense to (?:mention|tell me|bring up|note|add)|if (?:it helps|you want|you(?:'d| would) like|you tell me [^,]{1,40}),? i(?:'ll| will| can) (?:add|note|put|write|keep|record|help)|i believe (?:you|what you)|no,? i can'?t\b|i(?:'m| am) not going to (?:read|guess|judge|say)|that sounds like (?:a |an )?(?:\w+ ){0,2}wait|noted:|there(?:'s| is) no (?:right answer|need to (?:decide|rush|answer|explain|have it all))|"
+    r"^(?:what i can do is (?:write|turn|put|note|keep|add|record|help)|it makes sense to (?:mention|tell me|bring up|note|add)|if (?:it helps|you want|you(?:'d| would) like|you tell me [^,]{1,40}),? i(?:'ll| will| can) (?:add|note|put|write|keep|record|help)|i believe (?:you|what you)(?!'re right|'re correct| are right| are correct)|no,? i can'?t\b|i(?:'m| am) not going to (?:read|guess|judge|say)|that sounds like (?:a |an )?(?:\w+ ){0,2}wait|noted:|there(?:'s| is) no (?:right answer|need to (?:decide|rush|answer|explain|have it all))|"
     r"what an? (?:\w+ ){1,2}(?:week|day|time|night|month)|good,? (?:that'?s|to know)|so (?:it'?s|you(?:'ve|'re)?|that'?s)\b|that(?:'s| is) (?:a )?(?:helpful|useful|clear|good|really helpful)|that detail|try describing|"
     r"(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:you|your)\b|it sounds like (?:you(?:'ve| have|'re| are)?|your|the \w+(?: \w+)? (?:has|have|is|are|was|were)|it(?:'s| has) been)|for now,? i(?:'m| am) (?:just )?here|i can help you|thanks|thank you|noted|got it|okay|ok|understood|alright|sure|i see|makes sense|i hear you|i understand|i'?m sorry|sorry|no worries|no rush|no problem|take your time|"
     r"if you(?:'d| would) like,? you could (?:bring|show|share|take) (?:this|the|your) (?:summary|notes?|log)\b|"
@@ -93,7 +93,7 @@ _MAX_ACK_WORDS = 24
 # Phrases an acknowledgement may contain although they hold a claim word.
 _ACK_SAFE = re.compile(r"\b(?:your (?:doctor|gp) (?:may|might|will|could) find (?:it|this|that|the \w+) (?:useful|helpful)|your (?:doctor|gp) can say whether [^,.]*|(?:a )?cycle of (?:about |around |roughly )?\d+ days|(?:one|two|three|\d+) tablets?|what it means|not (?:quite )?sure|not be sure|(?:won'?t )?try to (?:explain|guess)(?: it)?(?:, as that'?s for your (?:doctor|gp))?|(?:(?:i hear|i understand|i can see) )?(?:that )?you(?:'re| are) worried|mostly (?:on the (?:left|right)|in the (?:evenings?|mornings?|night)|at night)|help with that|(?:starts?|eases?|stops?) (?:on|by) day (?:one|two|three|four|five|\d)|guess at anything|(?:at|for|from|off|to) (?:work|school|uni)\b|can help you get (?:your )?(?:symptoms|things|it) down(?: clearly)?|make sure|won'?t guess(?: at anything)?|stressful (?:week|day|time|night)|made (?:a|no) difference|the best person to (?:\w+ ){0,3}(?:into|about|with)(?: why it'?s happening| that)?|why it'?s happening|may be useful for your (?:appointment|gp|doctor)|will be useful for your (?:appointment|gp|doctor)|no need to (?:decide|rush|answer|explain)|to help you (?:describe|put|write|note|capture|explain)\b[^.]*|(?:your gp|your doctor) can (?:help|look|advise|assess|check)(?: with that)?|(?:writing|putting|noting) (?:it|this|things) down(?: clearly)? can help (?:your|you)\b[^.]*|if you(?:'re| are) worried|ready for (?:them|your gp|your doctor)|worth (?:noting|jotting|writing|adding)|your cycle|could be useful|can help you|may help your gp|would help your gp|(?:leave|left|leaving|miss(?:ed|ing)?|off) work(?: early)?|under what it affected|(?:the |your )?(?:heat pad|hot water bottle|bath)\b|didn'?t help(?: much)?|how often (?:this|it) happens|(?:logging|tracking) it is worth it|(?:since|in|from|until|till|by|last|early|late|mid|end of) may\b)\b", re.I)
 # Signposting to real services and "I won't guess" are safe in any statement (independent set v2, 2026-10-26).
-_PLAIN_SAFE = re.compile(r"\b(?:if (?![^.]*\b(?:likel\w*|probabl\w*|usually|just|normal|nothing|hormon\w*|stress)\b)[a-z ,'&]{0,80}?\b(?:severe|sudden|faint|frightened|scared|unwell|dizzy|sick|worse|act on (?:these|those) (?:feelings|thoughts))\b[a-z ,']{0,30}?,? (?:please )?(?=(?:call|ring|go to) )|if you might act on (?:these|those|the) (?:feelings|thoughts)|(?:please get support right now: )?call samaritans(?: free)?(?: on 116 123)?|(?:if (?:it'?s|it is|it gets|the pain (?:is|gets)) (?:very |really )?(?:severe|sudden|unbearable|worse)(?:,? (?:or )?(?:sudden|severe))?(?:,? or you(?:'re| are) (?:frightened|scared|worried)(?: right now)?)?,? |if you(?:'re| are) (?:worried|unsure|frightened|scared),? )?(?:please )?(?:call 999|go to a&e|call 111|ring 111|speak to your gp|see your gp|contact your gp)|(?:a |your )?(?:pharmacist|gp|doctor)(?: or (?:a |your )?(?:pharmacist|gp|doctor))? can help|if you(?:'re| are) unsure about what to take,? |(?:it'?s |it is |it (?:may|might|could) be |(?:may|might|could) be )?worth (?:telling|mentioning|showing|asking)(?: (?:it|this|that))?(?: to)? (?:your |a )?(?:doctor|gp|pharmacist|nurse)|(?:don'?t|wouldn'?t) want to guess|(?:wouldn'?t|isn'?t) (?:be )?right for me to guess)", re.I)
+_PLAIN_SAFE = re.compile(r"\b(?:if (?![^.]*\b(?:likel\w*|probabl\w*|usually|just|normal|nothing|hormon\w*|stress)\b)[a-z ,'&]{0,80}?\b(?:severe|sudden|faint|frightened|scared|unwell|dizzy|sick|worse|act on (?:these|those) (?:feelings|thoughts))\b[a-z ,']{0,30}?,? (?:please )?(?=(?:call|ring|go to) )|if you (?:(?:think|feel) (?:like )?you )?might act on (?:these|those|the) (?:feelings|thoughts)|(?:,? )?if (?:that|it) would help(?: later| you)?(?=[.!]|$)|(?:please get support right now: )?call samaritans(?: free)?(?: on 116 123)?|(?:if (?:it'?s|it is|it gets|the pain (?:is|gets)) (?:very |really )?(?:severe|sudden|unbearable|worse)(?:,? (?:or )?(?:sudden|severe))?(?:,? or you(?:'re| are) (?:frightened|scared|worried)(?: right now)?)?,? |if you(?:'re| are) (?:worried|unsure|frightened|scared),? )?(?:please )?(?:call 999|go to a&e|call 111|ring 111|speak to your gp|see your gp|contact your gp)|(?:a |your )?(?:pharmacist|gp|doctor)(?: or (?:a |your )?(?:pharmacist|gp|doctor))? can help|if you(?:'re| are) unsure about what to take,? |(?:it'?s |it is |it (?:may|might|could) be |(?:may|might|could) be )?worth (?:telling|mentioning|showing|asking)(?: (?:it|this|that))?(?: to)? (?:your |a )?(?:doctor|gp|pharmacist|nurse)|(?:don'?t|wouldn'?t) want to guess|(?:wouldn'?t|isn'?t) (?:be )?right for me to guess)", re.I)
 # A whole sentence that only points to a real service ("If you think you need help now, call NHS 111 or go to 111.online",
 # "If you feel you might hurt yourself, call 999 or go to A&E now, or call Samaritans on 116 123") is safe, as long as
 # it carries no cause, verdict, hedge or condition word (NHS set v20, 2026-10-27: 4 of 8 first-contact blocks).
@@ -115,8 +115,8 @@ _CLAIM = re.compile(
     r"will (?:pass|go|clear|settle|resolve)|go away|clear up|settle|sort (?:it|this)|guess|bet|likel\w*|probabl\w*|chances?|"
     r"usually|typical\w*|frequent\w*|tends? to|often|rarely|always|mostly|typical|signals?|indicat\w*|linked|reason|because|due|culprit|cause\w*|"
     r"signs?|suggest\w*|sounds? (?:as though|like)|reads? like|looks? like|means|comes? with|should|would|could|might|may|"
-    r"can help|improves?|works?|wonders?|normal\w*|heat\w*|compress\w*|packs?|lie down|better|baths?|reduces?|reaction|take care|painkillers?|antibiotics?|tablets?|pills?|frequently|commonly|complaint|reliev\w*|swear|heal\w*|ease|treat\w*|cure|explanation|benefit|down to|worth|no need|end up|i'?d say|nothing at all|by itself|"
-    r"noticeable|difference|normally|calm\w*|helps?|\d+\s?%|\d+ in \d+|definitely|certainly|absolutely|safely|ignore|scores?|risks?|caus\w+|confident|sure|certain|convinced|believe|reckon|think|fairly|you(?:'re| are) (?:fine|ok|okay|alright|safe))\b|^(?:yes|no|nope|yep|try|avoid|take|use|eat|drink|consider|cut|stop|start|apply|rest)\b|%",
+    r"can help|improves?|works?|wonders?|normal\w*|heat\w*|compress\w*|packs?|lie down|better|baths?|reduces?|reaction|take care|painkillers?|antibiotics?|tablets?|pills?|frequently|commonly|complaint|reliev\w*|swear|ease|treat\w*|cure|explanation|benefit|down to|worth|no need|end up|i'?d say|nothing at all|by itself|"
+    r"noticeable|difference|normally|calm\w*|helps?|\d+\s?%|\d+ in \d+|definitely|certainly|absolutely|safely|ignore|scores?|risks?|caus\w+|confident|sure|certain|convinced|believe|reckon|think|fairly|you(?:'re| are) (?:fine|ok|okay|alright|safe)|you(?:'re| are) (?:probably |quite |absolutely )?(?:right|correct) (?:that|about|it)|heal(?:s|ed|ing)?(?=\W|$))\b|^(?:yes|no|nope|yep|try|avoid|take|use|eat|drink|consider|cut|stop|start|apply|rest)\b|%",
     re.I,
 )
 _MAX_PLAIN_WORDS = 14
@@ -129,6 +129,9 @@ _HOMOGLYPHS = str.maketrans({"а": "a", "е": "e", "о": "o", "р": "p", "с": "
 # Phone keyboards type curly apostrophes (can’t); the patterns use the straight one.
 _QUOTES = str.maketrans({"\u2018": "'", "\u2019": "'", "\u02bc": "'", "\u2032": "'", "\u201c": '"', "\u201d": '"'})
 _LEET = {"0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "@": "a", "$": "s"}
+
+
+_DEVICE_TEMP = re.compile(r"\b(?:heat(?:ing)? pad|heating|heat on|hot[- ]?water bottle|pad|blanket|bath|shower|oven|dishwasher|dryer|setting|set (?:to|at))\b", re.I)
 
 
 def _norm(text: str) -> str:
@@ -145,6 +148,20 @@ def _norm(text: str) -> str:
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
     t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
+    # spelled temperatures next to a temperature word ("thirty nine degrees temperature", "fever of thirty-nine", "forty")
+    _words = {"thirty eight": "38", "thirty nine": "39", "forty": "40", "thirty-eight": "38", "thirty-nine": "39"}
+    t = re.sub(r"\b(thirty[ -](?:eight|nine)|forty)\b(?=\s*(?:degrees?\s*)?(?:c\b\s*)?(?:temp|temperature|fever)\b)|(?<=\btemp )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature )(thirty[ -](?:eight|nine)|forty)\b|(?<=\bfever of )(thirty[ -](?:eight|nine)|forty)\b|(?<=\btemperature of )(thirty[ -](?:eight|nine)|forty)\b", lambda m: _words[next(g for g in m.groups() if g).lower()], t, flags=re.I)
+    # measured temperatures: "temp 39.5", "38.9 temp", "thermometer says 102" read as "high temperature of 39" (38+ C or 100.4+ F);
+    # a device setting ("heat pad on temp 40", "bath at 40 degrees") is not a body temperature
+    def _fever(m: "re.Match[str]") -> str:
+        before = m.string[max(0, m.start() - 30):m.start()]
+        if _DEVICE_TEMP.search(before):
+            return m.group(0)
+        n = m.groupdict().get("c") or "39"
+        return f"high temperature of {n}"
+    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*(?P<c>3[89]|4[0-2])(?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times|minutes?|mins?|degrees|mg|%))", _fever, t, flags=re.I)
+    t = re.sub(r"\b(?P<c>3[89]|4[0-2])(?:\.\d)?\s*(?:°\s*c|c|degrees)?\s*(?:temp(?:erature)?|fever)\b", _fever, t, flags=re.I)
+    t = re.sub(r"\b(?:temp(?:erature)?|fever|thermometer (?:says|reads|shows|said))\s*(?:of|is|was|at|hit|hits|reached|reads|:)?\s*10[1-7](?:\.\d)?\b(?!\s*(?:weeks?|days?|hours?|times|minutes?|mins?|degrees|mg|%))", _fever, t, flags=re.I)
     return re.sub(r"[ \t]{2,}", " ", t)
 
 
@@ -166,9 +183,25 @@ def _claims(text: str, user_low: str) -> bool:
     return False
 
 
+# Empathy about her feelings, not a verdict on her body: "That sounds serious." / "That's a worry to carry" /
+# "I believe what you're telling me" (Marketing v22, 2026-10-28). A negation or hedge in between does not match.
+_EMPATHY = re.compile(r"\bthat(?: sounds|'s| is)(?: really| very| so)? (?:serious|scary|frightening|a (?:real )?worry(?: to carry)?)(?=[.,!]|$)|"
+                      r"\bi believe (?:what )?you(?:(?:'re| are) telling me| say(?:ing)?)?(?=[.,!]|$)", re.I)
+# Text she asked to have on the page, in quotes after add/note/put ('I can add "asked about the pill" to your summary'):
+# the quoted words are her note, so they are excused only when every claim word in them is one she wrote.
+_NOTE_QUOTE = re.compile(r"\b(?:add|note|put|write)\s+\"([^\"]{1,80})\"", re.I)
+
+
+def _strip_note_quotes(sent: str, user_low: str) -> str:
+    if not user_low:
+        return sent
+    return _NOTE_QUOTE.sub(lambda m: m.group(0)[: m.start(1) - m.start(0)] + '""' if not _claims(m.group(1), user_low) else m.group(0), sent)
+
+
 def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
     reasons = []
     for sent in _sentences(model_text):
+        sent = _EMPATHY.sub("that", _strip_note_quotes(sent, user_low))
         if sent.rstrip("'\"").endswith("?"):  # "...such as 'what could we try next?'" (NHS set v20)
             continue
         if _SIGNPOST_SENT.search(sent) and not _SIGNPOST_BAD.search(sent):
@@ -182,7 +215,7 @@ def _statement_hits(model_text: str, user_low: str = "") -> list[str]:
             sent = rest[:1].upper() + rest[1:]
         # Only a sentence that restates the user ("So it's a dull ache...") may reuse their claim words.
         # ...and so does a logging line ("Noted: on the pill", "I've added ibuprofen 400 mg").
-        ul = user_low if re.match(r"(?:so|you)\b|noted\b|i(?:'ve| have) (?:noted|added|recorded|logged|put)\b", sent, re.I) else ""
+        ul = user_low if re.match(r"(?:so|you)\b|noted\b|i(?:'ve| have) (?:noted|added|recorded|logged|put)\b|i can (?:note|add|log|record)\b", sent, re.I) else ""
         if _ADVICE_MODAL.search(sent):
             reasons.append("advice")
         # Words only: a refusal cut out of the middle leaves stray ", ," tokens that must not count (blind set v3 H02).
@@ -295,7 +328,13 @@ _SELF_HARM_RX = re.compile(
     r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)|"
     # set p83 (hormone/diagnosis distress; first contact 3/12 self-harm lines missed)
     r"(?:i would|i'?d|would) be better off (?:not alive|not here|not living)|(?:thinking|thought|thoughts) (?:of|about) ways to (?:not wake up|end it)|"
-    r"(?:ways|way) to not wake up)\b",
+    r"(?:ways|way) to not wake up|scared (?:of )?what i (?:might|could|will) do|afraid (?:of )?what i (?:might|could|will) do)\b"
+    # set p105 (indirect self-harm wording; first contact 7/8 missed)
+    r"|\b(?:everyone|everybody|they|family|friends)\b.{0,15}\b(?:cope|manage|be fine|be okay|be happier)\b.{0,15}\bwithout me\b(?!.{0,25}\b(?:at work|on leave|holiday|this week|while)\b)|"
+    r"\b(?:picture|imagin\w+|think(?:ing)? about|fantasi[sz]\w+)\b.{0,20}\bnot being (?:here|alive|around)\b|\bsaving (?:up )?(?:my |the )?(?:pills|tablets|painkillers|meds)\b|"
+    r"\b(?:i'?m|im|i am) done (?:trying(?! (?:that|the|this|a|my|to)\b)|with (?:life|everything|it all))\b|\b(?:i'?d|i would) rather not be (?:here|around|alive)\b|"
+    r"\b(?:cut|scratch\w*|burn\w*|hurt)\b.{0,12}\b(?:my )?(?:arms?|wrists?|thighs?|legs?)\b.{0,25}\b(?:blade|razor|knife|scissors|glass)\b|\b(?:blade|razor)\b.{0,30}\b(?:my )?(?:arms?|wrists?|thighs?)\b|"
+    r"\b(?:looked up|googled|searched)\b.{0,25}\bhow many (?:pills|tablets|paracetamol|painkillers)\b(?= (?:it takes|to (?:overdose|die|kill)|would (?:kill|be fatal)|is (?:too many|fatal|a lethal)))",
     re.I,
 )
 _EMERGENCY = re.compile(
@@ -488,6 +527,28 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
                     r"^(?=.*\b(?:stopped eating (?:completely|altogether|anything)|not eaten|haven'?t eaten)\b)(?=.*\b(?:too weak|can'?t stand|faint\w*|dizzy)\b)|"
+                    # PM blind set 0028: positive test (either order) with sharp or one-sided pain, and a number-form temperature with a tampon that is stuck
+                    r"^(?=.*\b(?:(?:pregnancy )?test (?:was |came back |is |showed )?positive|positive (?:pregnancy )?test)\b)(?=.*\b(?:sharp|stabbing|severe)\b.{0,30}\bpain\b|.*\bpain\b.{0,30}\b(?:on (?:the|my) (?:right|left)|one side)\b)(?=.*\b(?:shoulder|dizzy|faint\w*|bleed\w*))|"
+                    r"^(?=.*\b(?:tampons?|menstrual cups?|cup)\b)(?=.*\b(?:can'?t|cannot|couldn'?t|could not|unable to) (?:get|take|pull|reach)\b.{0,15}\b(?:out|it out)\b|.*\bstuck\b)(?=.*\b(?:temperature|temp) (?:of |is |was |at )?(?:3[89]|4\d)\b)|"
+                    # set p104 (burns, chemical in the eye, tick bite, red streaks, ear bleeding after a bang, sudden deafness, locked jaw, curtain over vision; first contact 8/10 missed)
+                    r"\b(?:burn\w*|scald\w*|boiling water|hot oil)\b.{0,60}\b(?:white|waxy|leathery|charred|doesn'?t hurt|no pain|numb)\b|\b(?:chemical|bleach|acid|oven cleaner|cleaning (?:fluid|spray))\b.{0,30}\b(?:in|into) (?:my |his |her |the )?eyes?\b|\b(?:splash\w*|got)\b.{0,30}\b(?:chemical|bleach|acid)\b.{0,30}\beyes?\b|"
+                    r"\btick\b.{0,60}\b(?:rash|fever\w*|flu|bullseye)\b|^(?=.*\bred streaks?\b.{0,40}\b(?:up|along)\b)(?=.*(?<!no )\b(?:infect\w*|wound|cut|chills|shiver\w*|fever\w*)\b)|\bstreaks?\b.{0,30}\b(?:infect\w*|cut|wound)\b.{0,50}\b(?:chills|fever|shiver\w*)\b|"
+                    r"\bears?\b.{0,20}\b(?:bleeding|leaking blood|blood)\b.{0,60}\b(?:head|bang|fall|fell|drows\w*)\b|\bsudden(?:ly)?\b.{0,20}\b(?:loss of hearing|lost (?:my )?hearing|deaf\w*)\b|\bjaw\b.{0,20}\b(?:locked|clamped)\b|\bcan'?t open my mouth\b.{0,80}\b(?:neck|cut|wound)\b|"
+                    r"\b(?:curtain|shadow|veil)\b.{0,30}\b(?:across|over|in)\b.{0,15}\b(?:vision|eye|sight)\b|\bflashes? of light\b.{0,60}\b(?:curtain|shadow|lost|vision)\b|"
+                    # set p103 (crushing chest with tingling arm, swallowing bleach or similar; first contact 2/10 missed)
+                    r"\bchest\b.{0,20}\b(?:crush\w*|squeez\w*|vice|elephant)\b|\b(?:crush\w*|squeez\w*)\b.{0,15}\bchest\b|"
+                    r"\b(?:drank|drink(?:ing)?|swallowed|ate)\b.{0,25}\b(?:bleach|antifreeze|weed ?killer|white spirit|dishwasher tablet|cleaning (?:fluid|product|spray))\b|\b(?:bleach|antifreeze|weed ?killer)\b.{0,30}\b(?:by mistake|by accident|swallowed|drank)\b.{0,60}\b(?:burning|mouth|throat|sick|vomit\w*)\b|"
+                    # set p102 (asthma with blue lips, low blood sugar not responding, cold pale numb limb; first contact 3/11 missed)
+                    r"\b(?:lips?|fingers?|skin)\b.{0,20}\b(?:blue|bluish|grey)\b.{0,60}\b(?:wheez\w*|inhaler|asthma|breath\w*)\b|\b(?:wheez\w*|inhaler|asthma|breath\w*)\b.{0,80}\b(?:lips?|fingers?)\b.{0,20}\b(?:blue|bluish|grey)\b|"
+                    r"\b(?:sugar|glucose|blood sugar)\b.{0,30}\b(?:very low|too low|dropping|crashed|hypo\w*)\b.{0,80}\b(?:confus\w*|not working|isn'?t working|aren'?t working|faint\w*|pass\w* out|can'?t (?:talk|think))\b|\b(?:confus\w*|shaky and sweaty)\b.{0,60}\b(?:sugar|glucose)\b.{0,30}\b(?:very low|too low|hypo\w*)\b|"
+                    r"^(?!.*(?:raynaud|pins and needles|fine (?:now|once)|gone after|warmed up|in the cold))(?=.*\b(?:leg|foot|arm)\b.{0,25}\b(?:pale|white|blue|mottled|ice cold)\b.{0,30}\b(?:cold|numb\w*|can'?t feel|can'?t move|no pulse)\b)|"
+                    # set p101 (teen register probe: puffy lips with rash or new tablets, double vision with a pounding head; first contact 2/11 missed)
+                    r"^(?=.*\b(?:lips?|tongue|face)\b.{0,15}\b(?:puffy|puffing|swelling|swollen|swelled)\b)(?=.*(?<!no )(?<!without )\b(?:rash|hives|tablets?|pills?|injection|antibiotics?|wheez\w*)\b)|\beyes? (?:are |is )?(?:swollen|puffy) shut\b.{0,60}\b(?:rash|hives|tablets?|injection|antibiotics?)\b|"
+                    r"\b(?:see(?:ing)?|vision (?:is|went)|eyes? (?:are|went)) double\b.{0,80}\b(?:head(?:ache)?|pounding|worst|never had|sick|vomit\w*|stiff neck)\b|\b(?:head(?:ache)?|pounding|worst|never had|stiff neck)\b.{0,80}\b(?:see(?:ing)?|vision (?:is|went)) double\b|\bdouble vision\b.{0,60}\b(?:sudden\w*|all at once|head(?:ache)?|pounding)\b|"
+                    # set p100 (NHS stroke, sepsis skin signs, sudden one-sided numbness or vision loss; first contact 3/12 missed)
+                    r"\b(?:face|mouth|smile)\b.{0,30}\b(?:droop\w*|dropp\w*|fallen|sagg\w*)\b.{0,80}\b(?:speak|speech|talk|words?|slurr\w*|arm|smile)\b|\b(?:can'?t|cannot|couldn'?t) smile\b.{0,60}\b(?:droop\w*|dropp\w*|speak|speech|slurr\w*)\b|"
+                    r"\b(?:skin|lips|tongue|hands|feet|fingers)\b.{0,30}\b(?:mottled|blotchy|bluish|blue|grey|ashen)\b.{0,80}\b(?:might die|going to die|dying|confus\w*|fever|infection|breath\w*|very ill|unwell|drowsy|sleepy)\b|"
+                    r"\bsudden(?:ly)?\b.{0,30}\b(?:numb\w*|weak\w*)\b.{0,30}\b(?:one side|left side|right side|face|arm|leg)\b|\b(?:can'?t|cannot|couldn'?t) see (?:out of|from) (?:one|my (?:left|right)) eye\b|\bsudden(?:ly)? (?:lost|loss of) (?:my )?(?:vision|sight)\b|"
                     # set p99 (cauda equina and jaundice wording; first contact 2/8 missed)
                     r"\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b.{0,60}\b(?:legs?|feet|foot|numb\w*|weak\w*)\b|\b(?:legs?|feet|foot|numb\w*|weak\w*)\b.{0,60}\b(?:couldn'?t|could not|can'?t|cannot) (?:control|hold) (?:my )?(?:wee|bladder|bowels?|poo)\b|"
                     r"^(?=.*\byellow (?:skin|eyes)\b)(?=.*(?<!no )\b(?:fever|temperature|stabbing pain|severe pain|sharp pain)\b)|"
@@ -499,7 +560,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set p97 (midlife, HRT; first contact 2/12 missed)
                     r"^(?=.*\b(?:calf|leg)\b.{0,20}\b(?:swollen|swelling)\b)(?=.*\b(?:hot|warm)\b)(?=.*\b(?:painful|tender|sore)\b)|\bbleeding like a tap\b|"
                     # set p95 (retained tampon, assault with bleeding, genital infection, prolapse, early labour; first contact 7/12 missed)
-                    r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature|rash|unwell)\b)|"
+                    r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature(?! (?:of |is |was |at )?(?:3[0-7]|normal)\b)|rash|unwell)\b)|"
                     r"\b(?:raped|sexually assaulted|sexual assault|forced me)\b.{0,80}\b(?:bleed\w*|in a lot of pain|hurts? so)\b|"
                     r"^(?=.*\bdischarge\b)(?=.*(?<!no )\b(?:fever|temperature)\b)(?=.*\b(?:terrible|severe|awful|unbearable)\b.{0,15}\bpain\b|.*\bpain\b.{0,15}\b(?:terrible|severe|awful|unbearable)\b)|"
                     r"^(?=.*\b(?:vulva|labia)\b)(?=.*\b(?:huge|swollen|swelling|lump)\b)(?=.*(?<!no )\b(?:temperature|fever)\b)(?=.*\bpain\w*\b)|"

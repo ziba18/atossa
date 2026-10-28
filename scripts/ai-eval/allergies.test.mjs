@@ -32,3 +32,8 @@ test('an empty summary has no allergy line', () => {
   const doc = buildDoctorSummary({ symptoms: [], periodDays: [], medicines: [], history: [], appointments: [] }, RANGE);
   assert.ok(!summaryToHtml(doc).includes(ALLERGIES_LABEL));
 });
+
+test("the text export also says 'not recorded' when there are notes but no allergy line", () => {
+  const text = summaryToText(buildDoctorSummary(sam(), RANGE));
+  assert.ok(text.includes(`${ALLERGIES_LABEL}: not recorded`));
+});
