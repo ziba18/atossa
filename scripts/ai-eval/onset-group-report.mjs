@@ -1,14 +1,15 @@
 // Report (not a test): which symptom group the onset confirm row would name, vs a gold group, on the 27 onset notes of
 // items.onset-heldout*.json (gold by AI Brain run06 = same author as the notes; ambiguous notes are listed, not scored).
+// run07: P03/U02 (bloating) gold set to bowelBladder after PM 3c (a note that names its symptom takes that group).
 // Needs `onsetGroupFor` (lib/records/summary.ts on design-redesign 823a477+). Prints k/n right and the wrong ones.
 // Run: node --experimental-strip-types scripts/ai-eval/onset-group-report.mjs
 await import('./ts-register.mjs');
 const S = await import('../../lib/records/summary.ts');
 if (!S.onsetGroupFor) { console.log('onsetGroupFor not on this branch'); process.exit(0); }
 const GOLD = {
-  P01: null, P02: 'pain', P03: null, P04: 'bleeding', P05: null, P06: 'pain', P07: 'fatigue', P08: 'bleeding', P09: null,
+  P01: null, P02: 'pain', P03: 'bowelBladder', P04: 'bleeding', P05: null, P06: 'pain', P07: 'fatigue', P08: 'bleeding', P09: null,
   P10: null, P11: 'pain', P12: 'pain', P13: null, P14: null, P15: null,
-  U01: 'pain', U02: null, U03: 'pain', U04: 'bleeding', U05: 'fatigue', U06: 'pain', U07: 'bowelBladder', U08: 'skinHair',
+  U01: 'pain', U02: 'bowelBladder', U03: 'pain', U04: 'bleeding', U05: 'fatigue', U06: 'pain', U07: 'bowelBladder', U08: 'skinHair',
   U09: 'bleeding', U10: 'pain', U11: 'mood', U12: 'pain',
 };
 const { readFileSync } = await import('node:fs');
