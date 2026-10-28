@@ -502,7 +502,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set p97 (midlife, HRT; first contact 2/12 missed)
                     r"^(?=.*\b(?:calf|leg)\b.{0,20}\b(?:swollen|swelling)\b)(?=.*\b(?:hot|warm)\b)(?=.*\b(?:painful|tender|sore)\b)|\bbleeding like a tap\b|"
                     # set p95 (retained tampon, assault with bleeding, genital infection, prolapse, early labour; first contact 7/12 missed)
-                    r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature|rash|unwell)\b)|"
+                    r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature(?! (?:of |is |was |at )?(?:3[0-7]|normal)\b)|rash|unwell)\b)|"
                     r"\b(?:raped|sexually assaulted|sexual assault|forced me)\b.{0,80}\b(?:bleed\w*|in a lot of pain|hurts? so)\b|"
                     r"^(?=.*\bdischarge\b)(?=.*(?<!no )\b(?:fever|temperature)\b)(?=.*\b(?:terrible|severe|awful|unbearable)\b.{0,15}\bpain\b|.*\bpain\b.{0,15}\b(?:terrible|severe|awful|unbearable)\b)|"
                     r"^(?=.*\b(?:vulva|labia)\b)(?=.*\b(?:huge|swollen|swelling|lump)\b)(?=.*(?<!no )\b(?:temperature|fever)\b)(?=.*\bpain\w*\b)|"
