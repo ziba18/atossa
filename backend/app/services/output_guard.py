@@ -231,7 +231,7 @@ _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|did
 _PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|in year \d{1,2}\b(?![^.]*\b(?:today|now|just|this (?:morning|afternoon)|tonight)\b)|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _BODY = [
-    r"can'?t (?:breathe|catch my breath|get (?:any )?air)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
+    r"can'?t (?:breathe|catch my breath|get (?:any )?air)(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
     r"(?:tight|crushing) chest", r"faint(?:ed|ing)?", r"passed out|blacked out|black(?:ing)? out", r"collaps\w+",
     r"going to (?:pass out|collapse|faint)", r"fell over", r"everything (?:went|goes|turned) (?:black|dark|grey|gray|white)", r"woke (?:up )?on the floor",
     r"gushing", r"in agony", r"(?:so|too) much blood|blood (?:is )?(?:running|pouring|dripping) down", r"(?:chest|heart).{0,35}(?:squeezed|crushed|gripped|vice)|squeez\w+ (?:my )?chest",
@@ -259,7 +259,7 @@ _BODY = [
     r"soaking (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour)",
     r"(?:pad|tampon)s? (?:every|each|an) hour", r"(?:changed|changing) (?:my )?(?:pad|tampon)s? (?:\w+ times )?(?:in|every|each) (?:an|one|half an) hour",
     r"blood everywhere", r"(?:very |really |so |extremely )?heav(?:y|ily) bleeding", r"bleeding (?:really |very |so )?heav(?:y|ily)",
-    r"bleeding (?:a )?(?:huge|massive|lot|loads)", r"clots (?:the size|as big|bigger)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)", r"severe (?:sudden )?(?:pain|belly|abdominal|pelvic)",
+    r"bleeding (?:a )?(?:huge|massive|lot|loads)(?! (?:more|heavier) than (?:usual|normal|before|i (?:usually|normally)))", r"clots (?:the size|as big|bigger)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)", r"severe (?:sudden )?(?:pain|belly|abdominal|pelvic)",
     r"worst pain|worst (?:I'?ve|i have) ever|pain (?:came|comes) on suddenly|sudden(?:ly)? (?:stabbing|sharp|severe|intense)",
     r"excruciating|unbearable", r"pain is (?:10|ten)(?:/| out of )(?:10|ten)", r"(?:10|ten)(?:/| out of )(?:10|ten) pain",
     r"can'?t stand up", r"pregnan\w+.{0,60}(?:bleed|pain|spotting)|(?:bleed|pain|spotting).{0,60}pregnan\w+",
@@ -332,11 +332,11 @@ _EMERGENCY = re.compile(
     r"passing (?:fresh |bright red |lots of |loads of |a lot of )?blood\b(?! clots?)|blood in (?:my )?(?:vomit|poo|stool)|"
     r"(?:my )?face (?:has |had |is |just )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
     r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
-    r"can'?t breathe?|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath(?![^.;!?]{0,30}\b(?:laugh\w*|giggl\w*|after (?:a |the |my |some )?(?:run|jog|gym|workout|exercise|sprint|stairs|walk|swim|dancing|dance)|running|jogging|climbing (?:the |a few |three |two )?(?:flights? of )?stairs|(?:up|down) the stairs|excitement|excited)\b)|struggling to breathe|chest pain|coughing up blood|"
+    r"can'?t breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath(?![^.;!?]{0,30}\b(?:laugh\w*|giggl\w*|after (?:a |the |my |some )?(?:run|jog|gym|workout|exercise|sprint|stairs|walk|swim|dancing|dance)|running|jogging|climbing (?:the |a few |three |two )?(?:flights? of )?stairs|(?:up|down) the stairs|excitement|excited)\b)|struggling to breathe|chest pain|coughing up blood|"
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
     r"bleeding through(?! (?:a |an |my |the )?(?:\w+ )?(?:pads?|tampons?|towels?|cups?)\b(?:(?!\b(?:an hour|1 hour|one hour|half an hour|\d+ ?min\w*|every hour|dizz\w*|faint\w*|light-?headed|weak|clots?)\b)[^.!?])*\b(?:(?:[2-9]|two|three|four|five|six|a few|several) hours?|overnight|in the night|all night)\b(?![^.!?]*\b(?:dizz\w*|faint\w*|light-?headed|weak|clots?)\b))|bleeding (?:heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
-    r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?|"
+    r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|"
     r"worst (?:pain )?(?:i'?ve|i have) ever|pain so bad|(?:big )?clots? (?:the size of|bigger than)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)|pain (?:is |was )?unbearable|pain (?:is |was )?(?:a )?(?:10|ten)(?:/| out of )10|"
     r"sudden (?:sharp |stabbing )?pain|\bi(?:'?m| am| think i'?m)? (?:\w+ ){0,3}miscarr\w+|"
     r"pregnan\w+ and (?:bleeding|pain|cramp\w*)|(?:i'?m|i am|am) pregnant.{0,40}(?:bleeding|pain|cramp\w*)|"
