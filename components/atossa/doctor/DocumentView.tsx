@@ -121,10 +121,11 @@ function Bars({ bars, st }: { bars: FreqBar[]; st: St }) {
     <View style={{ gap: st.s.gap * 3, marginTop: st.s.gap * 2 }}>
       {bars.map((b) => (
         <View key={b.label} accessible accessibilityLabel={joinFacts(barText(b), b.strength)}>
-          <Txt style={st.body}>
-            <Txt style={st.strong}>{barText(b)}</Txt>
-            {b.strength ? <Txt style={st.muted}>{` · ${b.strength}`}</Txt> : null}
-          </Txt>
+          {/* Two blocks that wrap as wholes: a middot between them used to end a line ('… days ·'). */}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: st.s.gap * 3 }}>
+            <Txt style={[st.body, st.strong]}>{barText(b)}</Txt>
+            {b.strength ? <Txt style={[st.body, st.muted]}>{b.strength}</Txt> : null}
+          </View>
           <View style={{ height: st.s.track, backgroundColor: C.track, borderWidth: 0.5, borderColor: C.borderStrong, marginTop: st.s.gap }}>
             <View style={{ height: '100%', width: `${Math.max(1.5, (b.days / Math.max(1, b.total)) * 100)}%`, backgroundColor: C.ink }} />
           </View>
