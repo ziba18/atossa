@@ -281,7 +281,7 @@ _BODY = [
     r"(?:soak\w*|drench\w*|bleed\w*|blood)(?: is)?(?: going)? (?:thru|through) (?:my )?(?:jeans|trousers|pants|leggings|skirt|dress|sheets|the bed|the mattress)",
     r"(?:soaked|drenched|ruined) (?:the |my )?(?:bed|sheets|mattress)\b.{0,30}\bblood|\bblood\b.{0,30}\b(?:soaked|drenched) (?:the |my )?(?:bed|sheets|mattress)\b",
     r"\b(?:left |right )?arm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b.{0,50}\b(?:jaw|sweat\w*)\b|\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*)\b.{0,50}\b(?:sweat\w*|(?:left |right )?arm)\b",
-    r"soaking (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour)",
+    r"soak(?:ing|ed)? (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour| (?:every|each) (?:half[- ]hour|half an hour|(?:15|20|30|45) ?min\w*))",
     r"(?:pad|tampon)s? (?:every|each|an) hour", r"(?:changed|changing) (?:my )?(?:pad|tampon)s? (?:\w+ times )?(?:in|every|each) (?:an|one|half an) hour",
     r"blood everywhere", r"(?:very |really |so |extremely )?heav(?:y|ily) bleeding", r"bleeding (?:really |very |so )?heav(?:y|ily)(?!\b[^.!?;]{0,30}\b(?:day (?:one|two|three|four|[1-4])|changed (?:my )?(?:pads?|tampons?) (?:only )?(?:twice|once))\b)",
     r"bleeding (?:a )?(?:huge|massive|lot|loads)(?! (?:more|heavier) than (?:usual|normal|before|i (?:usually|normally)))", r"clots (?:the size|as big|bigger)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)", r"severe (?:sudden )?(?:pain|belly|abdominal|pelvic)",
@@ -363,7 +363,8 @@ _SELF_HARM_RX = re.compile(
     r"nothing (?:left )?to live for|no reason to (?:live|go on|be here)|(?:might|going to|gonna|want to|thinking (?:of|about)) (?:harm|hurt|injure) myself|"
     r"(?:gonna|going to|about to|will) (?:take|swallow|down) (?:all|every one of|the whole lot of) (?:these|my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
     r"(?:took|taken|swallowed|had) (?:all|every one|the whole lot) (?:of )?(?:my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
-    r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds)|"
+    r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds|antidepressants|sleeping (?:pills|tablets)|co-?codamol|codeine)|"
+    r"(?:thoughts?|thinking) of ending it\b|(?:thinking|thought|thoughts|keep thinking) (?:of|about) (?:jumping (?:off|from) (?:the |a |an |that )?(?:\w+ ){0,2}(?:bridge|roof|cliff|building|balcony|window|tower|flats|car park|viaduct|pier|edge)|(?:jumping|throwing myself) (?:in front of|under) (?:a |the )?(?:train|bus|car|lorry|tube))|"
     r"(?:don'?t|do not|can'?t|cannot) see (?:the |any )?point (?:in |of )?(?:being alive|living|going on|carrying on|life)|no point (?:in )?(?:living|going on|being alive)|"
     r"(?:everyone|everybody|they|family|friends) (?:would|will|'d) be better off without me|wish i (?:was|were) dead|wish i (?:would|could) (?:just )?not wake up|"
     r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)|"
@@ -617,7 +618,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:drank|had)\b.{0,30}\b(?:vodka|alcohol|wine|whisky)\b.{0,40}\b(?:took|and took)\b.{0,20}\b(?:sleeping|pills|tablets)\b.{0,60}\b(?:stay awake|struggling|drowsy|slurr\w+)\b|"
                     r"\bbaby\b.{0,30}\b(?:under|less than) (?:3|three|2|two|1|one) months?\b.{0,40}\b(?:fever|high temperature)\b|"
                     # set p97 (midlife, HRT; first contact 2/12 missed)
-                    r"^(?=.*\b(?:calf|leg)\b.{0,20}\b(?:swollen|swelling)\b)(?=.*\b(?:hot|warm)\b)(?=.*\b(?:painful|tender|sore)\b)|\bbleeding like a tap\b|"
+                    r"^(?=.*\b(?:calf|leg)\b.{0,20}\b(?:swollen|swelling)\b)(?=.*\b(?:hot|warm)\b)(?=.*\b(?:painful|tender|sore)\b)|^(?!.*\b(?:sunburn\w*|in the sun|heat pad|hot water bottle|after (?:the |my )?(?:gym|run|yoga|walk|swim)|insect|mosquito|bite)\b)(?=.*\b(?:calf|leg)\b.{0,30}\b(?:hot|warm)\b)(?=.*\bred\b)(?=.*\b(?:sore|swollen|swelling|painful|tender)\b)|\bbleeding like a tap\b|"
                     # set p95 (retained tampon, assault with bleeding, genital infection, prolapse, early labour; first contact 7/12 missed)
                     r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature(?! (?:of |is |was |at )?(?:3[0-7]|normal)\b)|rash|unwell)\b)|"
                     r"\b(?:raped|sexually assaulted|sexual assault|forced me)\b.{0,80}\b(?:bleed\w*|in a lot of pain|hurts? so)\b|"
@@ -707,6 +708,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set v17 (typed fast): pad counts with abbreviations, very hot + confused, sudden headache with stiff neck
                     r"\b(?:soaked|soaking|filled|gone through|went through|used)\b.{0,12}\b\d+ (?:pads?|tampons?)\b.{0,15}\b(?:in|within) (?:\d+|an?|one|two|three|four) (?:hrs?|hours?)\b|"
                     r"^(?=.*\b(?:very hot|burning up|fever|high temperature)\b)(?=.*\bconfus\w*)(?=.*\b(?:shak\w+|shiver\w*))|\bconfus\w*\b.{0,40}\b(?:don'?t|do not|dont) know (?:what day|where i am|who)\b|"
+                    r"\bmigraine\b.{0,25}\bworst (?:ever|of my life)\b.{0,60}\b(?:vomit\w*|being sick|stiff neck|can\'?t look at (?:the )?light|light (?:hurts|is hurting))\b|\bworst migraine (?:ever|of my life)\b.{0,60}\b(?:vomit\w*|being sick|stiff neck|neck (?:is )?stiff|can\'?t look at (?:the )?light)\b|" 
                     r"\b(?:sudden|terrible|worst|awful|explosive)\b.{0,15}\bheadache\b.{0,60}\b(?:neck (?:is |feels |has gone )?stiff|stiff neck|hit (?:w|with)|like being hit)\b|"
                     # sepsis / DKA / stroke / postnatal-infection wording (set v15, first contact 4/20 missed)
                     r"^(?=.*\b(?:burning up|rigors?|temperature (?:of )?(?:3[89]|4\d))\b)(?=.*\b(?:heart (?:racing|pounding)|(?:haven'?t|not) (?:peed|passed (?:any )?urine|had a wee)|tummy pain|confus\w*))|"
@@ -865,7 +867,7 @@ _WHOLE = re.compile(_WHOLE.pattern
 _NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
 _LIGHT = (r"(?:light (?:is )?(?:\w+ ){0,2}(?:hurt\w*|painful|unbearable)|(?:can'?t (?:stand|bear|look at)|sensitive to|hurt by) (?:the )?(?:bright )?lights?|"
           r"(?:bright )?lights? (?:are|is) (?:unbearable|painful)|bright light is painful)")
-_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|migraine|all fine now|not a (?:fever|temperature)|no (?:fever|temperature)|without (?:a )?(?:fever|temperature)|after the gym|high temperature room|temperature of the (?:heating|room|house|office)|heating is too (?:high|hot)|from (?:sleeping|the gym|my desk|sitting|the laptop|my laptop|work|the drive|driving))\b)(?=[\s\S]*" + _NECK
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|(?<!worst )migraine\b(?![^.!?\n]{0,25}\bworst\b)|all fine now|not a (?:fever|temperature)|no (?:fever|temperature)|without (?:a )?(?:fever|temperature)|after the gym|high temperature room|temperature of the (?:heating|room|house|office)|heating is too (?:high|hot)|from (?:sleeping|the gym|my desk|sitting|the laptop|my laptop|work|the drive|driving))\b)(?=[\s\S]*" + _NECK
                     + r")(?=[\s\S]*(?:" + _LIGHT + r"|" + _FEVER + r"))", _WHOLE.flags)
 
 
@@ -935,7 +937,7 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:after the (?:long )?run|
 # run12 (PM class l, own v99 first contact 2/10 missed): face, lips, mouth, tongue or throat swelling or tightness, or wheeze,
 # soon after a new medicine. nhs.uk/conditions/anaphylaxis: "Call 999". Dental numbing, a cold sore, an old swelling that has gone stay quiet.
 _NEWMED = (r"(?:new (?:\w+ ){0,2}(?:medicine|medication|tablets?|pills?|antibiotics?|painkillers?|antihistamines?|injection|dose)|first (?:dose|time taking)|"
-           r"after the (?:injection|jab)|since the new|amoxicillin|penicillin)")
+           r"after the (?:injection|jab)|since the new|amoxicillin|penicillin|(?:after|since) (?:eating|having|a|the) (?:\w+ ){0,2}(?:peanuts?|nuts?|prawns?|shellfish|sesame|eggs?|sting|stung)|(?:was |got |been )?stung by|wasp|bee sting)")
 _ANA = (r"(?:\b(?:throat|tongue|lips?|mouth|face)\b[^.!?]{0,30}\b(?:swell\w*|swollen|puff\w*|tight\w*|closing|thick|huge)\b|\bswelled up\b|\bwheez\w*|"
         r"struggling to breathe|hard to (?:swallow|breathe)|can'?t (?:breathe|swallow))")
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:dentist|numbed|numbing|cold sore|gone now|hay fever|from crying)\b)(?=[\s\S]*\b" + _NEWMED + r")(?=[\s\S]*" + _ANA + r")", _WHOLE.flags)
@@ -954,14 +956,22 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:lighter|easing|eased|fee
 # run12 (PM class t, own v102 first contact 6/6 missed): pregnant or just given birth + a headache painkillers don't help,
 # flashing lights or blurred vision, pain under the ribs, sudden swelling of face or hands, heartburn that won't settle.
 # nhs.uk/conditions/pre-eclampsia (reviewed 23 Mar 2026, cited by PM 19:00): midwife/maternity unit or 111 -> the one fixed line.
-_PET_CTX = r"(?=[\s\S]*\b(?:\d\d ?weeks|weeks pregnant|months pregnant|pregnant|bump|" + _AFTERBIRTH + r")\b)"
+_PET_CTX = r"(?=[\s\S]*\b(?:\d\d ?weeks|weeks pregnant|months pregnant|(?<!not )(?<!isn't )(?<!am not )pregnant|bump|" + _AFTERBIRTH + r")\b)"
 _PET_SIGN = (r"(?:\bheadache\b[^.!?\n]{0,50}\b(?:paracetamol|painkillers?|tablets)\b[^.!?\n]{0,15}\b(?:isn'?t|aren'?t|not|won'?t|doesn'?t|don'?t|hasn'?t|haven'?t)\b[^.!?\n]{0,10}\b(?:touch\w*|help\w*|shift\w*|work\w*|budg\w*)|"
              r"\bflashing lights\b|\b(?:blurr\w+|blurry) vision\b|\bvision (?:is |has gone |went )?(?:blurr\w+|blurry|funny|fuzzy)\b|"
              r"\b(?:just )?(?:under|below) (?:my |the )?ribs\b|"
              r"\b(?:face|hands|fingers)\b[^.!?\n]{0,30}\b(?:suddenly|all of a sudden|really|very) (?:\w+ )?(?:swollen|puffy|swelled|swelling)\b|\bsudden(?:ly)? (?:\w+ )?swell\w*\b[^.!?\n]{0,20}\b(?:face|hands|fingers)\b|"
-             r"\bheartburn\b[^.!?\n]{0,30}\b(?:won'?t|doesn'?t|not|isn'?t) (?:go|settle|shift|easing|stop)\w*)")
+             r"\bheadache\b[^.!?\n]{0,60}\b(?:paracetamol|painkillers?|tablets|ibuprofen|co-?codamol)\b[^.!?\n]{0,15}\b(?:does|do|did) nothing\b|"
+             r"\b(?:paracetamol|painkillers?|tablets|ibuprofen|co-?codamol)\b[^.!?\n]{0,15}\b(?:does|do|did) nothing\b[^.!?\n]{0,30}\bheadache\b|"
+             r"\bheadache\b[^.!?\n]{0,30}\b(?:won'?t|doesn'?t|not) (?:go|shift|ease|budge)\w*\b[^.!?\n]{0,20}\b(?:paracetamol|painkillers?|tablets|medicine|ibuprofen)\b|"
+             r"\bseeing (?:spots|stars|floaters|zigzags)\b|\b1[5-9]\d ?(?:/|over) ?(?:1\d\d|9\d)\b|"
+             r"\b(?:face|hands|fingers)\b[^.!?\n]{0,30}\b(?:swollen|puffy|puffed|swelled|swelling)\b(?: up)?[^.!?\n]{0,12}\b(?:overnight|suddenly|fast|quickly|all of a sudden)\b|"
+             r"\bheartburn\b[^.!?\n]{0,30}\b(?:won'?t|doesn'?t|not|isn'?t) (?:go|settle|shift|easing|stop|touch)\w*)")
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|in the heat|baby kicking|comes and goes|feet up|my usual migraine)\b)" + _PET_CTX
                     + r"(?=[\s\S]*" + _PET_SIGN + r")", _WHOLE.flags)
+
+# Safety run 29 (S-250, probe p143 8/10): fast or hard breathing with drowsiness and being sick (any order, any medicine) -> the one fixed line.
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:meditat\w*|yoga|exercis\w*|run|gym|stairs|walk\w*|laugh\w*|panic\w*)\b)(?=[\s\S]*\bbreath(?:ing|e|es)\b[^.!?\n]{0,15}\b(?:fast|rapid\w*|quick\w*|hard)\b|[\s\S]*\b(?:fast|rapid|deep)\b[^.!?\n]{0,10}\bbreath\w*)(?=[\s\S]*\b(?:drowsy|(?:very|so|really) sleepy)\b)(?=[\s\S]*(?<!no )(?<!not )\b(?:sick|vomit\w*|throwing up)\b)", _WHOLE.flags)
 
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
