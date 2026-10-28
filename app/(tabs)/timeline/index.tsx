@@ -213,7 +213,7 @@ function ListView({
       <Sheet visible={filterOpen} onClose={() => setFilterOpen(false)} title="Show">
         <ChipGroup
           accessibilityLabel="Show"
-          options={options}
+          options={options.map((f) => (f === 'All' ? f : { value: f, label: `${f} ${mergeBleedingRuns(filterFeed(feed, f)).length}` }))}
           value={filter}
           onChange={(v) => { if (v) { setFilter(v as TimelineFilter); setFilterOpen(false); } }}
         />
