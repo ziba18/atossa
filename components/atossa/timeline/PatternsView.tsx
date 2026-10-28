@@ -79,6 +79,12 @@ function EmptyLine({ title, line }: { title: string; line: string }) {
   );
 }
 
+/** "4" or "1 to 4": the plain range of the weekly counts, for the chart title. */
+function weekRangeText(n: number[]): string {
+  const lo = Math.min(...n); const hi = Math.max(...n);
+  return lo === hi ? `${hi}` : `${lo} to ${hi}`;
+}
+
 export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: TimelineFilter) => void; onOpenWeek: (w: { from: string; to: string }) => void }) {
   const router = useRouter();
   const [range, setRange] = useState<PatternsRange>('4w');
@@ -141,28 +147,44 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           accessibilityActions={m.weeks.filter((w) => w.noteDays > 0).map((w) => ({ name: `week:${w.from}:${w.to}`, label: `Open the week from ${formatShortDate(w.from, 'always')}` }))}
           onAccessibilityAction={(name) => { const [, from, to] = name.split(':'); if (from && to) onOpenWeek({ from, to }); }}
         >
-          <Txt variant="groupLabel">Days with a note, by week</Txt>
-          <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            {m.weeks.map((w) => (
-              <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
-                {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
-                <WeekBar height={Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18))} color={w.peak == null ? colors.ink2 : severityColor(w.peak).bg} />
-              </Pressable>
-            ))}
-          </View>
-          {m.weeks.length <= 5 ? (
-            <View style={styles.chartLabels} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-              {m.weeks.map((w) => (
-                <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>{formatShortDate(w.from)}</Txt>
-              ))}
+          <Txt variant="groupLabel">{`Days with a note each week: ${weekRangeText(m.weeks.map((w) => w.noteDays))}`}</Txt>
+          <View style={{ flexDirection: 'row', marginTop: space.sm }}>
+            <View style={styles.yAxis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <Txt variant="caption" style={[styles.yLabel, { top: 10 }]}>{maxWeek}</Txt>
+              <Txt variant="caption" style={[styles.yLabel, { top: BAR_AREA - 9 }]}>0</Txt>
             </View>
-          ) : null}
-          {/* First and last day under the bars so 12 bars are not anonymous (spoken text already gives the range). */}
-          {m.weeks.length > 5 ? <View style={styles.axis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
-            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
-          </View> : null}
-          <Txt variant="caption" style={{ marginTop: space.xs }}>Height = days with a note · shade = highest number that week</Txt>
+            <View style={{ flex: 1 }}>
+              <View style={[styles.chart, { marginTop: 0 }]} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                <View pointerEvents="none" style={[styles.grid, { bottom: 0 }]} />
+                <View pointerEvents="none" style={[styles.grid, { bottom: BAR_AREA - 18, borderStyle: 'dashed' }]} />
+                {m.weeks.map((w) => (
+                  <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
+                    {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
+                    <WeekBar height={Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18))} color={colors.plum} />
+                  </Pressable>
+                ))}
+              </View>
+              {m.weeks.length <= 5 ? (
+                <View style={styles.chartLabels} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                  {m.weeks.map((w) => (
+                    <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>{formatShortDate(w.from)}</Txt>
+                  ))}
+                </View>
+              ) : (
+                <View style={styles.axis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                  <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
+                  <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
+                </View>
+              )}
+              {/* The strongest rating of each week as a number, not a shade: nothing here depends on colour. */}
+              <View style={styles.chartLabels} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                {m.weeks.map((w) => (
+                  <Txt key={w.from} variant="caption" color={colors.ink} style={{ flex: 1, textAlign: 'center', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{w.peak ?? '–'}</Txt>
+                ))}
+              </View>
+            </View>
+          </View>
+          <Txt variant="caption" style={{ marginTop: space.xs }}>Bars: days with a note. Bottom row: strongest rating that week, out of 10.</Txt>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
@@ -275,6 +297,9 @@ const styles = StyleSheet.create({
   tileNum: { fontSize: 32, lineHeight: 38 },
   numRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs, marginTop: space.xxs },
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },
+  yAxis: { width: 22, height: BAR_AREA },
+  yLabel: { position: 'absolute', left: 0, fontSize: 12, lineHeight: 16, fontVariant: ['tabular-nums'] },
+  grid: { position: 'absolute', left: 0, right: 0, height: 0, borderTopWidth: 1, borderTopColor: colors.hairline },
   axis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs, paddingRight: 10 },
   weekCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
   weekNum: { fontSize: 11 },
