@@ -403,6 +403,7 @@ _IDIOM = re.compile(
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
     r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
     r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? through (?:my )?nose\b"
+    r"|\bagony\b[^.!?]{0,25}\bfrom (?:the |my )?(?:gym|running|a run|workout|lifting|exercise|squats)\b"
     r"|\b(?:passed|dozed|zonked|crashed|flaked) out on (?:the |my )?(?:sofa|couch|bed|settee)\b"
     # wanting a baby is not being pregnant (NHS pelvic pain page: 111 if "pregnant or may be pregnant"); run 01 ruling
     r"|\b(?:get|getting|become|becoming) pregnan\w*|\btrying (?:for|to have) a (?:baby|child)\b|\btrying to conceive\b"
@@ -652,6 +653,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
                     # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
                     r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
+                    # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
+                    r"\b(?:i(?:'ve| have)? called|calling|called|waiting for|need|needs) (?:an |the )?ambulance\b|\bcalled 999\b|\bringing 999\b|"
+                    r"\bpain\b.{0,80}\bgetting worse(?: and worse)?\b.{0,60}\b(?:not stopping|won'?t stop|doesn'?t stop|isn'?t stopping|scared|frightened)\b|"
                     # set p116 (first contact 2/10 missed): hard belly with vomiting or no bowel movement for days, red painful eye with halos and sickness
                     r"^(?=.*\b(?:rock[- ]?hard|very hard|solid)\b.{0,15}\b(?:belly|tummy|stomach|abdomen)\b|.*\b(?:belly|tummy|stomach|abdomen)\b.{0,15}\b(?:rock[- ]?hard|very hard)\b)(?=.*\b(?:vomit\w*|being sick|throwing up|fever)\b)(?=.*\b(?:can'?t stop|haven'?t (?:opened|been|passed)|not (?:opened|been|passed)|for days|constant\w*)\b)|"
                     r"\b(?:eye|eyes)\b.{0,40}\b(?:red|painful)\b.{0,40}\b(?:halos?|rings? around (?:the )?lights?|blurr\w+)\b.{0,60}\b(?:sick|vomit\w*|nause\w+|headache)\b|"
