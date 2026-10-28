@@ -1,0 +1,140 @@
+{
+  "sections": [
+    {
+      "id": "frequency",
+      "title": "How often and how strong",
+      "rows": {
+        "bars": 4
+      }
+    },
+    {
+      "id": "periods",
+      "title": "Periods logged",
+      "rows": {
+        "runs": 4
+      }
+    },
+    {
+      "id": "impacts",
+      "title": "What it got in the way of",
+      "rows": {
+        "quotes": 3,
+        "items": 1
+      }
+    },
+    {
+      "id": "tried",
+      "title": "What I’ve tried",
+      "rows": {
+        "quotes": 0,
+        "items": 3
+      }
+    },
+    {
+      "id": "history",
+      "title": "Health history",
+      "rows": {
+        "items": 3
+      }
+    },
+    {
+      "id": "appointments",
+      "title": "Appointments",
+      "rows": {
+        "items": 3,
+        "upcoming": 1
+      }
+    },
+    {
+      "id": "words",
+      "title": "Symptoms in my words",
+      "rows": {
+        "quotes": 5
+      }
+    }
+  ],
+  "domains": [
+    {
+      "id": "agenda",
+      "heading": "Appointments and what I want from them",
+      "recorded": true,
+      "hasOnset": false
+    },
+    {
+      "id": "pain",
+      "heading": "Pain",
+      "recorded": true,
+      "hasOnset": true
+    },
+    {
+      "id": "fatigue",
+      "heading": "Tiredness and sleep",
+      "recorded": true,
+      "hasOnset": true
+    },
+    {
+      "id": "bleeding",
+      "heading": "Bleeding and periods",
+      "recorded": true,
+      "hasOnset": true
+    },
+    {
+      "id": "bowelBladder",
+      "heading": "Bowel and bladder",
+      "recorded": true,
+      "hasOnset": true
+    },
+    {
+      "id": "sexPain",
+      "heading": "Pain with sex",
+      "recorded": false,
+      "hasOnset": false
+    },
+    {
+      "id": "mood",
+      "heading": "Mood",
+      "recorded": false,
+      "hasOnset": false
+    },
+    {
+      "id": "skinHair",
+      "heading": "Skin and hair",
+      "recorded": true,
+      "hasOnset": true
+    },
+    {
+      "id": "eating",
+      "heading": "Weight and eating",
+      "recorded": false,
+      "hasOnset": false
+    },
+    {
+      "id": "impact",
+      "heading": "What it got in the way of",
+      "recorded": true,
+      "hasOnset": false
+    },
+    {
+      "id": "tried",
+      "heading": "What I’ve tried",
+      "recorded": true,
+      "hasOnset": false
+    },
+    {
+      "id": "history",
+      "heading": "Health history",
+      "recorded": true,
+      "hasOnset": false
+    },
+    {
+      "id": "fertility",
+      "heading": "Plans for pregnancy",
+      "recorded": false,
+      "hasOnset": false
+    }
+  ],
+  "completeness": "9 of 13 areas recorded",
+  "entries": 25,
+  "agendaTitle": "What I’d like from this appointment",
+  "empty": false
+}
