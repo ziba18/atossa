@@ -465,9 +465,11 @@ _IDIOM = re.compile(
     r"|\bfell over (?:at|in|during|while) (?:the )?(?:gym|running|jogging|skating|netball|football|dance|class)\b"
     r"|\b(?:short(?:ness)? of breath|can'?t (?:get|catch) my breath|out of breath)\b[^.;!?]{0,30}\b(?:after|when|while|during)\b[^.;!?]{0,25}\b(?:run\w*|climb\w*|stairs|exercis\w*|walk\w*|gym|workout|jog\w*|sprint\w*)\b"
     r"|\bagony (?:waiting|of waiting)\b"
+    r"|\bstop existing in (?:this|the|a) (?:cycle|loop|limbo)\b"
+    r"|\bbetter off without me (?:on|at|in|for) (?:the |my |their |this )?(?:rota|team|shift|project|work|meeting|call|squad|match)\b"
     r"|\bhurt(?:ing)? myself on (?:the |my |a )"
     r"|\boverdos\w* on (?:caffeine|coffee|sugar|chocolate|tea|netflix|screens?|social media)\b"
-    r"|\bdisappear (?:into|under) (?:my |the )?(?:bed|duvet|covers|blanket|sofa)\b"
+    r"|\bdisappear (?:into|under) (?:my |the |a )?(?:bed|duvet|covers|blanket|sofa)\b"
     r"|\b(?:tablets|pills) out of (?:the |my )?(?:blister|packet|box|bottle|pack)\b"
     r"|\bkms (?:is|means|stands)\b"
     r"|\b(?:gave|giving|donat\w+|had) (?:my )?blood (?:test|donation|taken)?\b[^.;!?]{0,20}\bbut it passed\b|\bfaint\w* when i (?:gave|gave my|donated|had my) blood\b"
@@ -793,9 +795,12 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*\b(?:rash|spots|marks|blotch\
 # _CLAUSE splits at "and i", so this is matched per sentence with the whole-text rule (Samaritans line).
 _SELF_WHOLE = re.compile(
     r"(?:want(?:ed)? (?:to be|to not be|not to be) (?:dead|gone|here|alive)|wish (?:i was|i were|i'?d been) (?:dead|gone|never born)|wish i (?:wasn'?t|weren'?t) (?:alive|here)|"
-    r"(?:rather|better off) (?:be )?dead(?! asleep)|don'?t want to be (?:alive|here)|want (?:it|everything|it all) to be over for good)"
+    r"(?:rather|better off) (?:be )?dead(?! asleep)|don'?t want to be (?:alive|here)|want (?:it|everything|it all) to be over for good|"
+    # run09 v81: a passive wish not to exist / not be here / everyone better off without me (+ the how part below)
+    r"don'?t want to (?:exist|be around)|wish i (?:didn'?t|did not) exist|(?:stop|not) existing|want to not exist|wish i could disappear (?:for good|forever)|"
+    r"wish i'?d never been born|(?:(?:they|everyone|everybody)(?:'?d| would)(?: all)? be )?better off (?:without me|if i (?:wasn'?t|weren'?t|was not|were not) (?:around|here))|(?:like|want) to (?:not|never) wake up)"
     r"[^.!?\n]{0,60}\b(?:worked out|figured out|planned(?: out)?|know(?: exactly)?|decided|chosen|picked)\b[^.!?\n]{0,12}\b(?:how|the (?:way|method|how))\b"
-    r"(?! (?:to (?:track|log|use|cope|manage|nap|sleep)|many days|my period))", re.I)
+    r"(?! (?:to (?:track|log|use|cope|manage|nap|sleep|swap|fix|plan|talk|ask|tell|rest|deal|get)|many days|my period))", re.I)
 
 
 _THIRD_NOW = re.compile(
