@@ -17,6 +17,7 @@ import {
   MIN_NOTE_DAYS, PATTERNS_RANGES, STRONG_FROM, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsModel, type PatternsRange,
 } from '../../../lib/records/patterns';
 import { formatShortDate, joinFacts } from '../../../lib/records/format';
+import { StrengthLine } from './StrengthLine';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { TimelineFilter } from './session';
 
@@ -239,6 +240,12 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         </PressableCard>
       </FadeIn>
       )}
+
+      {range === '12w' ? (
+        <FadeIn index={1}>
+          <StrengthLine weeks={m.weeks} />
+        </FadeIn>
+      ) : null}
 
       {m.zones.length ? (
         <FadeIn index={2}>
