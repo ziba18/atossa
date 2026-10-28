@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
   onset: { gap: space.xs, padding: space.md, borderRadius: radii.card, backgroundColor: colors.plumTint },
-  onsetActions: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginTop: space.xs },
+  onsetActions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm, marginTop: space.xs },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
   wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
