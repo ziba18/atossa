@@ -214,12 +214,29 @@ export default function ProfileScreen() {
         />
       </Group>
 
-      <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
+      <GroupHeading title="Your data" style={{ marginTop: space.xxl }} />
       <Card>
         <View style={{ gap: space.sm }}>
           {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
         </View>
       </Card>
+      <Group style={{ marginTop: space.md }}>
+        <GroupRow
+            icon="download"
+            label="Download all my notes"
+            detail="Everything you’ve saved, as one file"
+            chevron={false}
+            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(false); setExportDone(false); setExporting(true); }}
+          />
+        {IS_PREVIEW ? null : (
+          <GroupRow
+            icon="trash-2"
+            label="Delete account"
+            chevron={false}
+            onPress={() => { setConfirmingSignOut(false); setExporting(false); setConfirmingDelete(true); }}
+          />
+        )}
+      </Group>
 
       <GroupHeading title="About" style={{ marginTop: space.xxl }} />
       <Group>
@@ -230,26 +247,11 @@ export default function ProfileScreen() {
       <GroupHeading title="Account" style={{ marginTop: space.xxl }} />
       <Group>
         <GroupRow
-            icon="download"
-            label="Download all my notes"
-            detail="Everything you’ve saved, as one file"
-            chevron={false}
-            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(false); setExportDone(false); setExporting(true); }}
-          />
-        <GroupRow
           icon="log-out"
           label="Sign out"
           chevron={false}
           onPress={() => { setConfirmingDelete(false); setExporting(false); setConfirmingSignOut(true); }}
         />
-        {IS_PREVIEW ? null : (
-          <GroupRow
-            icon="trash-2"
-            label="Delete account"
-            chevron={false}
-            onPress={() => { setConfirmingSignOut(false); setExporting(false); setConfirmingDelete(true); }}
-          />
-        )}
       </Group>
 
       {exporting ? (
