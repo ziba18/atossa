@@ -1171,7 +1171,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dated td:nth-child(1) { width: 66pt; } table.dated td:nth-child(2) { width: 96pt; }
   table.dated.tried td:nth-child(1) { width: 120pt; } table.dated.tried td:nth-child(2) { width: 110pt; }
   table.dated tr:last-child td { border-bottom: 0; }
-  table.notes th:nth-child(1) { width: 80pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
+  table.notes th:nth-child(1) { width: 92pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
   .recorded { color: ${C.ink2}; ${pt(T.meta)} margin: 0; padding: 3pt 0 0; }
   table.figs { width: 100%; border-collapse: collapse; margin-top: 3pt; }
   table.figs th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
