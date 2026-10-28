@@ -55,6 +55,7 @@ export default function WelcomeScreen() {
               ))}
             </Animated.View>
             <View style={styles.textLine} />
+            <View style={styles.textLine2} />
           </View>}
         </View>
 
@@ -113,7 +114,9 @@ const styles = StyleSheet.create({
   heroLine: { fontSize: 36, lineHeight: 42 },
   art: { alignItems: 'center', gap: space.xs, paddingVertical: space.xs },
   wave: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 48 },
-  textLine: { width: 148, height: 14, borderRadius: 7, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.plum },
+  // Two ruled lines under the waveform (a voice becoming written text); thin so they never read as a progress bar.
+  textLine: { width: 148, height: 3, borderRadius: 2, backgroundColor: colors.plum, marginTop: 2 },
+  textLine2: { width: 92, height: 3, borderRadius: 2, backgroundColor: `${colors.plum}66`, marginTop: 6, alignSelf: 'center' },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'center', gap: 4 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
