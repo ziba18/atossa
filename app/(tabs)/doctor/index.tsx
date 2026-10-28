@@ -137,22 +137,36 @@ export default function DoctorScreen() {
   const olderData = symptomRecs.some((r) => r.data.date < doc.from) || periodRecs.some((r) => r.data.date < doc.from);
   const off = doc.empty || busy !== null;
 
-  // One slim row: Share PDF (primary) + Print and Show on screen as labelled 48 icon buttons.
+  // Share PDF (primary) with Print and Show on screen as labelled buttons: a second row, or one row on short phones.
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs }}>
+      <View style={{ flexDirection: 'row', flexWrap: short ? 'nowrap' : 'wrap', alignItems: 'center', gap: space.xs }}>
         <Button
           label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
           accessibilityLabel={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
-          icon="share-2"
+          icon={short ? undefined : 'share-2'}
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
           style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120, maxWidth: desk ? 420 : undefined }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
+      {short ? (
+        <>
+        <Button
+          label="Print" variant="secondary" small onPress={print} disabled={off} loading={busy === 'print'}
+          style={{ minWidth: 0, paddingHorizontal: space.sm }} accessibilityHint="Sends the summary to a printer"
+        />
+        <Button
+          label="Screen" variant="secondary" small disabled={doc.empty}
+          onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ minWidth: 0, paddingHorizontal: space.sm }}
+          accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
+        />
+        </>
+      ) : null}
       </View>
+      {short ? null : (
       <View style={{ flexDirection: 'row', gap: space.xs }}>
         <Button
           label="Print" icon="printer" variant="secondary" small onPress={print} disabled={off} loading={busy === 'print'}
@@ -163,7 +177,7 @@ export default function DoctorScreen() {
           onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ flex: 1.4 }}
           accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
         />
-      </View>
+      </View>)}
     </View>
   );
 

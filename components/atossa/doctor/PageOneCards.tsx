@@ -2,7 +2,7 @@
 // first sections are repeated here at body size. Same numbers as the document (read from the same
 // DoctorDoc); descriptive only. "See the full page" opens the reflowed document.
 import React from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { colors, fonts, space } from '../../../constants/atossaUI';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
 import { Card, Txt } from '../kit';
@@ -11,6 +11,7 @@ const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
 /** `showAgenda` is false when the editable agenda field already sits above the cards. */
 export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showAgenda?: boolean }) {
+  const narrow = useWindowDimensions().width < 360;
   const freq = doc.sections.find((s) => s.id === 'frequency');
   const periods = doc.sections.find((s) => s.id === 'periods');
   const impacts = doc.sections.find((s) => s.id === 'impacts');
@@ -37,18 +38,19 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
     const usual = (t: string) => t.replace(/,?\s*worst \d+\/10/, '').replace(/^,\s*/, '');
     const worstAll = areas.reduce((m, b) => Math.max(m, Number(worstOf(b.strength ?? '') ?? 0)), 0);
     const num = { fontVariant: ['tabular-nums', 'lining-nums'] as ('tabular-nums' | 'lining-nums')[] };
+    const big = narrow ? { ...num, fontSize: 34, lineHeight: 38 } : num;
     cards.push(
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
         {all ? (
-          <View style={{ flexDirection: 'row', gap: space.xl, marginTop: space.sm, alignItems: 'flex-end' }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-end' }}>
             <View accessible accessibilityLabel={`${all.days} of ${plural(all.total, 'day')} with a note`}>
-              <Txt variant="numeral" style={num}>{all.days}</Txt>
+              <Txt variant="numeral" style={big}>{all.days}</Txt>
               <Txt variant="secondary">{`of ${plural(all.total, 'day')} with a note`}</Txt>
             </View>
             {worstAll ? (
               <View accessible accessibilityLabel={`Worst rating ${worstAll} out of 10`}>
-                <Txt variant="numeral" style={num}>{`${worstAll}/10`}</Txt>
+                <Txt variant="numeral" style={big}>{`${worstAll}/10`}</Txt>
                 <Txt variant="secondary">worst rating</Txt>
               </View>
             ) : null}
