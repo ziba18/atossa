@@ -390,3 +390,12 @@ SET47 = json.loads((Path(__file__).parent / "emergency_set_v47_injury_eye_ear.js
 def test_set_v47_injury_eye_ear_caught_and_harmless_quiet():
     assert [t for t in SET47["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET47["harmless"] if is_emergency(t)] == []
+
+
+SET48 = json.loads((Path(__file__).parent / "emergency_set_v48_indirect_selfharm3.json").read_text())
+
+
+def test_set_v48_indirect_selfharm3_caught_and_harmless_quiet():
+    assert [t for t in SET48["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET48["harmless"] if is_emergency(t)] == []
+    assert emergency_kind("I've been saving up my pills just in case.") == "self_harm"

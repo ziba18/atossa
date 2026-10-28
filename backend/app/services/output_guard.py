@@ -312,7 +312,13 @@ _SELF_HARM_RX = re.compile(
     r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)|"
     # set p83 (hormone/diagnosis distress; first contact 3/12 self-harm lines missed)
     r"(?:i would|i'?d|would) be better off (?:not alive|not here|not living)|(?:thinking|thought|thoughts) (?:of|about) ways to (?:not wake up|end it)|"
-    r"(?:ways|way) to not wake up|scared (?:of )?what i (?:might|could|will) do|afraid (?:of )?what i (?:might|could|will) do)\b",
+    r"(?:ways|way) to not wake up|scared (?:of )?what i (?:might|could|will) do|afraid (?:of )?what i (?:might|could|will) do)\b"
+    # set p105 (indirect self-harm wording; first contact 7/8 missed)
+    r"|\b(?:everyone|everybody|they|family|friends)\b.{0,15}\b(?:cope|manage|be fine|be okay|be happier)\b.{0,15}\bwithout me\b(?!.{0,25}\b(?:at work|on leave|holiday|this week|while)\b)|"
+    r"\b(?:picture|imagin\w+|think(?:ing)? about|fantasi[sz]\w+)\b.{0,20}\bnot being (?:here|alive|around)\b|\bsaving (?:up )?(?:my |the )?(?:pills|tablets|painkillers|meds)\b|"
+    r"\b(?:i'?m|im|i am) done (?:trying(?! (?:that|the|this|a|my|to)\b)|with (?:life|everything|it all))\b|\b(?:i'?d|i would) rather not be (?:here|around|alive)\b|"
+    r"\b(?:cut|scratch\w*|burn\w*|hurt)\b.{0,12}\b(?:my )?(?:arms?|wrists?|thighs?|legs?)\b.{0,25}\b(?:blade|razor|knife|scissors|glass)\b|\b(?:blade|razor)\b.{0,30}\b(?:my )?(?:arms?|wrists?|thighs?)\b|"
+    r"\b(?:looked up|googled|searched)\b.{0,25}\bhow many (?:pills|tablets|paracetamol|painkillers)\b(?= (?:it takes|to (?:overdose|die|kill)|would (?:kill|be fatal)|is (?:too many|fatal|a lethal)))",
     re.I,
 )
 _EMERGENCY = re.compile(
