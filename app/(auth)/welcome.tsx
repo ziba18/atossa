@@ -28,6 +28,7 @@ export default function WelcomeScreen() {
   // Short phones (iPhone SE class): keep the buttons on the first screen, drop the step strip.
   const win = useWindowDimensions();
   const short = win.height < 700;
+  const tall = win.height >= 800; // spare height goes into the story (card, steps), not one empty band above the buttons
   const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
   useEffect(() => track('Welcome Viewed'), []);
   // One 400 ms rise of the waveform on first paint; nothing moves under Reduce Motion.
@@ -61,12 +62,12 @@ export default function WelcomeScreen() {
           </View>}
         </View>
 
-        <View style={[styles.hero, short && styles.heroShort]}>
+        <View style={[styles.hero, short && styles.heroShort, tall && styles.heroTall]}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
             {WEB ? 'Write it' : 'Say it'} the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
           </Txt>
-          <Card style={styles.example}>
+          <Card style={[styles.example, tall && styles.exampleTall]}>
             <Txt variant="caption" color={colors.ink2}>{WEB ? 'What you write' : 'What you say'}</Txt>
             <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>
             <Txt variant="caption" color={colors.ink2}>What your doctor sees</Txt>
@@ -80,7 +81,7 @@ export default function WelcomeScreen() {
           </Card>
         </View>
 
-        {short || narrow ? null : <View style={styles.steps} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
+        {short || narrow ? null : <View style={[styles.steps, tall && styles.stepsTall]} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
           {STEPS.map((st, i) => (
             <View key={st.word} style={styles.step}>
               <View style={styles.stepNum}><Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt></View>
@@ -128,6 +129,9 @@ const styles = StyleSheet.create({
   // between them and the anchored actions (a spacer, not a gap inside the story).
   hero: { justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.xl },
   heroShort: { paddingTop: 0, paddingBottom: space.sm, gap: space.xs },
+  heroTall: { gap: space.md, paddingTop: space.md },
+  exampleTall: { gap: space.sm, paddingVertical: space.lg },
+  stepsTall: { marginTop: space.xs, gap: space.md },
   example: { gap: space.xs, marginTop: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   tag: { backgroundColor: colors.plumTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
