@@ -484,6 +484,13 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set p73 (bladder, bowel and infection signs, NHS 111 lists; first contact 7/12 missed)
+                    r"^(?=.*\b(?:blood in (?:my )?(?:wee|urine|pee)|(?:wee|urine|pee)\b.{0,25}\b(?:bloody|blood))\b)(?=.*\b(?:fever|temperature|shiver\w*|shak\w+|pain in my (?:side|back)|bad pain)\b)|"
+                    r"\b(?:can'?t|cannot|unable to|haven'?t been able to) (?:pass|do) (?:any )?(?:wee|urine|pee)\b(?: at all| since| for (?:hours|\d+))\b.{0,60}\b(?:swollen|painful|pain)\b|"
+                    r"\blost (?:the )?feeling (?:between|in) (?:my )?(?:legs|thighs|bottom)\b|\bnumb(?:ness)?\b(?: and \w+)? (?:between|in the area between) my legs\b|"
+                    r"^(?=.*\b(?:fever|high temperature|shaking|shivering)\b)(?=.*\bpain\b.{0,25}\b(?:belly|tummy|pelvi\w+|abdomen)\b)(?=.*\b(?:smelly|foul)\b.{0,15}\bdischarge\b)|"
+                    r"^(?=.*\bpain\b.{0,30}\b(?:left|right) side\b|.*\b(?:left|right) side\b.{0,30}\bpain\b)(?=.*(?<!no )(?<!without )\b(?:high temperature|fever)\b)(?=.*(?:\bkeep being sick|\bbeen sick|\bvomiting|\bthrowing up|(?<!not )\bbeing sick)\b)|"
+                    r"\b(?:bleed\w*|blood)\b.{0,25}\bback passage\b.{0,60}\b(?:heavy|heavily|faint\w*|pass out|collapse)\b|\b(?:heavy|heavily)\b.{0,25}\bbleed\w*\b.{0,25}\bback passage\b|"
                     # set p47 (pain in pregnancy, NHS pelvic pain page; first contact 3/12 missed)
                     r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:can'?t|cannot|unable to) (?:put (?:any )?weight|walk|stand)\b)(?=.*\b(?:pelvi\w+|hip|groin)\b)|"
                     r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:bump|belly|tummy|stomach)\b.{0,20}\b(?:tight|hard)\b)(?=.*\bconstant pain\b)|"

@@ -222,3 +222,11 @@ SET26 = json.loads((Path(__file__).parent / "emergency_set_v26_pregnancy_pelvic.
 def test_set_v26_pregnancy_pelvic_caught_and_harmless_quiet():
     assert [t for t in SET26["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET26["harmless"] if is_emergency(t)] == []
+
+
+SET27 = json.loads((Path(__file__).parent / "emergency_set_v27_bladder_bowel_infection.json").read_text())
+
+
+def test_set_v27_bladder_bowel_infection_caught_and_harmless_quiet():
+    assert [t for t in SET27["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET27["harmless"] if is_emergency(t)] == []
