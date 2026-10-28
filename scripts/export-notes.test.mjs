@@ -10,5 +10,9 @@ if (lib.indexOf("api.post('/auth/login'") > lib.indexOf("api.get<unknown>('/me/e
 if (!lib.includes('Everything you saved in Atossa. Notes in your words. Not a medical record.')) bad.push('file heading changed');
 if (/from '\.\/analytics'|track\(/.test(lib)) bad.push('export must not send analytics');
 if (!read('app/(tabs)/profile/index.tsx').includes('downloadAllNotes(')) bad.push('Profile does not call downloadAllNotes');
+// Marketing R24: no "secure / private / safe / encrypted" promises in the export copy.
+const profile = read('app/(tabs)/profile/index.tsx');
+const copy = profile.slice(profile.indexOf('Download all my notes'), profile.indexOf('confirmingSignOut ? ('));
+if (/\b(secure|private|safe|encrypt|protected|anonymous)/i.test(copy)) bad.push('export copy makes a security/privacy claim');
 if (bad.length) { console.error(bad); process.exit(1); }
 console.log('ok: export flow wired, password first, heading present, no analytics');
