@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import { haptics } from '../../../lib/haptics';
@@ -136,6 +136,8 @@ export function Chip({
       // RN-web doesn't derive aria-* from accessibilityState for these roles (review 1, UX #20).
       {...(accessibilityRole === 'button' ? { 'aria-pressed': selected } : { 'aria-checked': selected })}
       aria-disabled={disabled || undefined}
+      // Space selects, as it does on a native button; Enter already clicks.
+      {...(Platform.OS === 'web' && !disabled ? { onKeyUp: (e: any) => { if (e.key === ' ') { e.preventDefault?.(); haptics.selection(); onPress(); } } } : null)}
       style={({ pressed }) => [
         styles.chip,
         ghost && !selected && styles.chipGhost,

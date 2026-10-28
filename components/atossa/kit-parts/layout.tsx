@@ -117,7 +117,7 @@ export function BackChevron({ label, onPress }: { label: string; onPress?: () =>
     <Pressable
       onPress={onPress ?? (() => router.back())}
       accessibilityRole="button"
-      accessibilityLabel={`Back to ${label}`}
+      accessibilityLabel={label === 'Back' ? 'Back' : `Back to ${label}`}
       style={({ pressed }) => [styles.back, pressed && { opacity: 0.6 }]}
     >
       <Icon name="chevron-left" size={24} color={colors.plum} />
