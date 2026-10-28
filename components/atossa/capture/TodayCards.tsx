@@ -280,6 +280,15 @@ export function HeroNumberCard() {
     sub = total === week ? 'Open them in your Timeline' : `${notesLabel(total)} in all`;
     target = '/(tabs)/timeline';
   }
+  // First run: a big "0" says nothing, so the card is one plain sentence instead of a number.
+  if (!next && total === 0) {
+    return (
+      <Card style={{ gap: space.xxs }}>
+        <Txt variant="headline">Nothing saved yet</Txt>
+        <Txt variant="secondary">Your first note starts your record.</Txt>
+      </Card>
+    );
+  }
   return (
     <HeroNumber
       big={big} line={line} sub={sub}
