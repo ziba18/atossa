@@ -488,6 +488,13 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
                     r"^(?=.*\b(?:stopped eating (?:completely|altogether|anything)|not eaten|haven'?t eaten)\b)(?=.*\b(?:too weak|can'?t stand|faint\w*|dizzy)\b)|"
+                    # set p90 (teen register, lower case and no apostrophes; first contact 6/12 missed)
+                    r"\bbleeding (?:like crazy|like mad|loads)\b.{0,60}(?<!not )(?<!no )\b(?:dizzy|faint\w*|weak|through (?:my|the) (?:skirt|trousers|jeans|clothes|sheets|bed))\b|(?<!not )\b(?:dizzy|faint\w*)\b.{0,60}\bbleeding (?:like crazy|like mad|loads)\b|"
+                    r"\btook (?:like |about |around |roughly )?(?:1[0-9]|[2-9]\d) (?:paracetamol|ibuprofen|tablets|pills|painkillers|co-?codamol|codeine)\b|"
+                    r"^(?=.*\b(?:throwing up|vomit\w*|been sick)\b)(?=.*\bpain\b.{0,25}\b(?:right|left) side\b)(?=.*\b(?:can'?t|cant) (?:even )?(?:stand|walk|move)\b)|"
+                    r"^(?=.*\b(?:shaking|trembling)\b)(?=.*\bheart\b.{0,15}\b(?:going mad|racing|pounding|going crazy)\b)(?=.*\bpain\b)|"
+                    r"\bappendix\b.{0,20}\b(?:burst|ruptured)\b|\bpain\b.{0,60}\b(?:belly button|tummy button|navel)\b.{0,50}\bsuddenly stopped\b|"
+                    r"^(?=.*\bhead\b.{0,15}\b(?:pounding|splitting)\b)(?=.*\b(?:can'?t|cant) see (?:properly|right|clearly)\b)|"
                     # set p84 (implant, injection and coil complications; first contact 5/12 missed)
                     r"^(?=.*\b(?:implant|injection site|depo|coil|iud|ius)\b)(?=.*\b(?:hot|oozing|pus|spreading red)\b)(?=.*(?<!no )(?<!without )\b(?:temperature|fever|chills|shivering|shaking)\b)|"
                     r"^(?=.*\bimplant\b)(?=.*\b(?:numb|tingling)\b)(?=.*\b(?:badly|severe\w*|spreading|whole arm)\b)|"
