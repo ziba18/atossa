@@ -4,13 +4,14 @@
 // scripts/urgent-wording-live.test.mjs runs this file against the shared phrase list.
 
 import * as P from './urgentPatterns.generated';
+import { SAMARITANS_NUMBER } from './helpNow';
 
 const QUOTES: Record<string, string> = { '\u2018': "'", '\u2019': "'", '\u02bc': "'", '\u2032': "'" };
 
 export const URGENT_SIGNPOST =
   'If you have severe sudden pain, very heavy bleeding or feel faint, call 999 or go to A&E, or call NHS 111.';
 export const SELF_HARM_SIGNPOST =
-  'If you might act on these thoughts, call 999 now. You can also call Samaritans free, any time, on 116 123, or call NHS 111.';
+  `If you might act on these thoughts, call 999 now. You can also call Samaritans free, any time, on ${SAMARITANS_NUMBER}, or call NHS 111.`;
 
 
 const HOMOGLYPHS: Record<string, string> = {
