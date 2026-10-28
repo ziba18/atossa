@@ -1,6 +1,7 @@
 // PM 3c (06:58): a note that names bloating or tiredness takes that group, never the pain default.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+await import('./ts-register.mjs');
 const { onsetGroupFor } = await import('../../lib/records/summary.ts');
 
 test('bloating notes go to bowel/bladder, tiredness to fatigue', () => {
