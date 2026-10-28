@@ -174,6 +174,15 @@ export default function ProfileScreen() {
         />
       </Group>
 
+      <Group style={{ marginTop: space.md }}>
+        <GroupRow
+          icon="heart-pulse"
+          label="Help now"
+          detail="999, NHS 111, Samaritans"
+          onPress={() => router.push('/(tabs)/profile/help-now' as any)}
+        />
+      </Group>
+
       <GroupHeading title="Records" style={{ marginTop: space.xxl }} />
       <Group>
         {RECORD_KINDS.map((kind) => (

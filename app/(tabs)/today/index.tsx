@@ -104,6 +104,13 @@ export default function TodayScreen() {
         <Txt variant="caption" style={{ textAlign: 'center' }}>
           Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
         </Txt>
+        <Button
+          label="Help now"
+          variant="text"
+          small
+          onPress={() => router.push('/(tabs)/profile/help-now' as any)}
+          accessibilityHint="Opens phone numbers for urgent help"
+        />
       </View>
       <LogBleedingSheet visible={bleeding} onClose={() => setBleeding(false)} />
     </ScreenLarge>
