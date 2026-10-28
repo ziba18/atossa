@@ -809,7 +809,9 @@ _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/r
 
 # A lead-in like "I don't know what to do," / "Not sure what's going on:" / "No idea why, but" is not a negation of what follows;
 # it is turned into a sentence break before detection (measured: such lead-ins silenced 14-37% of caught emergency lines).
-_LEADIN = re.compile(r"\b(?:i(?:'m| am) )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))", re.I)
+_LEADIN = re.compile(r"\b(?:i(?:'m| am) )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))"
+                     # the same openers said with no punctuation (dictated text, S-226): fixed phrases only
+                     r"|\b(?:i(?:'m| am) )?(?:don'?t know|do not know|not sure) (?:what to do|what'?s (?:going on|happening|wrong)|what is (?:going on|happening|wrong)|why)\b|\bno idea why\b|\bi(?:'m| am) not in a good way\b|\bnothing helps\b|\bdon'?t worry\b|\bwithout my (?:partner|mum|mom|friend|husband|wife) here\b", re.I)
 
 
 _NEG_WINDOW = re.compile(r"[.;:!?\n,]|\bbut\b")  # a negation only counts inside the same clause as the match
