@@ -484,6 +484,15 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set p81 (high sugar, kidney infection, spreading skin infection, no wee, very high blood pressure; first contact 10/12 missed)
+                    r"^(?=.*\b(?:thirsty|thirst)\b)(?=.*\b(?:weeing (?:loads|a lot|lots)|passing (?:huge|lots|loads)|wee loads|peeing (?:loads|a lot))\b)(?=.*\b(?:fruity|losing weight|vomit\w*|drowsy|sleepy)\b)|"
+                    r"^(?=.*\b(?:blood sugar|blood glucose|sugar (?:meter|reading|level)|glucose (?:meter|reading|level)|my meter|meter says|reading (?:says|was|is))\b[^.?]{0,25}?\b(?:2\d|[3-9]\d)(?:\.\d)?\b(?!\s*(?:%|percent|minutes|mins|hours|days|g\b)))(?=.*\b(?:sick|sleepy|drowsy|vomit\w*|confus\w*|breathing fast)\b)|"
+                    r"^(?=.*\b(?:sugar|glucose)\b.{0,20}\b(?:really|very|extremely) high\b)(?=.*\b(?:confus\w*|sleepy|drowsy|vomit\w*))|"
+                    r"^(?=.*\b(?:kidney|under (?:my |the )?ribs|loin)\b)(?=.*(?<!no )(?<!without )\b(?:fever|chills|shaking|shiver\w*|high temperature)\b)(?=.*\b(?:wee|urine|pee|vomit\w*|burning)\b)|"
+                    r"\bred streaks?\b.{0,40}\b(?:up|spreading|leg|arm)\b.{0,60}(?<!no )\b(?:fever|temperature|unwell)\b|"
+                    r"\b(?:haven'?t|not) (?:peed|weed|passed (?:any )?(?:wee|urine))\b.{0,25}\b(?:\d{2} hours|all day|since yesterday|twelve hours)\b.{0,60}\b(?:dizzy|faint\w*|drowsy|weak|thirsty)\b|"
+                    r"\b(?:blood pressure|bp)\b.{0,40}\b(?:1[89]\d|2\d\d) ?(?:/| over )(?:11\d|1[2-9]\d)\b(?=.{0,80}\b(?:headache|vision|chest|confus\w*|swollen|pregnan\w*|dizzy)\b)|"
+                    r"\b(?:blood pressure|bp)\b.{0,40}\b(?:1[89]\d|2\d\d) ?(?:/| over )(?:11\d|1[2-9]\d)\b|"
                     # set p80 (cyst, torsion, egg collection, after surgery, heart signs; first contact 5/12 missed)
                     r"^(?=.*\b(?:sudden\w*|out of nowhere|came on (?:suddenly|fast))\b)(?=.*\b(?:terrible|severe|awful|worst|agonising|agonizing|excruciating|sharp|stabbing)\b.{0,25}\bpain\b|.*\bpain\b.{0,25}\b(?:terrible|severe|awful|worst|agonising|excruciating)\b)(?=.*\b(?:threw up|throwing up|vomit\w*|(?<!not )being sick|was sick)\b)|"
                     r"^(?=.*\b(?:hardly|barely|not) (?:weeing|passing (?:any )?(?:wee|urine|pee))\b)(?=.*\b(?:swollen|bloated|tight|very thirsty)\b)(?=.*\b(?:sick|nausea|vomit\w*|breath\w*|thirsty)\b)|"

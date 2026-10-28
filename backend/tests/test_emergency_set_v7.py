@@ -262,3 +262,11 @@ SET31 = json.loads((Path(__file__).parent / "emergency_set_v31_cyst_torsion_surg
 def test_set_v31_cyst_torsion_surgery_caught_and_harmless_quiet():
     assert [t for t in SET31["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET31["harmless"] if is_emergency(t)] == []
+
+
+SET32 = json.loads((Path(__file__).parent / "emergency_set_v32_sugar_kidney_bp.json").read_text())
+
+
+def test_set_v32_sugar_kidney_bp_caught_and_harmless_quiet():
+    assert [t for t in SET32["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET32["harmless"] if is_emergency(t)] == []
