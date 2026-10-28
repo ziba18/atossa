@@ -108,7 +108,7 @@ export default function TodayScreen() {
           label="Help now"
           variant="text"
           small
-          onPress={() => router.push('/(tabs)/profile/help-now' as any)}
+          onPress={() => router.push({ pathname: '/(tabs)/profile/help-now', params: { from: 'Today' } } as any)}
           accessibilityHint="Opens phone numbers for urgent help"
         />
       </View>

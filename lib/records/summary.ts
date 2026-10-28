@@ -572,13 +572,13 @@ function domainLines(
   const bowel = of((s) => s.bowelPain === true);
   const urine = of((s) => s.urinePain === true);
   facts.bowelBladder = {
-    text: joinFacts(bowel ? `pain opening bowels on ${plural(bowel, 'day')}` : '', urine ? `pain passing urine on ${plural(urine, 'day')}` : ''),
+    text: joinFacts(bowel ? `Pain opening bowels on ${plural(bowel, 'day')}` : '', urine ? `pain passing urine on ${plural(urine, 'day')}` : ''),
     onset: 'bowelBladder',
   };
   const sexDays = of((s) => realImpacts(s).includes('Sex'));
   const afterSex = of((s) => s.bleedingAfterSex === true);
   facts.sexPain = {
-    text: joinFacts(sexDays ? `got in the way of sex on ${plural(sexDays, 'day')}` : '', afterSex ? `bleeding after sex on ${plural(afterSex, 'day')}` : ''),
+    text: joinFacts(sexDays ? `Got in the way of sex on ${plural(sexDays, 'day')}` : '', afterSex ? `bleeding after sex on ${plural(afterSex, 'day')}` : ''),
   };
   const moodNotes = of((s) => clean(s.mood) !== '');
   facts.mood = { text: moodNotes ? `${plural(moodNotes, 'note')} in my words` : '', onset: 'mood' };
