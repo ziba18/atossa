@@ -27,33 +27,6 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 
 const isCancel = (e: unknown) => /cancel|did not complete|dismiss/i.test(String((e as Error)?.message ?? e));
 
-/**
- * 48 outlined circle with an icon — Print and Show on screen in the share bar (labelled for screen
- * readers). Disabled: an ink-3 glyph on a sunken disc, so it can't be mistaken for an active button.
- */
-function BarIconButton({
-  icon, label, onPress, disabled, busy,
-}: { icon: IconName; label: string; onPress: () => void; disabled?: boolean; busy?: boolean }) {
-  const inactive = disabled || busy;
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={inactive}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled: !!inactive, busy: !!busy }}
-      hitSlop={4}
-      style={({ pressed }) => ({
-        width: heights.secondary, height: heights.secondary, borderRadius: radii.pill, borderWidth: 1,
-        borderColor: inactive ? colors.hairline : colors.borderStrong, alignItems: 'center', justifyContent: 'center',
-        backgroundColor: inactive || pressed ? colors.sunken : 'transparent',
-      })}
-    >
-      <Icon name={icon} size={24} color={inactive ? colors.ink3 : colors.ink} />
-    </Pressable>
-  );
-}
-
 function Step({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={{ marginTop: space.xxl, gap: space.sm }}>
@@ -179,10 +152,16 @@ export default function DoctorScreen() {
           style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120, maxWidth: desk ? 420 : undefined }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
-        <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
-        <BarIconButton
-          icon="monitor" label="Show on screen" disabled={doc.empty}
-          onPress={() => router.push('/(tabs)/doctor/show' as any)}
+      </View>
+      <View style={{ flexDirection: 'row', gap: space.xs }}>
+        <Button
+          label="Print" icon="printer" variant="secondary" small onPress={print} disabled={off} loading={busy === 'print'}
+          style={{ flex: 1 }} accessibilityHint="Sends the summary to a printer"
+        />
+        <Button
+          label={winWidth < 340 ? 'On screen' : 'Show on screen'} icon="monitor" variant="secondary" small disabled={doc.empty}
+          onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ flex: 1.4 }}
+          accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
         />
       </View>
     </View>
@@ -303,16 +282,16 @@ export default function DoctorScreen() {
         </Step>
       ) : null}
 
-      {agendaUp ? (
+      {!nothingYet && !doc.empty ? (
+        <>
+          <PageOneCards doc={doc} showAgenda={!agendaUp} />
+          {agendaUp ? (
         <View style={{ marginTop: short ? space.md : space.xl }}>
           <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} compact={short} />
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
       ) : null}
 
-      {!nothingYet && !doc.empty ? (
-        <>
-          <PageOneCards doc={doc} showAgenda={!agendaUp} />
           <Step title="Your summary page">
             <DocumentPreview doc={doc} tall={desk} />
           </Step>

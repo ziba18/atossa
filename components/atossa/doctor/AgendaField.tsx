@@ -69,8 +69,6 @@ export function AgendaField({
           options={[...PRIORITIES]}
           value={PRIORITIES.find((p) => value.startsWith(prioritySentence(p))) ?? null}
           allowDeselect
-          scroll
-          bleed
           accessibilityLabel="Main priority"
           onChange={(v) => {
             const rest = PRIORITIES.reduce((t, p) => (t.startsWith(prioritySentence(p)) ? t.slice(prioritySentence(p).length).trim() : t), value);
