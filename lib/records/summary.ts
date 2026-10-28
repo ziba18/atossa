@@ -1123,18 +1123,18 @@ export function summaryToHtml(doc: DoctorDoc): string {
   @page { size: A4; margin: 12mm 14mm 10mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8pt; color: ${C.ink2}; } }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: ${C.white}; }
-  body { font-family: ${SANS}; color: ${C.ink}; ${pt(T.body)} }
+  body { font-family: ${SANS}; color: ${C.ink}; ${pt(T.body)} font-variant-numeric: tabular-nums lining-nums; }
   table.page { width: 100%; border-collapse: collapse; }
   table.page > tbody > tr > td, table.page > thead > tr > td, table.page > tfoot > tr > td { padding: 0; vertical-align: top; }
-  h1 { font-family: ${SERIF}; font-style: italic; font-weight: 400; ${pt(T.title)} margin: 0; }
+  h1 { font-family: ${SANS}; font-weight: 700; letter-spacing: 0.2pt; ${pt(T.title)} margin: 0; }
   .metahead { color: ${C.ink2}; ${pt(T.meta)} margin: 3pt 0 0; padding-bottom: 8pt; border-bottom: 1pt solid ${C.ink}; }
-  h2 { ${pt(T.head)} font-weight: 600; margin: 0 0 5pt; }
+  h2 { ${pt(T.head)} font-weight: 700; margin: 0 0 5pt; }
   section { padding: ${T.section - 6}pt 0 ${T.section - 10}pt; border-bottom: 0.75pt solid ${C.borderStrong}; }
   h2 { break-after: avoid; page-break-after: avoid; }
   .keep { break-inside: avoid; page-break-inside: avoid; }
   section:last-child { border-bottom: 0; }
   p { margin: 0; }
-  .serif { font-family: ${SERIF}; font-style: italic; font-weight: 400; ${pt(T.quote)} }
+  .serif { font-family: ${SERIF}; font-style: normal; font-weight: 400; ${pt(T.quote)} }
   .serif.lead { ${pt(T.lead)} }
   .q { margin: 0 0 ${T.item}pt; break-inside: avoid; }
   .meta { color: ${C.ink2}; ${pt(T.meta)} }
