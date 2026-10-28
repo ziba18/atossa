@@ -9,7 +9,7 @@ import { AddButton, EmptyState, InlineError, ScreenLarge, Txt } from '../kit';
 import { Icon } from '../../ui/Icon';
 import type { IconName } from '../../ui/Icon';
 import { Group, GroupHeading, GroupRow } from './GroupedRows';
-import { KIND_INFO, recordFacts, recordTitle, sortRecords, type RecordDataKind } from './recordKinds';
+import { ALLERGY_TYPE, KIND_INFO, recordFacts, recordTitle, sortRecords, type RecordDataKind } from './recordKinds';
 
 type AnyData = MedicineData | AppointmentData | HistoryData;
 
@@ -86,7 +86,8 @@ export function RecordsList({
     // Under a type header the type is not repeated: the row leads with what was said or found.
     const said = grouped ? [h.told, h.done, h.result].map((t) => (t ?? '').trim()).find(Boolean)?.split('\n')[0] : '';
     const title = grouped ? said || recordTitle(kind, r.data) : recordTitle(kind, r.data);
-    const facts = grouped ? formatRecordDate(h.date, h.datePrecision) : recordFacts(kind, r.data);
+    // An allergy line carries no date of its own (it is a standing statement), so no date shows under it.
+    const facts = grouped ? (h.type === ALLERGY_TYPE ? '' : formatRecordDate(h.date, h.datePrecision)) : recordFacts(kind, r.data);
     return (
       <GroupRow
         key={r.id}
