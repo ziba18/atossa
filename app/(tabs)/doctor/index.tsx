@@ -176,7 +176,7 @@ export default function DoctorScreen() {
   const nothingYet = doc.empty && doc.available.length === 0;
   // An appointment today: the note field sits above the Customise fold (phone layout) so it is hard to miss.
   // Phones with notes and an appointment: page 1 itself rides the appointment card, above the fold (PRD doctor-v2 §21).
-  const thumbUp = !desk && !nothingYet && !doc.empty && !!upcoming;
+  const thumbUp = !desk && winWidth >= 300 && !nothingYet && !doc.empty && !!upcoming;
   const agendaUp = !desk && !nothingYet && upcoming?.data.date === today;
   // With nothing to share, the builder steps are noise — only the range stays, and only when a
   // longer range would find something.
