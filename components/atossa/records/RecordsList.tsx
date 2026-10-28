@@ -85,11 +85,11 @@ export function RecordsList({
     const h = r.data as HistoryData;
     // Under a type header the type is not repeated: the row leads with what was said or found.
     // What was done leads for tests, scans and procedures ("Ultrasound"), so rows under one header are told apart; what a doctor said leads under "Told to me by a doctor".
-    const lines = grouped ? (h.type === 'Told to me by a doctor' ? [h.told, h.done, h.result] : [h.done, h.told, h.result]).map((t) => (t ?? '').trim().split('\n')[0]).filter(Boolean) : [];
+    const lines = grouped ? (h.type === 'Told to me by a doctor' || h.type === 'When it started (in my words)' ? [h.told, h.done, h.result] : [h.done, h.told, h.result]).map((t) => (t ?? '').trim().split('\n')[0]).filter(Boolean) : [];
     const said = lines[0] ?? '';
     const title = grouped ? said || recordTitle(kind, r.data) : recordTitle(kind, r.data);
     // An allergy line carries no date of its own (it is a standing statement), so no date shows under it.
-    const facts = grouped ? (h.type === ALLERGY_TYPE ? '' : formatRecordDate(h.date, h.datePrecision)) : recordFacts(kind, r.data);
+    const facts = grouped ? (h.type === ALLERGY_TYPE ? '' : h.type === 'When it started (in my words)' ? recordFacts(kind, r.data) : formatRecordDate(h.date, h.datePrecision)) : recordFacts(kind, r.data);
     return (
       <GroupRow
         key={r.id}

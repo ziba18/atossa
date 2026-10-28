@@ -19,7 +19,7 @@ export const HISTORY_TYPES: HistoryType[] = [
 /** Onset phrases (written from the Today confirm row) are not a list item she adds by hand. */
 export const PICKABLE_HISTORY_TYPES = HISTORY_TYPES.filter((t) => t !== 'When it started (in my words)');
 
-import { ALLERGY_TYPE } from '../../../lib/records/summary';
+import { ALLERGY_TYPE, ONSET_GROUP_LABEL, ONSET_TYPE, type OnsetGroup } from '../../../lib/records/summary';
 export { ALLERGY_TYPE };
 
 export const KIND_INFO: Record<RecordDataKind, {
@@ -97,6 +97,11 @@ export function recordFacts(kind: RecordDataKind, data: MedicineData | Appointme
   // thing Sam wrote ("Around March 2023 · MRI was clear") so similar rows can be told apart.
   const h = data as HistoryData;
   if (h.type === ALLERGY_TYPE) return (h.told ?? '').trim().split('\n')[0];
+  // A confirmed onset phrase reads as the group, then her words; it has no date of its own.
+  if (h.type === ONSET_TYPE) {
+    const g = ONSET_GROUP_LABEL[h.done as OnsetGroup] ?? 'symptom';
+    return `About your ${g}`;
+  }
   const said = [h.told, h.done, h.result].map((t) => (t ?? '').trim()).find(Boolean) ?? '';
   return joinFacts(formatRecordDate(h.date, h.datePrecision), said.split('\n')[0]);
 }

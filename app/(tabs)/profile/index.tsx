@@ -41,7 +41,7 @@ function previewLine(kind: RecordDataKind, records: ReturnType<typeof useRecords
   // A medicine still being taken leads the row; otherwise the newest one.
   const current = kind === 'medicine' ? sorted.find((r: any) => !r.data.stopped) : undefined;
   const newest = current ?? sorted[0];
-  if (!newest) return kind === 'history' && records.history.length ? 'Allergies in your words' : undefined;
+  if (!newest) return kind === 'history' && records.history.some((r) => r.data.type === ALLERGY_TYPE) ? 'Allergies in your words' : undefined;
   const d = newest.data as any;
   const date = formatRecordDateInline(kind === 'medicine' ? d.started : d.date, kind === 'medicine' ? d.startedPrecision : d.datePrecision);
   const title = recordTitle(kind, d);
