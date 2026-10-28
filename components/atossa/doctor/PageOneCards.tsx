@@ -42,7 +42,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
     cards.push(
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xxs }}>{doc.rangeLabel}</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>{freq.windowLabel}</Txt>
         {all ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-end' }}>
             <View accessible accessibilityLabel={`${all.days} of ${plural(all.total, 'day')} with a note`}>
