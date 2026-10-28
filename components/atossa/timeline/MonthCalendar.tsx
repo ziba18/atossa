@@ -9,7 +9,6 @@
 // Empty days are plain. No streaks, no "missed" states, no animation.
 import React from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions, Dimensions } from 'react-native';
-import Svg, { Circle, ClipPath, Defs, G, Line, Path } from 'react-native-svg';
 import { IconButton, Txt } from '../kit';
 import { colors, fonts, radii, severityColor, space } from '../../../constants/atossaUI';
 import {
@@ -120,7 +119,7 @@ function DayCell({
 }) {
   const solid = mark?.bleeding === 'bleeding';
   const spotting = mark?.bleeding === 'spotting';
-  const tint = !solid && !spotting && mark?.worst != null ? severityColor(mark.worst) : null;
+  const tint = mark?.worst != null ? severityColor(mark.worst) : null;
   return (
     <Pressable
       onPress={onPress}
@@ -133,22 +132,13 @@ function DayCell({
     >
       {({ pressed }) => (
         <>
-          {joinLeft || joinRight ? (
-            <View
-              pointerEvents="none"
-              style={[styles.band, { left: joinLeft ? -1 : '50%', right: joinRight ? -1 : '50%' }]} // -1 overlaps the neighbour: no hairline seam
-            />
-          ) : null}
           <View style={styles.discWrap}>
             {/* Today ring sits outside a filled/hatched disc so both read. */}
-            {isToday ? <View style={[styles.todayRing, (solid || spotting || tint) && styles.todayRingOuter]} /> : null}
-            {spotting ? <SpottingHatch /> : null}
-            {spotting ? <View pointerEvents="none" style={styles.spotClear} /> : null}
+            {isToday ? <View style={[styles.todayRing, tint && styles.todayRingOuter]} /> : null}
             <View
               style={[
                 styles.disc,
                 tint && { backgroundColor: tint.bg },
-                solid && { backgroundColor: colors.clay },
                 pressed && !solid && !disabled && { backgroundColor: colors.sunken },
               ]}
             >
@@ -157,15 +147,20 @@ function DayCell({
                 style={[
                   styles.num,
                   future && !solid && !spotting && { color: colors.ink3 },
-                  solid && styles.numOnClay,
                   tint && { color: tint.fg },
-                  spotting && { color: colors.clay },
                 ]}
               >
                 {day}
               </Txt>
             </View>
           </View>
+          {solid || spotting ? (
+            <View pointerEvents="none" style={styles.bleedRow}>
+              <View style={[styles.bleedSide, solid && joinLeft && { backgroundColor: colors.clay }]} />
+              <View style={[styles.bleedMid, solid ? { backgroundColor: colors.clay } : styles.spotMid]} />
+              <View style={[styles.bleedSide, solid && joinRight && { backgroundColor: colors.clay }]} />
+            </View>
+          ) : null}
           {mark?.worst != null
             ? <Txt maxFontSizeMultiplier={1.2} style={styles.rating}>{mark.worst}</Txt>
             : <View style={[styles.dot, !mark?.notes && { opacity: 0 }]} />}
@@ -175,40 +170,16 @@ function DayCell({
   );
 }
 
-/** 36 pt clay outline (1.5) with diagonal hatching in a band inside it; the centre stays clear for the numeral. */
-function SpottingHatch() {
-  const id = React.useId().replace(/[^a-zA-Z0-9_-]/g, '');
-  const r = DISC / 2;
-  const outer = r - RING / 2;
-  const inner = r - 6;
-  // Annulus as one even-odd path: outer circle + inner circle.
-  const annulus =
-    `M ${r - outer} ${r} a ${outer} ${outer} 0 1 0 ${outer * 2} 0 a ${outer} ${outer} 0 1 0 ${-outer * 2} 0 Z ` +
-    `M ${r - inner} ${r} a ${inner} ${inner} 0 1 0 ${inner * 2} 0 a ${inner} ${inner} 0 1 0 ${-inner * 2} 0 Z`;
-  const lines = [];
-  for (let k = -DISC; k <= DISC; k += 5) lines.push(<Line key={k} x1={k} y1={DISC} x2={k + DISC} y2={0} stroke={colors.clay} strokeWidth={1.25} />);
-  return (
-    <Svg width={DISC} height={DISC} style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Defs>
-        <ClipPath id={`hatch-${id}`}>
-          <Path d={annulus} clipRule="evenodd" fillRule="evenodd" />
-        </ClipPath>
-      </Defs>
-      <G clipPath={`url(#hatch-${id})`}>{lines}</G>
-      <Circle cx={r} cy={r} r={outer} stroke={colors.clay} strokeWidth={RING} fill="none" />
-    </Svg>
-  );
-}
-
 const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', marginBottom: space.xs },
   row: { flexDirection: 'row' },
   weekday: { flex: 1, height: 28, alignItems: 'center', justifyContent: 'center' },
-  cell: { flex: 1, height: 56, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 4 },
-  /** Clay band joining consecutive bleeding days (behind the discs, same height). */
-  band: { position: 'absolute', top: 4, height: DISC, backgroundColor: colors.clay },
-  /** Clear centre for the spotting numeral, so the hatch never runs through the digits. */
-  spotClear: { position: 'absolute', width: DISC - 12, height: DISC - 12, borderRadius: radii.pill, backgroundColor: colors.canvas },
+  cell: { flex: 1, height: 62, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 4 },
+  /** The bleeding marker under a day (same grammar as the PDF strip): solid clay bar = bleeding, dashed = spotting; runs join across days. */
+  bleedRow: { position: 'absolute', left: 0, right: 0, top: DISC + 6, height: 4, flexDirection: 'row' },
+  bleedSide: { flex: 1 },
+  bleedMid: { width: DISC, height: 4 },
+  spotMid: { height: 0, borderTopWidth: 2, borderStyle: 'dashed', borderColor: colors.clay, marginTop: 1 },
   discWrap: { width: DISC, height: DISC, alignItems: 'center', justifyContent: 'center' },
   disc: { width: DISC, height: DISC, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   todayRing: {
@@ -216,7 +187,6 @@ const styles = StyleSheet.create({
   },
   todayRingOuter: { width: DISC + 6, height: DISC + 6, top: -3, left: -3 },
   num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
-  numOnClay: { fontFamily: fonts.semibold, color: colors.white },
-  rating: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 14, color: colors.ink, fontVariant: ['tabular-nums', 'lining-nums'], marginTop: 1 },
-  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.plum, marginTop: space.xxs },
+  rating: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 14, color: colors.ink, fontVariant: ['tabular-nums', 'lining-nums'], marginTop: 7 },
+  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.plum, marginTop: 9 },
 });
