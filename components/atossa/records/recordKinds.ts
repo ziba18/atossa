@@ -14,7 +14,11 @@ export type RecordSlug = 'medicines' | 'appointments' | 'history';
 
 export const HISTORY_TYPES: HistoryType[] = [
   'Told to me by a doctor', 'Test or scan', 'Procedure or surgery', 'Emergency visit',
+  'Allergies (in my words)',
 ];
+
+import { ALLERGY_TYPE } from '../../../lib/records/summary';
+export { ALLERGY_TYPE };
 
 export const KIND_INFO: Record<RecordDataKind, {
   slug: RecordSlug;
@@ -90,6 +94,7 @@ export function recordFacts(kind: RecordDataKind, data: MedicineData | Appointme
   // Health history: the category is the title, so lead the facts with the date and the first
   // thing Sam wrote ("Around March 2023 · MRI was clear") so similar rows can be told apart.
   const h = data as HistoryData;
+  if (h.type === ALLERGY_TYPE) return (h.told ?? '').trim().split('\n')[0];
   const said = [h.told, h.done, h.result].map((t) => (t ?? '').trim()).find(Boolean) ?? '';
   return joinFacts(formatRecordDate(h.date, h.datePrecision), said.split('\n')[0]);
 }

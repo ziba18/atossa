@@ -232,7 +232,7 @@ export type DocSection =
   | { id: 'periods'; title: string; runs: PeriodRun[]; spotting: string }
   | { id: 'impacts' | 'sex' | 'mood' | 'eating'; title: string; items: CountItem[]; quotes: DocQuote[] }
   | { id: 'tried'; title: string; items: TriedItem[]; quotes: DocQuote[] }
-  | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string }
+  | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string; allergies: string }
   /** `upcoming` = today's appointment and later ones — never shown as past. */
   | { id: 'appointments'; title: string; items: DatedItem[]; more: string; upcoming: DatedItem[] };
 
@@ -279,6 +279,9 @@ export interface SummaryInput {
   familyHistory?: string;
 }
 
+/** The one Health history type that is a plain statement, with no date, steps or result. */
+export const ALLERGY_TYPE: HistoryData['type'] = 'Allergies (in my words)';
+export const ALLERGIES_LABEL = 'Allergies, in my words';
 export const FAMILY_HISTORY_LABEL = 'Family health history, as I was told it';
 
 export interface SummaryOptions {
@@ -579,6 +582,7 @@ export function summaryToText(doc: DoctorDoc): string {
     if (d.onset) lines.push(`  ${d.onset}`);
     if (d.id === 'history' && d.state === 'recorded') {
       const h = doc.sections.find((x) => x.id === 'history');
+      if (h && h.id === 'history') lines.push(`  ${ALLERGIES_LABEL}: ${h.allergies ? `"${h.allergies}"` : 'not recorded'}`);
       if (h && h.id === 'history' && h.family) lines.push(`  ${FAMILY_HISTORY_LABEL}: "${h.family}"`);
     }
   }
@@ -761,9 +765,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   }
 
   // 7. Health history — "Around" dates.
-  const hist = [...input.history.map((r) => r.data)].sort((a, b) => b.date.localeCompare(a.date));
+  const histAll = input.history.map((r) => r.data);
+  const hist = histAll.filter((h) => h.type !== ALLERGY_TYPE).sort((a, b) => b.date.localeCompare(a.date));
+  // The patient's own allergy words, verbatim; never ticked, validated or commented on.
+  const allergyText = histAll.filter((h) => h.type === ALLERGY_TYPE).map((h) => clean(h.told)).filter(Boolean).join('; ');
   const familyText = clean(input.familyHistory);
-  if (hist.length || familyText) {
+  {
     all.push({
       id: 'history',
       title: 'Health history',
@@ -778,6 +785,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       })),
       more: hist.length > MAX_LISTED ? `${plural(hist.length - MAX_LISTED, 'earlier item')} saved in Atossa.` : '',
       family: familyText,
+      allergies: allergyText,
     });
   }
 
@@ -1003,7 +1011,7 @@ function sectionInner(s: DocSection): string {
     case 'appointments':
       return `<section>${head}${s.upcoming.length ? `<p class="sub">${esc(APPT_AHEAD)}</p>${datedTableHtml(s.upcoming)}${s.items.length ? `<p class="sub">${esc(APPT_PAST)}</p>` : ''}` : ''}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
     case 'history':
-      return `<section>${head}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}${s.family ? `<p><span class="muted">${esc(FAMILY_HISTORY_LABEL)}:</span> <span class="serif">“${esc(curly(s.family))}”</span></p>` : ''}</section>`;
+      return `<section>${head}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}${s.allergies ? `<p><span class="muted">${esc(ALLERGIES_LABEL)}:</span> <span class="serif">“${esc(curly(s.allergies))}”</span></p>` : `<p><span class="muted">${esc(ALLERGIES_LABEL)}:</span> not recorded</p>`}${s.family ? `<p><span class="muted">${esc(FAMILY_HISTORY_LABEL)}:</span> <span class="serif">“${esc(curly(s.family))}”</span></p>` : ''}</section>`;
   }
 }
 

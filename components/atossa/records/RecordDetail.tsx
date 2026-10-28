@@ -15,7 +15,7 @@ import { todayKey } from '../../../lib/records/dates';
 import { useScrollRef } from '../timeline/navigation';
 import { UrgentNote, textOf } from '../UrgentNote';
 import { RecordDateField } from './RecordDateField';
-import { HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
+import { ALLERGY_TYPE, HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
 
 const HELPED_OPTIONS = ['Helped', 'A little', 'No', 'Not sure'] as const;
 
@@ -50,6 +50,7 @@ function missing(kind: RecordDataKind, d: Draft): string {
     return need.length ? `Add ${need.join(' and ')} to save.` : '';
   }
   const h = d as HistoryDraft;
+  if (h.type === ALLERGY_TYPE) return h.told.trim() ? '' : 'Add your allergies to save.';
   const need = [!h.type && 'what it was', !h.date && 'when'].filter(Boolean);
   return need.length ? `Add ${need.join(' and ')} to save.` : '';
 }
@@ -68,6 +69,10 @@ function cleaned(kind: RecordDataKind, d: Draft): AnyData {
     };
   }
   const h = d as HistoryDraft;
+  // An allergy line is a plain statement: no date step (it carries the day it was written), no steps or result.
+  if (h.type === ALLERGY_TYPE) {
+    return { ...h, type: ALLERGY_TYPE, date: h.date || todayKey(), datePrecision: h.date ? h.datePrecision : 'exact', told: h.told.trim(), done: '', result: '' };
+  }
   return { ...h, type: h.type as HistoryType, told: h.told.trim(), done: h.done.trim(), result: h.result.trim() };
 }
 
@@ -397,15 +402,21 @@ function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
           accessibilityLabel="What it was"
         />
       </View>
-      <RecordDateField
-        label="When"
-        value={d.date}
-        precision={d.datePrecision}
-        onChange={(date, datePrecision) => set({ date, datePrecision })}
-      />
-      <TextField label="What I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
-      <TextField label="What was done" optional multiline value={d.done} onChangeText={(done) => set({ done })} />
-      <TextField label="Result" optional hint="How it went, in your own words" multiline value={d.result} onChangeText={(result) => set({ result })} />
+      {d.type === ALLERGY_TYPE ? (
+        <TextField label="Allergies (in my words)" hint="Write anything you want your doctor to know. We don’t check or comment on it." multiline value={d.told} onChangeText={(told) => set({ told })} />
+      ) : (
+        <>
+          <RecordDateField
+            label="When"
+            value={d.date}
+            precision={d.datePrecision}
+            onChange={(date, datePrecision) => set({ date, datePrecision })}
+          />
+          <TextField label="What I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
+          <TextField label="What was done" optional multiline value={d.done} onChangeText={(done) => set({ done })} />
+          <TextField label="Result" optional hint="How it went, in your own words" multiline value={d.result} onChangeText={(result) => set({ result })} />
+        </>
+      )}
     </>
   );
 }
