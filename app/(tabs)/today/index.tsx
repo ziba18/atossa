@@ -72,7 +72,7 @@ export default function TodayScreen() {
       {loadedFor ? (short && symptoms.length > 0 ? null : <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>)
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
       {loadedFor && symptoms.length > 0 ? (
-        <View style={{ marginBottom: space.md }}>
+        <View style={{ marginTop: short ? space.md : 0, marginBottom: space.md }}>
           {/* Patterns need a few notes to say anything; from 7 on, one tap from here (Timeline > Patterns). */}
           <RecentStrip
             symptoms={symptoms}
