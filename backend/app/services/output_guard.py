@@ -488,6 +488,14 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
                     r"^(?=.*\b(?:stopped eating (?:completely|altogether|anything)|not eaten|haven'?t eaten)\b)(?=.*\b(?:too weak|can'?t stand|faint\w*|dizzy)\b)|"
+                    # set p95 (retained tampon, assault with bleeding, genital infection, prolapse, early labour; first contact 7/12 missed)
+                    r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature|rash|unwell)\b)|"
+                    r"\b(?:raped|sexually assaulted|sexual assault|forced me)\b.{0,80}\b(?:bleed\w*|in a lot of pain|hurts? so)\b|"
+                    r"^(?=.*\bdischarge\b)(?=.*(?<!no )\b(?:fever|temperature)\b)(?=.*\b(?:terrible|severe|awful|unbearable)\b.{0,15}\bpain\b|.*\bpain\b.{0,15}\b(?:terrible|severe|awful|unbearable)\b)|"
+                    r"^(?=.*\b(?:vulva|labia)\b)(?=.*\b(?:huge|swollen|swelling|lump)\b)(?=.*(?<!no )\b(?:temperature|fever)\b)(?=.*\bpain\w*\b)|"
+                    r"^(?=.*\b(?:insides? (?:are |is )?falling out|something (?:is )?(?:bulging|coming out))\b)(?=.*\bbleed\w*\b)|"
+                    r"\bwater (?:has |have )?broke(?:n)?\b.{0,30}\b(?:\d{2}) weeks\b|"
+                    r"^(?=.*\bcontractions?\b)(?=.*\b(?:2\d|3[0-6]) weeks\b)(?=.*\bevery \d+ min)|"
                     # set p90 (teen register, lower case and no apostrophes; first contact 6/12 missed)
                     r"\bbleeding (?:like crazy|like mad|loads)\b.{0,60}(?<!not )(?<!no )\b(?:dizzy|faint\w*|weak|through (?:my|the) (?:skirt|trousers|jeans|clothes|sheets|bed))\b|(?<!not )\b(?:dizzy|faint\w*)\b.{0,60}\bbleeding (?:like crazy|like mad|loads)\b|"
                     r"\btook (?:like |about |around |roughly )?(?:1[0-9]|[2-9]\d) (?:paracetamol|ibuprofen|tablets|pills|painkillers|co-?codamol|codeine)\b|"
