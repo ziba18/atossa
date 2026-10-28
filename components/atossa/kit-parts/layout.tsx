@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
@@ -17,7 +18,7 @@ import { Quote, Txt } from './Txt';
  * content capped at 600 wide. Pass `back` for pushed screens to show a BackChevron above the title.
  */
 export function ScreenLarge({
-  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide, brand,
+  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide, brand, wash = true,
 }: {
   title: string;
   subtitle?: React.ReactNode;
@@ -33,6 +34,8 @@ export function ScreenLarge({
   wide?: boolean;
   /** Small ATOSSA wordmark above the title (sign in / register), so the auth screens carry the brand. */
   brand?: boolean;
+  /** Lavender light behind the header (Iris). Off for the evidence page, which stays white. */
+  wash?: boolean;
 }) {
   const head = (
     <View style={styles.head}>
@@ -51,6 +54,14 @@ export function ScreenLarge({
   );
   return (
     <SafeAreaView edges={["top"]} role="main" style={styles.screen}>
+      {wash ? (
+        <LinearGradient
+          colors={['#E6DCFB', colors.canvas]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 360, pointerEvents: 'none' }}
+        />
+      ) : null}
       {scroll ? (
         <ScrollView
           ref={scrollRef as React.RefObject<ScrollViewInstance>}

@@ -134,7 +134,7 @@ export default function DoctorScreen() {
 
   if (loadedFor === null && (loading || loadError)) {
     return (
-      <ScreenLarge title="For my doctor" right={<HeaderAvatar />}>
+      <ScreenLarge wash={false} title="For my doctor" right={<HeaderAvatar />}>
         {loadError ? (
           <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} />
         ) : (
@@ -189,7 +189,7 @@ export default function DoctorScreen() {
   );
 
   return (
-    <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
+    <ScreenLarge wash={false} wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
       {short ? null : (
         <Txt variant="body" color={colors.ink2}>
           Your notes, in your words, ready to share.
