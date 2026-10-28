@@ -241,7 +241,7 @@ export function OnsetConfirmRow({ note }: { note: Rec<SymptomData> }) {
   }, []);
   const phrase = onsetWords(note.data.words ?? '');
   const group = onsetGroupFor(note.data);
-  if (!phrase || skipped == null || skipped.includes(note.id) || onsetFromHistory(history)[group]) return null;
+  if (!phrase || !group || skipped == null || skipped.includes(note.id) || onsetFromHistory(history)[group]) return null;
   const skip = () => {
     const next = [...skipped, note.id].slice(-50);
     setSkipped(next);
