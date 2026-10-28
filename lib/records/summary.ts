@@ -580,10 +580,11 @@ export function summaryToText(doc: DoctorDoc): string {
   for (const d of doc.domains) {
     lines.push(`${d.heading}: ${d.text}`);
     if (d.onset) lines.push(`  ${d.onset}`);
-    if (d.id === 'history' && d.state === 'recorded') {
+    if (d.id === 'history') {
       const h = doc.sections.find((x) => x.id === 'history');
       if (h && h.id === 'history' && h.family) lines.push(`  ${FAMILY_HISTORY_LABEL}: "${h.family}"`);
-      if (h && h.id === 'history' && h.allergies) lines.push(`  ${ALLERGIES_LABEL}: ${h.allergies ? `"${h.allergies}"` : 'not recorded'}`);
+      // Same as the A4: whenever the history section exists the page says something about allergies.
+      if (h && h.id === 'history') lines.push(`  ${ALLERGIES_LABEL}: ${h.allergies ? `"${h.allergies}"` : 'not recorded'}`);
     }
   }
   const words = doc.sections.find((s) => s.id === 'words');
