@@ -79,6 +79,9 @@ export async function cancelPredictedCycleReminders(): Promise<void> {
 // Schedules (or replaces, since it reuses a fixed identifier) a repeating
 // local notification at the given local time to nudge the user to log
 // today's symptoms/mood in the chat.
+// Lock-screen text: no symptom words (anyone can read the lock screen).
+export const DAILY_LOG_REMINDER_BODY = "If today's worth noting, I'm here. Two minutes is plenty.";
+
 export async function scheduleDailyLogReminder(time: string): Promise<void> {
   const [hour, minute] = time.split(':').map(Number);
   if (Number.isNaN(hour) || Number.isNaN(minute)) return;
@@ -88,7 +91,7 @@ export async function scheduleDailyLogReminder(time: string): Promise<void> {
       identifier: DAILY_LOG_REMINDER_ID,
       content: {
         title: 'Atossa',
-        body: "Anything to note about your body today? Pain, bleeding, sleep or mood – two minutes.",
+        body: DAILY_LOG_REMINDER_BODY,
         data: { type: 'daily_log_reminder' },
       },
       trigger: {

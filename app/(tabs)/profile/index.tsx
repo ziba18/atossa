@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ScrollView, View, type ScrollViewInstance } from 'react-native';
+import { Platform, ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { DATA_LINES } from '../../../constants/dataLocation';
@@ -172,7 +172,7 @@ export default function ProfileScreen() {
         <GroupRow
           icon="bell"
           label="Reminders and notifications"
-          detail="Your daily reminder and its time"
+          detail={Platform.OS === 'web' ? 'Reminders come with the iPhone app' : 'Your daily reminder and its time'}
           onPress={() => router.push('/(tabs)/profile/settings' as any)}
         />
         <GroupRow

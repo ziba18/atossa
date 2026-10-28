@@ -50,3 +50,13 @@ def test_only_the_records_and_deletion_routers_read_record_content():
     root = pathlib.Path(__file__).resolve().parent.parent / "app"
     users = sorted(str(p.relative_to(root)) for p in root.rglob("*.py") if "HealthRecord" in p.read_text() and "models" not in p.parts)
     assert users == ["routers/profiles.py", "routers/records.py"]
+
+
+@pytest.mark.parametrize("kind", KINDS)
+def test_export_includes_the_kind_for_its_owner_only(world, kind):
+    from app.routers.profiles import export_my_data
+    db, a, b = world
+    create_record(RecordCreate(kind=kind, data={"text": "own words"}), current_user=a, db=db)
+    mine = export_my_data(current_user=a, db=db)["tables"]["health_records"]
+    assert [r["kind"] for r in mine] == [kind]
+    assert export_my_data(current_user=b, db=db)["tables"]["health_records"] == []

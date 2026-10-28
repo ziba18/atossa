@@ -4,7 +4,7 @@ import { space } from '../../../constants/atossaUI';
 import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/atossa/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
-import { syncDailyLogReminder } from '../../../lib/notifications';
+import { syncDailyLogReminder, DAILY_LOG_REMINDER_BODY } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
 import { usePageTitle } from '../../../lib/usePageTitle';
 
@@ -71,7 +71,7 @@ export default function SettingsScreen() {
               }}
             />
             <Txt variant="caption" style={{ marginTop: space.sm }}>
-              {'The reminder says: “Anything to note about your body today? Pain, bleeding, sleep or mood – two minutes.”'}
+              {`The reminder says: “${DAILY_LOG_REMINDER_BODY}”`}
             </Txt>
           </View>
         ) : null}

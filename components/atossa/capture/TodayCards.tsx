@@ -1,13 +1,13 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
 import React, { useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
   Button, Card, Chip, FactLine, HeroNumber, InlineError, QuickTile, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
-import { colors, layout, radii, space } from '../../../constants/atossaUI';
+import { colors, layout, radii, severityRamp, space } from '../../../constants/atossaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
@@ -292,6 +292,7 @@ export function HeroNumberCard() {
 /** Short phones (320x568): the same number as HeroNumberCard as one line above the prompt, so the appointment signal is not pushed off the first screen. */
 export function HeroChip() {
   const router = useRouter();
+  const wide = useWindowDimensions().width >= 340; // the ramp would wrap the label on a 320 phone
   const symptoms = useRecordsStore((s) => s.records.symptom);
   const appts = useRecordsStore((s) => s.records.appointment);
   const today = todayKey();
@@ -311,7 +312,13 @@ export function HeroChip() {
       accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Timeline'}
       style={styles.chip}
     >
-      <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
+      <View style={styles.chipRow}>
+        {/* Decorative: the plum ramp the Timeline uses for strength, as five rising bars. */}
+        {wide ? <View style={styles.ramp} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          {severityRamp.map((c, i) => <View key={c} style={{ width: 4, height: 6 + i * 3, borderRadius: 2, backgroundColor: c }} />)}
+        </View> : null}
+        <Txt variant="headline" style={{ fontVariant: ['tabular-nums'], flexShrink: 1 }}>{label}</Txt>
+      </View>
     </PressableCard>
   );
 }
@@ -344,6 +351,8 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 
 const styles = StyleSheet.create({
   chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: 'center', marginBottom: space.sm },
+  chipRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm },
+  ramp: { flexDirection: 'row', alignItems: 'flex-end', gap: 2, height: 18 },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },

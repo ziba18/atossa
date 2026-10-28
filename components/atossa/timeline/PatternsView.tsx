@@ -9,6 +9,7 @@ import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
 import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
+import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
 import {
@@ -55,6 +56,25 @@ function WeekBar({ height, color }: { height: number; color: string }) {
   return <Animated.View style={[styles.weekBar, { height, backgroundColor: color, transformOrigin: 'bottom', transform: [{ scaleY: t }] }]} />;
 }
 
+/** Counts up from 0 once (450 ms ease-out); shows the final number straight away under Reduce Motion. The spoken label always carries the final value. */
+function CountUp({ value }: { value: number }) {
+  const reduce = useReduceMotion();
+  const [n, setN] = useState(reduce || value <= 1 ? value : 0);
+  useEffect(() => {
+    if (reduce || value <= 1) { setN(value); return; }
+    const start = Date.now();
+    let raf = 0;
+    const tick = () => {
+      const t = Math.min(1, (Date.now() - start) / 450);
+      setN(Math.round(value * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, reduce]);
+  return <>{n}</>;
+}
+
 /** One number with a label under it; the row of three sits above the charts. */
 function StatTile({ value, label, onPress, hint, wide, zeroLabel }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean; zeroLabel?: string }) {
   // A zero that means "nothing logged" reads as a sentence, not a big 0.
@@ -62,7 +82,7 @@ function StatTile({ value, label, onPress, hint, wide, zeroLabel }: { value: num
   return (
     <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
       <View style={wide ? styles.tileRow : undefined}>
-        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}>{value}</Txt>}
+        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}><CountUp value={value} /></Txt>}
         {none ? null : <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>}
       </View>
     </PressableCard>
@@ -170,7 +190,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
             <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
           </View> : null}
-          <Txt variant="caption" style={{ marginTop: space.xs }}>Height = days with a note · shade = highest number that week</Txt>
+          <Txt variant="caption" style={{ marginTop: space.xs }}>Darker bar = a higher number that week</Txt>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
@@ -252,7 +272,11 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         <FadeIn index={4}>
           <Card>
             <Txt variant="caption">Latest, in your words · {m.latest.dateLabel}</Txt>
-            <View style={{ marginTop: space.xs }}><Quote numberOfLines={3}>{m.latest.text}</Quote></View>
+            <View style={{ marginTop: space.xs, gap: space.sm }}>
+              <Quote numberOfLines={3}>{m.latest.text}</Quote>
+              {/* Same rule as the Timeline card: the 999 / 111 line only for a note from today or yesterday. */}
+              <UrgentNote text={m.latest.text} date={m.latest.date} />
+            </View>
           </Card>
         </FadeIn>
       ) : null}

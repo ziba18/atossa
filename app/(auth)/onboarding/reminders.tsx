@@ -6,7 +6,7 @@ import { Button, ChipGroup, FieldLabel, InlineError } from '../../../components/
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
-import { syncDailyLogReminder } from '../../../lib/notifications';
+import { syncDailyLogReminder, DAILY_LOG_REMINDER_BODY } from '../../../lib/notifications';
 import { REMINDER_TIMES } from '../../../lib/reminderTimes';
 import { track } from '../../../lib/analytics';
 import { usePageTitle } from '../../../lib/usePageTitle';
@@ -72,7 +72,7 @@ export default function OnboardingReminders() {
       step={3}
       back={{ label: 'Back' }}
       title="Would a daily reminder help?"
-      helper="Anything to note about your body today? Pain, bleeding, sleep or mood – two minutes. You can change this later in Settings."
+      helper={`The reminder says: “${DAILY_LOG_REMINDER_BODY}” You can change this later in Settings.`}
     >
       <FieldLabel label="What time suits you?" />
       <ChipGroup

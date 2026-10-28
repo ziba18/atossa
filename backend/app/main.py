@@ -11,7 +11,8 @@ from app.routers import auth, profiles, connections, chat, records, legal, baske
 
 MAX_BODY_BYTES = 256 * 1024
 
-app = FastAPI(title="Atossa API", version="1.0.0")
+_docs = {"docs_url": None, "redoc_url": None, "openapi_url": None} if settings.hide_api_docs else {}
+app = FastAPI(title="Atossa API", version="1.0.0", **_docs)
 
 
 @app.exception_handler(RequestValidationError)
