@@ -327,7 +327,7 @@ _SELF += [
     r"(?:bridge|cliff|roof|train tracks?|railway(?: line| tracks?)?|platform edge|multi-?storey)\b.{0,50}\b(?:stepp?\w* (?:out|off|in front)|jump\w*|how high)\b", r"step\w* in front of (?:a |the )?(?:train|bus|car|lorry)\b",
     r"(?:know|decided|worked out|picked|chosen) (?:which|what|how many) (?:\w+ )?" + _MEDS + r" (?:i'?d|i would|i'?ll|i will|to) (?:use|take)\b",
     r"(?:thought|thinking|planned|planning|worked out) (?:about |out )?how i(?:'?d| would| will|'?ll) do it\b", r"rehears\w+ (?:it|how)\b.{0,40}\brope\b|\bnoose\b|\bhang(?:ing)? myself\b",
-    r"(?:stockpil\w+|hoard\w*|collect\w*|saving|saved|stash\w*) (?:up )?(?:all )?(?:my |the )?(?:\w+ )?" + _MEDS + r"\b(?![^.]{0,30}\b(?:for (?:the |my )?(?:holiday|trip|travel)|in case)\b)",
+    r"(?:stockpil\w+|hoard\w*|collect\w*|saving|saved|stash\w*) (?:up )?(?:all )?(?:my |the )?(?:\w+ )?" + _MEDS + r"\b(?![^.]{0,30}\b(?:for (?:the |my )?(?:holiday|trip|travel)|in case|before (?:my |the |a )?period)\b)",  # run10: "before my period" quiet (v90; loosening, Safety to rule)
     r"giv(?:ing|e|en) (?:all )?(?:my )?(?:things|stuff|belongings|possessions) away\b(?![^.]{0,40}\b(?:charity|fits?|clear\w*|declutter\w*|moving|car boot|vinted|ebay)\b)",
     r"(?:wrote|written|writing|left) (?:a |some )?(?:notes?|letters?) (?:to|for) (?:my |each of my )?(?:mum|mom|dad|partner|family|kids|children|husband|wife|boyfriend|girlfriend|everyone|sister|brother)\b(?![^.]{0,40}\b(?:gp|doctor|appointment|birthday|christmas|card|thank\w*|symptoms?|pain|period|shopping|list)\b)",
     r"(?:who (?:gets|will get|'?ll get|has|will have|takes)|after)\b.{0,30}\bwhen i'?m (?:not around|gone|not here)\b(?! (?:on|for|to|at)\b)|when i'?m (?:not around|not here|gone) (?:any ?more|for good)\b",
