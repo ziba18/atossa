@@ -652,6 +652,10 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
                     # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
                     r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
+                    # set p115 (first contact 3/10 missed): breast red/hard/hot with fever, a red line going up a limb with chills, pregnant and unable to keep food or water down for days
+                    r"^(?=.*\bbreast\b.{0,30}\b(?:red|hot|hard|lump\w*)\b)(?=.*\b(?:fever|temperature|shiver\w*|chills|flu-?like)\b)(?=.*\b(?:breastfeed\w*|feeding|nursing|mastitis|baby)\b)|"
+                    r"\b(?:red|dark) (?:line|streak|lines|streaks)\b.{0,30}\b(?:going |running |spreading |travelling )?(?:up|along)\b.{0,60}\b(?:chills|fever|shivering|unwell|high temperature)\b|"
+                    r"^(?=.*\b(?:pregnan\w+|\d{1,2} weeks)\b)(?=.*\b(?:can'?t|cannot|unable to|haven'?t been able to) keep (?:any |anything |even )?(?:food|water|fluids|anything)\b.{0,25}\bdown\b)(?=.*\b(?:\d+ days|days|dizz\w*|lost weight|weak)\b)|"
                     # set p114 (medicine reactions; first contact 3/10 missed): yellow skin or eyes with stomach pain, fruity breath with thirst and sickness, agitation with rigid muscles and sweating
                     r"^(?=.*\b(?:yellow(?:ish)? (?:skin|eyes)|skin (?:looks |is |has gone |went )?yellow|eyes (?:look |are |went )?yellow|jaundice\w*)\b)(?=.*\b(?:stomach|tummy|belly|abdom\w+) pain\b|.*\bpain\b.{0,25}\b(?:stomach|tummy|belly|abdomen|back)\b)|"
                     r"\b(?:breath|wee|pee)\b.{0,15}\b(?:smells?|smelling) (?:fruity|of pear[- ]?drops?|like nail varnish)\b.{0,80}\b(?:sick|vomit\w*|thirsty|drowsy|breathing fast)\b|\b(?:sick|vomit\w*|thirsty|drowsy)\b.{0,80}\bbreath\b.{0,15}\bsmells? fruity\b|"
