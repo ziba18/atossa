@@ -325,7 +325,7 @@ export default function ProfileScreen() {
       ) : null}
 
       <SafetyLine style={{ marginTop: space.xxl }} />
-      <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.sm }}>
+      <Txt variant="secondary" style={{ marginTop: space.sm }}>
         Your notes are stored under your account and only shared when you share them.
       </Txt>
 

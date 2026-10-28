@@ -10,7 +10,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions, Dimensions } from 'react-native';
 import { IconButton, Txt } from '../kit';
-import { colors, fonts, radii, severityColor, space } from '../../../constants/atossaUI';
+import { colors, fonts, radii, space } from '../../../constants/atossaUI';
 import {
   MONTH_NAMES, WEEKDAY_LETTERS, daysInMonth, firstWeekdayOffset, toKey, todayKey,
 } from '../../../lib/records/dates';
@@ -119,7 +119,8 @@ function DayCell({
 }) {
   const solid = mark?.bleeding === 'bleeding';
   const spotting = mark?.bleeding === 'spotting';
-  const tint = mark?.worst != null ? severityColor(mark.worst) : null;
+  // A day with a note is one neutral outline; the strongest rating is the number printed under it (no shade carries meaning).
+  const hasNote = (mark?.notes ?? 0) > 0 || mark?.worst != null;
   return (
     <Pressable
       onPress={onPress}
@@ -134,11 +135,11 @@ function DayCell({
         <>
           <View style={styles.discWrap}>
             {/* Today ring sits outside a filled/hatched disc so both read. */}
-            {isToday ? <View style={[styles.todayRing, tint && styles.todayRingOuter]} /> : null}
+            {isToday ? <View style={[styles.todayRing, hasNote && styles.todayRingOuter]} /> : null}
             <View
               style={[
                 styles.disc,
-                tint && { backgroundColor: tint.bg },
+                hasNote && { borderWidth: 1.5, borderColor: colors.borderStrong },
                 pressed && !solid && !disabled && { backgroundColor: colors.sunken },
               ]}
             >
@@ -147,7 +148,6 @@ function DayCell({
                 style={[
                   styles.num,
                   future && !solid && !spotting && { color: colors.ink3 },
-                  tint && { color: tint.fg },
                 ]}
               >
                 {day}

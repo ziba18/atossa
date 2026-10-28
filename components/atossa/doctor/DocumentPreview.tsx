@@ -125,7 +125,7 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
           >
             {inner > 0 ? <PageCrop doc={doc} width={inner} height={thumbH} onHeight={setDocHeight} /> : <View style={{ height: THUMB_MAX_H }} />}
           </Pressable>
-          <Txt variant="secondary" style={{ marginTop: space.sm, textAlign: 'center' }}>
+          <Txt variant="secondary" style={{ marginTop: space.sm }}>
             {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${printedRange(doc).split(' · ')[0]} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
           </Txt>
         </>
@@ -166,7 +166,7 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
       ) : null}
       {tall ? <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" /> : null}
       {Platform.OS === 'web' ? (
-        <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
+        <Txt variant="caption" style={{ marginTop: space.xs }}>Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
       ) : null}
       {doc.sections.length ? (
         <View style={{ marginTop: space.md, gap: space.xs }}>

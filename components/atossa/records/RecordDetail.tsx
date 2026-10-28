@@ -269,7 +269,7 @@ export function RecordDetail({
           {rangeError ? <InlineError message={rangeError} /> : null}
           <InlineError message={error} />
           <Button label="Save" onPress={save} disabled={!canSave} loading={busy && !confirming} />
-          {need ? <Txt variant="secondary" style={{ textAlign: 'center' }}>{need}</Txt> : null}
+          {need ? <Txt variant="secondary">{need}</Txt> : null}
         </View>
       </View>
 

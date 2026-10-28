@@ -373,8 +373,8 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: 'center', marginBottom: space.sm },
-  chipRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm },
+  chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: 'flex-start', marginBottom: space.sm },
+  chipRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: space.sm },
   ramp: { flexDirection: 'row', alignItems: 'flex-end', gap: 2, height: 18 },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   hero: { paddingTop: space.lg, paddingBottom: space.lg, paddingHorizontal: space.lg, alignItems: 'flex-start' },

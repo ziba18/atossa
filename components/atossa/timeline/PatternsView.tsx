@@ -347,7 +347,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>A clear summary from your notes, in your words.</Txt>
       </PressableCard>
 
-      <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
+      <Txt variant="caption" style={{ marginTop: space.xs }}>
         Counts of what you logged, from {MIN_NOTE_DAYS}+ days of notes. They match your summary for the same dates.
       </Txt>
     </View>

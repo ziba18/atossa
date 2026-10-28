@@ -10,7 +10,7 @@ export const openLegal = (page: keyof typeof LegalUrls) => Linking.openURL(Legal
 export function LegalLinks() {
   return (
     <View style={{ alignItems: 'center', marginTop: space.xxs }}>
-      <Txt variant="caption" style={{ textAlign: 'center' }}>
+      <Txt variant="caption">
         By creating an account, you agree to our terms of use and privacy policy.
       </Txt>
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: space.md }}>

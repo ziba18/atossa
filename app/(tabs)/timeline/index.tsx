@@ -223,7 +223,7 @@ function ListView({
         <RecentStrip symptoms={symptoms} />
       ) : null}
       {groups.length === 0 && filter !== 'All' ? (
-        <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.xxxl }}>
+        <Txt variant="secondary" style={{ marginTop: space.xxxl }}>
           {EMPTY_FILTER_TEXT[filter]}
         </Txt>
       ) : (
@@ -326,7 +326,7 @@ function MonthView({
       {noteDays || bleedingDays || spottingDays ? (
         <Txt variant="caption">
           {[
-            noteDays ? 'The small number under a day is the strongest rating that day, out of 10. A dot means a note with no number.' : '',
+            noteDays ? 'A circle is a day with a note. The small number under it is the strongest rating that day, out of 10; a dot means a note with no number.' : '',
             [bleedingDays ? 'A solid red-brown bar under a day is bleeding.' : '', spottingDays ? 'A dashed bar is spotting.' : ''].filter(Boolean).join(' '),
             'Tap a day to open it.',
           ].filter(Boolean).join(' ')}

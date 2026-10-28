@@ -49,7 +49,7 @@ export function SocialAuthButtons({ mode = 'signin', divider = true }: { mode?: 
 
   if (IN_EXPO_GO) {
     return (
-      <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
+      <Txt variant="caption" style={{ marginTop: space.xs }}>
         Apple and Google sign-in only work in the installed app. Use email while testing in Expo Go.
       </Txt>
     );

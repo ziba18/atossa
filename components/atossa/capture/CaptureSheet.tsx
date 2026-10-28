@@ -345,7 +345,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 accessibilityLabel={recording ? 'Stop recording' : micLabel}
               />
               <Txt variant="secondary" color={colors.ink} style={styles.micLabel}>{micLabel}</Txt>
-              {idleSpeak ? <Txt variant="caption" style={{ textAlign: 'center' }}>Then Atossa asks only for what’s missing.</Txt> : null}
+              {idleSpeak ? <Txt variant="caption">Then Atossa asks only for what’s missing.</Txt> : null}
             </View>
             <InlineError message={dictation.error} style={{ marginTop: space.md }} />
           </>
@@ -423,7 +423,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       {body}
       {/* Always there on the writing step, whatever is typed: the same fixed sentence the detector shows, never a reading of the note. */}
       {stage === 'capture' && !confirmClose && !signpost ? (
-        <Txt variant="secondary" style={{ textAlign: 'center', marginTop: space.lg }}>{URGENT_SIGNPOST}</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.lg }}>{URGENT_SIGNPOST}</Txt>
       ) : null}
       {/* Under ~240 pt wide a sticky footer would cover the field, so the action follows the content instead. */}
       {narrow && footer ? <View style={{ marginTop: space.lg }}>{footer}</View> : null}

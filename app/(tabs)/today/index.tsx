@@ -86,7 +86,7 @@ export default function TodayScreen() {
         <RoughDayCard />
       </View>
       )}
-      <View style={{ marginTop: space.lg, alignItems: 'center', gap: space.xxs }}>
+      <View style={{ marginTop: space.lg, alignItems: 'flex-start', gap: space.xxs }}>
         {CHAT_ENABLED ? (
           <Button
             label="Talk it through instead"
@@ -96,7 +96,7 @@ export default function TodayScreen() {
             accessibilityHint="Opens a chat. It can’t diagnose; you can turn it into a note for your doctor"
           />
         ) : null}
-        <Txt variant="caption" style={{ textAlign: 'center' }}>
+        <Txt variant="caption">
           Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
         </Txt>
         <Button

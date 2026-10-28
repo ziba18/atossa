@@ -348,7 +348,7 @@ export function EmptyState({
   return (
     <View style={[styles.empty, fill && styles.emptyFill, style]}>
       {illustration ?? (icon ? <Icon name={icon} size={32} color={colors.ink3} /> : null)}
-      <Txt variant="body" color={colors.ink2} style={{ textAlign: 'center' }}>{message}</Txt>
+      <Txt variant="body" color={colors.ink2}>{message}</Txt>
       {action ? <Button label={action.label} onPress={action.onPress} style={{ alignSelf: 'stretch' }} /> : null}
     </View>
   );
@@ -372,7 +372,7 @@ export const SAFETY_TEXT = "If you feel very unwell or you’re worried, contact
 
 /** The fixed safety line (Profile + foot of the summary builder). Static: NEVER triggered by content. */
 export function SafetyLine({ style }: { style?: StyleProp<ViewStyle> }) {
-  return <Txt variant="secondary" style={[{ textAlign: 'center' }, style as any]}>{SAFETY_TEXT}</Txt>;
+  return <Txt variant="secondary" style={style as any}>{SAFETY_TEXT}</Txt>;
 }
 
 export interface ConfirmAction {
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   clayEdge: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: colors.clay },
   noted: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm, minHeight: heights.minHit },
   notedDivider: { borderTopWidth: 1, borderTopColor: colors.hairline },
-  empty: { alignItems: 'center', gap: space.lg, paddingVertical: space.xxxl },
+  empty: { alignItems: 'flex-start', gap: space.lg, paddingVertical: space.xxxl },
   emptyFill: { flexGrow: 1, justifyContent: 'center', paddingBottom: 80 },
   error: {
     flexDirection: 'row', gap: space.xs, alignItems: 'flex-start', backgroundColor: colors.errorTint,
