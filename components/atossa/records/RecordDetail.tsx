@@ -15,6 +15,7 @@ import { todayKey } from '../../../lib/records/dates';
 import { useScrollRef } from '../timeline/navigation';
 import { UrgentNote, textOf } from '../UrgentNote';
 import { RecordDateField } from './RecordDateField';
+import { ONSET_GROUP_LABEL, ONSET_TYPE, type OnsetGroup } from '../../../lib/records/summary';
 import { ALLERGY_TYPE, PICKABLE_HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
 
 const HELPED_OPTIONS = ['Helped', 'A little', 'No', 'Not sure'] as const;
@@ -51,6 +52,7 @@ function missing(kind: RecordDataKind, d: Draft): string {
   }
   const h = d as HistoryDraft;
   if (h.type === ALLERGY_TYPE) return h.told.trim() ? '' : 'Add your allergies to save.';
+  if (h.type === ONSET_TYPE) return h.told.trim() ? '' : 'Add your words to save.';
   const need = [!h.type && 'what it was', !h.date && 'when'].filter(Boolean);
   return need.length ? `Add ${need.join(' and ')} to save.` : '';
 }
@@ -73,6 +75,8 @@ function cleaned(kind: RecordDataKind, d: Draft): AnyData {
   if (h.type === ALLERGY_TYPE) {
     return { ...h, type: ALLERGY_TYPE, date: h.date || todayKey(), datePrecision: h.date ? h.datePrecision : 'exact', told: h.told.trim(), done: '', result: '' };
   }
+  // An onset phrase keeps its group key in `done`; only her words change.
+  if (h.type === ONSET_TYPE) return { ...h, type: ONSET_TYPE, told: h.told.trim(), result: '' };
   return { ...h, type: h.type as HistoryType, told: h.told.trim(), done: h.done.trim(), result: h.result.trim() };
 }
 
@@ -389,6 +393,15 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
 }
 
 function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
+  if (d.type === ONSET_TYPE) {
+    return (
+      <TextField
+        label={`When your ${ONSET_GROUP_LABEL[d.done as OnsetGroup] ?? 'symptoms'} started`}
+        hint="In your own words. It goes on your doctor summary as you write it."
+        multiline value={d.told} onChangeText={(told) => set({ told })}
+      />
+    );
+  }
   return (
     <>
       <UrgentNote text={textOf(d)} date={d.date} precision={d.datePrecision} />
