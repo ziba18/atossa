@@ -4,6 +4,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { colors, radii, space } from '../../../constants/atossaUI';
+import { addDays } from '../../../lib/records/dates';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
 import { Card, Txt } from '../kit';
 
@@ -76,6 +77,35 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         </View>
       </Card>,
     );
+  }
+  if (freq && freq.id === 'frequency' && freq.strip.days.length >= 15) {
+    // Strongest number in each 7-day block of the same window as the card above (same days, same numbers).
+    const days = freq.strip.days;
+    const start = days[0].date;
+    const blocks: { from: string; peak: number | null }[] = [];
+    for (let i = 0; i * 7 < days.length; i++) {
+      const from = addDays(start, i * 7);
+      const to = addDays(from, 6);
+      const peak = days.reduce<number | null>((hi, d) => (d.date >= from && d.date <= to && d.value != null && (hi == null || d.value > hi) ? d.value : hi), null);
+      blocks.push({ from, peak });
+    }
+    if (blocks.some((w) => w.peak != null) && blocks.length <= 16) {
+      const hi = Math.max(...blocks.map((w) => w.peak ?? 0));
+      cards.push(
+        <Card key="weekly">
+          <Txt variant="groupLabel">Strongest note each week, out of 10</Txt>
+          <View role="img" accessibilityLabel={`Strongest number in each week, out of 10. ${blocks.map((w, i) => `Week ${i + 1}, ${w.peak ?? 'no number'}`).join('; ')}.`} style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 72, marginTop: space.sm }}>
+            {blocks.map((w) => (
+              <View key={w.from} style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 }}>
+                {w.peak != null && blocks.length <= 12 ? <Txt variant="caption" style={{ fontSize: 11 }}>{w.peak}</Txt> : null}
+                <View style={{ width: '100%', maxWidth: 28, height: w.peak == null ? 3 : Math.max(3, (w.peak / 10) * 54), borderRadius: 4, backgroundColor: w.peak == null ? colors.hairline : colors.plum }} />
+              </View>
+            ))}
+          </View>
+          <Txt variant="caption" style={{ marginTop: space.xs }}>Highest in one week: {hi} out of 10.</Txt>
+        </Card>,
+      );
+    }
   }
   if (periods && periods.id === 'periods' && periods.runs.length) {
     cards.push(
