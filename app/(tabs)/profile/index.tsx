@@ -250,7 +250,7 @@ export default function ProfileScreen() {
               <View accessibilityRole="alert" style={{ gap: space.xxs }}>
                 <Txt variant="headline">Your file is ready</Txt>
                 <Txt variant="secondary">
-                  It holds everything you’ve saved, in your words. It isn’t a medical record. It’s only on your phone, so delete it when you’ve finished with it.
+                  It holds everything you’ve saved, in your words. It isn’t a medical record. This copy is saved wherever you choose, so delete it when you’ve finished with it. Your notes stay in Atossa until you delete them.
                 </Txt>
               </View>
               <Button label="Done" variant="primary" onPress={() => { setExporting(false); setExportDone(false); }} />
@@ -260,7 +260,7 @@ export default function ProfileScreen() {
             <View accessibilityRole="alert" style={{ gap: space.xxs }}>
               <Txt variant="headline">Download all my notes</Txt>
               <Txt variant="secondary">
-                One file with everything you’ve saved: your notes, periods, appointments, medicines and history, in your words. It goes only to your phone, to keep or share as you choose.
+                One file with everything you’ve saved: your notes, periods, appointments, medicines and history, in your words. It downloads to this device, to keep or share as you choose.
               </Txt>
             </View>
             <TextField
