@@ -769,9 +769,10 @@ _SHOULDER = (r"(?:shoulder[- ]?tip|tip of (?:my |the )?shoulder|(?:end|top) of (
              r"(?:pain|ache|aching|hurt\w*) (?:in|at) (?:my |the )?shoulder|shoulder (?:\w+ ){0,3}(?:at the|when i lie))")
 _FEVER = (r"(?:(?<!no )(?<!not )(?<!without )(?<!any )fever\w*|high temperature|(?<!no )(?:a|running a) (?:temperature|temp)\b|temperature of|burning up|boiling hot|"
           r"(?<!a bit )(?<!a little )(?<!slightly )shiver\w*|the shivers|(?<!from the cold, )shaking|(?<!a bit )(?<!a little )(?<!slightly )shaky|rigou?rs|heart (?:is |'s )?(?:\w+ ){0,2}(?:racing|pounding)|heart(?:'s| is)? going (?:really |so )?fast|heart won'?t slow|\b(?:38|39|40)(?:\.\d)?\b)")
-_PROC = (r"(?:coil (?:was )?(?:fitted|put in|in)\b|got my coil in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
+# run09: Data's near-miss (d) 2/10 at first contact: "no surgery recently" and "my sister had a fever after her C-section".
+_PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?:coil (?:was )?(?:fitted|put in|in)\b|got my coil in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
          r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b)\b")
-_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|from the cold|gone by|went away|settled)\b)"
+_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|from the cold|gone by|went away|settled|family history|(?:her|his|their) (?:c-?section|caesarean|op|operation|surgery|procedure|biopsy|laparoscopy|hysteroscopy|coil))\b)"
 _BACK = r"(?:back(?:'s| is| has)? (?:\w+ ){0,3}(?:pain|ache|hurts?|agony|bad|gone|killing|went)|back pain|bad back|my back went|lower back|sciatica)"
 _SADDLE = (r"(?:numb\w* (?:around|in|down|under) (?:my )?(?:bottom|bum|genitals|vagina|down there|privates|groin|anus)|numb\w* between my legs|"
            r"(?:bottom|bum|genitals|groin|saddle|down there)(?: area)? (?:feels? |is |has gone |gone |going )?numb|can'?t (?:really )?feel (?:it |anything )?(?:when i wipe|between my legs|down there))")
