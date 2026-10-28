@@ -932,6 +932,29 @@ _ANA = (r"(?:\b(?:throat|tongue|lips?|mouth|face)\b[^.!?]{0,30}\b(?:swell\w*|swo
         r"struggling to breathe|hard to (?:swallow|breathe)|can'?t (?:breathe|swallow))")
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:dentist|numbed|numbing|cold sore|gone now|hay fever|from crying)\b)(?=[\s\S]*\b" + _NEWMED + r")(?=[\s\S]*" + _ANA + r")", _WHOLE.flags)
 
+
+# run12 (PM class k, own v101 first contact 3/6 missed): bleeding after birth that is getting heavier, or clots / soaking pads,
+# with feeling cold, shaky, faint, dizzy or clammy. Safety run28 ruling Q1 (cuh.nhs.uk Rosie, read 2026-10-28: "Sudden or heavy
+# bleeding, especially if you feel dizzy"). Lighter or easing bleeding, heavy bleeding with "feel fine", someone else stay quiet.
+_AFTERBIRTH = (r"(?:had (?:the|my) baby|gave birth|given birth|since the birth|after (?:the )?birth|postpartum|post-partum|"
+               r"baby is \d+ (?:days?|weeks?) old|after my (?:c-section|caesarean))")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:lighter|easing|eased|feel fine|feeling fine|being looked after|my (?:sister|friend|cousin)\b))(?=[\s\S]*\b" + _AFTERBIRTH + r")"
+                    + r"(?=[\s\S]*\b(?:bleed\w*|blood)\b[^.!?\n]{0,40}\b(?:heavier|really heavy|very heavy|so heavy|gone heavy)\b|[\s\S]*\b(?:big|large|huge) clots\b|[\s\S]*\bsoaking (?:a |through )?(?:\w+ )?pads?\b)"
+                    + r"(?=[\s\S]*\b(?:cold|shaky|shaking|shivery|shivering|faint|dizzy|light-?headed|clammy|weak|passed out|pass out)\b)", _WHOLE.flags)
+
+
+# run12 (PM class t, own v102 first contact 6/6 missed): pregnant or just given birth + a headache painkillers don't help,
+# flashing lights or blurred vision, pain under the ribs, sudden swelling of face or hands, heartburn that won't settle.
+# nhs.uk/conditions/pre-eclampsia (reviewed 23 Mar 2026, cited by PM 19:00): midwife/maternity unit or 111 -> the one fixed line.
+_PET_CTX = r"(?=[\s\S]*\b(?:\d\d ?weeks|weeks pregnant|months pregnant|pregnant|bump|" + _AFTERBIRTH + r")\b)"
+_PET_SIGN = (r"(?:\bheadache\b[^.!?\n]{0,50}\b(?:paracetamol|painkillers?|tablets)\b[^.!?\n]{0,15}\b(?:isn'?t|aren'?t|not|won'?t|doesn'?t|don'?t|hasn'?t|haven'?t)\b[^.!?\n]{0,10}\b(?:touch\w*|help\w*|shift\w*|work\w*|budg\w*)|"
+             r"\bflashing lights\b|\b(?:blurr\w+|blurry) vision\b|\bvision (?:is |has gone |went )?(?:blurr\w+|blurry|funny|fuzzy)\b|"
+             r"\b(?:just )?(?:under|below) (?:my |the )?ribs\b|"
+             r"\b(?:face|hands|fingers)\b[^.!?\n]{0,30}\b(?:suddenly|all of a sudden|really|very) (?:\w+ )?(?:swollen|puffy|swelled|swelling)\b|\bsudden(?:ly)? (?:\w+ )?swell\w*\b[^.!?\n]{0,20}\b(?:face|hands|fingers)\b|"
+             r"\bheartburn\b[^.!?\n]{0,30}\b(?:won'?t|doesn'?t|not|isn'?t) (?:go|settle|shift|easing|stop)\w*)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|in the heat|baby kicking|comes and goes|feet up|my usual migraine)\b)" + _PET_CTX
+                    + r"(?=[\s\S]*" + _PET_SIGN + r")", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
