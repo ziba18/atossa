@@ -29,7 +29,7 @@ export const colors = {
 } as const;
 
 /** Single-hue severity ramp for 0–2, 3–4, 5–6, 7–8, 9–10. Always shown with the digit. */
-export const severityRamp = ['#E6DDFB', '#C4B2F6', '#8E72EE', '#6A48E8', '#3F23A8'] as const;
+export const severityRamp = ['#E6DDFB', '#C4B2F6', '#A08AF2', '#6A48E8', '#3F23A8'] as const;
 
 /** Ramp step (0–4) for a 0–10 score. */
 export function severityStep(n: number): 0 | 1 | 2 | 3 | 4 {
@@ -41,10 +41,10 @@ export function severityStep(n: number): 0 | 1 | 2 | 3 | 4 {
   return 4;
 }
 
-/** Fill + legible text colour for a 0–10 score (steps 0–1 take ink, 2–4 take white). */
+/** Fill + legible text colour for a 0–10 score (steps 0–2 take ink, 3–4 take white; ink on step 2 is 5.76:1, white on #8E72EE was 3.63). */
 export function severityColor(n: number): { bg: string; fg: string } {
   const step = severityStep(n);
-  return { bg: severityRamp[step], fg: step <= 1 ? colors.ink : colors.white };
+  return { bg: severityRamp[step], fg: step <= 2 ? colors.ink : colors.white };
 }
 
 /** Font family names, as registered in app/_layout.tsx. Serif is the ITALIC face and never takes a weight. */
