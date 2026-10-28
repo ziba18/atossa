@@ -72,15 +72,15 @@ export const type: Record<TypeVariant, TextStyle> = {
   quote: { fontFamily: fonts.serif, fontSize: 20, lineHeight: 28, color: colors.ink },
   headline: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 24, color: colors.ink },
   body: { fontFamily: fonts.regular, fontSize: 17, lineHeight: 24, color: colors.ink },
-  secondary: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink2 },
-  caption: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, letterSpacing: 0.26, color: colors.ink3 },
+  secondary: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 22, color: colors.ink2 },
+  caption: { fontFamily: fonts.medium, fontSize: 14, lineHeight: 19, letterSpacing: 0.2, color: colors.ink3 },
   numeral: { fontFamily: fonts.medium, fontSize: 44, lineHeight: 48, fontVariant: ['tabular-nums'], color: colors.ink },
   tab: { fontFamily: fonts.medium, fontSize: 14, lineHeight: 18, color: colors.ink3 },
   // ---- text hierarchy (review 1, V4/V5/V10) ----
   /** The ONE form-field label style (FieldLabel): "What's happening?", "Usually", "Name". */
   fieldLabel: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 24, color: colors.ink },
   /** Group header above a run of cards (Timeline week headers "This week"). Distinct from card titles. */
-  groupLabel: { fontFamily: fonts.semibold, fontSize: 15, lineHeight: 20, color: colors.ink2 },
+  groupLabel: { fontFamily: fonts.semibold, fontSize: 16, lineHeight: 22, color: colors.ink2 },
 };
 
 /**

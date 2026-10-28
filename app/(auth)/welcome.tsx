@@ -2,14 +2,12 @@ import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
 import { isVoiceCaptureSupported } from '../../lib/transcription';
 
-const WAVE = [0.3, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.8, 0.55, 0.9, 0.35, 0.6, 0.25];
 const stepsFor = (voice: boolean) => [
   { word: 'Say it', line: voice ? 'Speak or type' : 'Type it in your own words' },
   { word: 'See it', line: 'Notes line up by date' },
@@ -33,18 +31,7 @@ export default function WelcomeScreen() {
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
         <View style={styles.band}>
-          <LinearGradient
-            colors={[colors.plumTint, colors.canvas]}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
-          />
           <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
-          {short ? null : <View aria-hidden style={styles.wave}>
-            {WAVE.map((h, i) => (
-              <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-            ))}
-          </View>}
         </View>
 
         <View style={styles.hero}>
@@ -76,12 +63,12 @@ export default function WelcomeScreen() {
             <View key={st.word} style={styles.step}>
               <View style={styles.stepNum}><Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt></View>
               <Txt variant="headline">{st.word}</Txt>
-              <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center' }}>{st.line}</Txt>
+              <Txt variant="caption" color={colors.ink2}>{st.line}</Txt>
             </View>
           ))}
         </View>}
 
-        {short ? null : <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
+        {short ? null : <Txt variant="caption" color={colors.ink2} style={{ marginBottom: space.sm }}>
           Atossa doesn’t diagnose or give medical advice.
         </Txt>}
 
@@ -105,9 +92,8 @@ const styles = StyleSheet.create({
   band: { marginHorizontal: -layout.gutter, paddingHorizontal: layout.gutter, paddingTop: space.md, paddingBottom: space.sm, gap: space.xs },
   wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
   heroLine: { fontSize: 36, lineHeight: 42 },
-  wave: { flexDirection: 'row', alignItems: 'center', gap: 4, height: 30 },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
-  step: { flex: 1, alignItems: 'center', gap: 4 },
+  step: { flex: 1, alignItems: 'flex-start', gap: 4 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
   // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
   // anchored actions (not above the headline).
