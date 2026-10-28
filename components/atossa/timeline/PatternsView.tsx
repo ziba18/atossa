@@ -7,7 +7,7 @@ import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, severityRamp, space } from '../../../constants/atossaUI';
+import { colors, heights, severityRamp, space } from '../../../constants/atossaUI';
 import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
 import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
@@ -44,31 +44,39 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
 }
 
 /** The 28 days as one bar: days with bleeding logged, other days with a note, days with nothing logged. Counts add to the range. */
-function SplitDays({ m, onPress }: { m: PatternsModel; onPress: () => void }) {
+function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter) => void }) {
   const withB = m.days.filter((d) => d.bleeding).length; // same count as the 'days of bleeding' tile
   const without = m.days.filter((d) => d.logged && !d.bleeding).length;
   const none = m.totalDays - withB - without;
-  const parts = [
-    { key: 'with', label: 'Bleeding logged', n: withB, color: colors.plum },
-    { key: 'without', label: 'Note, no bleeding', n: without, color: `${colors.plum}73` },
+  const parts: { key: string; label: string; n: number; color: string; opens?: TimelineFilter; hint?: string }[] = [
+    { key: 'with', label: 'Bleeding logged', n: withB, color: colors.plum, opens: 'Bleeding', hint: 'Opens your bleeding days.' },
+    { key: 'without', label: 'Note, no bleeding', n: without, color: `${colors.plum}73`, opens: 'Symptoms', hint: 'Opens your notes.' },
     { key: 'none', label: 'Nothing logged', n: none, color: colors.hairline },
   ];
   return (
-    <PressableCard onPress={onPress} accessibilityLabel={`${noteDaysText(m)}. ${parts.map((x) => `${x.label}, ${plural(x.n, 'day')}`).join('; ')}. Opens your notes.`}>
+    <Card>
       <Txt variant="groupLabel">Your {m.totalDays} days</Txt>
-      <View style={{ flexDirection: 'row', height: 20, borderRadius: 10, overflow: 'hidden', marginTop: space.sm, gap: 2 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <View style={{ flexDirection: 'row', height: 20, borderRadius: 10, overflow: 'hidden', marginTop: space.sm, gap: 2 }} accessibilityLabel={`${noteDaysText(m)}.`} role="img">
         {parts.filter((x) => x.n > 0).map((x) => <View key={x.key} style={{ flexGrow: x.n, flexBasis: 0, backgroundColor: x.color }} />)}
       </View>
-      <View style={{ gap: space.xs, marginTop: space.md }}>
-        {parts.map((x) => (
-          <View key={x.key} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-            <View aria-hidden style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: x.color, borderWidth: x.key === 'none' ? 1 : 0, borderColor: colors.borderStrong }} />
-            <Txt variant="body" style={{ flex: 1 }}>{x.label}</Txt>
-            <Txt variant="body" style={{ fontVariant: ['tabular-nums'] }}>{x.n}</Txt>
-          </View>
-        ))}
+      <View style={{ marginTop: space.xs }}>
+        {parts.map((x) => {
+          const row = (
+            <>
+              <View aria-hidden style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: x.color, borderWidth: x.key === 'none' ? 1 : 0, borderColor: colors.borderStrong }} />
+              <Txt variant="body" style={{ flex: 1 }}>{x.label}</Txt>
+              <Txt variant="body" style={{ fontVariant: ['tabular-nums'] }}>{x.n}</Txt>
+            </>
+          );
+          const rowStyle = { flexDirection: 'row' as const, alignItems: 'center' as const, gap: space.sm, minHeight: heights.minHit };
+          return x.opens && x.n > 0 ? (
+            <Pressable key={x.key} accessibilityRole="button" accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}. ${x.hint}`} onPress={() => onOpen(x.opens!)} style={({ pressed }) => [rowStyle, { opacity: pressed ? 0.7 : 1 }]}>{row}</Pressable>
+          ) : (
+            <View key={x.key} accessible accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}`} style={rowStyle}>{row}</View>
+          );
+        })}
       </View>
-    </PressableCard>
+    </Card>
   );
 }
 
@@ -183,7 +191,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       {range === '4w' ? (
         <FadeIn index={1}>
-          <SplitDays m={m} onPress={() => onOpen('Symptoms')} />
+          <SplitDays m={m} onOpen={onOpen} />
         </FadeIn>
       ) : (
       <FadeIn index={1}>
