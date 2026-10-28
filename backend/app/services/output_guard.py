@@ -144,6 +144,7 @@ def _norm(text: str) -> str:
     t = re.sub(r"\b(?:[A-Za-z][ .\-]){2,}[A-Za-z]\b", lambda m: re.sub(r"[ .\-]", "", m.group(0)), t)
     # stretched letters ("sooo heavily") and doubled spaces ("chest  pain")
     t = re.sub(r"([A-Za-z])\1{2,}", r"\1", t)
+    t = re.sub(r"\b(ive|im|cant|dont|doesnt|didnt|isnt|wasnt|havent|hasnt|couldnt|wouldnt|shouldnt|arent|wont)\b", lambda m: {"ive": "i've", "im": "i'm"}.get(m.group(1).lower(), m.group(1)[:-1] + "'" + m.group(1)[-1:]), t, flags=re.I)  # typed without apostrophes
     t = re.sub(r"[^\S\n]+", " ", t)  # tabs and runs of spaces become one space (newlines stay: they end a clause)
     # dictation fillers ("um i cant like breathe") and "wanna"/"gonna"
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
@@ -657,6 +658,8 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set p119 (hedged wording; first contact 2/10 missed): blood from the ears after a fall or knock, blue lips on a baby or child
                     r"\bblood\b.{0,20}\b(?:coming |running |leaking |dripping )?(?:out of|from) (?:both |my )?(?:ears?|nose and ears?)\b.{0,40}\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b|\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b.{0,40}\bblood\b.{0,20}\b(?:out of|from) (?:both |my )?ears?\b|"
                     r"\b(?:baby|toddler|child|son|daughter|newborn)(?:'s|s'| has| have)?\b.{0,25}\b(?:lips|face|skin)\b.{0,20}\b(?:gone |turned |going |look\w* |are |is )?(?:a bit |slightly |very )?(?:blue|grey|gray)\b|"
+                    # arm numbness with jaw pain and sweating, split across clauses ("... and i'm sweating" starts a new clause; found by the apostrophe variant test)
+                    r"^(?=.*\barm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b)(?=.*\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*|tight|clench\w*)\b)(?=.*\b(?:sweat\w*|clammy|breathless|feel sick|nausea\w*)\b)|"
                     # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
                     r"\b(?:i(?:'ve| have)? called|calling|called|waiting for|need|needs) (?:an |the )?ambulance\b|\bcalled 999\b|\bringing 999\b|"
                     r"\bpain\b.{0,80}\bgetting worse(?: and worse)?\b.{0,60}\b(?:not stopping|won'?t stop|doesn'?t stop|isn'?t stopping|scared|frightened)\b|"
