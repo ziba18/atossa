@@ -484,6 +484,11 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set p84 (implant, injection and coil complications; first contact 5/12 missed)
+                    r"^(?=.*\b(?:implant|injection site|depo|coil|iud|ius)\b)(?=.*\b(?:hot|oozing|pus|spreading red)\b)(?=.*(?<!no )(?<!without )\b(?:temperature|fever|chills|shivering|shaking)\b)|"
+                    r"^(?=.*\bimplant\b)(?=.*\b(?:numb|tingling)\b)(?=.*\b(?:badly|severe\w*|spreading|whole arm)\b)|"
+                    r"^(?=.*\b(?:zig-?zag|flashing|flickering)\b.{0,15}\b(?:lights?|lines)\b)(?=.*\b(?:numb|weak\w*|slurr\w*)\b.{0,15}\b(?:face|arm|speech)\b|.*\b(?:face|arm)\b.{0,15}\b(?:numb|weak)\b)|"
+                    r"^(?=.*\b(?:coil|iud|ius)\b)(?=.*(?<!no )\b(?:shaking|chills|shiver\w*|fever|high temperature)\b)(?=.*\bpain\b)|"
                     # set p81 (high sugar, kidney infection, spreading skin infection, no wee, very high blood pressure; first contact 10/12 missed)
                     r"^(?=.*\b(?:thirsty|thirst)\b)(?=.*\b(?:weeing (?:loads|a lot|lots)|passing (?:huge|lots|loads)|wee loads|peeing (?:loads|a lot))\b)(?=.*\b(?:fruity|losing weight|vomit\w*|drowsy|sleepy)\b)|"
                     r"^(?=.*\b(?:blood sugar|blood glucose|sugar (?:meter|reading|level)|glucose (?:meter|reading|level)|my meter|meter says|reading (?:says|was|is))\b[^.?]{0,25}?\b(?:2\d|[3-9]\d)(?:\.\d)?\b(?!\s*(?:%|percent|minutes|mins|hours|days|g\b)))(?=.*\b(?:sick|sleepy|drowsy|vomit\w*|confus\w*|breathing fast)\b)|"
