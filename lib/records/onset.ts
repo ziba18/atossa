@@ -7,7 +7,7 @@
 const NUM = String.raw`(?:\d{1,2}|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|a few|few|a couple of|several|many)`;
 const MONTH = String.raw`(?:january|february|march|april|may|june|july|august|september|october|november|december)`;
 const SEASON = String.raw`(?:spring|summer|autumn|fall|winter)`;
-const QUAL = String.raw`(?:about|around|roughly|nearly|almost|over|at least|maybe|probably)\s+`;
+const QUAL = String.raw`(?:about|around|roughly|nearly|almost|over|at least|maybe)\s+`;
 const LONG = String.raw`(?:weeks?|months?|years?)`;
 
 const PATTERNS: RegExp[] = [
