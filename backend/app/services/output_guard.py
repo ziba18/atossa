@@ -652,6 +652,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"(?=.*\b(?:vomit\w*|being sick|rash|dizz\w*|shivery|confus\w*|muscle aches?|diarrh\w*))|"
                     # S-191 follow-on: bleeding through a pad over a long time still counts when she is dizzy or faint in the same note
                     r"\bbleeding through\b.{0,80}\b(?:i feel |feeling |and )?(?:dizz\w*|faint\w*|light-?headed)\b|"
+                    # set p112 (voice-style notes; first contact 2/10 missed): chest tightness with arm numbness and sweating, spelled-out fever with not knowing where she is
+                    r"^(?=.*\bchest\b.{0,30}\b(?:tight|heavy|pressure|pain)\b)(?=.*\b(?:left |right )?arm\b.{0,25}\b(?:numb|tingl\w+|heavy|aching)\b)(?=.*\b(?:sweat\w*|clammy|sick|breathless)\b)|"
+                    r"^(?=.*\b(?:temperature|fever)\b.{0,25}\b(?:thirty|forty)[- ](?:eight|nine|one|two)\b)(?=.*\b(?:don'?t know where i am|do not know where i am|confus\w*|shaking)\b)|"
                     # set p111 (first contact 5/10 missed): carbon monoxide, heat stroke, choking, electric shock, swallowed battery
                     r"^(?=.*\b(?:boiler|carbon monoxide|co alarm|gas fire|co detector)\b)(?=.*\b(?:headache|dizz\w*|sick|drowsy|confus\w*)\b)(?=.*\b(?:alarm|every time|since|keeps)\b)|"
                     r"^(?=.*\b(?:stopped sweating|hot and dry|hot dry skin)\b)(?=.*\b(?:confus\w*|dizz\w*|faint\w*|drowsy)\b)|"
