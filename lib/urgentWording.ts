@@ -81,8 +81,10 @@ function isPast(clause: string): boolean {
 }
 
 const WHOLE = new RegExp(P.WHOLE_SRC, 'is');
-function hitWhole(text: string): boolean {
-  const m = WHOLE.exec(text);
+// run08 v80: wish to be dead + worked out how, one sentence (same past/negation checks as WHOLE).
+const SELFW = new RegExp(P.SELFW_SRC, 'i');
+function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
+  const m = rx.exec(text);
   if (!m) return false;
   // Past tense counts only in the sentence(s) the match sits in, as in `hit`: "I had this in 2019. Now my belly is rock hard" is current.
   const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
@@ -117,7 +119,7 @@ function hit(pattern: RegExp, text: string): boolean {
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
   const t = normalise(text).replace(IDIOM, ' ').replace(LEADIN, '. ');
-  if (hit(SELF, t) || hit(SELF2, t)) return SELF_HARM_SIGNPOST;
+  if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW)) return SELF_HARM_SIGNPOST;
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;

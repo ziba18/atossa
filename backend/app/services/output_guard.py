@@ -264,7 +264,7 @@ _BODY = [
     r"can'?t get enough air|wheez\w+.{0,30}(?:panic|air|breath)", r"off the scale|pain.{0,30}(?:ten|10) out of (?:ten|10)", r"lost (?:so |a lot of |too )?much blood|lost a lot of blood", r"can'?t get my breath|gasping|heart is (?:pounding|racing).{0,40}breath",
     r"agoni[sz]ing|doubled over", r"soaked .{0,15}(?:pads?|tampons?).{0,25}(?:half an hour|an hour|\d+ minutes)",
     r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
-    r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop (?:the )?bleeding", r"bleeding .{0,30}(?:won'?t|will not) stop", r"losing (?:a lot of|so much|too much) blood", r"breathing (?:very|really|so) (?:fast|quickly|rapidly)|(?:not|n[o']t|isn[o']t) making (?:any )?sense|(?:rash|spots|marks)[^.]{0,30}(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) fade[^.]{0,20}press|(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)(?=[^.]{0,80}\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b)|\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|cold|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b[^.]{0,80}(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)|\bsepsis\b|septic", r"(?:rash|spots?|marks?) (?:that )?(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) (?:fade|go|disappear)[^.]{0,30}glass|glass test|sandpaper[- ]?(?:like )?rash|bright red (?:palms|soles|tongue)", r"(?:toilet|bowl)(?: water| bowl)? (?:turned|went|was|is|looked|looks) (?:bright |dark )?red|red (?:toilet|bowl) water|(?:toilet|bowl) (?:was |is )?(?:full of|filled with|covered in) blood|blood (?:filled|filling|covered) the (?:toilet|bowl)|(?:lots?|loads) of blood in the (?:toilet|bowl)",
+    r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop (?:the )?bleeding", r"bleeding .{0,30}(?:won'?t|will not) stop", r"losing (?:a lot of|so much|too much) blood", r"breathing (?:very|really|so) (?:fast|quickly|rapidly)|(?:not|n[o']t|isn[o']t) making (?:any )?sense|(?:rash|spots|marks)[^.]{0,30}(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) fade[^.]{0,20}press|(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)(?=[^.]{0,80}\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b)|\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|cold|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b[^.]{0,80}(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)|\bsepsis\b|septic", r"(?:rash|spots?|marks?) (?:that )?(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) (?:fade|go|disappear)[^.]{0,30}glass|sandpaper[- ]?(?:like )?rash|bright red (?:palms|soles|tongue)", r"(?:toilet|bowl)(?: water| bowl)? (?:turned|went|was|is|looked|looks) (?:bright |dark )?red|red (?:toilet|bowl) water|(?:toilet|bowl) (?:was |is )?(?:full of|filled with|covered in) blood|blood (?:filled|filling|covered) the (?:toilet|bowl)|(?:lots?|loads) of blood in the (?:toilet|bowl)",
     r"(?:trouble|difficulty|hard to|struggling to) breath\w*", r"pressure in (?:my )?chest", r"(?:gonna|going to|about to) (?:be sick and )?pass(?:ing)? out", r"(?:non[- ]?stop|constant\w*) bleeding|bleeding (?:non[- ]?stop|constantly|for (?:\d+|three|four|a few) weeks)",
     r"seizure|convuls\w+|(?<!wig )(?<!bra )(?<!dress )(?<!shoe )(?<!coil )(?<!implant )(?<!ring )fitting\b(?! (?:room|appointment))", r"(?:feel|feels|feeling) like (?:i'?m |i am )?(?:dying|i'?m going to die)", r"can'?t (?:wake|rouse) (?:my|him|her|them|the)\b",
     r"(?:stabbing|knife).{0,40}(?:curled up|on the floor)|(?:curled up|on the floor).{0,40}(?:stabbing|agony)",
@@ -296,7 +296,7 @@ _BODY = [
 ]
 _SELF = [
     # set v16 (first contact 6/20 missed): hopelessness, "better off dead", plans phrased without "suicide"
-    r"(?:rather|better off) (?:be )?dead|wish (?:i was|i were|i could be) dead|(?:life (?:isn'?t|is not) worth living|not worth living|done with (?:life|living)|no reason to (?:live|go on))",
+    r"(?:rather|better off) (?:be )?dead(?! asleep)|wish (?:i was|i were|i could be) dead|(?:life (?:isn'?t|is not) worth living|not worth living|done with (?:life|living)|no reason to (?:live|go on))",
     r"nobody would (?:notice|miss me)\b.{0,30}(?:disappear\w*|gone|died?)|(?:going to|gonna|about to) jump\b",
     r"(?:thinking (?:about|of)|want(?:ing)? to) taking (?:all|every)\b.{0,20}(?:tablets|pills|medication|painkillers)",
     r"(?:not|won'?t|n't) (?:going to )?wake up (?:tomorrow|again)|(?:don'?t|do not) want to wake up",
@@ -781,6 +781,23 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*" + _LATE + r")(?=[\s\S]*" + 
                     r"|^(?=[\s\S]*" + _SADDLE + r")(?=[\s\S]*" + _BLADDER + r")", _WHOLE.flags)
 
 
+# run08 sets v79/v80 (first contact 6/10 and 5/10 missed). v79: a rash or spots that do not fade when pressed or under a
+# glass is on the NHS 999 list (nhs.uk/conditions/sepsis, reviewed 14 May 2026), after a procedure or not; the parts are
+# often split by a comma ("spots since the op, they don't fade when pressed"), so whole text. A glass test that faded is quiet.
+_NOFADE = (r"(?:(?:does|do|did|wo|is|are)(?:n'?t| not) (?:fade|fading|blanch|disappear|go away|go pale|go white|make it go (?:pale|white))|"
+           r"not (?:fading|blanching)|stays?|stayed|still (?:there|see it|visible)|could still see)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*\b(?:rash|spots|marks|blotch\w*)\b)(?=[\s\S]*(?:" + _NOFADE + r"[^.!?]{0,25}\b(?:press\w*|push\w*|glass)\b|"
+                    r"\b(?:press\w*|push\w*|glass)\b[^.!?]{0,60}" + _NOFADE + r"|\bnon-?blanch\w*|(?:does|do)(?:n'?t| not) blanch))"
+                    r"|^(?![\s\S]*\b(?:fad(?:ed|es)|went (?:pale|white)|goes (?:pale|white))\b)(?=[\s\S]*\bglass test\b)", _WHOLE.flags)
+# v80: a wish to be dead plus having worked out how, in one sentence (C-SSRS classes 1 + 3 as a coverage map only);
+# _CLAUSE splits at "and i", so this is matched per sentence with the whole-text rule (Samaritans line).
+_SELF_WHOLE = re.compile(
+    r"(?:want(?:ed)? (?:to be|to not be|not to be) (?:dead|gone|here|alive)|wish (?:i was|i were|i'?d been) (?:dead|gone|never born)|wish i (?:wasn'?t|weren'?t) (?:alive|here)|"
+    r"(?:rather|better off) (?:be )?dead(?! asleep)|don'?t want to be (?:alive|here)|want (?:it|everything|it all) to be over for good)"
+    r"[^.!?\n]{0,60}\b(?:worked out|figured out|planned(?: out)?|know(?: exactly)?|decided|chosen|picked)\b[^.!?\n]{0,12}\b(?:how|the (?:way|method|how))\b"
+    r"(?! (?:to (?:track|log|use|cope|manage|nap|sleep)|many days|my period))", re.I)
+
+
 _THIRD_NOW = re.compile(
     r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
     r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
@@ -818,7 +835,7 @@ _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:to
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     user_text = _LEADIN.sub(". ", _IDIOM.sub(" ", _norm(user_text)))
-    if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text):
+    if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text):
         return "self_harm"
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
     # ("i tried to kill myself last year and i want to do it again") is the highest-risk case, not history.
