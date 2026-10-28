@@ -92,7 +92,7 @@ test('holistic fields: counted as reported, never labelled', () => {
   const by = Object.fromEntries(doc.domains.map((d) => [d.id, d]));
   assert.match(by.bleeding.text, /6\+ pads or tampons a day on 2 days · flooding on 1 day/);
   assert.equal(by.bowelBladder.text, 'Pain opening bowels on 1 day · pain passing urine on 1 day');
-  assert.match(by.fatigue.text, /Tiredness given on 2 of 92 days \(4.*7\/10\)/);
+  assert.match(by.fatigue.text, /Tiredness given on 2 of 24 days \(4.*7\/10\)/);
   assert.equal(by.skinHair.text, 'Hair loss · 1 day');
   assert.doesNotMatch(JSON.stringify(doc.domains), /\bheavy\b/i);
   const withFert = buildDoctorSummary(EMPTY, RANGE);

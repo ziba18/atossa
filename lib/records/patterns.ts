@@ -1,6 +1,7 @@
 // Patterns: counts and ranges over the last 4 or 12 weeks, computed on the device from the same
 // document model as For my doctor (buildDoctorSummary), so the numbers always match the summary
 // for the same dates. Descriptive only: no trends, verdicts, comparisons or predictions.
+import { weeklyPeaks } from './summaryWeeks';
 import { addDays } from './dates';
 import { bleedingStatus, noteCount } from './format';
 import { buildDoctorSummary, type TriedItem, type CountItem, type DocQuote, type FreqBar, type HeatDay, type SummaryInput } from './summary';
@@ -57,19 +58,9 @@ export function buildPatterns(input: SummaryInput, today: string, range: Pattern
   const days = freq && freq.id === 'frequency' ? freq.strip.days : [];
   const bars = freq && freq.id === 'frequency' ? freq.bars : [];
 
-  const weeks: WeekBucket[] = [];
-  const n = totalDays / 7;
-  for (let w = 0; w < n; w++) {
-    const wFrom = addDays(from, w * 7);
-    const wTo = addDays(wFrom, 6);
-    weeks.push({
-      from: wFrom,
-      to: wTo,
-      label: String(w + 1),
-      noteDays: days.filter((d) => d.logged && d.date >= wFrom && d.date <= wTo).length,
-      peak: days.reduce<number | null>((hi, d) => (d.date >= wFrom && d.date <= wTo && d.value != null && (hi == null || d.value > hi) ? d.value : hi), null),
-    });
-  }
+  // Same per-week numbers as the doctor PDF: both come from weeklyPeaks over the summary strip.
+  const weeks: WeekBucket[] = weeklyPeaks(days, from, today).slice(0, totalDays / 7)
+    .map((w, i) => ({ from: w.from, to: w.to, label: String(i + 1), noteDays: w.noteDays, peak: w.peak }));
   const noteDays = days.filter((d) => d.logged).length;
   // The 28-day check is separate so the 12-week view isn't blocked by a quiet first month.
   const recent = days.filter((d) => d.logged && d.date >= addDays(today, -27)).length;

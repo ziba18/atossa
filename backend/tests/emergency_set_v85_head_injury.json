@@ -1,0 +1,27 @@
+{
+ "_note": "AI Brain run09, own set written before any rule (A46 probe for the 0940 class). nhs.uk/conditions/head-injury-and-concussion lists going to A&E after a head injury with being sick (vomiting), being very drowsy or hard to wake, a seizure, or confusion. Rule needs a head injury PLUS one of those in the same note; a bump alone, or sickness from a bug, stays quiet.",
+ "emergency": [
+  "I fell and hit my head, now I've been sick twice and I'm really sleepy",
+  "banged my head on the cupboard an hour ago and I keep throwing up",
+  "hit my head when I fainted, now I'm so drowsy I can't stay awake",
+  "Knocked my head on the car door. Been vomiting since.",
+  "I bumped my head this morning and now I feel confused and keep being sick",
+  "fell down the stairs and hit my head, I've vomited and can barely keep my eyes open",
+  "whacked my head on a shelf, now I'm being sick",
+  "I hit my head yesterday and today I'm really drowsy and feel sick and have vomited",
+  "slipped in the shower and hit my head, been sick three times",
+  "my head hit the floor when I fell, now I'm vomiting and dizzy"
+ ],
+ "harmless": [
+  "bumped my head on the cupboard, bit of a lump, feel fine",
+  "been sick twice with a tummy bug, sleepy all day",
+  "I hit my head on the shelf last week, all fine now",
+  "headache and feeling sick, period due tomorrow",
+  "banged my knee and I'm tired",
+  "I was sick this morning, then I hit my funny bone, ouch",
+  "head feels heavy and I'm sleepy, the cramps kept me up",
+  "knocked my head on the car door, no sickness, no headache",
+  "nauseous and drowsy from the new tablets, GP said it would pass",
+  "Hit my head on the low beam again, laughed it off"
+ ]
+}

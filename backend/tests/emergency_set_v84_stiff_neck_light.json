@@ -1,0 +1,27 @@
+{
+ "_note": "AI Brain run09, own set written before any rule (PM 13:00 task 3: probing for the 0940 class with my own 12-class probe; the only miss was this class). nhs.uk/conditions/meningitis lists a stiff neck, a dislike of bright lights, a high temperature and a rash that does not fade, and says get emergency help (999/A&E) if you think it might be meningitis. Rule needs a stiff neck PLUS light/fever; a stiff neck alone, light sensitivity alone, or her usual migraine stays quiet.",
+ "emergency": [
+  "neck is really stiff, light hurts my eyes and I've got a blotchy rash",
+  "I can't bend my neck, it's so stiff, and the lights are unbearable",
+  "stiff neck and I can't stand bright light, feel awful",
+  "my neck has gone stiff and I've got a high temperature and a pounding head",
+  "Can't touch my chin to my chest. Bright light is painful too.",
+  "Feverish since this morning. My neck is stiff and I'm vomiting.",
+  "stiff neck, really sensitive to light, and I feel confused",
+  "My neck's so stiff I can't move it and I've got a fever of 39.",
+  "the light is hurting my eyes so much and my neck is stiff",
+  "neck stiff as a board and I've been burning up all day"
+ ],
+ "harmless": [
+  "stiff neck from sleeping funny on the sofa",
+  "light hurts my eyes during my migraine, same as always",
+  "my neck is stiff after the gym, nothing else",
+  "Bright lights bother me before my period, standard for me.",
+  "stiff neck and shoulders from sitting at my desk all day",
+  "had a fever last week, all fine now",
+  "my usual migraine: light hurts my eyes and my neck feels stiff, took my triptan and it's easing",
+  "neck a bit stiff after the long drive",
+  "sensitive to light on day one of my period",
+  "stiff neck from carrying my toddler around"
+ ]
+}

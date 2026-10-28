@@ -1,0 +1,21 @@
+{
+ "_note": "AI Brain run10, own set written before any rule (PM 16:00 task 5 note on 1540: false fires on 'past fainting stated with an age' and 'a time-bound sleep idiom'; classes only, no PM lines seen). Quiet: history of fainting dated by an age; sleep idioms bounded by a time ('could sleep for a week', 'out cold for 10 hours'). Urgent counterparts: fainting now / today, can't be woken now. Third-person 'my sister can't be woken' was dropped before scoring: class h is owner + clinician Q-new-37 (PM 16:00), not built here.",
+ "emergency": [
+  "I fainted just now and hit my head, still feel confused.",
+  "Passed out twice today on my period and I'm really pale and dizzy.",
+  "I keep blacking out this afternoon and my heart is racing.",
+  "I collapsed at work an hour ago and my chest is tight."
+ ],
+ "harmless": [
+  "I fainted at 15 during a school assembly, never since.",
+  "Used to pass out at age 14 on my first periods, not now.",
+  "When I was 16 I fainted in PE, my GP knows.",
+  "I fainted aged 13 when I had my blood taken.",
+  "Blacked out at 17 at a concert, the heat, nothing since.",
+  "I could sleep for a week after this period.",
+  "Out cold for 10 hours last night, felt better after.",
+  "Slept like the dead for twelve hours, still tired.",
+  "Could have slept for days, period day two.",
+  "Dead to the world for 11 hours, that's my period tiredness."
+ ]
+}

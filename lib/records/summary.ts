@@ -515,6 +515,15 @@ export function onsetText(o: Onset | undefined): string {
   return `First noticed: around ${when} (as reported)`;
 }
 
+/** First day the record covers: the first entry (note or bleeding day) when it is later than `from`, and at least 14
+ *  days before `to`. Days before it were never recorded, so neither How often nor the area lines count them; one
+ *  function so the "of N days" agrees on both pages (PM 15:52: 91 vs 92 days on the same PDF). */
+export function recordedFrom(notes: SymptomData[], bleedDays: PeriodDayData[], from: string, to: string): string {
+  const firstEntry = [...notes.map((s) => s.date), ...bleedDays.map((d) => d.date)].sort()[0];
+  const startAt = firstEntry && firstEntry < addDays(to, -13) ? firstEntry : addDays(to, -13);
+  return firstEntry && startAt > from ? startAt : from;
+}
+
 /** The 13 PRODUCT §4 areas, one line each, in DOMAINS order. Counts and her own choices only. */
 function domainLines(
   input: SummaryInput, options: SummaryOptions, notes: SymptomData[], bleedDays: PeriodDayData[],
@@ -522,7 +531,7 @@ function domainLines(
 ): DomainLine[] {
   const { from, to } = options;
   const include = options.include ?? {};
-  const total = inclusiveDays(from, to);
+  const total = inclusiveDays(recordedFrom(notes, bleedDays, from, to), to);
   const of = (has: (s: SymptomData) => boolean) => nOfN(notes, from, to, has).days;
   const dayText = (n: number) => `${n} of ${plural(total, 'day')}`;
   const onsetFor = (g: OnsetGroup) => onsetText(input.onset?.[g]);
@@ -677,9 +686,8 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const cappedFrom = inclusiveDays(from, to) > STRIP_MAX_DAYS ? addDays(to, -(STRIP_MAX_DAYS - 1)) : from;
     // Days before the first entry were never recorded, so they are not shown as days with no note: the
     // window starts at the first entry (at least 14 days wide, so a new user's strip is not one cell).
-    const firstEntry = [...notes.map((s) => s.date), ...bleedDays.map((d) => d.date)].sort()[0];
-    const startAt = firstEntry && firstEntry < addDays(to, -13) ? firstEntry : addDays(to, -13);
-    const stripFrom = firstEntry && startAt > cappedFrom ? startAt : cappedFrom;
+    const recorded = recordedFrom(notes, bleedDays, from, to);
+    const stripFrom = recorded > cappedFrom ? recorded : cappedFrom;
     const windowNotes = notes.filter((s) => s.date >= stripFrom);
     const total = inclusiveDays(stripFrom, to);
     const bleedSet = new Set(bleedDays.filter((d) => bleedingStatus(d) !== 'spotting').map((d) => d.date));
