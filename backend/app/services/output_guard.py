@@ -484,6 +484,9 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set p76 (after birth, section or miscarriage; first contact 3/12 missed)
+                    r"^(?=.*\b(?:stitches|wound|scar|section|tear)\b)(?=.*(?:\bhot and swollen\b|\bswollen\b|\bpus\b|\bleaking\b|\boozing\b|(?<!no )\bsmell(?:s|y)\b|\bred and (?:hot|swollen|painful)\b))(?=.*(?<!no )(?<!without )(?<!normal )\b(?:got a temperature|high temperature|fever|shivery|shaky|feel (?:very )?unwell|feeling (?:very )?unwell)\b)|"
+                    r"^(?=.*\b(?:headache|head hurts)\b)(?=.*(?<!no )(?:\bblurr\w+|\bflashing\b|\bspots (?:in|before) my\b|\bvision (?:is |went |gone )?(?:blurry|blurred|double|odd|strange)\b))(?=.*\b(?:after (?:the )?(?:birth|delivery|having (?:the|my) baby|giving birth)|postnatal|postpartum)\b)|"
                     # set p72 (heavy bleeding wording, NHS heavy periods page; first contact 3/12 missed)
                     r"\bbled through\b.{0,25}\b(?:mattress|sheets?|bed)\b.{0,60}\b(?:barely stand|can'?t stand|dizz\w+|faint\w*|weak|collaps\w+)\b|"
                     r"\bclots?\b.{0,15}\b(?:golf ball|egg|lemon|fist)s?\b(?! pip| seed| sized? pip)|"
