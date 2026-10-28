@@ -207,10 +207,9 @@ export default function DoctorScreen() {
 
   return (
     <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={nothingYet || inlineBar ? undefined : footer}>
-      {short ? null : (
-        <Txt variant="body" color={colors.ink2}>
-          {nothingYet ? 'Your notes, in your words, for your appointment.' : 'Your notes, in your words, ready to share.'}
-        </Txt>
+      {/* With notes the title and the Save bar already say it; the line is kept for the first run only (more room to the chart above the fold). */}
+      {short || !nothingYet ? null : (
+        <Txt variant="body" color={colors.ink2}>Your notes, in your words, for your appointment.</Txt>
       )}
 
       {offlineCopyFrom ? (
@@ -273,7 +272,7 @@ export default function DoctorScreen() {
       )}
 
       {nothingYet ? null : (
-        <View style={{ marginTop: space.xxl }}>
+        <View style={{ marginTop: space.xl }}>
           <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
@@ -425,7 +424,7 @@ export default function DoctorScreen() {
       )}
 
       {nothingYet || agendaUp ? null : (
-        <View style={{ marginTop: space.xxl }}>
+        <View style={{ marginTop: space.xl }}>
           <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
