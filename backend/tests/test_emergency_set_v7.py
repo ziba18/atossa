@@ -302,3 +302,10 @@ SET36 = json.loads((Path(__file__).parent / "emergency_set_v36_genital_labour_as
 def test_set_v36_genital_labour_assault_caught_and_harmless_quiet():
     assert [t for t in SET36["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET36["harmless"] if is_emergency(t)] == []
+
+
+SET37 = json.loads((Path(__file__).parent / "emergency_set_v37_long_everyday.json").read_text())
+
+
+def test_set_v37_twenty_long_everyday_notes_stay_quiet():
+    assert [t[:40] for t in SET37["harmless"] if is_emergency(t)] == []
