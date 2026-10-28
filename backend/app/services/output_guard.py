@@ -384,7 +384,7 @@ def _hits(rx, text: str) -> bool:
         for m in rx.finditer(clause):
             before = clause[: m.start()]
             after = clause[m.end():]
-            if _NEG.search(before[-40:]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
+            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
                 continue
             return True
     return False
@@ -707,6 +707,7 @@ _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/r
 _LEADIN = re.compile(r"\b(?:i(?:'m| am) )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))", re.I)
 
 
+_NEG_WINDOW = re.compile(r"[.;:!?\n,]|\bbut\b")  # a negation only counts inside the same clause as the match
 _HEDGE = re.compile(r"\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b", re.I)  # "probably nothing but ..." is a hedge, not a negation
 
 
@@ -720,7 +721,7 @@ def _hits_whole(rx, text: str) -> bool:
     start = starts[-1] + 1 if starts else 0
     ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
     end = m.end() + ends[0] if ends else len(text)
-    return not (_NEG.search(_HEDGE.sub(' ', text[max(0, m.start() - 40):m.start()])) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
+    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
 
 
 _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:tonight|today|now)|urge is back|urges? (?:are|is) back|(?:cut|cutting|hurt|hurting) myself again|thinking about (?:doing )?it again|want to do it again)\b", re.I)
