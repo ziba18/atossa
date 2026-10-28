@@ -1,7 +1,7 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
 import React, { useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
@@ -29,9 +29,10 @@ const PROMPT = 'What’s been going on with your body?';
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
 export function HeroCard() {
+  const narrowW = useWindowDimensions().width < 360;
   return (
     <Card tone="hero" style={styles.hero}>
-      <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
+      <Txt variant="hero" style={[styles.center, narrowW && { fontSize: 25, lineHeight: 31 }]} accessibilityRole="header" accessibilityLabel={PROMPT}>
         {PROMPT}
       </Txt>
       {Platform.OS === 'web' ? (

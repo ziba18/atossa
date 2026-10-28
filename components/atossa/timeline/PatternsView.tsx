@@ -7,7 +7,7 @@ import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, severityColor, severityRamp, space } from '../../../constants/atossaUI';
+import { colors, fonts, severityColor, severityRamp, space } from '../../../constants/atossaUI';
 import { untaggedLine } from '../../../lib/records/counts';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
@@ -31,7 +31,7 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
         <View key={r.label} style={{ gap: 4 }}>
           <View style={styles.barHead}>
             <Txt variant="body" style={{ flexShrink: 1 }}>{r.label}</Txt>
-            <Txt variant="secondary" numberOfLines={1} style={{ flexShrink: 0 }}>{plural(r.days, "day")}</Txt>
+            <Txt variant="body" numberOfLines={1} style={{ flexShrink: 0, fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
