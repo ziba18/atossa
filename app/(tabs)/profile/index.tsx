@@ -137,6 +137,7 @@ export default function ProfileScreen() {
         sub={total === 0 ? 'Your first note starts your record' : span}
         onPress={total === 0 ? undefined : () => router.push('/(tabs)/timeline' as any)}
         accessibilityHint="Opens Timeline"
+        keepSub
       />
 
       <Group style={{ marginTop: space.md }}>

@@ -199,13 +199,15 @@ export function PressableCard({
  * line and a secondary sub-line. Pass `onPress` to make the whole card a PressableCard.
  */
 export function HeroNumber({
-  big, line, sub, onPress, accessibilityHint,
+  big, line, sub, onPress, accessibilityHint, keepSub,
 }: {
   big?: string;
   line: string;
   sub: string;
   onPress?: () => void;
   accessibilityHint?: string;
+  /** Keep the sub-line on short screens (screens with no capture prompt to protect, e.g. Profile). */
+  keepSub?: boolean;
 }) {
   // Under ~240 pt wide (200% text) 17 pt "appointment" no longer fits the column and breaks mid-word.
   const winW = useWindowDimensions().width;
@@ -225,12 +227,12 @@ export function HeroNumber({
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
       <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: short ? 90 : 130, gap: space.xxs }}>
         <Txt variant="headline" style={narrow ? { fontSize: 15, lineHeight: 20 } : undefined}>{line}</Txt>
-        {short ? null : <Txt variant="secondary">{sub}</Txt>}
+        {short && !keepSub ? null : <Txt variant="secondary">{sub}</Txt>}
       </View>
     </View>
   );
   if (!onPress) return <Card>{body}</Card>;
-  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
+  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
 }
 
 /** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
