@@ -23,7 +23,7 @@ export function OnboardingScreen({
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
 }) {
   return (
-    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+    <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView
         ref={scrollRef as React.RefObject<ScrollViewInstance>}
         contentContainerStyle={styles.column}
