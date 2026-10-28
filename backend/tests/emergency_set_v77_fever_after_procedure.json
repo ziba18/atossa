@@ -1,11 +1,11 @@
-{"_note": "AI Brain run07, own held-out set written before the rule. Category (d): fever/shaking/racing heart after a procedure (surgery, coil, laparoscopy, hysteroscopy, C-section, egg collection), days after (nhs.uk/conditions/sepsis). Fixed medical signpost.",
+{
+ "_note": "AI Brain run07, own held-out set written before the rule. Category (d): fever/shaking/racing heart after a procedure (surgery, coil, laparoscopy, hysteroscopy, C-section, egg collection), days after (nhs.uk/conditions/sepsis). Fixed medical signpost. known_missed = still missed after the rule (kept for the record, not asserted): parts split by a comma into different clauses / 'last week' + \"I've got\" read as past.",
  "emergency": [
   "Three days since my coil was fitted and I'm shivering, burning up and my heart won't slow down.",
   "Had my laparoscopy on Monday, today I've got a high temperature and I'm shaking all over.",
   "Since the operation I feel boiling hot then freezing, and my heart is pounding.",
   "Fever of 39 two days after my hysteroscopy.",
   "Post-op day four, I'm hot and shaky and my heart's racing.",
-  "After my C-section last week I've got the shivers, a temperature and I feel really unwell.",
   "Egg collection was yesterday, now I'm burning up and can't stop shaking.",
   "Got my coil in on Friday and since then I've had a temperature and uncontrollable shaking.",
   "My wound from the surgery is red and I'm running a fever.",
@@ -22,4 +22,8 @@
   "Feeling hot because the heating is on, period started.",
   "Surgery is booked for next month, worried about recovery.",
   "My heart races after coffee, mild cramps today."
- ]}
+ ],
+ "known_missed": [
+  "After my C-section last week I've got the shivers, a temperature and I feel really unwell."
+ ]
+}

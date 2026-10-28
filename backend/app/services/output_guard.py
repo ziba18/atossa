@@ -307,6 +307,30 @@ _SELF = [
     r"(?:took|taken|swallowed) all (?:of )?(?:my|the) (?:paracetamol|tablets|pills|painkillers|medication)", r"(?:sleep|asleep|bed).{0,25}(?:never|not) (?:wake|waking) up", r"(?:no|any) reason to (?:keep )?(?:living|live|go on)(?! (?:in|at|with|near)\b)|don'?t see any (?:reason|point) (?:to|in) (?:keep )?(?:living|live|go on|going on|carry on|carrying on)",
     r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b", r"no point (?:in )?(?:going on|living|being here)",
 ]
+# run07 set v75 (first contact 20/20 missed): a plan said without die/kill/suicide. Coverage map = the three C-SSRS
+# screener classes (wish to be dead, method, preparation; cssrs.columbia.edu); Atossa never screens or asks these.
+_MEDS = r"(?:tablets|pills|painkillers|meds|medication|co-?codamol|paracetamol|tramadol|codeine|sleeping (?:tablets|pills)|sertraline|amitriptyline|insulin)"
+_SELF += [
+    r"(?:hop\w*|pray\w*|wish\w*)\b.{0,40}(?:not|never|don'?t|won'?t) (?:wake up|open my eyes)\b", r"(?:^|\s)just (?:not|never) wake up\b(?! (?:until|till|til|before|in time|for|at)\b)",
+    r"(?:be (?:fine|okay|ok|happy|glad)|wouldn'?t (?:mind|care)) if (?:a|the) (?:bus|car|lorry|train|truck) (?:hit|ran over|knocked (?:me )?down|took) me\b", r"\bstop existing\b|\bcease to exist\b",
+    r"(?:tired|sick) of (?:being (?:here|alive)|living)\b(?! (?:in|at|on|for|with|here)\b)",
+    r"how many (?:of (?:my|the|these) )?(?:\w+ )?" + _MEDS + r" (?:it would|it'?d|would it|would|i'?d need to|i would need to) (?:take|kill|be enough|do it)\b",
+    r"(?:bridge|cliff|roof|train tracks?|railway(?: line| tracks?)?|platform edge|multi-?storey)\b.{0,50}\b(?:stepp?\w* (?:out|off|in front)|jump\w*|how high)\b", r"step\w* in front of (?:a |the )?(?:train|bus|car|lorry)\b",
+    r"(?:know|decided|worked out|picked|chosen) (?:which|what|how many) (?:\w+ )?" + _MEDS + r" (?:i'?d|i would|i'?ll|i will|to) (?:use|take)\b",
+    r"(?:thought|thinking|planned|planning|worked out) (?:about |out )?how i(?:'?d| would| will|'?ll) do it\b", r"rehears\w+ (?:it|how)\b.{0,40}\brope\b|\bnoose\b|\bhang(?:ing)? myself\b",
+    r"(?:stockpil\w+|hoard\w*|collect\w*|saving|saved|stash\w*) (?:up )?(?:all )?(?:my |the )?(?:\w+ )?" + _MEDS + r"\b(?![^.]{0,30}\b(?:for (?:the |my )?(?:holiday|trip|travel)|in case)\b)",
+    r"giv(?:ing|e|en) (?:all )?(?:my )?(?:things|stuff|belongings|possessions) away\b(?![^.]{0,40}\b(?:charity|fits?|clear\w*|declutter\w*|moving|car boot|vinted|ebay)\b)",
+    r"(?:wrote|written|writing|left) (?:a |some )?(?:notes?|letters?) (?:to|for) (?:my |each of my )?(?:mum|mom|dad|partner|family|kids|children|husband|wife|boyfriend|girlfriend|everyone|sister|brother)\b(?![^.]{0,40}\b(?:gp|doctor|appointment|birthday|christmas|card|thank\w*|symptoms?|pain|period|shopping|list)\b)",
+    r"(?:who (?:gets|will get|'?ll get|has|will have|takes)|after)\b.{0,30}\bwhen i'?m (?:not around|gone|not here)\b(?! (?:on|for|to|at)\b)|when i'?m (?:not around|not here|gone) (?:any ?more|for good)\b",
+    r"(?:chosen|picked|set|decided on) (?:a|the) (?:date|day)(?=[,.!]|$|\s+(?:it'?ll|it will|it'?s going))", r"tonight'?s the night[,.!]\s*(?:i'?ve |i have )?got everything (?:ready|sorted|planned)",
+    r"said (?:my )?goodbyes?\b.{0,60}\breally (?:goodbye|saying goodbye)|\b(?:my|a) (?:last|final) goodbye\b",
+    # tuned on PM blind-pm-1240/1240b/1840 lines (seen after scoring, so not first contact): word-order variants of the above
+    r"(?:fall asleep|go to sleep|sleep|asleep)\b.{0,25}\bnever (?:have to |need to )?wake up\b", r"\bnobody would (?:notice|care|miss me) if i\b",
+    r"\bwhich (?:bridge|cliff|roof|building|tablets|pills|method|train) would be (?:quickest|fastest|best|easiest|highest|enough)\b",
+    r"\bhow many (?:\w+ )?" + _MEDS + r" (?:it takes|it would take|would it take|to take)\b(?! (?:for|to (?:work|help|kick in|ease)))",
+    _MEDS + r" (?:saved|stashed|hidden|stockpiled|put by)(?: up| away)?\b.{0,40}\btonight'?s the night\b|" + _MEDS + r" (?:saved|stashed|stockpiled) up\b(?![^.]{0,30}\b(?:for (?:the |my )?(?:holiday|trip|travel)|in case)\b)",
+    r"(?:won'?t|will not|not going to) be (?:here|around|alive) (?:for (?:it|that|them|christmas|her|his)|by then|next (?:week|month|year)|much longer|any ?more|for long)\b(?![^.]{0,30}\b(?:holiday|away|abroad|work|trip|hospital|course)\b)",
+]
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
 _SELF_RX = re.compile(r"(?:" + "|".join(_SELF) + r")", re.I)
 _CLAUSE = re.compile(r"[.;!?\n]+|,\s*|\bbut\b|\band\b(?=\s+(?:i|it|the|my|now|just|then)\b)", re.I)
@@ -722,6 +746,32 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"^(?=.*\b(?:terrible|severe|awful|agonising|unbearable|constant|really bad|very bad|excruciating)\b[^.!?;]{0,30}\b(?:stomach|tummy|belly|abdominal|abdomen)\b[^.!?;]{0,15}\bpain\b|.*\b(?:stomach|tummy|belly|abdominal|abdomen) pain\b[^.!?;]{0,30}\b(?:terrible|severe|awful|agonising|unbearable|constant|really bad|very bad|excruciating)\b)(?=.*\b(?:through|spread\w*|going|radiat\w*|shoot\w*) (?:to|into|through) (?:my )?(?:back|shoulder)\b)(?=.*(?<!no )(?<!not )(?<!without )\b(?:vomit\w*|being sick|throwing up)\b)|"
                     r"^(?=.*\bbreath(?:ing|e|es)\b[^.!?;]{0,20}\b(?:deep|deeply)\b[^.!?;]{0,12}\b(?:and|but)? ?(?:fast|quick\w*|heavy|heavily)?\b|.*\bdeep (?:and|,) ?fast breath\w*)(?=.*(?<!no )(?<!not )\b(?:drows\w*|very sick|vomit\w*|being sick|confus\w*|very thirsty|awful)\b)(?!.*\b(?:meditat\w*|yoga|exercis\w*|run|gym)\b)", re.I | re.S)
 # Someone else collapsing or fainting, said in the present with a second warning sign (Q-new-14 recommendation; clinician to confirm)
+# run07 sets v76-v78 (first contact 10/10, 10/10, 7/10 missed): three NHS red-flag patterns whose parts sit in different
+# sentences, so they are whole-text lookaheads anchored at the start (any order). Sources: nhs.uk/conditions/ectopic-pregnancy,
+# nhs.uk/conditions/sepsis, nhs.uk/conditions/sciatica (reviewed 03 Dec 2024: "Go to A&E or call 999").
+_LATE = (r"(?:period (?:is |'s |was )?(?:\w+ ){0,4}(?:late|overdue)|(?:missed|haven'?t had|not had|no) (?:a |my )?periods?\b|"
+         r"period (?:hasn'?t|has not|didn'?t|did not) (?:come|start|arrive)\w*|\b(?:days?|weeks?) (?:late|overdue)\b|\blate period\b)")
+_ONESIDE = (r"(?:one[- ]sided?|on one side|one side|just one side|(?:left|right)[- ]sided?|(?:left|right) side|(?:left|right) only|"
+            r"only (?:on )?(?:my |the )?(?:left|right)\b|(?:on|of|in) (?:my |the )?(?:left|right)\b(?! (?:shoulder|arm|leg|foot|hand|knee|eye|ear|breast)))")
+_SHOULDER = (r"(?:shoulder[- ]?tip|tip of (?:my |the )?shoulder|(?:end|top) of (?:my |the )?shoulder|shoulder (?:is |has )?(?:\w+ ){0,4}(?:hurt\w*|ach\w*|pain|sore)|"
+             r"(?:pain|ache|aching|hurt\w*) (?:in|at) (?:my |the )?shoulder|shoulder (?:\w+ ){0,3}(?:at the|when i lie))")
+_FEVER = (r"(?:(?<!no )(?<!not )(?<!without )(?<!any )fever\w*|high temperature|(?<!no )(?:a|running a) (?:temperature|temp)\b|temperature of|burning up|boiling hot|"
+          r"(?<!a bit )(?<!a little )(?<!slightly )shiver\w*|the shivers|(?<!from the cold, )shaking|(?<!a bit )(?<!a little )(?<!slightly )shaky|rigou?rs|heart (?:is |'s )?(?:\w+ ){0,2}(?:racing|pounding)|heart(?:'s| is)? going (?:really |so )?fast|heart won'?t slow|\b(?:38|39|40)(?:\.\d)?\b)")
+_PROC = (r"(?:coil (?:was )?(?:fitted|put in|in)\b|got my coil in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
+         r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b)\b")
+_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|from the cold|gone by|went away|settled)\b)"
+_BACK = r"(?:back(?:'s| is| has)? (?:\w+ ){0,3}(?:pain|ache|hurts?|agony|bad|gone|killing|went)|back pain|bad back|my back went|lower back|sciatica)"
+_SADDLE = (r"(?:numb\w* (?:around|in|down|under) (?:my )?(?:bottom|bum|genitals|vagina|down there|privates|groin|anus)|numb\w* between my legs|"
+           r"(?:bottom|bum|genitals|groin|saddle|down there)(?: area)? (?:feels? |is |has gone |gone |going )?numb|can'?t (?:really )?feel (?:it |anything )?(?:when i wipe|between my legs|down there))")
+_BLADDER = (r"(?:(?:wet|soiled) myself(?! (?:laughing|when i (?:sneeze|cough|laugh)))|lost control of my (?:bladder|bowels?)|can'?t control my (?:bladder|bowels?|wee|pee|poo)|"
+            r"can'?t (?:pee|wee|urinate)\b|couldn'?t (?:pee|wee|urinate) at all)")
+_LEGS = r"(?:both (?:of )?(?:my )?legs (?:\w+ ){0,3}(?:numb|weak|tingl\w*|dead)|(?:numb|weak|tingl\w*|pins and needles)\w* (?:in )?both (?:of )?(?:my )?legs|legs (?:have |are )?(?:gone|going) numb)"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*" + _LATE + r")(?=[\s\S]*" + _ONESIDE + r")(?=[\s\S]*" + _SHOULDER + r")"
+                    r"|^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")"
+                    r"|^(?=[\s\S]*" + _BACK + r")(?=[\s\S]*(?:" + _SADDLE + r"|" + _BLADDER + r"|" + _LEGS + r"))"
+                    r"|^(?=[\s\S]*" + _SADDLE + r")(?=[\s\S]*" + _BLADDER + r")", _WHOLE.flags)
+
+
 _THIRD_NOW = re.compile(
     r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
     r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
