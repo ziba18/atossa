@@ -91,3 +91,36 @@ def test_export_includes_every_record_kind_and_history_rows():
     assert sorted(r["kind"] for r in rows if r["data"].get("note")) == sorted(kinds)
     assert any(r["data"].get("told") == "mine-allergy-words" for r in rows)
     assert "theirs-" not in json.dumps(out)
+
+
+def test_export_shape_has_only_real_columns_and_no_secret_like_keys():
+    """Shape guard for the 'Download all my notes' file (PM 28 Oct ai-brain task 5): a user with
+    empty and null fields must get only real column names (no ORM internals such as
+    _sa_instance_state), no credential-like key, and an empty list for an empty table."""
+    import re
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    db = sessionmaker(bind=engine)()
+    me = User(email="me@example.com", hashed_password="$2b$secret-hash")
+    db.add(me)
+    db.commit()
+    db.add_all([HealthRecord(user_id=me.id, kind="symptom", data="{}"),
+                HealthRecord(user_id=me.id, kind="symptom", data="")])
+    db.commit()
+
+    out = export_my_data(current_user=me, db=db)
+    assert set(out) == {"exported_at", "tables"}
+    tables = {t.name: t for t in Base.metadata.sorted_tables}
+    secretish = re.compile(r"password|token|secret|hash|api_?key|salt", re.I)
+    for name, rows in out["tables"].items():
+        assert name in tables, name
+        assert isinstance(rows, list), name
+        real = {c.name for c in tables[name].c}
+        for row in rows:
+            assert set(row) <= real, (name, set(row) - real)
+            # token_version is a sign-out counter, not a credential (kept; Safety may hide it).
+            assert not [k for k in row if k.startswith("_") or (secretish.search(k) and k != "token_version")], (name, sorted(row))
+    assert out["tables"].get("connected_accounts", []) == []  # an empty table is an empty list
+    datas = [r["data"] for r in out["tables"]["health_records"]]
+    assert sorted(datas, key=repr) == sorted([{}, ""], key=repr)  # empty fields stay empty, never another row's data
+    json.dumps(out)  # the file is valid JSON
