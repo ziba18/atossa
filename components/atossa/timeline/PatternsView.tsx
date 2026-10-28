@@ -32,7 +32,7 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
         <View key={r.label} style={{ gap: 4 }}>
           <View style={styles.barHead}>
             <Txt variant="body" style={{ flexShrink: 1 }}>{r.label}</Txt>
-            <Txt variant="secondary" numberOfLines={1} style={{ flexShrink: 0 }}>{plural(r.days, "day")}</Txt>
+            <Txt variant="secondary" numberOfLines={1} style={{ flexShrink: 0 }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
@@ -196,7 +196,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       {m.zones.length ? (
         <FadeIn index={2}>
-          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${plural(z.days, 'day')}`).join('; ')}. Opens your notes.`}>
+          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${z.days} of ${plural(m.totalDays, 'day')}`).join('; ')}. Opens your notes.`}>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>Where you felt it</Txt>
             <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} />
           </PressableCard>
@@ -207,7 +207,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       {m.bleedingDays || m.spottingDays ? (
         <FadeIn index={2}>
-          <PressableCard edge="clay" onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
+          <PressableCard onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
             <Txt variant="groupLabel">Bleeding</Txt>
             <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m)}</Txt>
             {m.bleedingDays || m.spottingDays ? (
@@ -235,7 +235,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       {m.impacts.length ? (
         <FadeIn index={3}>
-          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it got in the way of. ${m.impacts.map((i) => `${i.label}, ${plural(i.days, 'day')}`).join('; ')}. Opens your notes.`}>
+          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it got in the way of. ${m.impacts.map((i) => `${i.label}, ${i.days} of ${plural(m.totalDays, 'day')}`).join('; ')}. Opens your notes.`}>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>What it got in the way of</Txt>
             <Bars rows={m.impacts} total={m.totalDays} />
           </PressableCard>
