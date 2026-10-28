@@ -1,35 +1,35 @@
-// Design tokens — "Warm Paper, Deep Ink" (spec: reports/Atossa app design research.md §Visual system;
+// Design tokens — "Iris" (round 3, mockups in atossa-hq agents/design/mockups/round3) (spec: reports/Atossa app design research.md §Visual system;
 // exact values: design/lovable-reference/styles.css). Light only. See design/KIT.md for usage rules.
 import type { TextStyle, ViewStyle } from 'react-native';
 
 /** The palette. Every colour on screen comes from here. */
 export const colors = {
-  canvas: '#F7F3EE', // app background
+  canvas: '#F7F4FD', // app background
   surface: '#FFFFFF', // cards, sheets, PDF
-  sunken: '#EFE9E1', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
-  hairline: '#D6CCBF', // card borders, dividers — decorative only
-  borderStrong: '#8F867C', // input + chip outlines (3:1 UI contrast)
-  ink: '#1F1B18', // body text, Sam's words
-  ink2: '#5A534D', // secondary text, Atossa's tidy values
-  ink3: '#6B625A', // labels, "why I'm asking", timestamps, chevrons
-  plum: '#4A2C4F', // ACTION ONLY: primary buttons, mic, selected tab, links, selection
-  plumPressed: '#3A2140',
-  plumTint: '#EFE6EF', // selected chips / segments, user bubble
-  clay: '#A6452E', // BLEEDING ONLY: calendar fill, entry edge, droplet icon, PDF band
-  clayTint: '#F3DED6', // period-day band in charts
+  sunken: '#ECE6F8', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
+  hairline: '#DCD2EE', // card borders, dividers — decorative only
+  borderStrong: '#7F7292', // input + chip outlines (3:1 UI contrast)
+  ink: '#2A1838', // body text, Sam's words
+  ink2: '#5E4F70', // secondary text, Atossa's tidy values
+  ink3: '#6B5A7A', // labels, "why I'm asking", timestamps, chevrons
+  plum: '#6A48E8', // ACTION ONLY: primary buttons, mic, selected tab, links, selection
+  plumPressed: '#5636C9',
+  plumTint: '#ECE6FD', // selected chips / segments, user bubble
+  clay: '#C23B4E', // BLEEDING ONLY: calendar fill, entry edge, droplet icon, PDF band
+  clayTint: '#FBE1E5', // period-day band in charts
   saved: '#2E6A4F', // system "saved" status — never describes a body
   savedTint: '#E2EEE6',
   error: '#A12A2A', // app errors only (network, mic permission)
   errorTint: '#F6E0DE',
   white: '#FFFFFF',
   /** Scrim behind sheets (ink at 20%). */
-  scrim: 'rgba(31,27,24,0.2)',
+  scrim: 'rgba(42,24,56,0.2)',
   /** Tab bar surface. */
   tabBar: 'rgba(255,255,255,0.94)',
 } as const;
 
 /** Single-hue severity ramp for 0–2, 3–4, 5–6, 7–8, 9–10. Always shown with the digit. */
-export const severityRamp = ['#E4D6E6', '#C3A6C7', '#85598B', '#6E4775', '#3E2144'] as const;
+export const severityRamp = ['#E6DDFB', '#C4B2F6', '#8E72EE', '#6A48E8', '#3F23A8'] as const;
 
 /** Ramp step (0–4) for a 0–10 score. */
 export function severityStep(n: number): 0 | 1 | 2 | 3 | 4 {
