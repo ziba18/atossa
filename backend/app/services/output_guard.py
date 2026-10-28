@@ -484,6 +484,10 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\bblood (?:sugar|glucose) (?:is |was |of |level )?[0-2](?:\.\d)?\b(?![\d%.])|"
                     # NHS ectopic pregnancy 999 list: very dizzy or fainting, looking very pale, feeling sick - when she might be pregnant
                     r"^(?=.*\b(?:pregnan\w+|missed (?:a |my )?period)\b)(?=.*\b(?:very dizzy|faint\w*))(?=.*\b(?:very pale|looking pale|pale)\b)|"
+                    # set p72 (heavy bleeding wording, NHS heavy periods page; first contact 3/12 missed)
+                    r"\bbled through\b.{0,25}\b(?:mattress|sheets?|bed)\b.{0,60}\b(?:barely stand|can'?t stand|dizz\w+|faint\w*|weak|collaps\w+)\b|"
+                    r"\bclots?\b.{0,15}\b(?:golf ball|egg|lemon|fist)s?\b(?! pip| seed| sized? pip)|"
+                    r"\bbleed\w* after sex\b.{0,30}\b(?:heavy|heavily|not stopping|won'?t stop|hasn'?t stopped)\b|"
                     # set p73 (bladder, bowel and infection signs, NHS 111 lists; first contact 7/12 missed)
                     r"^(?=.*\b(?:blood in (?:my )?(?:wee|urine|pee)|(?:wee|urine|pee)\b.{0,25}\b(?:bloody|blood))\b)(?=.*\b(?:fever|temperature|shiver\w*|shak\w+|pain in my (?:side|back)|bad pain)\b)|"
                     r"\b(?:can'?t|cannot|unable to|haven'?t been able to) (?:pass|do) (?:any )?(?:wee|urine|pee)\b(?: at all| since| for (?:hours|\d+))\b.{0,60}\b(?:swollen|painful|pain)\b|"
