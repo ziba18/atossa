@@ -73,6 +73,7 @@ export default function ProfileScreen() {
   const [exportPw, setExportPw] = useState('');
   const [exportBusy, setExportBusy] = useState(false);
   const [exportError, setExportError] = useState('');
+  const [exportDone, setExportDone] = useState(false);
   const scrollRef = useRef<ScrollViewInstance | null>(null);
 
   const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : '';
@@ -119,15 +120,14 @@ export default function ProfileScreen() {
   };
 
   const onExport = async () => {
-    if (IS_PREVIEW) { setExporting(false); setExportPw(''); showToast('Preview only: nothing is downloaded.'); return; }
+    if (IS_PREVIEW) { setExportPw(''); setExportDone(true); return; } // preview: shows the done state, downloads nothing
     if (exportBusy || !user?.email) return;
     setExportBusy(true);
     setExportError('');
     try {
       await downloadAllNotes(user.email, exportPw);
       setExportPw('');
-      setExporting(false);
-      showToast('Your file is ready.');
+      setExportDone(true);
     } catch (e) {
       setExportError(EXPORT_ERRORS[classifyExportError(e)]);
     } finally {
@@ -225,7 +225,7 @@ export default function ProfileScreen() {
             label="Download all my notes"
             detail="Everything you’ve saved, as one file"
             chevron={false}
-            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(false); setExporting(true); }}
+            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(false); setExportDone(false); setExporting(true); }}
           />
         <GroupRow
           icon="log-out"
@@ -245,30 +245,45 @@ export default function ProfileScreen() {
 
       {exporting ? (
         <Card style={{ marginTop: space.xl, gap: space.md }} onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}>
-          <View accessibilityRole="alert" style={{ gap: space.xxs }}>
-            <Txt variant="headline">Download all my notes</Txt>
-            <Txt variant="secondary">
-              One file with everything you’ve saved: your notes, periods, appointments, medicines and history, in your words. It goes only to your phone, to keep or share as you choose.
-            </Txt>
-          </View>
-          <TextField
-            label="Your password"
-            hint="Asked so no one else can download your notes."
-            value={exportPw}
-            onChangeText={(v) => { setExportPw(v); setExportError(''); }}
-            secret
-            autoFocus
-            autoCapitalize="none"
-            autoComplete="current-password"
-            textContentType="password"
-            returnKeyType="done"
-            onSubmitEditing={onExport}
-          />
-          {exportError ? <InlineError message={exportError} /> : null}
-          <View style={{ gap: space.xs }}>
-            <Button label={exportBusy ? 'Making your file…' : 'Download'} variant="primary" onPress={onExport} disabled={!exportPw || exportBusy} />
-            <Button label="Cancel" variant="text" onPress={() => { setExporting(false); setExportPw(''); setExportError(''); }} />
-          </View>
+          {exportDone ? (
+            <>
+              <View accessibilityRole="alert" style={{ gap: space.xxs }}>
+                <Txt variant="headline">Your file is ready</Txt>
+                <Txt variant="secondary">
+                  It holds everything you’ve saved, in your words. It isn’t a medical record. It’s only on your phone, so delete it when you’ve finished with it.
+                </Txt>
+              </View>
+              <Button label="Done" variant="primary" onPress={() => { setExporting(false); setExportDone(false); }} />
+            </>
+          ) : (
+            <>
+            <View accessibilityRole="alert" style={{ gap: space.xxs }}>
+              <Txt variant="headline">Download all my notes</Txt>
+              <Txt variant="secondary">
+                One file with everything you’ve saved: your notes, periods, appointments, medicines and history, in your words. It goes only to your phone, to keep or share as you choose.
+              </Txt>
+            </View>
+            <TextField
+              label="Your password"
+              hint="Asked so no one else can download your notes."
+              value={exportPw}
+              onChangeText={(v) => { setExportPw(v); setExportError(''); }}
+              secret
+              autoFocus
+              autoCapitalize="none"
+              autoComplete="current-password"
+              textContentType="password"
+              returnKeyType="done"
+              onSubmitEditing={onExport}
+            />
+            {exportError ? <InlineError message={exportError} /> : null}
+            <View style={{ gap: space.xs }}>
+              <Button label={exportBusy ? 'Making your file…' : 'Download'} variant="primary" onPress={onExport} disabled={!exportPw || exportBusy} />
+              <Button label="Cancel" variant="text" onPress={() => { setExporting(false); setExportPw(''); setExportError(''); }} />
+            </View>
+
+            </>
+          )}
         </Card>
       ) : null}
 
