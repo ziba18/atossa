@@ -4,7 +4,7 @@
 import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useState } from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
@@ -38,8 +38,7 @@ export default function TodayScreen() {
   const loading = useRecordsStore((s) => s.loading);
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
-  // Short phones (320x568): capture comes first, the number and week strip follow, so "Type a note" is on the first screen.
-  const short = useWindowDimensions().height < 640;
+  // Capture first on every phone (owner decision, 28 Oct): a one-line chip, then "Type a note", then the week strip.
 
   const capture = (
     <>
@@ -55,13 +54,12 @@ export default function TodayScreen() {
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      {short && loadedFor ? <HeroChip /> : null}
-      {short ? capture : null}
+      {loadedFor ? <HeroChip /> : null}
+      {capture}
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
-      {loadedFor ? (short && symptoms.length > 0 ? null : <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>)
+      {loadedFor ? (symptoms.length > 0 ? null : <View style={{ marginTop: space.xl, marginBottom: space.md }}><HeroNumberCard /></View>)
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
-      {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
-      {short ? null : capture}
+      {loadedFor && symptoms.length > 0 ? <View style={{ marginTop: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
       ) : (
