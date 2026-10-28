@@ -114,7 +114,7 @@ export function AddButton({ label, onPress }: { label: string; onPress: () => vo
  * `ghost` is for the always-offered non-answers: "Not sure", "It varies", "Skip".
  */
 export function Chip({
-  label, selected = false, onPress, ghost, disabled, accessibilityRole = 'button', accessibilityHint, style,
+  label, selected = false, onPress, ghost, disabled, accessibilityRole = 'button', accessibilityHint, tabIndex, style,
 }: {
   label: string;
   selected?: boolean;
@@ -123,11 +123,14 @@ export function Chip({
   disabled?: boolean;
   accessibilityRole?: 'button' | 'radio' | 'checkbox';
   accessibilityHint?: string;
+  /** Web radio groups: -1 takes the chip out of the Tab order (roving focus, arrows move between chips). */
+  tabIndex?: 0 | -1;
   style?: StyleProp<ViewStyle>;
 }) {
   return (
     <Pressable
       onPress={() => { haptics.selection(); onPress(); }}
+      {...(tabIndex !== undefined ? { tabIndex } : null)}
       accessibilityHint={accessibilityHint}
       disabled={disabled}
       accessibilityRole={accessibilityRole}
@@ -219,6 +222,28 @@ export function ChipGroup(props: ChipGroupProps) {
   };
   useEffect(() => { if (props.scroll) reveal(firstSelected, true); }, [firstSelected]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Web radio groups are one Tab stop: the chosen chip (or the first when none) holds it, arrow keys move and choose.
+  const roving = Platform.OS === 'web' && !isMulti;
+  const tabbable = props.options.map(optValue).find((v) => isSelected(v)) ?? (props.options.length ? optValue(props.options[0]) : undefined);
+  const rovingTab = (v: string): 0 | -1 | undefined => (roving ? (v === tabbable ? 0 : -1) : undefined);
+  const onArrow = roving
+    ? {
+        onKeyDown: (e: any) => {
+          const k = e.key as string;
+          const dir = k === 'ArrowRight' || k === 'ArrowDown' ? 1 : k === 'ArrowLeft' || k === 'ArrowUp' ? -1 : 0;
+          if (!dir) return;
+          const radios: HTMLElement[] = Array.from(e.currentTarget.querySelectorAll('[role="radio"]'));
+          const at = radios.indexOf(document.activeElement as HTMLElement);
+          if (at < 0) return;
+          e.preventDefault();
+          const next = radios[(at + dir + radios.length) % radios.length];
+          if (next === document.activeElement) return;
+          next.focus();
+          next.click();
+        },
+      }
+    : null;
+
   const chips = props.options.map((o) => {
     const v = optValue(o);
     const ghost = typeof o === 'object' && o.ghost !== undefined ? o.ghost : ghosts.includes(v);
@@ -236,6 +261,7 @@ export function ChipGroup(props: ChipGroupProps) {
           ghost={ghost}
           selected={isSelected(v)}
           accessibilityRole={isMulti ? 'checkbox' : 'radio'}
+          tabIndex={rovingTab(v)}
           onPress={() => toggle(v)}
         />
       </View>
@@ -253,6 +279,7 @@ export function ChipGroup(props: ChipGroupProps) {
           onLayout={(e) => { viewW.current = e.nativeEvent.layout.width; }}
           accessibilityRole={isMulti ? undefined : 'radiogroup'}
           accessibilityLabel={props.accessibilityLabel}
+          {...onArrow}
           contentContainerStyle={[styles.chipRow, props.bleed && styles.chipRowBleed]}
         >
           {chips}
@@ -273,6 +300,7 @@ export function ChipGroup(props: ChipGroupProps) {
     <View
       accessibilityRole={isMulti ? undefined : 'radiogroup'}
       accessibilityLabel={props.accessibilityLabel}
+      {...onArrow}
       style={[styles.chipWrap, props.style]}
     >
       {chips}
