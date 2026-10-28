@@ -28,7 +28,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 if (Platform.OS === 'web' && typeof document !== 'undefined' && !document.getElementById('atossa-focus')) {
   const el = document.createElement('style');
   el.id = 'atossa-focus';
-  el.textContent = ':focus-visible{outline:3px solid #2A1838 !important;outline-offset:2px;box-shadow:0 0 0 2px #fff}';
+  el.textContent = ':focus-visible:not([tabindex="-1"]){outline:3px solid #2A1838 !important;outline-offset:2px;box-shadow:0 0 0 2px #fff}';
   document.head.appendChild(el);
 }
 
