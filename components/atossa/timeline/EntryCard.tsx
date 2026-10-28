@@ -145,7 +145,7 @@ export function EntryCard({
             ) : null}
             {urgent ? (
               <View style={styles.urgent}>
-                <Txt variant="secondary" style={{ color: colors.ink }}>{urgent}</Txt>
+                <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent}</Txt>
               </View>
             ) : null}
           </View>
@@ -234,7 +234,8 @@ export function EntryCard({
 
 const styles = StyleSheet.create({
   stack: { gap: space.xs },
-  urgent: { backgroundColor: colors.sunken, borderRadius: radii.input - 4, paddingHorizontal: space.sm, paddingVertical: space.xs },
+  // Same words and place; a quiet rule instead of a filled box so her own words get the first read (Safety OK pending before a hosted build).
+  urgent: { borderLeftWidth: 2, borderLeftColor: colors.plum, paddingLeft: space.sm },
   facts: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.xs, rowGap: space.xs },
   factText: { flexShrink: 1, minWidth: 0 },
   // N11: the 4 pt clay edge sits inside the card's own padding, so bleeding content lines up
