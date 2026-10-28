@@ -94,7 +94,7 @@ export const type: Record<TypeVariant, TextStyle> = {
 /** 4-pt grid. Use these instead of ad-hoc numbers. */
 export const space = { xxs: 4, xs: 8, sm: 12, md: 16, lg: 20, xl: 24, xxl: 32, xxxl: 40, huge: 56 } as const;
 
-export const radii = { input: 14, card: 20, sheet: 28, pill: 999 } as const;
+export const radii = { input: 16, card: 24, sheet: 32, pill: 999 } as const;
 
 export const heights = {
   primary: 56, secondary: 48, chip: 44, addChip: 36, segmented: 36, datePill: 36, minHit: 44,
