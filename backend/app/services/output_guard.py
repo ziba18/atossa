@@ -411,7 +411,7 @@ _RESOLVED = re.compile(r"(?<!n't )(?<!not )(?<!never )\b(?:stopped|settled|eased
 
 # "last week" often dates the cause, not the symptom: with a present-tense word in the clause it is not past tense.
 _LASTREL = re.compile(r"(?<!since )last (?:year|decade|month|week)", re.I)
-_PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today)\b", re.I)
+_PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today|i'?ve got|i have got)\b", re.I)
 
 
 # A baby or young child described as limp/floppy/not waking/with a rash that stays under pressure, or not feeding with a fever (NHS 999 lists for children; p110, first contact 2/2 missed)

@@ -9,7 +9,8 @@
   "Egg collection was yesterday, now I'm burning up and can't stop shaking.",
   "Got my coil in on Friday and since then I've had a temperature and uncontrollable shaking.",
   "My wound from the surgery is red and I'm running a fever.",
-  "The day after my op I'm feverish and my heart is going really fast."
+  "The day after my op I'm feverish and my heart is going really fast.",
+  "After my C-section last week I've got the shivers, a temperature and I feel really unwell."
  ],
  "harmless": [
   "Coil fitted last week, cramps settling, no fever.",
@@ -23,7 +24,5 @@
   "Surgery is booked for next month, worried about recovery.",
   "My heart races after coffee, mild cramps today."
  ],
- "known_missed": [
-  "After my C-section last week I've got the shivers, a temperature and I feel really unwell."
- ]
+ "known_missed": []
 }
