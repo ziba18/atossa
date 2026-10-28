@@ -402,7 +402,7 @@ _IDIOM = re.compile(
     # everyday uses of words the lists react to: "faint" as an adjective, a blocked nose, a figure of speech,
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
     r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
-    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? through (?:my )?nose\b"
+    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?through (?:my )?nose\b"
     r"|\bagony\b[^.!?]{0,25}\bfrom (?:the |my )?(?:gym|running|a run|workout|lifting|exercise|squats)\b"
     r"|\b(?:passed|dozed|zonked|crashed|flaked) out on (?:the |my )?(?:sofa|couch|bed|settee)\b"
     # wanting a baby is not being pregnant (NHS pelvic pain page: 111 if "pregnant or may be pregnant"); run 01 ruling
@@ -659,6 +659,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
                     r"\b(?:i(?:'ve| have)? called|calling|called|waiting for|need|needs) (?:an |the )?ambulance\b|\bcalled 999\b|\bringing 999\b|"
                     r"\bpain\b.{0,80}\bgetting worse(?: and worse)?\b.{0,60}\b(?:not stopping|won'?t stop|doesn'?t stop|isn'?t stopping|scared|frightened)\b|"
+                    r"^(?=.*\b(?:rock[- ]?hard|very hard)\b.{0,15}\b(?:belly|tummy|stomach|abdomen)\b|.*\b(?:belly|tummy|stomach|abdomen)\b.{0,15}\b(?:rock[- ]?hard|very hard)\b)(?=.*\b(?:vomit\w*|being sick|throwing up)\b)(?=.*\b(?:fever|high temperature|temperature of (?:3[89]|4\d))\b)|"
                     # set p116 (first contact 2/10 missed): hard belly with vomiting or no bowel movement for days, red painful eye with halos and sickness
                     r"^(?=.*\b(?:rock[- ]?hard|very hard|solid)\b.{0,15}\b(?:belly|tummy|stomach|abdomen)\b|.*\b(?:belly|tummy|stomach|abdomen)\b.{0,15}\b(?:rock[- ]?hard|very hard)\b)(?=.*\b(?:vomit\w*|being sick|throwing up|fever)\b)(?=.*\b(?:can'?t stop|haven'?t (?:opened|been|passed)|not (?:opened|been|passed)|for days|constant\w*)\b)|"
                     r"\b(?:eye|eyes)\b.{0,40}\b(?:red|painful)\b.{0,40}\b(?:halos?|rings? around (?:the )?lights?|blurr\w+)\b.{0,60}\b(?:sick|vomit\w*|nause\w+|headache)\b|"
@@ -701,7 +702,7 @@ _THIRD_NOW = re.compile(
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
 
-_HEDGE = re.compile(r"\bnothing,? but\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b", re.I)  # "probably nothing but ..." is a hedge, not a negation
+_HEDGE = re.compile(r"\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b", re.I)  # "probably nothing but ..." is a hedge, not a negation
 
 
 def _hits_whole(rx, text: str) -> bool:

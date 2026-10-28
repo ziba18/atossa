@@ -76,7 +76,7 @@ function hitWhole(text: string): boolean {
   const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
   const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
   const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
-  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).replace(/\bnothing,? but\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence) || OTHER.test(text.slice(0, m.index)));
+  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence) || OTHER.test(text.slice(0, m.index)));
 }
 
 const THIRD = new RegExp(P.THIRD_SRC, 'is');
