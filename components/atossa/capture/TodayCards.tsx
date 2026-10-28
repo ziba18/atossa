@@ -354,7 +354,8 @@ export function HeroNumberCard() {
 /** Short phones (320x568): the same number as HeroNumberCard as one line above the prompt, so the appointment signal is not pushed off the first screen. */
 export function HeroChip() {
   const router = useRouter();
-  const wide = useWindowDimensions().width >= 340; // the ramp would wrap the label on a 320 phone
+  const winW = useWindowDimensions().width;
+  const wide = winW >= 340; // the ramp would wrap the label on a 320 phone
   const symptoms = useRecordsStore((s) => s.records.symptom);
   const appts = useRecordsStore((s) => s.records.appointment);
   const today = todayKey();
@@ -373,6 +374,7 @@ export function HeroChip() {
       onPress={() => router.push(target as any)}
       accessibilityLabel={sub ? `${label}. ${sub}` : label}
       accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Timeline'}
+      chevron={winW >= 240} // at 195 pt the chevron left 'Appointment' too little room and it broke mid-word
       style={styles.chip}
     >
       <View style={styles.chipRow}>

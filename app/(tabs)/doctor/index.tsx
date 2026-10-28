@@ -236,7 +236,7 @@ export default function DoctorScreen() {
           )}
           <View style={{ flex: 1 }}>
             {/* The date rides the caption so the name gets a line to itself (one line at 360). */}
-            {thumbUp ? (
+            {thumbUp || winWidth < 300 ? (
               <>
                 <Txt variant="caption">{upcoming.data.date === today ? 'Appointment today' : 'Next appointment'}</Txt>
                 <Txt variant="caption">{formatDay(upcoming.data.date)}</Txt>
