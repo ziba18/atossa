@@ -349,3 +349,11 @@ SET42 = json.loads((Path(__file__).parent / "emergency_set_v42_temperature_numbe
 def test_set_v42_temperature_numbers_caught_and_harmless_quiet():
     assert [t for t in SET42["emergency"] if not is_emergency(t)] == []
     assert [t for t in SET42["harmless"] if is_emergency(t)] == []
+
+
+SET43 = json.loads((Path(__file__).parent / "emergency_set_v43_stroke_sepsis_vision.json").read_text())
+
+
+def test_set_v43_stroke_sepsis_vision_caught_and_harmless_quiet():
+    assert [t for t in SET43["emergency"] if not is_emergency(t)] == []
+    assert [t for t in SET43["harmless"] if is_emergency(t)] == []

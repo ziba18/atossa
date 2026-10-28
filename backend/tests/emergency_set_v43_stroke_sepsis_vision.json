@@ -1,0 +1,40 @@
+{
+ "emergency": [
+  "My face has dropped on one side and I can't lift my arm, my words are coming out slurred.",
+  "I feel very hot and shivery, my heart is racing and I'm breathing really fast, and I'm not sure where I am.",
+  "My skin looks mottled and blue and I feel like I might die, I've had a chest infection all week.",
+  "My lips and tongue have swollen up after eating peanuts and I'm wheezing.",
+  "I got stung and now I'm covered in hives, my throat feels tight and I feel faint.",
+  "I have a rash that doesn't fade when I roll a glass over it and I feel awfully ill.",
+  "Sudden numbness down my left side and I can't see out of one eye.",
+  "I've not passed any urine all day and I'm feeling confused and sleepy, I've had a fever.",
+  "My baby is floppy and won't wake up for feeds and has a high temperature.",
+  "Worst headache of my life came on in a second, like being hit on the head.",
+  "I've been coughing blood and I'm short of breath after the long flight, with calf pain.",
+  "My husband's mouth is drooping and he can't lift his arm, words are all mixed up.",
+  "Mouth drooped when I smiled in the mirror, and my arm feels heavy and my speech is slurry.",
+  "Skin all mottled and grey, I have a fever and feel very ill.",
+  "Lips and hands look blue, I've got an infection and I'm struggling to breathe.",
+  "Suddenly numb down my right side and my face feels strange.",
+  "I can't see out of my left eye, it went dark all at once.",
+  "Suddenly lost vision in one eye."
+ ],
+ "harmless": [
+  "My face felt a bit numb after the dentist but it wore off, no pain now.",
+  "Drooped my shoulders all day at my desk, tired and a bit stiff.",
+  "My heart was racing after the coffee, settled after a glass of water.",
+  "I'm breathing fast after the stairs, normal for me after exercise.",
+  "Peanuts give me heartburn but nothing serious, I just avoid them.",
+  "Got a few hives on my arm from the new soap, itchy, gone by evening.",
+  "Rash on my elbow that comes and goes, my usual eczema.",
+  "Slept badly, tired and sleepy at work, no fever, no other symptoms.",
+  "Suddenly cold in the office and my hands went a bit blue, put a jumper on, fine now.",
+  "My legs went numb sitting cross-legged, pins and needles, gone after a stretch.",
+  "Weak and tired after the flu, no fever now, sleeping a lot.",
+  "I saw the eye doctor, my left eye is just dry, drops helped."
+ ],
+ "third_person_open_Q_new_14": [
+  "She can't smile properly, her mouth has drooped and she can't speak clearly.",
+  "Her face has drooped on one side and her speech is slurred."
+ ]
+}
