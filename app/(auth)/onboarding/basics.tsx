@@ -67,7 +67,7 @@ export default function OnboardingBasics() {
         average_period_length: typeof period === 'number' ? period : DEFAULT_PERIOD,
       });
       track('Onboarding Step Completed', { step: 'basics' });
-      router.push('/(auth)/onboarding/reminders');
+      router.push('/(auth)/onboarding/areas');
     } catch {
       setError('We couldn’t save that. Check your connection and try again.');
     } finally {

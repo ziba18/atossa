@@ -23,6 +23,8 @@ export default function AuthLayout() {
       <Stack.Screen name="onboarding/consent" />
       <Stack.Screen name="onboarding/name" />
       <Stack.Screen name="onboarding/basics" />
+      <Stack.Screen name="onboarding/areas" />
+      <Stack.Screen name="onboarding/onset" />
       <Stack.Screen name="onboarding/reminders" />
     </Stack>
   );

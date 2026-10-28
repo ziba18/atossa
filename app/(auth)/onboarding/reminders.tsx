@@ -49,7 +49,7 @@ export default function OnboardingReminders() {
   if (Platform.OS === 'web') {
     return (
       <OnboardingScreen
-        step={3}
+        step={5}
         back={{ label: 'Back' }}
         title="Reminders come with the iPhone app"
         helper="On the web, Atossa can’t remind you yet. You can still add a note any time you open it."
@@ -69,7 +69,7 @@ export default function OnboardingReminders() {
 
   return (
     <OnboardingScreen
-      step={3}
+      step={5}
       back={{ label: 'Back' }}
       title="Would a daily reminder help?"
       helper={`The reminder says: “${DAILY_LOG_REMINDER_BODY}” You can change this later in Settings.`}

@@ -313,7 +313,9 @@ export function onsetFromHistory(history: Rec<HistoryData>[]): Partial<Record<On
   const out: Partial<Record<OnsetGroup, Onset>> = {};
   for (const r of [...history].sort((a, b) => a.createdAt.localeCompare(b.createdAt))) {
     if (r.data.type !== ONSET_TYPE || !r.data.told.trim()) continue;
-    out[r.data.done as OnsetGroup] = { words: r.data.told.trim() };
+    const told = r.data.told.trim();
+    // Onboarding stores a bare year or "Not sure"; capture stores her own phrase, verbatim.
+    out[r.data.done as OnsetGroup] = /^(?:19|20)\d\d$/.test(told) ? { year: Number(told) } : told === 'Not sure' ? { notSure: true } : { words: told };
   }
   return out;
 }

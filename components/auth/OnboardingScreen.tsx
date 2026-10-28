@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
 
-export const ONBOARDING_STEPS = 3;
+export const ONBOARDING_STEPS = 5;
 
 /**
  * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 3" caption
