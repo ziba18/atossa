@@ -12,16 +12,7 @@ const TABS: Record<string, { label: string }> = {
 };
 export const VISIBLE_TABS = ['today', 'timeline', 'doctor'];
 
-/** Visible title → tab route ("from" params carry titles). */
-const TAB_BY_TITLE: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
-
 type AnyRoute = { key?: string; name: string; params?: any; state?: { key?: string; index?: number; routes?: AnyRoute[] } };
-
-/** Profile (and its records) were opened from a tab: find which, via the `from` param. */
-function profileOrigin(route: AnyRoute | undefined): string {
-  const from = route?.params?.from ?? route?.params?.params?.from ?? route?.state?.routes?.[0]?.params?.from;
-  return TAB_BY_TITLE[String(from ?? '')] ?? 'today';
-}
 
 /**
  * Three tabs as a floating white pill: text labels, unselected ink2, selected white on an ink pill.
@@ -40,8 +31,8 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
   if (keyboard) return null;
 
   const active = state.routes[state.index] as AnyRoute | undefined;
-  // On Profile (not a tab) keep the tab it came from tinted, so you are never "nowhere" (V18).
-  const activeName = active && !VISIBLE_TABS.includes(active.name) ? profileOrigin(active) : active?.name;
+  // Profile and its records (opened from the avatar) are not a tab: no tab is active there (PM rule, blueprint §4); Back returns to where the avatar was tapped.
+  const activeName = active && VISIBLE_TABS.includes(active.name) ? active.name : undefined;
   const routes = state.routes.filter((r) => VISIBLE_TABS.includes(r.name));
 
   /**
