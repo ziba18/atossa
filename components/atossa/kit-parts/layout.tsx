@@ -175,7 +175,7 @@ export function Card({
 
 /** Tappable Card with a chevron-right (ink3, 20) and a pressed state. */
 export function PressableCard({
-  children, onPress, chevron = true, edge, accessibilityLabel, accessibilityHint, accessibilityActions, onAccessibilityAction, style, chevronColor,
+  children, onPress, chevron = true, edge, accessibilityLabel, accessibilityHint, accessibilityActions, onAccessibilityAction, style, chevronColor, pressedColor,
 }: {
   children: React.ReactNode;
   onPress: () => void;
@@ -188,6 +188,8 @@ export function PressableCard({
   onAccessibilityAction?: (name: string) => void;
   style?: StyleProp<ViewStyle>;
   chevronColor?: string;
+  /** Background while pressed, for cards with their own fill (default: sunken). */
+  pressedColor?: string;
 }) {
   return (
     <Pressable
@@ -197,7 +199,7 @@ export function PressableCard({
       accessibilityHint={accessibilityHint}
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction ? (e) => onAccessibilityAction(e.nativeEvent.actionName) : undefined}
-      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken }, style]}
+      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken }, style, pressed && pressedColor ? { backgroundColor: pressedColor } : null]}
     >
       {edge ? <View style={styles.clayEdge} /> : null}
       <View style={{ flex: 1, minWidth: 0 }}>{children}</View>
@@ -247,7 +249,7 @@ export function HeroNumber({
   );
   const heroStyle = filled ? { backgroundColor: severityRamp[4], borderColor: severityRamp[4] } : undefined;
   if (!onPress) return <Card style={heroStyle}>{body}</Card>;
-  return <PressableCard style={heroStyle} chevronColor={filled ? colors.white : undefined} onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
+  return <PressableCard style={heroStyle} chevronColor={filled ? colors.white : undefined} pressedColor={filled ? '#331C94' : undefined} onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
 }
 
 /** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
