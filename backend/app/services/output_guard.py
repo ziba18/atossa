@@ -1077,6 +1077,26 @@ _O_QUIET = (r"(?![\s\S]*\b(?:no (?:other )?(?:paracetamol|tablets)|without parac
 _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + _O_QUIET + rf"(?={_A}\b{_O_PARA}\b)(?:(?={_A}(?:{_O_CLOCK}))|(?={_A}(?:{_O_MANY}))|(?={_A}(?:{_O_SOON})))"
                     + r"|^" + _OD_QUIET + _O_QUIET + rf"(?:{_O_TWO})", _WHOLE.flags)
 
+# run15 A62 (class n, concept rule like A59): a headache word anywhere x one NHS 999 headache sign anywhere in the note.
+# nhs.uk/conditions/headaches (reviewed 17 Apr 2024, read via PM 29 Oct 2026): call 999 if it came on suddenly and is extremely
+# painful, with numbness or weakness in the face or body, trouble speaking or with balance, drowsiness or confusion, loss of
+# vision, or a stiff neck or light hurting the eyes with a high temperature. Her usual headache, one that went or someone else's stay quiet.
+_N_HEAD = r"(?:headache|migraine|head\w*\b[^.!?\n]{0,25}\b(?:pound\w*|thump\w*|bang\w*|killing|splitting|agony|pain)|(?:pounding|thumping|splitting|banging) head|pain\b[^.!?\n]{0,20}\bback of my head)"
+_N_FEVER = r"(?:" + _FEVER_WORD + r"|high temp\b)"
+_N_SIGNS = "|".join([
+    rf"(?={_A}\b{_HA_SUDDEN})(?={_A}\b(?:{_HA_SEVERE[3:-1]}|splitting|killing|like (?:a|being) (?:hit|bang))\b)",
+    rf"(?={_A}\b(?:face|arm|leg|hand|body|side)\b[^.!?\n]{{0,25}}\b(?:numb|weak|droop\w*|dead|tingl\w*|floppy)\b|{_A}\b(?:numb|droopy) (?:face|arm|hand|side)\b)",
+    rf"(?={_A}\b(?:words?\b[^.!?\n]{{0,20}}\b(?:muddled|wrong|jumbled|garbled)|can'?t (?:get|find) (?:my |the )?words|slurr\w*|(?:talking|speaking) is (?:hard|difficult)|can'?t speak)\b)",
+    rf"(?={_A}\b(?:los(?:ing|t) (?:my )?balance|keep (?:falling|tipping) over|walking into (?:the )?walls|can'?t walk straight)\b)",
+    rf"(?={_A}\b(?:drowsy|can'?t (?:keep my eyes open|stay awake|think straight)|keep falling asleep|confused|muddled)\b)",
+    rf"(?={_A}\b(?:lost (?:the )?(?:vision|sight)|can'?t see (?:out of|properly out of)|(?:gone|went|going) (?:dark|black) in my (?:\w+ )?eye|gone blind)\b)",
+    rf"(?={_A}\b(?:stiff neck|neck\b[^.!?\n]{{0,15}}\b(?:stiff|won'?t bend|can'?t bend)|chin to (?:my )?chest)\b)(?={_A}\b{_N_FEVER})",
+    rf"(?={_A}\b(?:light\w*\b[^.!?\n]{{0,15}}\b(?:hurts?|painful|unbearable)|can'?t (?:look at|stand) (?:the )?lights?)\b)(?={_A}\b{_N_FEVER})"])
+_N_QUIET = (r"\b(?:usual|same as (?:always|every)|like always|hangover|sleeping funny|from the (?:desk|gym)|night shift|"
+            r"went (?:after|away|by)|passed|eased|better (?:after|now|today|by)|helped|worked|fine after|gone (?:by|now|after)|"
+            r"my (?:sister|mum|friend|brother|dad|partner)(?:'s)?\b[^.!?\n]{0,20}\bheadache|mum'?s headache)\b")
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_N_QUIET})(?={_A}\b{_N_HEAD})(?:{_N_SIGNS})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
