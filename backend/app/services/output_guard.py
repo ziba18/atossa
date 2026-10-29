@@ -1116,6 +1116,15 @@ _CHEST_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|(?:left |right )?arm|neck|bac
 _CHEST_QUIET = r"\b(?:after (?:the|a|my) (?:run|gym|workout|swim)|exercis\w*|from (?:my|a|the) (?:cold|cough)|coughing|boobs?|breasts?|period|bra|fine after|vaccine|indigestion after)\b"
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CHEST_QUIET})(?={_A}{_CHEST_P})(?={_A}{_CHEST_SIGN})", _WHOLE.flags)
 
+# run17 (Safety S-287): a FAST sign that has stopped still counts if it was recent. nhs.uk/conditions/stroke/symptoms (reviewed
+# 12 Sep 2024, fetched 29 Oct 2026): 999 if "you've had signs of a stroke within the last 24 hours even if they've now stopped".
+_FAST_SIGN = (r"\b(?:(?:arm|hand|leg)\b[^.!?;]{0,15}\b(?:went|was|felt|go|gone) (?:weak|heavy|floppy|dead)|(?:couldn'?t|could not|can'?t) (?:lift|raise|grip)\b|"
+              r"(?:couldn'?t|could not) (?:get (?:my |the )?words out|speak|talk)|words? (?:came|coming) out (?:wrong|jumbled)|speech (?:went |was )?slurr\w*|slurr\w* (?:my )?(?:speech|words)|"
+              r"face\b[^.!?;]{0,20}\b(?:droop\w*|dropp\w*|went numb|fell)|mouth (?:droop\w*|dropped))")
+_FAST_RECENT = r"\b(?:earlier|this (?:morning|afternoon|evening)|tonight|today|last night|an? (?:hour|few hours) ago|\d{1,2} hours? ago|minutes? ago)\b"
+_FAST_QUIET = r"\b(?:dentist|numbing|anaesthetic|slept on|sleeping on|lying on|pins and needles|nerves|presentation|drunk|wine|years? ago|months? ago|weeks? ago|typing|gym|weights)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_FAST_QUIET})(?={_A}{_FAST_SIGN})(?={_A}{_FAST_RECENT})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
