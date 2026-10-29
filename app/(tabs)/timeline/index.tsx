@@ -223,7 +223,7 @@ function ListView({
       </Sheet>
       {/* The strip counts symptom notes, so it only shows where those are on the list. */}
       {(filter === 'All' || filter === 'Symptoms') && !short ? (
-        <RecentStrip symptoms={symptoms} twoRows onDayPress={onDayPress} />
+        <RecentStrip symptoms={symptoms} onDayPress={onDayPress} />
       ) : null}
       {groups.length === 0 && filter !== 'All' ? (
         <Txt variant="secondary" style={{ marginTop: space.xxxl }}>
