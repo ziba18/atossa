@@ -3,7 +3,7 @@
 // (see design/KIT.md). TextField and SwitchRow are still the right inputs for forms.
 import React from 'react';
 import {
-  ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, TextInput, View,
+  ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, TextInput, View, useWindowDimensions,
   type StyleProp, type TextInputProps, type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -42,6 +42,8 @@ export function TextField({
 } & Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'autoComplete' | 'autoCorrect' | 'autoFocus' | 'returnKeyType' | 'onSubmitEditing' | 'textContentType'>) {
   const [shown, setShown] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
+  // Under ~240 pt (200% text on a small phone) the Show button would leave the field about 75 pt wide: it goes below the field instead.
+  const stackShow = useWindowDimensions().width < 240;
   return (
     <View style={style}>
       {subLabel ? (
@@ -49,7 +51,7 @@ export function TextField({
       ) : (
         <FieldLabel label={label} optional={optional} hint={hint} style={{ marginBottom: 0 }} />
       )}
-      <View style={secret ? styles.secretRow : null}>
+      <View style={secret ? [styles.secretRow, stackShow && { flexDirection: 'column', alignItems: 'stretch' }] : null}>
         <TextInput
           {...inputProps}
           onFocus={() => setFocused(true)}
@@ -64,7 +66,7 @@ export function TextField({
           accessibilityLabel={label}
           accessibilityHint={error || undefined}
           textAlignVertical={multiline ? 'top' : 'center'}
-          style={[styles.input, multiline && styles.inputMulti, secret && { flex: 1, minWidth: 0 }, error ? { borderColor: colors.error, borderWidth: 2 } : focused ? styles.inputFocused : null]}
+          style={[styles.input, multiline && styles.inputMulti, secret && !stackShow && { flex: 1, minWidth: 0 }, error ? { borderColor: colors.error, borderWidth: 2 } : focused ? styles.inputFocused : null]}
         />
         {secret ? (
           <Pressable
