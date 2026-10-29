@@ -53,6 +53,8 @@ export function MonthCalendar({
   const cells: (number | null)[] = [...Array(offset).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
   while (cells.length % 7) cells.push(null);
 
+  // Under 200 pt the grid reaches 8 pt into the page gutter so each day button stays 24 px wide (WCAG 2.2 target size).
+  const bleed = winW < 200 ? { marginHorizontal: -8 } : null;
   return (
     <View>
       <View style={styles.head}>
@@ -62,13 +64,13 @@ export function MonthCalendar({
         </Txt>
         <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
       </View>
-      <View style={styles.row} aria-hidden>
+      <View style={[styles.row, bleed]} aria-hidden>
         {WEEKDAY_LETTERS.map((w, i) => (
           <View key={i} style={styles.weekday}><Txt variant="caption">{w}</Txt></View>
         ))}
       </View>
       {Array.from({ length: cells.length / 7 }, (_, r) => (
-        <View key={r} style={styles.row}>
+        <View key={r} style={[styles.row, bleed]}>
           {cells.slice(r * 7, r * 7 + 7).map((d, c, row) => {
             if (d == null) return <View key={c} style={styles.cell} />;
             const key = toKey(year, month0, d);
