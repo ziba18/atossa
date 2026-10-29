@@ -348,9 +348,11 @@ function monthKeyLabel(notes: boolean, bleeding: boolean, spotting: boolean): st
 }
 
 function MonthKeyRow({ glyph, children }: { glyph: React.ReactNode; children: React.ReactNode }) {
+  // Under ~240 pt (200% text) the glyph goes above its words so the words keep the full width.
+  const stack = useWindowDimensions().width < 240;
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-      <View style={{ width: 40, alignItems: 'center' }}>{glyph}</View>
+    <View style={stack ? { gap: space.xxs } : { flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+      <View style={{ width: 40, alignItems: stack ? 'flex-start' : 'center' }}>{glyph}</View>
       <Txt variant="secondary" color={colors.ink} style={{ flex: 1, minWidth: 0 }}>{children}</Txt>
     </View>
   );
