@@ -918,7 +918,7 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _P_QUIET + r"(?=[\s\S]*" + _P_CTX +
 # not making sense / not knowing the year. Baby blues, a professional's reassurance, someone else's past and 'laughed about it' stay quiet.
 _PP_CTX = (r"\b(?:baby (?:is|was) (?:\d+|a|one|two|three) (?:days?|weeks?) old|since (?:the|my|our) (?:birth|c-?section|delivery)|"
            r"since (?:the|my|our) (?:baby|son|daughter|little one) (?:was born|came|arrived)|(?:after|since) having (?:her|him|the baby|my baby)|"
-           r"gave birth|had (?:my|the|our) baby|post-?(?:partum|natal)|newborn|(?:days?|weeks?) after (?:having|giving birth|the birth))\b")
+           r"gave birth|had (?:my|the|our|her|their) baby|\b(?:she|i) had (?:him|her|them|the twins) (?:on \w+day|last week|(?:\w+ ){1,2}(?:days?|weeks?) ago)|post-?(?:partum|natal)|newborn|(?:days?|weeks?) after (?:having|giving birth|the birth))\b")
 _PP_QUIET = (r"(?![\s\S]*\b(?:baby blues|(?:midwife|health visitor|gp|doctor) (?:said|says) (?:it'?s|that'?s|lots|this is)|years ago|"
              r"we (?:both )?laughed about it|it passed|(?:asking|ask) (?:my|the) (?:midwife|gp|doctor) about)\b)")
 _PP_SIGN = (r"(?:\b(?:hear\w*|see|seeing|saw|smell\w*)\b[^.!?]{0,60}\b(?:(?:aren'?t|isn'?t|wasn'?t|weren'?t|not) (?:really )?there|"
@@ -927,7 +927,15 @@ _PP_SIGN = (r"(?:\b(?:hear\w*|see|seeing|saw|smell\w*)\b[^.!?]{0,60}\b(?:(?:aren
             r"watching (?:me|us|her|him)|spying|following me|out to get|plotting|trying to (?:harm|hurt|kill|poison|take))|\bi'?m (?:the )?chosen\b|"
             r"\b(?:haven'?t|not|hardly) slept (?:in|for) (?:two|three|four|five|\d+|days|nights)\b[^.!?]{0,80}\b(?:talking (?:a mile a minute|really fast|non-?stop|so fast)|"
             r"racing|plan\w* to)|\btalking a mile a minute\b|\blaughing then (?:sobbing|crying)\b|\b(?:sobbing|crying) then laughing\b|"
-            r"\bnot making (?:any )?sense\b|\b(?:didn'?t|don'?t|did not|do not) know what (?:year|month|day) it (?:is|was)\b)")
+            r"\bnot making (?:any )?sense\b|"
+            # run22 S-332 (own set s332-postpartum-wide-run22 committed before code): voices telling her anything, baby not hers,
+            # baby unsafe around her, chosen for a mission/purpose, not knowing who her family are, devices sending her messages
+            r"\bvoices? (?:keeps? |is |are )?(?:telling|saying|talking to|ordering|whispering to)\b|"
+            r"\b(?:baby|he|she|him|her|it) (?:is ?n'?t|is not|isn'?t) (?:really )?(?:hers|mine|my baby|her baby|ours)\b|\bnot (?:really )?(?:my|her) (?:own )?(?:baby|son|daughter)\b|"
+            r"\b(?:isn'?t|is not|not) safe (?:around|with) (?:me|her)\b|"
+            r"\b(?:picked|chosen|selected)\b[^.!?]{0,30}\b(?:special|mission|purpose)\b|\b(?:given|got|have|has) (?:me |her )?a (?:special |secret |holy )?mission\b|"
+            r"\b(?:didn'?t|doesn'?t|don'?t|did not|does not) (?:know|recogni[sz]e) (?:who )?(?:her|my|his) (?:own )?(?:mum|mom|mother|husband|partner|dad|family|sister|baby)\b|"
+            r"\b(?:tv|telly|radio|phone|news)\b[^.!?]{0,20}\b(?:is |are )?(?:sending|giving|talking to) (?:me|her) (?:messages|signs|secret)|\b(?:didn'?t|don'?t|did not|do not) know what (?:year|month|day) it (?:is|was)\b)")
 _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PP_QUIET + r"(?=[\s\S]*" + _PP_CTX + r")(?=[\s\S]*" + _PP_SIGN + r")", _WHOLE.flags)
 
 
