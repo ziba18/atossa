@@ -67,7 +67,7 @@ const config: ExpoConfig = {
   },
   plugins: [
     ['expo-router', { asyncRoutes: false }],
-    'expo-secure-store',
+    ['expo-secure-store', { faceIDPermission: false }],
     'expo-font',
     'expo-sharing',
     'expo-status-bar',
