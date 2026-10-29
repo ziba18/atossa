@@ -72,6 +72,19 @@ const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES =
 // run19 (S-307, backend _hits): another person as subject is quiet unless the clause says it is happening now.
 const LIVE_REPORT = mk(P.LIVEREPORT_SRC), FAINT_WORD = new RegExp('^(?:' + P.FAINTWORD_SRC + ')$', 'i'), FAINT_REC = mk(P.FAINTREC_SRC);
 const OTHER_NOW = mk(P.OTHERNOW_SRC), REPORTED = mk(P.REPORTED_SRC), AGE_PAST = mk(P.AGEPAST_SRC), IN_CARE = mk(P.INCARE_SRC);
+const HEAVY_PHRASE = new RegExp(P.HEAVYPHRASE_SRC, 'gi'), HEAVY_USUAL_Q = mk(P.HEAVYUSUALQ_SRC), HEAVY_USUAL_CTRL = mk(P.HEAVYUSUALCTRL_SRC);
+const BLOOD346 = mk(P.BLOOD346_SRC), SIGN346 = mk(P.SIGN346_SRC), PAST_Q346 = mk(P.PASTQ346_SRC), BAD346 = mk(P.BAD346_SRC), CANTSTAND346 = mk(P.CANTSTAND346_SRC);
+const WAKE342 = mk(P.WAKE342_SRC), EYES342 = mk(P.EYES342_SRC), HOT342 = mk(P.HOT342_SRC), SIGN342 = mk(P.SIGN342_SRC), MORN342 = mk(P.MORN342_SRC);
+const NEG342 = new RegExp(P.NEG342_SRC, 'gi'), S343 = mk(P.S343_SRC), S343_SIGN = mk(P.S343SIGN_SRC), QUIET347 = mk(P.QUIET347_SRC);
+
+// Mirrors backend `_hard_to_wake342` (S-342): hard to wake / can't keep eyes open with a fever or floppy/confused sign.
+function hardToWake342(t: string): boolean {
+  t = t.replace(/\u2019/g, "'");
+  if (EYES342.test(t) && HOT342.test(t.replace(NEG342, ''))) return true;
+  if (!WAKE342.test(t)) return false;
+  if (SIGN342.test(t.replace(NEG342, ''))) return true;
+  return !MORN342.test(t) && !/refresh/i.test(t);
+}
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi'), LEGBREATH = new RegExp(P.LEGBREATH_SRC, 'i');
 
 /** Mirrors backend `_is_past`: "last week" with a present-tense word in the clause is not past tense. */
@@ -166,7 +179,10 @@ function hit(pattern: RegExp, text: string): boolean {
 
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
-  const line = signpostOnce(text);
+  let line = signpostOnce(text);
+  // S-347 (backend emergency_kind): a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on the
+  // heavy phrase alone; it is blanked and the note re-read. Any faint / pale / hourly-pad / worse-than-usual word keeps it.
+  if (line === URGENT_SIGNPOST && HEAVY_USUAL_Q.test(text) && !HEAVY_USUAL_CTRL.test(text)) line = signpostOnce(text.replace(HEAVY_PHRASE, 'bleeding'));
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
@@ -183,5 +199,10 @@ function signpostOnce(text: string): string | null {
   if (procFever(t.slice(0, 20000)) || otherHistRescue(t)) return URGENT_SIGNPOST;
   if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
   if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
+  // S-342 / S-343 / S-346 prototypes (backend _emergency_kind, Safety run 40-41)
+  if (!QUIET347.test(t) && S343.test(t) && S343_SIGN.test(t) && !PAST_Q346.test(t)) return URGENT_SIGNPOST;
+  if (!QUIET347.test(t) && hardToWake342(t)) return URGENT_SIGNPOST;
+  if (!PAST_Q346.test(t) && ((BLOOD346.test(t) && SIGN346.test(t)) || BAD346.test(t)
+    || (!QUIET347.test(t) && CANTSTAND346.test(t) && /\bpain\b|\bhurts?\b|\bbleed\w*/i.test(t)))) return URGENT_SIGNPOST;
   return null;
 }

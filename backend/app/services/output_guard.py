@@ -298,7 +298,7 @@ _BODY = [
     r"(?:pad|tampon)s? (?:every|each|an) hour", r"(?:changed|changing) (?:my )?(?:pad|tampon)s? (?:\w+ times )?(?:in|every|each) (?:an|one|half an) hour",
     r"blood everywhere", r"(?:very |really |so |extremely )?heav(?:y|ily) bleeding", r"bleeding (?:really |very |so )?heav(?:y|ily)(?!\b[^.!?;]{0,30}\b(?:day (?:one|two|three|four|[1-4])|changed (?:my )?(?:pads?|tampons?) (?:only )?(?:twice|once))\b)",
     r"bleeding (?:a )?(?:huge|massive|lot|loads)(?! (?:more|heavier) than (?:usual|normal|before|i (?:usually|normally)))", r"clots (?:the size|as big|bigger)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)", r"severe (?:sudden )?(?:pain|belly|abdominal|pelvic)",
-    r"worst pain|worst (?:I'?ve|i have) ever|pain (?:came|comes) on suddenly|sudden(?:ly)? (?:stabbing|sharp|severe|intense)",
+    r"worst pain(?!\s+(?:today|this (?:week|month|cycle|morning|afternoon|evening)|of the (?:day|week|month|year|cycle)|so far|was (?:at|during|on|after|around|about|a|an|day|\d)|(?:today )?(?:is|was) (?:about |around )?(?:a |an )?\d))|worst (?:I'?ve|i have) ever|pain (?:came|comes) on suddenly|sudden(?:ly)? (?:stabbing|sharp|severe|intense)",
     r"excruciating|unbearable", r"pain is (?:10|ten)(?:/| out of )(?:10|ten)", r"(?:10|ten)(?:/| out of )(?:10|ten) pain",
     r"can'?t stand up", r"pregnan\w+.{0,60}(?:bleed|pain|spotting)|(?:bleed|pain|spotting).{0,60}pregnan\w+",
     r"(?:\d{1,2}|\w{3,8}) weeks pregnant.{0,60}(?:pain|bleed|spotting)", r"pregnan\w+.{0,80}(?:one[- ]sided|on one side|shoulder)|(?:one[- ]sided|on one side|shoulder).{0,80}pregnan\w+", r"positive (?:pregnancy )?test.{0,60}(?:pain|bleed)", r"high fever.{0,40}(?:severe|pain)|(?:severe|pain).{0,40}high fever",
@@ -405,7 +405,7 @@ _EMERGENCY = re.compile(
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
     r"bleeding through(?! (?:a |an |my |the )?(?:\w+ )?(?:pads?|tampons?|towels?|cups?)\b(?:(?!\b(?:an hour|1 hour|one hour|half an hour|\d+ ?min\w*|every hour|dizz\w*|faint\w*|light-?headed|weak|clots?)\b)[^.!?])*\b(?:(?:[2-9]|two|three|four|five|six|a few|several) hours?|overnight|in the night|all night)\b(?![^.!?]*\b(?:dizz\w*|faint\w*|light-?headed|weak|clots?)\b))|bleeding (?:heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
-    r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|"
+    r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain(?!\s+(?:today|this (?:week|month|cycle|morning|afternoon|evening)|of the (?:day|week|month|year|cycle)|so far|was (?:at|during|on|after|around|about|a|an|day|\d)|(?:today )?(?:is|was) (?:about |around )?(?:a |an )?\d))|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|"
     r"worst (?:pain )?(?:i'?ve|i have) ever|pain so bad|(?:big )?clots? (?:the size of|bigger than)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)|pain (?:is |was )?unbearable|pain (?:is |was )?(?:a )?(?:10|ten)(?:/| out of )10|"
     r"sudden (?:sharp |stabbing )?pain|\bi(?:'?m| am| think i'?m)? (?:\w+ ){0,3}miscarr\w+|"
     r"pregnan\w+ and (?:bleeding|pain|cramp\w*)|(?:i'?m|i am|am) pregnant.{0,40}(?:bleeding|pain|cramp\w*)|"
@@ -823,9 +823,9 @@ _FEVER = (r"(?:(?<!no )(?<!not )(?<!without )(?<!any )fever\w*|high temperature|
 _PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?<!her )(?<!his )(?<!their )(?<!mum's )(?<!mom's )(?<!sister's )(?<!friend's )(?:(?:coil|iud|ius|mirena) (?:was )?(?:fitted|put in|inserted|in)\b|got my (?:coil|iud) in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c[- ]?section|caesarean|"
          # run25 (own set voice-pp5class-run25, committed before code): childbirth is a recent procedure for the fever rule
          # (nhs.uk/conditions/sepsis; speech-to-text writes "c section" and "had the baby nine days ago")
-         r"(?:had|have had) (?:the|my) baby|gave birth|given birth|since (?:the|my) birth|"
+         r"(?:had|have had) (?:the|my) baby(?! (?:jab|vaccin|clinic|check|group|class|shower))|gave birth|given birth|since (?:the|my) birth|"
          r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b)\b")
-_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|(?:had (?:the|my) baby|gave birth|given birth) (?:back )?in (?:january|february|march|april|may|june|july|august|september|october|november|december)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|fine since|from the cold|gone by|went away|settled|family history|(?:friend|sister|mum|mom|mother|partner|daughter|cousin|colleague) (?:had|has had|is having) (?:(?:a|an|her)\b[^.!?\n]{0,20})?(?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|c-?section))\b)"
+_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|(?:had (?:the|my) baby|gave birth|given birth|since (?:the|my) birth)[^.;!?\n]{0,40}?(?:last year|a year ago|(?:years?|months?) ago|(?:back )?in (?:19|20)\d\d|last (?:spring|summer|autumn|winter))|(?:had (?:the|my) baby|gave birth|given birth) (?:back )?in (?:january|february|march|april|may|june|july|august|september|october|november|december)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|fine since|from the cold|gone by|went away|settled|family history|(?:friend|sister|mum|mom|mother|partner|daughter|cousin|colleague) (?:had|has had|is having) (?:(?:a|an|her)\b[^.!?\n]{0,20})?(?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|c-?section))\b)"
 _BACK = r"(?:back(?:'s| is| has)? (?:\w+ ){0,3}(?:pain|ache|hurts?|agony|bad|gone|killing|went)|back pain|bad back|my back went|lower back|sciatica)"
 _SADDLE = (r"(?:numb\w* (?:around|in|down|under) (?:my )?(?:bottom|bum|genitals|vagina|down there|privates|groin|anus)|numb\w* between my legs|"
            r"(?:bottom|bum|genitals|groin|saddle|down there)(?: area)? (?:feels? |is |has gone |gone |going )?numb|can'?t (?:really )?feel (?:it |anything )?(?:when i wipe|between my legs|down there))")
@@ -1437,15 +1437,52 @@ def _other_hist_rescue(text: str) -> bool:
     return _hits_whole(_WHOLE, rest) or _proc_fever_hit(rest)
 
 
+_HEAVY_PHRASE = re.compile(r"\b(?:(?:very |really |so |extremely )?heav(?:y|ily) bleeding|bleeding (?:really |very |so )?heav(?:y|ily)|bleeding (?:a )?(?:lot|loads))\b", re.I)
+_HEAVY_USUAL_Q = re.compile(r"\b(?:normal for me|as usual|as expected|same as (?:every|most|always)|always (?:is|does|has been)|like every (?:month|period))\b", re.I)
+_HEAVY_USUAL_CTRL = re.compile(r"\b(?:faint\w*|dizz\w*|light-?headed|pass(?:ed|ing)? out|black(?:ed)? out|pale|vision|racing|pounding|breath\w*|chest|every (?:hour|half|30|20|15)|an hour|nothing like|not like|worse than|never (?:had|been|bled)|first time|scared|frightened|soaking|soaked|flooding|pregnan\w*|can'?t stand|cannot stand|clots? (?:bigger|larger|the size of (?:a|an) (?:egg|fist|orange|lemon|golf|tennis|ball)))\b", re.I)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     kind = _emergency_kind(user_text)
+    # S-347 proto: a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on those words alone;
+    # the heavy phrase is blanked and the rest of the note is judged as before. Any faint / pale / hourly-pad / worse-than-usual word keeps it urgent.
+    if kind == "medical" and _HEAVY_USUAL_Q.search(user_text) and not _HEAVY_USUAL_CTRL.search(user_text):
+        kind = _emergency_kind(_HEAVY_PHRASE.sub("bleeding", user_text))
     # run11 (S-240 follow-up): a line break between clauses must not hide a self-harm plan ("Better off without me on the
     # team,\nand I've got a plan for tonight"): the note is re-read with line breaks as commas, for self-harm only.
     if kind is None and "\n" in user_text and _emergency_kind(user_text.replace("\n", ", ")) == "self_harm":
         return "self_harm"
     return kind
 
+
+_BLOOD346 = re.compile(r"\b(?:massive|huge|big|heavy|loads of|lots of|a lot of|so much|gushing)\s+(?:bright red\s+)?(?:bleed\w*|blood)\b|\bbright red blood\b", re.I)
+_SIGN346 = re.compile(r"\b(?:dizzy|faint|light ?headed|shaky|cold|clammy|white|pale|sweaty|passing out|pass out|scared|weak)\b", re.I)
+_PAST_Q346 = re.compile(r"\b(?:passed|eased|gone|years? ago|last (?:week|month|year)|usual|normal for me|my period|nose\w*|cut|graze)\b", re.I)
+_BAD346 = re.compile(r"\bso bad\b.{0,25}\b(?:can'?t|cant|cannot)\s+(?:even\s+)?(?:stand|walk|move|breathe)\b", re.I)
+_CANTSTAND346 = re.compile(r"\b(?:can'?t|cant|cannot)\s+(?:even\s+)?stand(?:\s+up)?\b", re.I)
+
+_WAKE342 = re.compile(r"\b(?:(?:hard|difficult|impossible|struggl\w+)\s+to\s+(?:wake|rouse)|(?:wo?n'?t|will\s*not|not|can'?t|cant|cannot|unable\s+to|barely)\s+(?:be\s+)?(?:wak\w+|wake|rouse\w*)|(?:wo?n'?t|not|barely)\s+(?:respond\w*|answer\w*))\b", re.I)
+_EYES342 = re.compile(r"\b(?:can'?t|cant|barely)\s+keep\s+(?:his|her|my|their)\s+eyes\s+open\b", re.I)
+_HOT342 = re.compile(r"\b(?:burning|boiling|very hot|high temperature|fever|floppy|blue|confused|slurr\w+)\b", re.I)
+_SIGN342 = re.compile(r"\b(?:burning|boiling|very hot|high temperature|fever|floppy|blue|confused|slurr\w+|breathing|respond\w*|drowsy|sleepy|barely)\b", re.I)
+_NEG342 = re.compile(r"\b(?:no|without|not|never)\s+(?:a\s+)?(?:fever|temperature)\b", re.I)
+_MORN342 = re.compile(r"\b(?:alarm|snooz\w+|school|morning|refresh\w+|shift|overslept|baby|slept badly|kept waking|teenager|groggy)\b", re.I)
+
+def _hard_to_wake342(t):
+    t = t.replace("’", "'")
+    if _EYES342.search(t) and _HOT342.search(_NEG342.sub("", t)):
+        return True
+    if not _WAKE342.search(t):
+        return False
+    if _SIGN342.search(_NEG342.sub("", t)):
+        return True
+    return not _MORN342.search(t) and not re.search(r"refresh", t, re.I)
+
+_S343 = re.compile(r"\b(?:temperature (?:of |is |was |has dropped to )?(?:3[0-5](?:\.\d)?)\b|(?:not|n'?t|haven'?t|hasn'?t)\s+(?:had|done|passed)\s+(?:a\s+)?(?:wee|pee|urine)\b[^.!?;]{0,40}\b(?:12|twelve|all day|since yesterday)\b|(?:talking|talks) nonsense|not making sense|(?:weak|thin|high[- ]pitched|wrong)\b[^.!?;]{0,20}\bcry\b|cry\b[^.!?;]{0,30}\b(?:high and thin|sounds wrong|high[- ]pitched)\b|(?:hardly|barely) respond\w*)", re.I)
+_S343_SIGN = re.compile(r"\b(?:shak\w+|shiver\w*|freezing|cold|sleepy|drowsy|hot|burning|breathing|fast|might die|floppy|feeding|temperature|operation|baby|toddler|daughter|son|she|he|mum|dad)\b", re.I)
+
+_QUIET347 = re.compile(r"\b(?:thermometer|broken|texts?|messages?|phone|up early|for nursery|for school|mondays?|any more|anymore|retired|dinosaurs?|imagination|smell|teething|for long|stand the)\b", re.I)
 
 def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
@@ -1470,6 +1507,15 @@ def _emergency_kind(user_text: str):
         return "medical"
     if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
         return "medical"
+    if not _QUIET347.search(user_text) and _S343.search(user_text) and _S343_SIGN.search(user_text) and not _PAST_Q346.search(user_text):
+        return "medical"  # S-343/S-344 prototype
+    if not _QUIET347.search(user_text) and _hard_to_wake342(user_text):
+        return "medical"  # S-342 prototype (Safety run 40)
+    # S-346 prototype (Safety run 40): heavy blood in plain words with a sign word; "so bad I can't stand"; pain with can't stand/walk
+    _t = user_text
+    if not _PAST_Q346.search(_t):
+        if (_BLOOD346.search(_t) and _SIGN346.search(_t)) or _BAD346.search(_t) or (not _QUIET347.search(_t) and _CANTSTAND346.search(_t) and re.search(r"\bpain\b|\bhurts?\b|\bbleed\w*", _t, re.I)):
+            return "medical"
     return None
 
 
