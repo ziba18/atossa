@@ -79,6 +79,7 @@ export default function OnboardingOnset() {
   return (
     <OnboardingScreen
       step={4}
+      editing={Boolean(edit)}
       back={{ label: 'Back', onPress: () => (i > 0 ? setI(i - 1) : router.back()) }}
       title="When did you first notice this?"
       badge={`${area[0].toUpperCase()}${area.slice(1)}`}

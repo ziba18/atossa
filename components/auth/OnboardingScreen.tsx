@@ -13,7 +13,7 @@ export const ONBOARDING_STEPS = 5;
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
-  step, title, helper, badge, back, children, scrollRef,
+  step, title, helper, badge, back, children, scrollRef, editing,
 }: {
   step: number;
   title: string;
@@ -23,9 +23,11 @@ export function OnboardingScreen({
   back?: { label: string; onPress?: () => void };
   children: React.ReactNode;
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
+  /** Opened later from Profile, outside the sign-up flow: no progress strip or step count. */
+  editing?: boolean;
 }) {
   // Under ~240 pt of layout width (200% text on a 320 phone) the 34 pt title broke words mid-letter.
-  usePageTitle(`Step ${step} of ${ONBOARDING_STEPS}`);
+  usePageTitle(editing ? title : `Step ${step} of ${ONBOARDING_STEPS}`);
   const narrow = useWindowDimensions().width < 240;
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
@@ -39,12 +41,16 @@ export function OnboardingScreen({
       >
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
-          <View style={styles.segments} aria-hidden>
-            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
-              <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
-            ))}
-          </View>
-          <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
+          {editing ? null : (
+            <>
+              <View style={styles.segments} aria-hidden>
+                {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
+                  <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
+                ))}
+              </View>
+              <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
+            </>
+          )}
           {badge ? <View style={styles.badge}><Txt variant="caption" color={colors.ink}>{badge}</Txt></View> : null}
           <Txt variant={narrow ? 'title' : 'hero'} accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
