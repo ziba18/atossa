@@ -132,7 +132,9 @@ criterion(9, 'agenda / priority first', () => {
   assert.ok(agendaAt > 0 && agendaAt < text.findIndex((l) => l.startsWith('AREAS')), 'agenda before the areas');
   assert.equal(text[agendaAt + 1], 'My main priority is pain.');
   const html = htmlText(doc);
-  const first = html.indexOf(doc.agendaBlock.priority);
+  // The printed page now carries her pick in the header block ('Main priority (her choice)'), still before every section.
+  const first = html.indexOf('Main priority (her choice)');
+  assert.ok(/Main priority \(her choice\)\s+Pain/.test(html), 'header names her pick');
   for (const s of doc.sections) assert.ok(first >= 0 && first < html.indexOf(s.title), `priority before ${s.title}`);
 });
 

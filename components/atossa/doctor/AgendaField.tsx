@@ -9,10 +9,11 @@ import { haptics } from '../../../lib/haptics';
 import { ChipGroup, IconButton, InlineError, Txt } from '../kit';
 
 // Quick starts for the one thing she wants the GP to take away. Tapping one writes a plain sentence into the
-// field (still hers to edit); it isn't a separate record. Symptom areas only: no treatments, no conditions.
-const PRIORITIES = ['Pain', 'Bleeding', 'Tiredness', 'Mood', 'Bowel or bladder'] as const;
+// field (still hers to edit); it isn't a separate record. The list is the Oxford pelvic-pain pre-appointment form's
+// "main priority" choices (plain "Tiredness" for its "Fatigue"); no treatments, no conditions.
+const PRIORITIES = ['Pain', 'Tiredness', 'Getting pregnant', 'Bladder', 'Other'] as const;
 const PRIORITY_PREFIX = 'My main priority is ';
-const prioritySentence = (p: string) => `${PRIORITY_PREFIX}${p.toLowerCase()}.`;
+const prioritySentence = (p: string) => `${PRIORITY_PREFIX}${p === 'Other' ? 'something else' : p.toLowerCase()}.`;
 
 export function AgendaField({
   value, onChange, onBlur, title, compact,

@@ -356,6 +356,14 @@ export function agendaBlockOf(note: string | undefined | null, title: string): A
   return { title, priority, questions };
 }
 
+/** The chip's choice as the form words it ("Pain", "Other"); '' when she picked none. Her typed priority sentence reads the same way. */
+export function mainPriorityOf(block: AgendaBlock | null): string {
+  const m = block?.priority.match(/^My main priority is (.*?)\.?$/i);
+  const w = m ? m[1].trim() : '';
+  if (!w) return '';
+  return /^something else$/i.test(w) ? 'Other' : w.charAt(0).toUpperCase() + w.slice(1);
+}
+
 export const agendaTitleFor = (appointmentToday?: boolean) =>
   appointmentToday ? 'What I’d like from today' : 'What I’d like from this appointment';
 
@@ -1175,6 +1183,7 @@ function headBlock(doc: DoctorDoc): string {
   const rows: [string, string][] = [
     ['Period', printedRange(doc)],
     ...(visit ? [['Visit', visit] as [string, string]] : []),
+    ['Main priority (her choice)', mainPriorityOf(doc.agendaBlock)],
     ['Generated', made],
     ['Source', 'Recorded by the patient in Atossa. Not clinically verified.'],
   ].filter(([, v]) => v) as [string, string][];
@@ -1195,8 +1204,9 @@ export function summaryToHtml(doc: DoctorDoc): string {
   const T = PAGE_TYPE;
   const pt = (v: readonly [number, number]) => `font-size: ${v[0]}pt; line-height: ${v[1]}pt;`;
   const body = [
-    doc.agendaBlock
-      ? `<section><h2>${esc(doc.agendaBlock.title)}</h2>${doc.agendaBlock.priority ? `<p class="serif lead">“${esc(curly(doc.agendaBlock.priority))}”</p>` : ''}${
+    // Her chip choice prints once, in the header block ("Main priority (her choice)"); the quote block keeps her own words.
+    doc.agendaBlock && (!mainPriorityOf(doc.agendaBlock) || doc.agendaBlock.questions.length)
+      ? `<section><h2>${esc(doc.agendaBlock.title)}</h2>${doc.agendaBlock.priority && !mainPriorityOf(doc.agendaBlock) ? `<p class="serif lead">“${esc(curly(doc.agendaBlock.priority))}”</p>` : ''}${
         doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`
       : '',
     ...doc.sections.map(sectionHtml),
@@ -1243,7 +1253,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dated tr:last-child td { border-bottom: 0; }
   table.notes th:nth-child(1) { width: 84pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
   table.kv { width: 100%; border-collapse: collapse; border-bottom: 1pt solid ${C.ink}; margin-top: 4pt; }
-  table.kv th { width: 70pt; text-align: left; font-weight: 600; color: ${C.ink}; ${pt(T.meta)} padding: 1pt 6pt 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
+  table.kv th { width: 114pt; text-align: left; font-weight: 600; color: ${C.ink}; ${pt(T.meta)} padding: 1pt 6pt 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
   table.kv td { color: ${C.ink}; ${pt(T.body)} padding: 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
   .recorded { color: ${C.ink2}; ${pt(T.meta)} margin: 0; padding: 3pt 0 0; }
   table.figs { width: 100%; border-collapse: collapse; margin-top: 3pt; }
