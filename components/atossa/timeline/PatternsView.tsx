@@ -251,6 +251,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
                 </View>
               )}
               {/* The strongest rating of each week as a number, not a shade: nothing here depends on colour. */}
+              <Txt variant="caption" style={{ marginTop: space.xs }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">Strongest rating that week, out of 10</Txt>
               <View style={styles.chartLabels} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
                 {m.weeks.map((w) => (
                   <Txt key={w.from} variant="caption" color={colors.ink} style={{ flex: 1, textAlign: 'center', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{w.peak ?? '–'}</Txt>
@@ -258,7 +259,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
               </View>
             </View>
           </View>
-          <Txt variant="caption" style={{ marginTop: space.xs }}>Bars: days with a note. Bottom row: strongest rating that week, out of 10.</Txt>
+          <Txt variant="caption" style={{ marginTop: space.xs }}>Bars: days with a note that week.</Txt>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
