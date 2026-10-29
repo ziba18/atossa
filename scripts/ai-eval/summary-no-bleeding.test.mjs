@@ -16,14 +16,14 @@ const text = (periodDays) => {
   return { doc, text: summaryToHtml(doc).replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n') };
 };
 
-test('0 bleeding days: Periods logged says no bleeding was logged', () => {
+test('0 bleeding days: Periods logged says none logged', () => {
   const { doc, text: t } = text([]);
   assert.ok(doc.sections.some((s) => s.id === 'periods'));
-  assert.ok(t.includes('No bleeding was logged in this range.'));
+  assert.ok(t.includes('Bleeding: none logged in this range.'));
 });
 
 test('with bleeding days the line is absent', () => {
-  assert.ok(!text(sampleBuckets().period_day).text.includes('No bleeding was logged'));
+  assert.ok(!text(sampleBuckets().period_day).text.includes('Bleeding: none logged'));
 });
 
 test('strip footnote and repeated highest-rating line', () => {

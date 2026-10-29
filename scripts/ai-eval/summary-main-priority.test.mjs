@@ -1,4 +1,4 @@
-// "Main priority (her choice)" prints once in the PDF header block when she picked a chip, and not at all when she did not.
+// "Main priority (chosen by the patient)" prints once in the PDF header block when she picked a chip, and not at all when she did not.
 // Chip words follow the Oxford pelvic-pain pre-appointment form. Run: node --experimental-strip-types --test scripts/ai-eval/summary-main-priority.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -17,14 +17,14 @@ const html = (agenda) => {
 
 test('a pick prints one header line; the sentence is not repeated as a lead quote', () => {
   const t = html('My main priority is tiredness.');
-  assert.equal((t.match(/Main priority \(her choice\)/g) ?? []).length, 1);
-  assert.ok(/Main priority \(her choice\)\s+Tiredness/.test(t));
+  assert.equal((t.match(/Main priority \(chosen by the patient\)/g) ?? []).length, 1);
+  assert.ok(/Main priority \(chosen by the patient\)\s+Tiredness/.test(t));
   assert.ok(!t.includes('My main priority is'));
 });
 
 test('a pick plus her questions keeps the questions in her words', () => {
   const t = html('My main priority is pain. Can we talk about scans?');
-  assert.ok(/Main priority \(her choice\)\s+Pain/.test(t));
+  assert.ok(/Main priority \(chosen by the patient\)\s+Pain/.test(t));
   assert.ok(t.includes('Can we talk about scans?'));
 });
 

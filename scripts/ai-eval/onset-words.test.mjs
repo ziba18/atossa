@@ -35,7 +35,7 @@ test('episodes, waits, medicines, other people and pregnancy plans are not an on
 });
 
 test('onsetText shows her phrase in quotes, never a year or an age; a typed year still wins', () => {
-  assert.equal(onsetText({ words: 'since I was 15' }), 'First noticed: “since I was 15” (her words)');
+  assert.equal(onsetText({ words: 'since I was 15' }), 'First noticed: “since I was 15” (patient’s words)');
   assert.doesNotMatch(onsetText({ words: 'since I was 15' }), /\b(?:19|20)\d\d\b|years? old|aged?\b/);
   assert.equal(onsetText({ year: 2015, month: 6, words: 'since I was 15' }), 'First noticed: around June 2015 (as reported)');
   assert.equal(onsetText({ words: '  ' }), 'First noticed: Not recorded');

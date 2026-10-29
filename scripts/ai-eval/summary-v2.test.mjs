@@ -164,11 +164,11 @@ test('agenda block: main priority first, then her questions, rendered FIRST; omi
   }
 });
 
-test('flow wording (Safety flow-wording-rule.md): "Flow (your choice): …", never "Flow logged"', () => {
+test('flow wording (Safety flow-wording-rule.md): "Flow (chosen by the patient): …", never "Flow logged"', () => {
   const doc = buildDoctorSummary(sam(), RANGE);
   const periods = doc.sections.find((s) => s.id === 'periods');
   const flows = periods.runs.map((r) => r.flows).filter(Boolean);
   assert.ok(flows.length > 0);
-  for (const f of flows) assert.match(f, /^Flow \(your choice\): /);
+  for (const f of flows) assert.match(f, /^Flow \(chosen by the patient\): /);
   assert.doesNotMatch(summaryToHtml(doc), /Flow logged/);
 });

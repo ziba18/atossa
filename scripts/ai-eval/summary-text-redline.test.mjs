@@ -1,7 +1,7 @@
 // Red-line lint over the WHOLE doctor summary for the Sam seed (zones, agenda, every section incl. sensitive ones):
 // the plain-text export and the A4 HTML (tags stripped). Patient words are exempt (pm/redline-words.md "Review as quote"):
 // text inside quotes, her agenda lines, any line that is verbatim one of her typed fields (e.g. history "Why I went"),
-// and the options she chose in a "Flow (your choice):" line. Everything else is ours and must be clean.
+// and the options she chose in a "Flow (chosen by the patient):" line. Everything else is ours and must be clean.
 // Run: node --experimental-strip-types --test scripts/ai-eval/summary-text-redline.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -18,7 +18,7 @@ const ours = (text, agendaLines) => text
   .replace(/“[^”]*”|"[^"]*"/g, '«quote»')
   .split('\n')
   .filter((l) => !agendaLines.has(l.replace(/^- /, '').trim()))
-  .map((l) => l.replace(/Flow \(your choice\): [^·<\n]*/g, 'Flow (your choice): «hers»'));
+  .map((l) => l.replace(/Flow \(chosen by the patient\): [^·<\n]*/g, 'Flow (chosen by the patient): «hers»'));
 
 // Every free-text string she typed anywhere in the record.
 const typed = (input) => new Set(Object.values(input).flatMap((v) => (Array.isArray(v) ? v : []))
@@ -50,6 +50,6 @@ test('Sam seed, whole summary (text + A4), all sections on: 0 Block hits outside
 test('the lint is live: our own "heavy" label or a % would be caught', () => {
   assert.equal(ours('Bleeding: heavy days 3', new Set()).some((l) => BLOCK.test(l)), true);
   assert.equal(ours('9 of 13 areas (69%)', new Set()).some((l) => BLOCK.test(l)), true);
-  assert.equal(ours('Flow (your choice): Medium, Heavy', new Set()).some((l) => BLOCK.test(l)), false);
+  assert.equal(ours('Flow (chosen by the patient): Medium, Heavy', new Set()).some((l) => BLOCK.test(l)), false);
   assert.equal(ours('12 Sep: "heavy and awful"', new Set()).some((l) => BLOCK.test(l)), false);
 });

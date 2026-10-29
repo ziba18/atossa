@@ -532,7 +532,7 @@ function periodRuns(days: PeriodDayData[]): PeriodDayData[][] {
 /** "around June 2015 (as reported)" — only what she typed; never derived from note dates. */
 export function onsetText(o: Onset | undefined): string {
   if (!o) return `First noticed: ${NOT_RECORDED}`;
-  if (!o.year && o.words?.trim()) return `First noticed: “${o.words.trim()}” (her words)`;
+  if (!o.year && o.words?.trim()) return `First noticed: “${o.words.trim()}” (patient’s words)`;
   if (o.notSure && !o.year) return 'First noticed: not sure (as reported)';
   if (!o.year) return `First noticed: ${NOT_RECORDED}`;
   const when = o.month && o.month >= 1 && o.month <= 12 ? `${MONTH_NAMES[o.month - 1]} ${o.year}` : `${o.year}`;
@@ -780,7 +780,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       range: formatRange(start, end, 'always'),
       days: inclusiveDays(start, end),
       // Safety flow-wording-rule.md: the word is hers (picked from the Flow list), never our label.
-      flows: flows.length ? `Flow (your choice): ${flows.join(', ')}` : '',
+      flows: flows.length ? `Flow (chosen by the patient): ${flows.join(', ')}` : '',
       notes: run.filter((d) => clean(d.note)).map((d) => ({ date: d.date, dateLabel: formatDay(d.date), text: clean(d.note), facts: '' })),
     };
   });
@@ -793,7 +793,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       title: 'Periods logged',
       runs,
       spotting: spottingDays.length ? `Spotting logged: ${spottingDays.map((d) => formatShortDate(d, 'always')).join(', ')}` : '',
-      windowCount: noBleeding ? 'No bleeding was logged in this range.' : bleedWindowLine,
+      windowCount: noBleeding ? 'Bleeding: none logged in this range.' : bleedWindowLine,
     });
   }
 
@@ -1183,7 +1183,7 @@ function headBlock(doc: DoctorDoc): string {
   const rows: [string, string][] = [
     ['Period', printedRange(doc)],
     ...(visit ? [['Visit', visit] as [string, string]] : []),
-    ['Main priority (her choice)', mainPriorityOf(doc.agendaBlock)],
+    ['Main priority (chosen by the patient)', mainPriorityOf(doc.agendaBlock)],
     ['Generated', made],
     ['Source', 'Recorded by the patient in Atossa. Not clinically verified.'],
   ].filter(([, v]) => v) as [string, string][];
@@ -1204,7 +1204,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   const T = PAGE_TYPE;
   const pt = (v: readonly [number, number]) => `font-size: ${v[0]}pt; line-height: ${v[1]}pt;`;
   const body = [
-    // Her chip choice prints once, in the header block ("Main priority (her choice)"); the quote block keeps her own words.
+    // Her chip choice prints once, in the header block ("Main priority (chosen by the patient)"); the quote block keeps her own words.
     doc.agendaBlock && (!mainPriorityOf(doc.agendaBlock) || doc.agendaBlock.questions.length)
       ? `<section><h2>${esc(doc.agendaBlock.title)}</h2>${doc.agendaBlock.priority && !mainPriorityOf(doc.agendaBlock) ? `<p class="serif lead">“${esc(curly(doc.agendaBlock.priority))}”</p>` : ''}${
         doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`

@@ -34,7 +34,7 @@ const ours = (doc, input) => {
   for (const q of doc.agendaBlock?.questions ?? []) hers.add(norm(q));
   if (doc.agendaBlock?.priority) hers.add(norm(doc.agendaBlock.priority));
   return [S.summaryToText(doc), htmlText(doc)].join('\n').split('\n')
-    .map((l) => norm(l).replace(/"[^"]*"/g, '«q»').replace(/Flow \(your choice\): [^·]*/g, '«hers»'))
+    .map((l) => norm(l).replace(/"[^"]*"/g, '«q»').replace(/Flow \(chosen by the patient\): [^·]*/g, '«hers»'))
     .filter((l) => l && !hers.has(l.replace(/^- /, '')));
 };
 
@@ -132,9 +132,9 @@ criterion(9, 'agenda / priority first', () => {
   assert.ok(agendaAt > 0 && agendaAt < text.findIndex((l) => l.startsWith('AREAS')), 'agenda before the areas');
   assert.equal(text[agendaAt + 1], 'My main priority is pain.');
   const html = htmlText(doc);
-  // The printed page now carries her pick in the header block ('Main priority (her choice)'), still before every section.
-  const first = html.indexOf('Main priority (her choice)');
-  assert.ok(/Main priority \(her choice\)\s+Pain/.test(html), 'header names her pick');
+  // The printed page now carries her pick in the header block ('Main priority (chosen by the patient)'), still before every section.
+  const first = html.indexOf('Main priority (chosen by the patient)');
+  assert.ok(/Main priority \(chosen by the patient\)\s+Pain/.test(html), 'header names her pick');
   for (const s of doc.sections) assert.ok(first >= 0 && first < html.indexOf(s.title), `priority before ${s.title}`);
 });
 
