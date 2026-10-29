@@ -3,7 +3,7 @@
 // Delete is confirmed in-page (ConfirmCard), never Alert.alert.
 import React, { useEffect, useRef, useState } from 'react';
 import { UrgentNote, textOf } from '../UrgentNote';
-import { StyleSheet, TextInput, View, type HostInstance } from 'react-native';
+import { Platform, StyleSheet, TextInput, View, type HostInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   Button, Card, ChipGroup, ConfirmCard, DatePill, DayChooser, EmptyState, InlineError, NotedRow, ScreenLarge,
@@ -56,6 +56,14 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [confirming, setConfirming] = useState(false);
+  // Web: Cancel removes the confirm card, so keyboard focus would fall to the page body; put it back on Delete entry.
+  const wasConfirming = useRef(false);
+  useEffect(() => {
+    if (wasConfirming.current && !confirming && Platform.OS === 'web' && typeof document !== 'undefined') {
+      setTimeout(() => document.querySelector<HTMLElement>('#delete-entry [role="button"], #delete-entry button')?.focus(), 0);
+    }
+    wasConfirming.current = confirming;
+  }, [confirming]);
   const deleting = useRef(false);
   const loaded = useRecordsStore((st) => st.loadedFor != null && !st.loading);
   /** The open editor's host node, and which opening has already been scrolled into view (N9). */
@@ -290,7 +298,9 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
             ]}
           />
         ) : (
-          <Button variant="destructive" icon="trash-2" align="start" label="Delete entry" onPress={() => { cancel(); setConfirming(true); revealConfirm(scrollRef); }} />
+          <View nativeID="delete-entry">
+            <Button variant="destructive" icon="trash-2" align="start" label="Delete entry" onPress={() => { cancel(); setConfirming(true); revealConfirm(scrollRef); }} />
+          </View>
         )}
       </View>
     </ScreenLarge>
