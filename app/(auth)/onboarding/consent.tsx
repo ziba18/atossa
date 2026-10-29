@@ -36,7 +36,7 @@ export default function OnboardingConsentScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+    <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
       <Txt variant="hero" accessibilityRole="header" style={styles.title}>Before you start</Txt>
       <Card>
