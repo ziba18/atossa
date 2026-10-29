@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   cellNoted: { borderColor: colors.ink2, backgroundColor: colors.surface },
   digit: { fontWeight: '700', fontSize: 13, fontVariant: ['tabular-nums', 'lining-nums'] },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.ink2 },
-  letter: { fontSize: 11 },
+  letter: { fontSize: 12 },
   patterns: {
     flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44,
     borderTopWidth: 1, borderTopColor: colors.hairline, marginTop: space.xs, paddingTop: space.xs,
