@@ -88,7 +88,7 @@ export function recordTitle(kind: RecordDataKind, data: MedicineData | Appointme
 
 /** The FactLine under a record's title in lists. */
 export function recordFacts(kind: RecordDataKind, data: MedicineData | AppointmentData | HistoryData): string {
-  if (kind === 'medicine') return joinFacts(medicineDates(data as MedicineData), (data as MedicineData).dose, (data as MedicineData).helped ? `Did\u00a0it\u00a0help?\u00a0${(data as MedicineData).helped}` : '');
+  if (kind === 'medicine') return joinFacts(medicineDates(data as MedicineData), (data as MedicineData).dose, (data as MedicineData).helped ? `Did\u00a0it\u00a0help? ${(data as MedicineData).helped!.length <= 12 ? (data as MedicineData).helped!.replace(/ /g, '\u00a0') : (data as MedicineData).helped}` : '');
   if (kind === 'appointment') {
     const a = data as AppointmentData;
     return formatRecordDate(a.date, a.datePrecision);
