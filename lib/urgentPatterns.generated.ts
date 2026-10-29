@@ -9,6 +9,7 @@ export const PAST_SRC = String.raw`\b(?:(?:years?|months?|weeks?) ago|a (?:while
 export const OTHER_SRC = String.raw`\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b`;
 export const OTHERNOW_SRC = String.raw`\b(?:right now|now|just now|at the moment|currently|still|is|isn'?t|are|aren'?t|won'?t|can'?t|keeps?|has gone|have gone)\b`;
 export const REPORTED_SRC = String.raw`\b(?:told|tells?|says?|said|reckons?|thinks?|thought)\b|\b(?:is|are|'s|'re|gets?|got) (?:a bit |really |very |so )?(?:worried|anxious|concerned|nervous|stressed) about\b`;
+export const LIVEREPORT_SRC = String.raw`\b(?:just (?:rang|called|texted|messaged)|on my way|right now|at the moment|as we speak|cannot get up|can'?t get up)\b`;
 export const AGEPAST_SRC = String.raw`\bwhen (?:i|he|she|they|we) (?:was|were) (?:\d{1,2}|a (?:kid|child|teen\w*|baby|toddler|student))\b`;
 export const INCARE_SRC = String.raw`\b(?:in hospital|being looked after|on the ward|in a&e|at a&e|doctors? (?:is|are) with)\b`;
 export const RES_SRC = String.raw`(?<!n't )(?<!not )(?<!never )\b(?:stopped|settled|eased|resolved|subsided|passed|went away|has gone|have gone)\b`;
