@@ -1450,7 +1450,13 @@ _ST_SPEECH = r"\b(?:words? (?:are |is |came out |coming out )?(?:muddled|jumbled
 _ST_QUIET = r"(?![\s\S]*\b(?:slept on|sleeping on|pins and needles|gone after|numb from|fell asleep|after (?:the )?gym|cramp)\b)"
 _ST_F = rf"(?=[\s\S]*\b(?:face|mouth)\b[^.!?\n]{{0,25}}\b{_ST_LOSS}\b)"
 _ST_L = rf"(?=[\s\S]*\b(?:hand|arm|leg)\b[^.!?\n]{{0,25}}\b{_ST_LOSS}\b)"
-_WHOLE = re.compile(_WHOLE.pattern + rf"|^{_ST_QUIET}{_ST_F}{_ST_L}|^{_ST_QUIET}{_ST_L}(?=[\s\S]*{_ST_SPEECH})", _WHOLE.flags)
+# run26 (AI Brain, own set s349-stroke-own-run26): NHS stroke symptoms also name sudden numbness or weakness on ONE side
+# (nhs.uk/conditions/stroke/symptoms, read 2026-10-29): a numb/weak/gave-way limb or side plus a sudden or one-side word.
+_ST_NUMB = r"(?:numb\w*|lost (?:all )?(?:the )?feeling|(?:can'?t|cant|cannot) feel|no feeling|gave way|giving way|gone weak|weak and floppy)"
+_ST_SUDDEN = r"(?=[\s\S]*\b(?:sudden\w*|all of a sudden|out of nowhere|one side|(?:left|right) side|came on (?:suddenly|all at once))\b)"
+_ST_N = rf"(?=[\s\S]*(?:\b(?:face|hand|arm|leg|side|body)\b[^.!?\n]{{0,30}}\b{_ST_NUMB}|\b{_ST_NUMB}\b[^.!?\n]{{0,30}}\b(?:face|hand|arm|leg|side|body)\b))"
+_ST_NQUIET = r"(?![\s\S]*\b(?:dentist|injection|anaesthetic|epidural|sitting|cross[- ]legged|crossed|came back|back to normal|eased|period|every month)\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^{_ST_QUIET}{_ST_F}{_ST_L}|^{_ST_QUIET}{_ST_L}(?=[\s\S]*{_ST_SPEECH})|^{_ST_QUIET}{_ST_NQUIET}{_ST_SUDDEN}{_ST_N}", _WHOLE.flags)
 
 
 def emergency_kind(user_text: str):
