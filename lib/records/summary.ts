@@ -848,6 +848,15 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   const tests = hist.filter((h) => h.type === TEST_TYPE);
   const others = hist.filter((h) => h.type !== TEST_TYPE).slice(0, Math.max(0, MAX_LISTED - tests.length));
   const listedHistory = [...tests, ...others].sort((a, b) => b.date.localeCompare(a.date));
+  // Identical tests (same what and what she was told) print as ONE line with every date; different results stay as their own lines.
+  const collapseTests = (list: typeof listedHistory) => {
+    const groups: (typeof listedHistory)[] = [];
+    for (const h of list) {
+      const g = h.type === TEST_TYPE ? groups.find((x) => x[0].type === TEST_TYPE && clean(x[0].done) === clean(h.done) && clean(x[0].told) === clean(h.told)) : undefined;
+      if (g) g.push(h); else groups.push([h]);
+    }
+    return groups;
+  };
   // The patient's own allergy words, verbatim; never ticked, validated or commented on.
   const allergyText = histAll.filter((h) => h.type === ALLERGY_TYPE).map((h) => clean(h.told)).filter(Boolean).join('; ');
   const familyText = clean(input.familyHistory);
@@ -856,20 +865,25 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     all.push({
       id: 'history',
       title: 'Health history',
-      items: listedHistory.map((h) => ({
-        date: docDate(h.date, h.datePrecision),
-        title: h.type,
-        inline: h.type === TEST_TYPE,
-        lines: (h.type === TEST_TYPE ? [
-          { label: 'What was done', text: clean(h.done) },
-          { label: 'I was told', text: clean(h.told) },
-          { label: 'Result or how it went', text: clean(h.result) },
-        ] : [
-          { label: 'I was told', text: clean(h.told) },
-          { label: 'What was done', text: clean(h.done) },
-          { label: 'Result or how it went', text: clean(h.result) },
-        ]).filter((l) => l.text),
-      })),
+      items: collapseTests(listedHistory).map((g) => {
+        const h = g[0];
+        const short = (x: (typeof g)[number]) => docDate(x.date, x.datePrecision).replace(/^Around /, '');
+        const results = [...new Set(g.map((x) => (clean(x.result) ? (g.length > 1 ? `${short(x)}: ${clean(x.result)}` : clean(x.result)) : '')).filter(Boolean))];
+        return {
+          date: g.length > 1 ? `Around ${g.map(short).join(', ')}` : docDate(h.date, h.datePrecision),
+          title: h.type,
+          inline: h.type === TEST_TYPE && results.length <= 1,
+          lines: (h.type === TEST_TYPE ? [
+            { label: 'What was done', text: clean(h.done) },
+            { label: 'I was told', text: clean(h.told) },
+            ...results.map((text) => ({ label: 'Result or how it went', text })),
+          ] : [
+            { label: 'I was told', text: clean(h.told) },
+            { label: 'What was done', text: clean(h.done) },
+            { label: 'Result or how it went', text: clean(h.result) },
+          ]).filter((l) => l.text),
+        };
+      }),
       more: hist.length > listedHistory.length ? `${plural(hist.length - listedHistory.length, 'earlier item')} saved in Atossa.` : '',
       family: familyText,
       allergies: allergyText,
