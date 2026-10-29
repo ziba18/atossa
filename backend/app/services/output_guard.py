@@ -911,6 +911,26 @@ _P_SIGN = (r"(?:\bblack(?:ed)? out\b|\bkeel(?:ed)? over\b|\bcame (?:round|to)\b|
 _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _P_QUIET + r"(?=[\s\S]*" + _P_CTX + r")(?=[\s\S]*" + _P_SIGN + r")", _WHOLE.flags)
 
 
+# run21 S-328 postpartum psychosis (Safety High; own set s328-postpartum-run21 committed before code; nhs.uk/mental-health/conditions/
+# post-partum-psychosis, reviewed 18 Oct 2023, read 29 Oct 2026: "a medical emergency"; GP immediately / same day, 999 if imminent harm).
+# After-birth context AND one sign said in plain speech: hearing/seeing things that are not there, a fixed false belief (baby swapped,
+# being poisoned/watched/sent messages, chosen), no sleep for nights + racing talk or big plans, laughing-then-sobbing swings,
+# not making sense / not knowing the year. Baby blues, a professional's reassurance, someone else's past and 'laughed about it' stay quiet.
+_PP_CTX = (r"\b(?:baby (?:is|was) (?:\d+|a|one|two|three) (?:days?|weeks?) old|since (?:the|my|our) (?:birth|c-?section|delivery)|"
+           r"since (?:the|my|our) (?:baby|son|daughter|little one) (?:was born|came|arrived)|(?:after|since) having (?:her|him|the baby|my baby)|"
+           r"gave birth|had (?:my|the|our) baby|post-?(?:partum|natal)|newborn|(?:days?|weeks?) after (?:having|giving birth|the birth))\b")
+_PP_QUIET = (r"(?![\s\S]*\b(?:baby blues|(?:midwife|health visitor|gp|doctor) (?:said|says) (?:it'?s|that'?s|lots|this is)|years ago|"
+             r"we (?:both )?laughed about it|it passed|(?:asking|ask) (?:my|the) (?:midwife|gp|doctor) about)\b)")
+_PP_SIGN = (r"(?:\b(?:hear\w*|see|seeing|saw|smell\w*)\b[^.!?]{0,60}\b(?:(?:aren'?t|isn'?t|wasn'?t|weren'?t|not) (?:really )?there|"
+            r"when the (?:flat|house|room) is empty|(?:nobody|no one|no-one) (?:is |was )?there)|\bhearing voices\b|"
+            r"\b(?:sure|convinced|know|certain|believe)\b[^.!?]{0,40}\b(?:swapped|switched|replaced|poison\w*|sending me (?:messages|signs)|"
+            r"watching (?:me|us|her|him)|spying|following me|out to get|plotting|trying to (?:harm|hurt|kill|poison|take))|\bi'?m (?:the )?chosen\b|"
+            r"\b(?:haven'?t|not|hardly) slept (?:in|for) (?:two|three|four|five|\d+|days|nights)\b[^.!?]{0,80}\b(?:talking (?:a mile a minute|really fast|non-?stop|so fast)|"
+            r"racing|plan\w* to)|\btalking a mile a minute\b|\blaughing then (?:sobbing|crying)\b|\b(?:sobbing|crying) then laughing\b|"
+            r"\bnot making (?:any )?sense\b|\b(?:didn'?t|don'?t|did not|do not) know what (?:year|month|day) it (?:is|was)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PP_QUIET + r"(?=[\s\S]*" + _PP_CTX + r")(?=[\s\S]*" + _PP_SIGN + r")", _WHOLE.flags)
+
+
 # run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
 # (nhs.uk/conditions/meningitis: "get emergency medical help"). Stiff neck alone, light alone, or her usual migraine stay quiet.
 _NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
