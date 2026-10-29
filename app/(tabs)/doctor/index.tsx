@@ -145,30 +145,51 @@ export default function DoctorScreen() {
   const off = doc.empty || busy !== null;
 
   // Save PDF is the one primary; Print and On screen are text buttons on one line below it.
+  // On a normal phone all three sit on one row (Save PDF takes the spare width), about 50 pt less bar over the summary.
+  const oneRow = !desk && !short && winWidth >= 390;
+  const saveButton = (
+    <Button
+      label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
+      accessibilityLabel={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
+      icon={winWidth >= 380 && !oneRow ? 'file-text' : undefined}
+      onPress={share}
+      loading={busy === 'share'}
+      disabled={off}
+      style={oneRow
+        ? { flex: 1, minWidth: 0 }
+        : { alignSelf: desk ? 'flex-start' : 'stretch', minWidth: desk ? 320 : 0, ...(short ? { minHeight: heights.minHit } : null) }}
+      accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
+    />
+  );
+  const otherButtons = (
+    <>
+      <Button
+        label="Print" icon="printer" variant="text" small onPress={print} disabled={off} loading={busy === 'print'}
+        style={{ minWidth: 0 }} accessibilityHint="Sends the summary to a printer"
+      />
+      <Button
+        label="On screen" icon="monitor" variant="text" small disabled={doc.empty}
+        onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ minWidth: 0 }}
+        accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
+      />
+    </>
+  );
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      <Button
-        label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
-        accessibilityLabel={Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
-        icon={winWidth >= 380 ? 'file-text' : undefined}
-        onPress={share}
-        loading={busy === 'share'}
-        disabled={off}
-        style={{ alignSelf: desk ? 'flex-start' : 'stretch', minWidth: desk ? 320 : 0, ...(short ? { minHeight: heights.minHit } : null) }}
-        accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
-      />
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: desk ? 'flex-start' : 'center', gap: space.md }}>
-        <Button
-          label="Print" icon="printer" variant="text" small onPress={print} disabled={off} loading={busy === 'print'}
-          style={{ minWidth: 0 }} accessibilityHint="Sends the summary to a printer"
-        />
-        <Button
-          label="On screen" icon="monitor" variant="text" small disabled={doc.empty}
-          onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ minWidth: 0 }}
-          accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
-        />
-      </View>
+      {oneRow ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+          {saveButton}
+          {otherButtons}
+        </View>
+      ) : (
+        <>
+          {saveButton}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: desk ? 'flex-start' : 'center', gap: space.md }}>
+            {otherButtons}
+          </View>
+        </>
+      )}
     </View>
   );
 
