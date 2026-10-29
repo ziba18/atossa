@@ -133,10 +133,10 @@ function StatTile({ value, label, onPress, hint, wide, zeroLabel, hero }: { valu
   // A zero that means "nothing logged" reads as a sentence, not a big 0.
   const none = value === 0 && !!zeroLabel;
   return (
-    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
+    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={[wide ? styles.tileWide : styles.tile, hero && !none ? { backgroundColor: severityRamp[4], borderColor: severityRamp[4] } : null]}>
       <View style={wide ? styles.tileRow : undefined}>
-        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={hero ? styles.tileNumHero : styles.tileNum}><CountUp value={value} /></Txt>}
-        {none ? null : <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>}
+        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={[hero ? styles.tileNumHero : styles.tileNum, hero ? { color: colors.white } : null]}><CountUp value={value} /></Txt>}
+        {none ? null : <Txt variant="caption" style={[wide ? { flexShrink: 1 } : { marginTop: 2 }, hero ? { color: severityRamp[0] } : null]}>{label}</Txt>}
       </View>
     </PressableCard>
   );
