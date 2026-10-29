@@ -197,13 +197,14 @@ export function EntryCard({
         <PressableCard
           style={styles.appointment}
           onPress={onPress}
-          accessibilityLabel={[`Appointment, ${who}`, hideDate ? '' : when, told ? `I was told: ${told}` : ''].filter(Boolean).join('. ')}
+          // The name starts with the words on screen (WCAG 2.5.3); the trailing space in the stacked title keeps them apart in the page text.
+          accessibilityLabel={[hideDate ? who : `${who} ${when}`, told ? `I was told: ${told}` : '', 'Appointment'].filter(Boolean).join('. ')}
           accessibilityHint="Opens the appointment"
         >
           <View style={styles.stack}>
             {/* One line, on a tinted card, so an appointment never reads as one more note. */}
             {/* Long name + date: the date goes on its own line instead of leaving a dot at the end of line one. */}
-            <GlyphLine icon="calendar-days" variant="secondary" text={hideDate ? who : stackDate ? who : `${who} · ${keep(when)}`} />
+            <GlyphLine icon="calendar-days" variant="secondary" text={hideDate ? who : stackDate ? `${who} ` : `${who} · ${keep(when)}`} />
             {!hideDate && stackDate ? <Txt variant="secondary">{when}</Txt> : null}
             {told ? <Txt variant="secondary" numberOfLines={2}>{`I was told: ${told}`}</Txt> : null}
           </View>
