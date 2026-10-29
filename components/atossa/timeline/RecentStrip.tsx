@@ -61,7 +61,7 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
           );
         })}
       </View>
-      <Txt variant="caption" color={colors.ink2}>Number: strongest rating that day, out of 10. Blank: no note.</Txt>
+      <Txt variant="caption" color={colors.ink2}>Number: strongest rating that day, of 10.</Txt>
       {onPatterns || onMonth ? (
         <Pressable
           onPress={onPatterns ?? onMonth}
@@ -80,7 +80,7 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
 }
 
 const styles = StyleSheet.create({
-  card: { padding: space.md, gap: space.sm, marginTop: space.sm },
+  card: { padding: space.md, gap: 10, marginTop: space.sm },
   head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   row: { flexDirection: 'row', gap: 3 },
   col: { flex: 1, alignItems: 'center', gap: 4 },
