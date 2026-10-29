@@ -152,12 +152,6 @@ function EmptyLine({ title, line }: { title: string; line: string }) {
   );
 }
 
-/** "4" or "1 to 4": the plain range of the weekly counts, for the chart title. */
-function weekRangeText(n: number[]): string {
-  const lo = Math.min(...n); const hi = Math.max(...n);
-  return lo === hi ? `${hi}` : `${lo} to ${hi}`;
-}
-
 export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: TimelineFilter) => void; onOpenWeek: (w: { from: string; to: string }) => void }) {
   const router = useRouter();
   const [range, setRange] = useState<PatternsRange>('4w');
@@ -201,7 +195,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
     <View style={{ gap: space.md, marginTop: space.lg }}>
       {toggle}
       <Txt variant="secondary" style={{ fontWeight: '600', color: colors.ink }}>Your notes, {rangeText}</Txt>
-      <Txt variant="caption" style={{ marginTop: -space.sm }}>{plural(m.notes, 'note')} in this time</Txt>
+      <Txt variant="caption" style={{ marginTop: -space.sm }}>{noteDaysText(m)}</Txt>
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
@@ -224,7 +218,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
           accessibilityActions={m.weeks.filter((w) => w.noteDays > 0).map((w) => ({ name: `week:${w.from}:${w.to}`, label: `Open the week from ${formatShortDate(w.from, 'always')}` }))}
           onAccessibilityAction={(name) => { const [, from, to] = name.split(':'); if (from && to) onOpenWeek({ from, to }); }}
         >
-          <Txt variant="groupLabel">{`Days with a note each week: ${weekRangeText(m.weeks.map((w) => w.noteDays))}`}</Txt>
+          <Txt variant="groupLabel">{'Days with a note, each week'}</Txt>
           <View style={{ flexDirection: 'row', marginTop: space.sm }}>
             <View style={styles.yAxis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
               <Txt variant="caption" style={[styles.yLabel, { top: 10 }]}>{maxWeek}</Txt>
