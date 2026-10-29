@@ -8,11 +8,13 @@ import { colors, radii } from '../../../constants/atossaUI';
 import { Icon } from '../../ui/Icon';
 
 export function MicButton({
-  recording = false, onPress, accessibilityLabel, accessibilityHint, size = 72, disabled, invite = false,
+  recording = false, onPress, accessibilityLabel, accessibilityHint, size = 72, disabled, invite = false, onDark = false,
 }: {
   recording?: boolean;
   /** Idle: the ring breathes out three times on arrival to say "tap me", then rests (not at all under Reduce Motion). */
   invite?: boolean;
+  /** On the deep-Iris Today card: white disc, plum icon. */
+  onDark?: boolean;
   onPress: () => void;
   accessibilityLabel: string;
   accessibilityHint?: string;
@@ -41,7 +43,7 @@ export function MicButton({
       style={({ pressed }) => [
         big ? styles.big : styles.small,
         big || recording
-          ? { backgroundColor: pressed ? colors.plumPressed : colors.plum, borderColor: colors.plum }
+          ? (onDark && !recording ? { backgroundColor: pressed ? colors.plumTint : colors.white, borderColor: colors.white } : { backgroundColor: pressed ? colors.plumPressed : colors.plum, borderColor: colors.plum })
           : { backgroundColor: pressed ? colors.sunken : colors.surface, borderColor: colors.borderStrong },
         disabled && { opacity: 0.5 },
       ]}
@@ -50,7 +52,7 @@ export function MicButton({
         <Icon
           name={recording ? 'square' : 'mic'}
           size={big ? 32 : 24}
-          color={big || recording ? colors.white : colors.plum}
+          color={onDark && !recording ? colors.plum : big || recording ? colors.white : colors.plum}
         />
       </View>
     </Pressable>

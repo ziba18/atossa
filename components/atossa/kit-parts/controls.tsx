@@ -22,6 +22,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'destructive' | '
 export function Button({
   label, onPress, variant = 'primary', icon, disabled, loading, style, accessibilityLabel, accessibilityHint, align = 'center',
   small,
+  onDark,
 }: {
   label: string;
   onPress: () => void;
@@ -36,10 +37,13 @@ export function Button({
   align?: 'center' | 'start';
   /** Text variant only: a quieter 15/500 label (e.g. "Type instead" under the hero mic). */
   small?: boolean;
+  /** On a deep-Iris card: primary becomes a white button with ink text, text becomes white. */
+  onDark?: boolean;
 }) {
   const inactive = disabled || loading;
   const fg =
-    variant === 'primary' ? (inactive ? colors.ink2 : colors.white)
+    onDark ? (variant === 'primary' ? colors.ink : colors.white)
+    : variant === 'primary' ? (inactive ? colors.ink2 : colors.white)
     : variant === 'secondary' ? (inactive ? colors.ink3 : colors.ink)
     : variant === 'destructive' || variant === 'destructiveOutline' ? colors.error
     : colors.plum;
@@ -55,7 +59,7 @@ export function Button({
         styles.btnBase,
         // A 2% press-in on the filled and outlined buttons: the colour change alone is only ~1.2:1.
         pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.98 }] },
-        variant === 'primary' && [styles.primary, { overflow: 'hidden', backgroundColor: inactive ? colors.sunken : colors.plum }],
+        variant === 'primary' && [styles.primary, { overflow: 'hidden', backgroundColor: inactive ? colors.sunken : onDark ? colors.white : colors.plum }],
         variant === 'secondary' && [styles.secondary, { borderColor: inactive ? colors.hairline : colors.borderStrong, backgroundColor: pressed ? colors.sunken : 'transparent' }],
         variant === 'destructiveOutline' && [styles.secondary, { borderColor: colors.error, backgroundColor: pressed ? colors.errorTint : 'transparent', opacity: inactive ? 0.5 : 1 }],
         (variant === 'text' || variant === 'destructive') && [styles.textBtn, { opacity: inactive ? 0.5 : pressed ? 0.6 : 1 }],

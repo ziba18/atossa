@@ -30,28 +30,29 @@ const PROMPT = 'What’s been going on with your body?';
 
 export function HeroCard() {
   return (
-    <Card tone="hero" style={styles.hero}>
-      <Txt variant="hero" style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
+    <Card tone="hero" style={[styles.hero, { backgroundColor: severityRamp[4], borderColor: severityRamp[4] }]}>
+      <Txt variant="hero" color={colors.white} style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT}
       </Txt>
       {Platform.OS === 'web' ? (
         // Browsers have no voice capture here: lead with the typed note instead of a mic that opens the Type tab.
-        <Button label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md, alignSelf: 'stretch' }} />
+        <Button onDark label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md, alignSelf: 'stretch' }} />
       ) : (
         <>
           <View style={styles.heroMic}>
             <MicButton
               invite
+              onDark
               onPress={() => openCapture({ mode: 'speak', startRecording: true })}
               accessibilityLabel="Tap to talk"
               accessibilityHint="Opens a new note and starts recording"
             />
             {/* The primary action's label outranks the secondary link (V7). */}
-            <Txt variant="headline" style={styles.micLabel} aria-hidden>
+            <Txt variant="headline" color={colors.white} style={styles.micLabel} aria-hidden>
               Tap to talk
             </Txt>
           </View>
-          <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
+          <Button onDark label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
         </>
       )}
     </Card>
