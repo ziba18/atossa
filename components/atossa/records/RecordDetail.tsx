@@ -351,7 +351,8 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
       />
       <TextField
         label="Side effects"
-        hint="Optional, in your own words"
+        optional
+        hint="In your own words"
         multiline
         value={d.sideEffects ?? ''}
         onChangeText={(sideEffects) => set({ sideEffects })}
