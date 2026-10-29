@@ -259,9 +259,8 @@ _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|did
 _PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|in year \d{1,2}\b(?![^.]*\b(?:today|now|just|this (?:morning|afternoon)|tonight)\b)|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger|(?:1[0-9]|[5-9])(?! ?(?:weeks?|days?|hours?|minutes?|mins?|months?|am|pm|o'?clock|%|:|\.\d)))|(?:fainted|passed out|blacked out|collapsed) aged (?:1[0-9]|[5-9]))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _OTHER_NOW = re.compile(r"\b(?:right now|now|just now|at the moment|currently|still|is|isn'?t|are|aren'?t|won'?t|can'?t|keeps?|has gone|have gone)\b", re.I)
-_REPORTED = re.compile(r"\b(?:told|tells?|says?|said|reckons?|thinks?|thought)\b"
-                       # run20 (Safety p209 false on run19): "my partner is worried about his chest tightness" reports a worry, not an event now
-                       r"|\b(?:is|are|'s|'re|gets?|got) (?:a bit |really |very |so )?(?:worried|anxious|concerned|nervous|stressed) about\b", re.I)   # someone else giving information
+_REPORTED = re.compile(r"\b(?:told|tells?|says?|said|reckons?|thinks?|thought)\b", re.I)   # someone else giving information
+_LIVE_REPORT = re.compile(r"\b(?:just (?:rang|called|texted|messaged)|on my way|right now|at the moment|as we speak|cannot get up|can'?t get up)\b", re.I)
 _AGE_PAST = re.compile(r"\bwhen (?:i|he|she|they|we) (?:was|were) (?:\d{1,2}|a (?:kid|child|teen\w*|baby|toddler|student))\b", re.I)
 _IN_CARE = re.compile(r"\b(?:in hospital|being looked after|on the ward|in a&e|at a&e|doctors? (?:is|are) with)\b", re.I)   # already being cared for
 _BODY = [
@@ -448,6 +447,10 @@ def _is_past(clause: str) -> bool:
     return False
 
 
+_FAINT_WORD = re.compile(r"faint(?:ed|ing)?", re.I)
+_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b", re.I)
+
+
 def _hits(rx, text: str) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
@@ -458,9 +461,11 @@ def _hits(rx, text: str) -> bool:
                 continue
             # run19 (S-307, structure not phrases): another person as the subject stays quiet UNLESS the same clause says it
             # is happening now, so every existing urgent concept also fires for "my mum can't breathe" (NHS when-to-call-999)
-            if _OTHER.search(before) and (not _OTHER_NOW.search(clause) or _REPORTED.search(clause) or _IN_CARE.search(text)):
+            if _OTHER.search(before) and (not _OTHER_NOW.search(clause) or (_REPORTED.search(clause) and not _LIVE_REPORT.search(clause)) or _IN_CARE.search(text)):
                 continue
             if _AGE_PAST.search(clause):
+                continue
+            if _FAINT_WORD.fullmatch(m.group(0)) and _FAINT_RECOVERY.search(text):
                 continue
             return True
     return False
@@ -533,7 +538,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:pelvi\w+|tummy|belly|abdom\w+)\b.{0,40}\b(?:pain|ache)\b.{0,60}\b(?:temperature of (?:3[89]|4\d)|shivering|very high temperature)\b|"
                     r"\b(?:temperature of (?:3[89]|4\d)|shivering)\b.{0,60}\bpelvi\w+ pain\b|"
                     r"\b(?:touch|press)\w*\b.{0,40}\bgetting worse\b|\bgetting worse\b.{0,40}\b(?:touch|press)\w*\b|"
-                    r"\bpelvi\w+ pain\b.{0,40}\b(?:confused|disorientated)\b(?! (?:about|by|over|with|as to|whether|which|what|how)\b)|\b(?:confused|disorientated)\b(?! (?:about|by|over|with|as to|whether|which|what|how)\b).{0,40}\bpelvi\w+ pain\b|"
+                    r"\bpelvi\w+ pain\b.{0,40}\b(?:confused|disorientated)\b|\b(?:confused|disorientated)\b.{0,40}\bpelvi\w+ pain\b|"
                     # run 01 (S-149): a lot of one's own tablets, then feeling strange/unwell; pain so bad she was sick and shaking
                     r"\b(?:took|taken|swallowed) (?:a lot|loads|a load|lots|too many) of (?:my |the )?(?:\w+ ){0,2}(?:tablets|pills|painkillers|meds|medication)\b.{0,60}\b(?:strange|weird|odd|drowsy|sick|dizzy|not right)\b|"
                     r"\bpain\b.{0,15}\bso bad\b.{0,30}\b(?:sick|vomit\w*|threw up)\b.{0,30}\bshaking\b|"
@@ -878,22 +883,6 @@ _WHOLE = re.compile(_WHOLE.pattern
                     + r"|^(?=[\s\S]*" + _NOWEE + r")(?=[\s\S]*\b(?:fever|temperature|temp|shiver\w*|shaking|burning (?:hot|up))\b)(?![\s\S]*\b(?:no (?:temperature|fever|temp)|all fine now)\b)"
                     + r"|^(?=[\s\S]*(?:" + _ACC_OD + r"))"
                     + r"|^(?=[\s\S]*\b(?:sudden\w*|out of nowhere|all of a sudden)\b)(?=[\s\S]*(?:" + _HARDBELLY + r"))(?![\s\S]*\b(?:every period|as usual|from the gym)\b)", _WHOLE.flags)
-
-
-# run20 S-317 (Safety run36 ruling; nhs.uk/conditions/pelvic-pain, reviewed 24 Nov 2025: 999 for pelvic pain with sudden
-# confusion, or severe pain getting worse that hurts to move or touch). Two concepts, whole note, chronic-day words stay quiet:
-# (1) SUDDEN confusion: an onset word next to confusion / not knowing where or what day / not making sense ("confused about" stays quiet);
-# (2) NEW FAST change (within hours, came on fast, worse every hour, from nothing) AND it hurts to touch/move or she cannot stand/walk/move.
-_ONSET = r"(?:sudden(?:ly)?|all of a sudden|out of nowhere|without warning)"
-_CONFUSE = (r"(?:confus\w*(?! (?:about|by|over|with|as to|whether|which|what|how)\b)|disorient\w*|(?:didn'?t|did not|don'?t|do not) know (?:where i (?:was|am)|what day|who)|"
-            r"(?:not|wasn'?t|isn'?t) making (?:any )?sense)")
-_FAST = (r"(?:(?:in|within|over) (?:the )?(?:last |past )?(?:(?:an?|one|a couple of|a few|two|three|\d) )?hours?\b|came on (?:fast|quickly|suddenly)|"
-         r"(?:worse|worsening) (?:every|by the|each) hour|(?:from|went from) nothing to|(?:started|began|came on) (?:a couple of|a few|two|three|\d) hours ago)")
-_TOUCHMOVE = (r"(?:(?:hurts?|agony|painful|can'?t bear|cannot bear)\b[^.!?]{0,30}\b(?:touch\w*|press\w*|seatbelt|duvet|clothes|move|moving)\b|"
-              r"\btouching (?:it|my)\b|can'?t (?:walk|stand|move)\b|without (?:holding|crying)|can'?t bear (?:the |anyone |anything )?(?:\w+ )?(?:on|touching) it)")
-_WHOLE = re.compile(_WHOLE.pattern
-                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*(?:\b" + _ONSET + r"\b[^.!?]{0,40}\b" + _CONFUSE + r"|\b" + _CONFUSE + r"[^.!?]{0,20}\b" + _ONSET + r"\b))"
-                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*" + _FAST + r")(?=[\s\S]*" + _TOUCHMOVE + r")(?![\s\S]*\b(?:as usual|same as always|every (?:month|period)|usual (?:flare|endo))\b)", _WHOLE.flags)
 
 
 # run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
@@ -1272,6 +1261,13 @@ _WHOLE = re.compile(_WHOLE.pattern + rf"|^{_K_QUIET}(?={_A}{_K_CTX})(?={_A}{_K_B
 # haemorrhage stay quiet.
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\bhaem?orrhag\w*\s+(?:money|cash|players|staff|customers|subscribers|fans|points|votes)\b)"
                     r"(?=[\s\S]*\b(?:i'?m|i am|am i|been|still|keep|now|started|i think i'?m|i'?ve been)?\s*(?:haem?orrhaging|hemorrhaging)\b)", _WHOLE.flags)
+
+# S-325 prototype: asthma attack in plain words (NHS: getting worse, reliever not helping, no inhaler). Whole-text, because _CLAUSE splits at "and".
+_RELIEVER = r"\b(?:inhaler|reliever|puffs?|blue one)\b"
+_NOHELP = r"\b(?:still|isn'?t (?:helping|touching|working)|not (?:helping|touching|working)|did(?:n'?t| nothing)|did nothing|nothing|no (?:use|help|effect)|empty|ran out|(?:max|maximum))\b"
+_ATTACK = r"\b(?:can'?t (?:get|talk|finish|breathe)|wheez\w*|gasp\w*|clos\w+ up|tighter|worse|barely|struggl\w+ (?:to|with|for))\b"
+_EASED = r"\b(?:eased|helped|settled|sorted|passes|normal for me|controlled|quiet|back to normal|picked up|review)\b"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*" + _EASED + r")(?=[\s\S]*" + _RELIEVER + r")(?=[\s\S]*" + _NOHELP + r")(?=[\s\S]*" + _ATTACK + r")", _WHOLE.flags)
 
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
