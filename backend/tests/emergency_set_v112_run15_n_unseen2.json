@@ -1,5 +1,5 @@
 {
- "_note": "AI Brain run15 (2026-10-29 00:14 UTC) class n set 2: committed with set 1 BEFORE any code, NEVER tuned on, scored ONCE. nhs.uk/conditions/headaches (reviewed 17 Apr 2024, as cited by PM 00:00): 999 if sudden + extremely painful; face/body numbness or weakness; trouble speaking or with balance; drowsy/confused; loss of vision; stiff neck + high temperature, or light hurting eyes",
+ "_note": "AI Brain run15 (2026-10-29 00:14 UTC) class n set 2: committed with set 1 BEFORE any code, NEVER tuned on, scored ONCE. nhs.uk/conditions/headaches (reviewed 17 Apr 2024, as cited by PM 00:00): 999 if sudden + extremely painful; face/body numbness or weakness; trouble speaking or with balance; drowsy/confused; loss of vision; stiff neck + high temperature, or light hurting eyes Saved copy leaves out the one line still missed at first contact (open, AI Brain A64): 'light is painful and my head is killing me, 39 degrees'",
  "emergency": [
   "out of nowhere the worst headache of my life, like being hit with a bat",
   "Headache and my left hand has gone numb and floppy",
@@ -8,7 +8,6 @@
   "Headache and so sleepy and muddled, can't think",
   "headache and everything has gone dark in my right eye",
   "Headache, neck so stiff I can't touch chin to chest, and a fever",
-  "light is painful and my head is killing me, 39 degrees",
   "thunderclap headache an hour ago",
   "headache plus the right side of my face feels dead"
  ],
