@@ -979,7 +979,7 @@ export const PAGE_TYPE = {
  * The strip's key, under it on every rendering. Bleeding is a solid clay underline, spotting a thin
  * dashed one — told apart by shape, so both survive B/W print.
  */
-export const STRIP_KEY = 'Number = highest strength given that day (0–10). Dot = a note with no number.';
+export const STRIP_KEY = 'Number = strongest rating given that day, out of 10. Dot = a note with no number.';
 export const STRIP_BLEED_KEY = 'bleeding logged';
 export const STRIP_SPOT_KEY = 'spotting logged';
 /** Sub-labels inside Appointments when one is still ahead. */
