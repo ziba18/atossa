@@ -70,6 +70,7 @@ const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SEL
 const LASTREL = new RegExp('^(?:' + P.LASTREL_SRC + ')$', 'i'), PRESENT = mk(P.PRESENT_SRC);
 const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES = mk(P.RES_SRC);
 // run19 (S-307, backend _hits): another person as subject is quiet unless the clause says it is happening now.
+const LIVE_REPORT = mk(P.LIVEREPORT_SRC), FAINT_WORD = new RegExp('^(?:' + P.FAINTWORD_SRC + ')$', 'i'), FAINT_REC = mk(P.FAINTREC_SRC);
 const OTHER_NOW = mk(P.OTHERNOW_SRC), REPORTED = mk(P.REPORTED_SRC), AGE_PAST = mk(P.AGEPAST_SRC), IN_CARE = mk(P.INCARE_SRC);
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi'), LEGBREATH = new RegExp(P.LEGBREATH_SRC, 'i');
 
@@ -155,7 +156,8 @@ function hit(pattern: RegExp, text: string): boolean {
       const before = clause.slice(0, m.index);
       const after = clause.slice(m.index + m[0].length);
       if (!(NEG.test(before.slice(-40).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(clause) || RES.test(after)
-        || (OTHER.test(before) && (!OTHER_NOW.test(clause) || REPORTED.test(clause) || IN_CARE.test(text))) || AGE_PAST.test(clause))) return true;
+        || (OTHER.test(before) && (!OTHER_NOW.test(clause) || (REPORTED.test(clause) && !LIVE_REPORT.test(clause)) || IN_CARE.test(text))) || AGE_PAST.test(clause)
+        || (FAINT_WORD.test(m[0]) && FAINT_REC.test(text)))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }
   }
