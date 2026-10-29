@@ -51,15 +51,20 @@ function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter
   const both = m.days.filter((d) => d.logged && d.bleeding).length; // bleeding days that also have a note
   const none = m.totalDays - withB - without;
   const parts: { key: string; label: string; n: number; color: string; opens?: TimelineFilter; hint?: string }[] = [
-    { key: 'with', label: 'Bleeding logged', n: withB, color: colors.plum, opens: 'Bleeding', hint: 'Opens your bleeding days.' },
-    { key: 'without', label: 'Note, no bleeding', n: without, color: `${colors.plum}73`, opens: 'Symptoms', hint: 'Opens your notes.' },
-    { key: 'none', label: 'Nothing logged', n: none, color: colors.hairline },
+    { key: 'with', label: 'Bleeding logged', n: withB, color: colors.clay, opens: 'Bleeding', hint: 'Opens your bleeding days.' },
+    { key: 'without', label: 'Note, no bleeding', n: without, color: colors.plum, opens: 'Symptoms', hint: 'Opens your notes.' },
+    { key: 'none', label: 'Nothing logged', n: none, color: colors.sunken },
   ];
   return (
     <Card>
-      <Txt variant="groupLabel">Your {m.totalDays} days</Txt>
-      <View style={{ flexDirection: 'row', height: 20, borderRadius: 10, overflow: 'hidden', marginTop: space.sm, gap: 2 }} accessibilityLabel={`${noteDaysText(m)}.`} role="img">
-        {parts.filter((x) => x.n > 0).map((x) => <View key={x.key} style={{ flexGrow: x.n, flexBasis: 0, backgroundColor: x.color }} />)}
+      <Txt variant="groupLabel">{`${withB} bleeding · ${without} note only · ${none} nothing logged`}</Txt>
+      <Txt variant="caption" style={{ marginTop: 2 }}>{`Your ${m.totalDays} days, one box per group`}</Txt>
+      <View style={{ flexDirection: 'row', height: 28, borderRadius: 8, overflow: 'hidden', marginTop: space.sm, gap: 2 }} accessibilityLabel={`${noteDaysText(m)}.`} role="img">
+        {parts.filter((x) => x.n > 0).map((x) => (
+          <View key={x.key} style={{ flexGrow: x.n, flexBasis: 0, backgroundColor: x.color, alignItems: 'center', justifyContent: 'center', borderWidth: x.key === 'none' ? 1 : 0, borderColor: colors.borderStrong }}>
+            {x.n >= 2 ? <Txt variant="caption" color={x.key === 'none' ? colors.ink : '#FFFFFF'} style={{ fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{x.n}</Txt> : null}
+          </View>
+        ))}
       </View>
       <View style={{ marginTop: space.xs }}>
         {parts.map((x) => {
