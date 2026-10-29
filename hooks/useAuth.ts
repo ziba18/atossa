@@ -13,7 +13,7 @@ function startAuthInit() {
   authInitStarted = true;
 
   setSessionExpiredHandler(() => {
-    useAuthStore.getState().signOut();
+    useAuthStore.getState().signOut({ keepOutbox: true });
   });
 
   // Design preview: signed in as "Sam" immediately, no tokens, no network.
