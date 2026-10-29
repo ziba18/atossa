@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', marginBottom: space.xs },
   row: { flexDirection: 'row' },
   weekday: { flex: 1, height: 28, alignItems: 'center', justifyContent: 'center' },
-  cell: { flex: 1, height: 62, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 4 },
+  cell: { flex: 1, height: 64, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 4 },
   /** The bleeding marker under a day (same grammar as the PDF strip): solid clay bar = bleeding, dashed = spotting; runs join across days. */
   bleedRow: { position: 'absolute', left: 0, right: 0, top: DISC + 6, height: 4, flexDirection: 'row' },
   bleedSide: { flex: 1 },
@@ -192,6 +192,6 @@ const styles = StyleSheet.create({
   },
   todayRingOuter: { width: DISC + 6, height: DISC + 6, top: -3, left: -3 },
   num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
-  rating: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 14, color: colors.ink, fontVariant: ['tabular-nums', 'lining-nums'], marginTop: 7 },
+  rating: { fontFamily: fonts.semibold, fontSize: 13, lineHeight: 16, color: colors.ink, fontVariant: ['tabular-nums', 'lining-nums'], marginTop: 6 },
   dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.plum, marginTop: 9 },
 });
