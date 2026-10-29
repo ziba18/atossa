@@ -258,55 +258,50 @@ export function HeroNumberCard() {
   const appts = useRecordsStore((s) => s.records.appointment);
   const today = todayKey();
   const next = nextAppointment(appts);
-  const daysAway = next ? Math.max(0, diffDays(today, next.data.date)) : 0;
-  // Past two months a count reads as noise: the date itself ("14 April") is what a person plans by.
-  const inWeeks = daysAway > 60;
-  const apptDate = next ? parseKey(next.data.date) : null;
   const total = noteCount(symptoms);
-  // On the day itself the numeral is the notes ready for the visit, not a "0 days".
-  const count = useCountUp(next ? (daysAway === 0 ? total : inWeeks && apptDate ? apptDate.d : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
-  let big: string; let line: string; let sub: string; let target: string;
-  if (next) {
-    const days = diffDays(today, next.data.date);
-    const who = next.data.who.trim();
-    if (days === 0) {
-      big = String(count);
-      line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
-      const tail = total > 0 ? 'Opens your summary' : 'Add a note and it appears in your summary';
-      sub = who ? `${who} · ${tail}` : tail;
-    } else {
-      big = String(count);
-      line = inWeeks && apptDate ? `${MONTH_NAMES[apptDate.m0]}${apptDate.y !== parseKey(today).y ? ` ${apptDate.y}` : ''} · your appointment` : days === 1 ? 'day until your appointment' : 'days until your appointment';
-      const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
-      sub = who ? `${who} · ${notes}` : notes;
-    }
-    target = '/(tabs)/doctor';
-  } else if (total === 0) {
-    big = '0';
-    line = 'notes so far';
-    sub = 'Your first note starts your record';
-    target = '';
-  } else {
-    const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
-    big = String(count);
+  const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
+  const noteDays = new Set(symptoms.map((x) => x.data.date)).size;
+  const daysAway = next ? diffDays(today, next.data.date) : -1;
+  // Blueprint 3.3: an appointment inside 60 days leads; past that a count reads as noise, so the notes lead and the date rides in the caption.
+  const soon = next && daysAway >= 0 && daysAway <= 60;
+  const who = next?.data.who.trim() ?? '';
+  const apptDate = next ? parseKey(next.data.date) : null;
+  let target = ''; let hint = ''; let bigN = 0; let line = ''; let sub = '';
+  if (soon && daysAway === 0) {
+    bigN = total; target = '/(tabs)/doctor'; hint = 'Opens For my doctor';
+    line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
+    const tail = total > 0 ? 'Opens your summary' : 'Add a note and it appears in your summary';
+    sub = who ? `${who} · ${tail}` : tail;
+  } else if (soon) {
+    bigN = daysAway; target = '/(tabs)/doctor'; hint = 'Opens For my doctor';
+    line = daysAway === 1 ? 'day until your appointment' : 'days until your appointment';
+    const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
+    sub = who ? `${who} · ${notes}` : notes;
+  } else if (week > 0) {
+    bigN = week; target = '/(tabs)/timeline'; hint = 'Opens Timeline';
     line = week === 1 ? 'note in the last 7 days' : 'notes in the last 7 days';
-    sub = total === week ? 'Open them in your Timeline' : `${notesLabel(total)} in all`;
-    target = '/(tabs)/timeline';
+    sub = total === week ? 'Open them in your Timeline' : `${noteDays} ${noteDays === 1 ? 'day' : 'days'} with a note in all`;
+  } else if (total > 0) {
+    bigN = noteDays; target = '/(tabs)/timeline'; hint = 'Opens Timeline';
+    line = noteDays === 1 ? 'day with a note so far' : 'days with a note so far';
+    sub = `${notesLabel(total)} in all. Open your Timeline`;
   }
+  if (next && !soon && apptDate) sub += ` · Appointment ${apptDate.d} ${MONTH_NAMES[apptDate.m0]}`;
+  const count = useCountUp(bigN);
   // First run: a big "0" says nothing, so the card is one plain sentence instead of a number.
-  if (!next && total === 0) {
+  if (!soon && total === 0) {
     return (
       <Card style={{ gap: space.xxs }}>
         <Txt variant="headline">Nothing saved yet</Txt>
-        <Txt variant="secondary">Your first note starts your record.</Txt>
+        <Txt variant="secondary">Your first note starts your record.{next && apptDate ? ` Appointment ${apptDate.d} ${MONTH_NAMES[apptDate.m0]}.` : ''}</Txt>
       </Card>
     );
   }
   return (
     <HeroNumber
-      big={big} line={line} sub={sub}
-      onPress={target ? () => router.push(target as any) : undefined}
-      accessibilityHint={next ? 'Opens For my doctor' : 'Opens Timeline'}
+      big={String(count)} line={line} sub={sub}
+      onPress={() => router.push(target as any)}
+      accessibilityHint={hint}
     />
   );
 }

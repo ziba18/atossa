@@ -11,7 +11,7 @@ import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { PeriodCard } from '../../../components/atossa/capture/PeriodCard';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
 import {
-  GhostNoteCard, HeroCard, HeroChip, HeroNumberCard, LatestNoteCard, OnsetConfirmRow, QuickRows, RoughDayCard, latestNote,
+  GhostNoteCard, HeroCard, HeroNumberCard, LatestNoteCard, OnsetConfirmRow, QuickRows, RoughDayCard, latestNote,
 } from '../../../components/atossa/capture/TodayCards';
 import { space } from '../../../constants/atossaUI';
 import { isHumanName } from '../../../lib/humanName';
@@ -60,6 +60,8 @@ export default function TodayScreen() {
   const capture = (
     <>
       <HeroCard />
+      {/* The one big number sits right under the capture card: capture stays first, the proof of the record is next. */}
+      {loadedFor ? <View style={{ marginTop: space.md }}><HeroNumberCard /></View> : null}
       {strip}
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
@@ -73,10 +75,9 @@ export default function TodayScreen() {
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      {loadedFor ? <HeroChip /> : null}
       {capture}
       {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
-      {loadedFor ? (symptoms.length > 0 ? null : <View style={{ marginTop: space.xl, marginBottom: space.md }}><HeroNumberCard /></View>)
+      {loadedFor ? null
         : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
