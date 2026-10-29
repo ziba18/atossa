@@ -45,7 +45,7 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
 
   const label = `Last ${days} days: notes on ${noteDays} ${noteDays === 1 ? 'day' : 'days'}`;
   return (
-    <Card tone={flush ? 'default' : 'selected'} style={[styles.card, flush && { marginTop: 0 }]}>
+    <Card tone="default" style={[styles.card, flush && { marginTop: 0 }]}>
       <View style={styles.head}>
         <Txt variant="groupLabel">Last {days} days</Txt>
         <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : (noteDays === 1 ? '1 day with a note' : `${noteDays} days with notes`)}</Txt>
@@ -54,7 +54,7 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
         {cells.map((c) => {
           const body = (
             <>
-              <View style={[styles.cell, !flush && styles.cellOnTint, c.noted ? styles.cellNoted : null]}>
+              <View style={[styles.cell, c.noted ? styles.cellNoted : null]}>
                 {c.worst != null ? (
                   <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
                 ) : c.noted ? <View style={styles.dot} /> : <View style={styles.dash} />}
@@ -72,7 +72,7 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
           }
           return (
             <View key={c.key} style={[styles.col, wrap && { flexBasis: `${100 / MIN_DAYS - 1}%`, flexGrow: 0 }]}>
-              <View style={[styles.cell, !flush && styles.cellOnTint, c.noted ? styles.cellNoted : null]}>
+              <View style={[styles.cell, c.noted ? styles.cellNoted : null]}>
                 {c.worst != null ? (
                   <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
                 ) : c.noted ? <View style={styles.dot} /> : <View style={styles.dash} />}
