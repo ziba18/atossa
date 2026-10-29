@@ -5,7 +5,7 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Card, Txt } from '../kit';
 import { Icon } from '../../ui/Icon';
-import { colors, space } from '../../../constants/atossaUI';
+import { colors, severityRamp, space } from '../../../constants/atossaUI';
 import { addDays, parseKey, todayKey } from '../../../lib/records/dates';
 import { formatDay, worstOf } from '../../../lib/records/format';
 import type { Rec, SymptomData } from '../../../types/records';
@@ -19,7 +19,7 @@ const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 interface Cell { key: string; letter: string; worst: number | null; noted: boolean }
 
-export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; twoRows?: boolean; onDayPress?: (key: string) => void; onPatterns?: () => void; onMonth?: () => void }) {
+export function RecentStrip({ symptoms, flush, twoRows, band, onDayPress, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; /** One deep-Iris band: white day cells on it, white text. */ band?: boolean; twoRows?: boolean; onDayPress?: (key: string) => void; onPatterns?: () => void; onMonth?: () => void }) {
   const [inner, setInner] = useState(0);
   // Narrow screens / big text: show the last 7 days instead of squeezing 14 cells.
   // With twoRows (Timeline, which has the height) the 14 days stay: two rows of 7 instead of dropping to 7.
@@ -45,21 +45,21 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
 
   const label = `Last ${days} days: notes on ${noteDays} ${noteDays === 1 ? 'day' : 'days'}`;
   return (
-    <Card tone="default" style={[styles.card, flush && { marginTop: 0 }]}>
+    <Card tone="default" style={[styles.card, flush && { marginTop: 0 }, band && { backgroundColor: severityRamp[4], borderColor: severityRamp[4] }]}>
       <View style={styles.head}>
-        <Txt variant="groupLabel">Last {days} days</Txt>
-        <Txt variant="secondary" style={{ flexShrink: 1 }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : (noteDays === 1 ? '1 day with a note' : `${noteDays} days with notes`)}</Txt>
+        <Txt variant="groupLabel" color={band ? colors.white : undefined}>Last {days} days</Txt>
+        <Txt variant="secondary" style={[{ flexShrink: 1 }, band ? { color: severityRamp[0] } : null]}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : (noteDays === 1 ? '1 day with a note' : `${noteDays} days with notes`)}</Txt>
       </View>
       <View style={[styles.row, wrap && { flexWrap: 'wrap', rowGap: 6 }]} onLayout={(e) => setInner(e.nativeEvent.layout.width)} {...(onDayPress ? null : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label })}>
         {cells.map((c) => {
           const body = (
             <>
-              <View style={[styles.cell, c.noted ? styles.cellNoted : null]}>
+              <View style={[styles.cell, c.noted ? styles.cellNoted : null, band && (c.noted ? { backgroundColor: colors.white, borderColor: colors.white } : { backgroundColor: 'transparent', borderColor: severityRamp[1] })]}>
                 {c.worst != null ? (
                   <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
-                ) : c.noted ? <View style={styles.dot} /> : <View style={styles.dash} />}
+                ) : c.noted ? <View style={styles.dot} /> : <View style={[styles.dash, band && !c.noted ? { backgroundColor: colors.white } : null]} />}
               </View>
-              <Txt variant="caption" color={flush ? colors.ink3 : colors.ink2} style={styles.letter}>{c.letter}</Txt>
+              <Txt variant="caption" color={band ? colors.white : flush ? colors.ink3 : colors.ink2} style={styles.letter}>{c.letter}</Txt>
             </>
           );
           const colStyle = [styles.col, wrap && { flexBasis: `${100 / MIN_DAYS - 1}%`, flexGrow: 0 }];
@@ -72,17 +72,17 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
           }
           return (
             <View key={c.key} style={[styles.col, wrap && { flexBasis: `${100 / MIN_DAYS - 1}%`, flexGrow: 0 }]}>
-              <View style={[styles.cell, c.noted ? styles.cellNoted : null]}>
+              <View style={[styles.cell, c.noted ? styles.cellNoted : null, band && (c.noted ? { backgroundColor: colors.white, borderColor: colors.white } : { backgroundColor: 'transparent', borderColor: severityRamp[1] })]}>
                 {c.worst != null ? (
                   <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
-                ) : c.noted ? <View style={styles.dot} /> : <View style={styles.dash} />}
+                ) : c.noted ? <View style={styles.dot} /> : <View style={[styles.dash, band && !c.noted ? { backgroundColor: colors.white } : null]} />}
               </View>
-              <Txt variant="caption" color={flush ? colors.ink3 : colors.ink2} style={styles.letter}>{c.letter}</Txt>
+              <Txt variant="caption" color={band ? colors.white : flush ? colors.ink3 : colors.ink2} style={styles.letter}>{c.letter}</Txt>
             </View>
           );
         })}
       </View>
-      <Txt variant="caption" color={colors.ink2}>{flush ? 'Number: strongest rating that day, out of 10. Dash: no note.' : 'Number: strongest rating that day, of 10. Dash: no note.'}</Txt>
+      <Txt variant="caption" color={band ? severityRamp[0] : colors.ink2}>{flush ? 'Number: strongest rating that day, out of 10. Dash: no note.' : 'Number: strongest rating that day, of 10. Dash: no note.'}</Txt>
       {onPatterns || onMonth ? (
         <Pressable
           onPress={onPatterns ?? onMonth}
