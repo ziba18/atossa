@@ -38,6 +38,7 @@ function normalise(text: string): string {
   // dictation fillers ("um i cant like breathe") and "wanna"; mirrors backend `_norm`
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
+  t = t.replace(/\b(took|taken|to|is|was|am|and|but|so|just|really|had|has|with|my|then)\s+like\s+(?!being\b|i\b|i'm\b|i\u2019m\b|something\b|a (?:bang|knife|stabbing|hammer|vice|weight|punch)\b|there\b|it\b)/gi, '$1 ');
   t = t.replace(/\bwanna\b/gi, 'want to');
   // dictated number words (S-223); mirrors backend `_norm`
   const UNITS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };

@@ -149,6 +149,7 @@ def _norm(text: str) -> str:
     # dictation fillers ("um i cant like breathe") and "wanna"/"gonna"
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
+    t = re.sub(r"\b(took|taken|to|is|was|am|and|but|so|just|really|had|has|with|my|then)\s+like\s+(?!being\b|i\b|i'm\b|i\u2019m\b|something\b|a (?:bang|knife|stabbing|hammer|vice|weight|punch)\b|there\b|it\b)", r"\1 ", t, flags=re.I)  # run28 S-246: "took like a whole packet", "want to like not be here"
     t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
     # dictated number words (S-223): tens ("twenty", "thirty five"), "thirty nine point two", and small counts before pads/tampons/tablets
     _units = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
@@ -1108,6 +1109,28 @@ _THIRD_NOW = re.compile(
     r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
     r"(?!.*\b(?:fine|ok|okay|recovered|better)\b (?:now|after|since|again|once|when)|.*\b(?:was|is|been) (?:fine|ok|okay)\b)", re.I | re.S)
 
+
+# run30 (S-262b, p142 miss): fertility treatment + a swollen tight belly + hardly passing urine, whole note. Each part alone stays quiet.
+_OHSS = (r"^(?=[\s\S]*\b(?:egg (?:collection|retrieval)|ivf|stimulation|fertility (?:injections?|treatment))\b)"
+         r"(?=[\s\S]*\b(?:belly|tummy|stomach|abdomen)\b[^.!?]{0,30}\b(?:huge|massive|enormous|swollen|tight|balloon\w*)\b)"
+         r"(?=[\s\S]*\b(?:hardly|barely|can'?t|struggling to)\s+(?:wee|pee|urinate|pass urine)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|" + _OHSS, _WHOLE.flags)
+
+# run30 (S-256, p149 6/10 missed): NHS sepsis page (nhs.uk/conditions/sepsis, read 2026-10-28): confusion or slurred speech, blue/pale/grey/blotchy
+# skin, very drowsy, with an infection or fever. Whole note; infection word + (confusion | mottled skin), neither alone.
+_INFECT = r"(?:infection|uti|kidney|wee infection|water infection|fever|temperature|burning up|shiver\w*|rigors|shaking|been sick for days|bug)"
+_CONFUSED = r"(?:slurr\w*|confused\b(?! (?:about|by|with|over|as to|why|how|whether))|can'?t think straight|out of it|won'?t wake|(?:can|could) barely stay awake|drifting off|don'?t know where i am)"
+_MOTTLED = r"(?:(?:mottled|blotchy|grey|gone grey|bluish|blue)\b[^.!?]{0,25}\b(?:skin|legs|arms|hands|feet|lips)\b|\b(?:skin|legs|arms|hands|feet)\b[^.!?]{0,25}\b(?:mottled|blotchy|gone grey|gone blue))"
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?![\s\S]*\b(?:no|not|without|never)\s+(?:a\s+)?(?:fever|temperature|confus\w*)\b)(?=[\s\S]*\b" + _INFECT + r"\b)(?=[\s\S]*\b" + _CONFUSED + r"\b)"
+                    + r"|^(?=[\s\S]*" + _MOTTLED + r")(?=[\s\S]*\b(?:freezing|clammy|drowsy|(?:can )?barely stay awake|haven'?t (?:had a )?(?:wee|peed))\b)", _WHOLE.flags)
+
+# run30 (S-261): a burst/ruptured cyst with dizziness, faintness, sweating or sickness, whole note.
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*\bcyst\b[^.!?]{0,15}\b(?:burst|ruptur\w*|popped)\b)(?=[\s\S]*\b(?:dizzy|faint\w*|sweat\w*|clammy|being sick|vomit\w*)\b)", _WHOLE.flags)
+# run30 (S-258, S-260a): self-harm. "ending it" + can't cope/take the pain (not "ending it with <x>"), and "not be here" + tablets to hand.
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
+                         + r"|^(?=[\s\S]*\b(?:ending|end) it\b(?! with\b)(?! for\b))(?=[\s\S]*\b(?:can'?t (?:take|cope|do this|go on)|tired of (?:the )?(?:pain|everything|this))\b)"
+                         + r"|^(?=[\s\S]*\b(?:want(?:ed)?|wanna|going) to (?:just )?(?:not be here|disappear)\b)(?=[\s\S]*\b(?:any ?more|tonight|at all|for good|forever)\b)(?=[\s\S]*\b(?:(?:load|pile|box|packet|bottle|strip) of (?:tablets|pills|painkillers|meds)|(?:tablets|pills|blade|rope)\b[^.!?]{0,20}\b(?:in front of me|next to me|beside me))\b)", _SELF_WHOLE.flags)
 
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
