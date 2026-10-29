@@ -114,6 +114,8 @@ const styles = StyleSheet.create({
   pillBar: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.94)', borderRadius: 30, padding: 5,
     boxShadow: '0 8px 22px rgba(90,60,160,0.16)', minHeight: heights.tabBar - 10,
+    // Very narrow screens (large text on a small phone): wrap to a second row instead of clipping labels.
+    flexWrap: 'wrap', justifyContent: 'center', maxWidth: '100%',
   },
   // Selected = ink pill + heavier label, so state never rests on colour alone (WCAG 1.4.1).
   pill: { minHeight: 44, paddingHorizontal: 14, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
