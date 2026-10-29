@@ -474,7 +474,7 @@ def _hits(rx, text: str) -> bool:
 
 
 _PREG_WHOLE = re.compile(r"\bpregnan\w+\b", re.I)
-_PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b", re.I)
+_PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain|pain (?:is |was |about |around |like |of )*(?:an? )?(?:8|9|10|eight|nine|ten)\b(?! ?(?:days?|weeks?|hours?|mins?|minutes?|am|pm|o'?clock)))\b", re.I)
 
 
 # "the pain was killing me" describes pain, it is not a statement about self-harm.
