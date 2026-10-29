@@ -32,8 +32,8 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
       {rows.map((r) => (
         <View key={r.label} style={{ gap: 4 }}>
           <View style={styles.barHead}>
-            <Txt variant="body" style={{ flexShrink: 1 }}>{r.label}</Txt>
-            <Txt variant="body" style={{ flexShrink: 1, marginLeft: 'auto', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
+            <Txt variant="body" style={{ flexShrink: 1, flex: 1 }}>{r.label}</Txt>
+            <Txt variant="body" style={{ flexShrink: 0, marginLeft: 'auto', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   weekCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
   weekNum: { fontSize: 13 },
   weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.ink2 },
-  barHead: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 0, justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
+  barHead: { flexDirection: 'row', flexWrap: 'nowrap', rowGap: 0, justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.sunken, overflow: 'hidden' },
   fill: { height: 8, borderRadius: 4, backgroundColor: severityRamp[3] },
 });
