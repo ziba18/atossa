@@ -331,14 +331,14 @@ export function HeroChip() {
   return (
     <PressableCard
       onPress={() => router.push(target as any)}
-      accessibilityLabel={sub ? `${label}. ${sub}` : label}
+      accessibilityLabel={sub ? `${label} ${sub}` : label}
       accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Timeline'}
       chevron={winW >= 240} // at 195 pt the chevron left 'Appointment' too little room and it broke mid-word
       style={styles.chip}
     >
       <View style={styles.chipRow}>
         <View style={{ flexShrink: 1 }}>
-          <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
+          <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{sub ? `${label} ` : label}</Txt>
           {sub ? <Txt variant="secondary" style={{ fontVariant: ['tabular-nums'] }}>{sub}</Txt> : null}
         </View>
       </View>
