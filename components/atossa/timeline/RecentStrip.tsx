@@ -48,7 +48,7 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
     <Card tone="default" style={[styles.card, flush && { marginTop: 0 }]}>
       <View style={styles.head}>
         <Txt variant="groupLabel">Last {days} days</Txt>
-        <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : (noteDays === 1 ? '1 day with a note' : `${noteDays} days with notes`)}</Txt>
+        <Txt variant="secondary" style={{ flexShrink: 1 }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : (noteDays === 1 ? '1 day with a note' : `${noteDays} days with notes`)}</Txt>
       </View>
       <View style={[styles.row, wrap && { flexWrap: 'wrap', rowGap: 6 }]} onLayout={(e) => setInner(e.nativeEvent.layout.width)} {...(onDayPress ? null : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label })}>
         {cells.map((c) => {
@@ -102,7 +102,7 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
 
 const styles = StyleSheet.create({
   card: { padding: space.md, gap: 10, marginTop: space.sm },
-  head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
+  head: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'baseline', columnGap: space.sm },
   row: { flexDirection: 'row', gap: 3 },
   col: { flex: 1, alignItems: 'center', gap: 4 },
   cell: {
