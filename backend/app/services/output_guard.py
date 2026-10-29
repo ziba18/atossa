@@ -1165,6 +1165,16 @@ _WHOLE = re.compile(_WHOLE.pattern
 _IDIOM = re.compile(_IDIOM.pattern + r"|\b(?:commute|deadline|shift|journey|my boss|the kids|this week)\b[^.!?]{0,15}\bkill(?:ing|s)? me\b"
                     + r"|\bblack (?:poo|poos|stools?|motions?) (?:after|since|from) (?:taking |starting |eating )?(?:pepto\S*|bismuth|iron|ferrous \w+|liquorice)\b(?![\s\S]*\b" + _GI_WEAK + r"\b)", _IDIOM.flags)
 
+# run16 (class k, own first contact 2/10 missed): after the birth, heavy or heavier bleeding x feeling faint, dizzy, a racing or
+# pounding heart, cold and clammy (nhs.uk postpartum haemorrhage; Safety run28 class-k ruling). Settled, lighter, or a period
+# months later stays quiet.
+_K_CTX = (r"\b(?:after (?:the|my) (?:birth|baby|c-?section)|postnatal|post-?partum|had (?:my|the) baby|gave birth|given birth|c-?section|"
+          r"since having (?:my|the) \w+|newborn|baby is (?:\d|one|two|three|a) (?:days?|weeks?))\b")
+_K_BLEED = r"\b(?:bleeding\b[^.!?\n]{0,25}\b(?:heav\w*|pouring|gushing|loads|a lot)|heavier|soak\w*|pouring|gush\w*|clots?|(?:filled|through) (?:\d|two|three|four) pads)\b"
+_K_SIGN = r"\b(?:faint\w*|dizz\w*|(?:heart|pulse)\b[^.!?\n]{0,15}\b(?:racing|pounding|thumping|fast)|clammy|light ?-?headed|shaky|pass out)\b"
+_K_QUIET = r"(?![\s\S]*\b(?:settled|lighter|fine now|months? (?:old|postpartum|after)|periods? (?:are |is )?back|first period|not sleeping)\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^{_K_QUIET}(?={_A}{_K_CTX})(?={_A}{_K_BLEED})(?={_A}{_K_SIGN})", _WHOLE.flags)
+
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
 
