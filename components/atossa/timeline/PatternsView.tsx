@@ -198,7 +198,8 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
   return (
     <View style={{ gap: space.md, marginTop: space.lg }}>
       {toggle}
-      <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
+      <Txt variant="secondary" style={{ fontWeight: '600', color: colors.ink }}>Your notes, {rangeText}</Txt>
+      <Txt variant="caption" style={{ marginTop: -space.sm }}>{plural(m.notes, 'note')} in this time</Txt>
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
