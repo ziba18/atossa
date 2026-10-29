@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { Button, ChipGroup, InlineError, type ChipOption } from '../../../components/atossa/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
@@ -40,7 +40,7 @@ export default function OnboardingOnset() {
   const [showEarlier, setShowEarlier] = useState(false);
 
   const group = list[i];
-  if (!group) return null;
+  if (!group) return <Redirect href="/(auth)/onboarding/reminders" />;
   const year = years[group] ?? null;
   const older = year !== null && /^\d{4}$/.test(year) && thisYear - Number(year) >= RECENT_YEARS;
   const expanded = showEarlier || older;

@@ -189,8 +189,8 @@ function ListView({
   if (feed.length === 0) {
     return (
       <EmptyState
-        fill
         illustration={<GhostEntry />}
+        style={{ marginTop: space.xxl }}
         icon="list"
         message="Nothing here yet. Your notes will line up here by date."
         action={{ label: 'Add a note', onPress: () => openCapture() }}

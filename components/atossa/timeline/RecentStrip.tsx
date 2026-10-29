@@ -1,6 +1,6 @@
 // "Last 14 days" strip above the Timeline list: one cell per day, the same grammar as the Month view:
 // a day with a note gets one neutral outline and its strongest "at worst" score printed in ink (no shade
-// carries meaning). Days with a note but no score show a dot; days with nothing stay faint. Descriptive only.
+// carries meaning). Days with a note but no score show a dot; days with nothing show a dash. Descriptive only.
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Card, Txt } from '../kit';
@@ -13,7 +13,7 @@ import type { Rec, SymptomData } from '../../../types/records';
 const MAX_DAYS = 14;
 const MIN_DAYS = 7;
 /** Narrowest a day cell may get before the strip drops to fewer days (digit stays legible). */
-const MIN_CELL = 22;
+const MIN_CELL = 28;
 const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 interface Cell { key: string; letter: string; worst: number | null; noted: boolean }
@@ -54,14 +54,14 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
               <View style={[styles.cell, !flush && styles.cellOnTint, c.noted ? styles.cellNoted : null]}>
                 {c.worst != null ? (
                   <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
-                ) : c.noted ? <View style={styles.dot} /> : null}
+                ) : c.noted ? <View style={styles.dot} /> : <View style={styles.dash} />}
               </View>
               <Txt variant="caption" color={flush ? colors.ink3 : colors.ink2} style={styles.letter}>{c.letter}</Txt>
             </View>
           );
         })}
       </View>
-      <Txt variant="caption" color={colors.ink2}>{flush ? 'Number: strongest rating that day, out of 10. Blank: no note.' : 'Number: strongest rating that day, of 10.'}</Txt>
+      <Txt variant="caption" color={colors.ink2}>{flush ? 'Number: strongest rating that day, out of 10. Dash: no note.' : 'Number: strongest rating that day, of 10. Dash: no note.'}</Txt>
       {onPatterns || onMonth ? (
         <Pressable
           onPress={onPatterns ?? onMonth}
@@ -85,14 +85,15 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 3 },
   col: { flex: 1, alignItems: 'center', gap: 4 },
   cell: {
-    width: '100%', aspectRatio: 1, borderRadius: 8, borderWidth: 1,
+    width: '100%', maxWidth: 44, aspectRatio: 1, borderRadius: 8, borderWidth: 1,
     borderColor: colors.hairline, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center',
   },
   cellOnTint: { backgroundColor: 'transparent', borderColor: colors.borderStrong },
   cellNoted: { borderColor: colors.ink2, backgroundColor: colors.surface },
   digit: { fontWeight: '700', fontSize: 13, fontVariant: ['tabular-nums', 'lining-nums'] },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.ink2 },
-  letter: { fontSize: 12 },
+  dash: { width: 8, height: 1.5, borderRadius: 1, backgroundColor: colors.ink3 },
+  letter: { fontSize: 13 },
   patterns: {
     flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44,
     borderTopWidth: 1, borderTopColor: colors.borderStrong, marginTop: space.xs, paddingTop: space.xs,
