@@ -160,11 +160,11 @@ export default function DoctorScreen() {
       />
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: desk ? 'flex-start' : 'center', gap: space.md }}>
         <Button
-          label="Print" variant="text" small onPress={print} disabled={off} loading={busy === 'print'}
+          label="Print" icon="printer" variant="text" small onPress={print} disabled={off} loading={busy === 'print'}
           style={{ minWidth: 0 }} accessibilityHint="Sends the summary to a printer"
         />
         <Button
-          label="On screen" variant="text" small disabled={doc.empty}
+          label="On screen" icon="monitor" variant="text" small disabled={doc.empty}
           onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ minWidth: 0 }}
           accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
         />
