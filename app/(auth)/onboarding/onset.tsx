@@ -12,7 +12,6 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 const ORDER: OnsetGroup[] = ['pain', 'bleeding', 'bowelBladder', 'fatigue', 'mood', 'skinHair'];
 const YEARS_BACK = 30;
 const RECENT_YEARS = 10;
-const EARLIER = 'Earlier…';
 
 /**
  * Step 4: "When did you first notice this?" once for each area she ticked. A year she picks (or "Not sure")
@@ -37,7 +36,7 @@ export default function OnboardingOnset() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const thisYear = new Date().getFullYear();
-  // The last ten years first; "Earlier…" opens the older ones (also open when an older year is already picked).
+  // The last ten years first; "Earlier years…" opens the older ones (also open when an older year is already picked).
   const [showEarlier, setShowEarlier] = useState(false);
 
   const group = list[i];
@@ -47,7 +46,6 @@ export default function OnboardingOnset() {
   const expanded = showEarlier || older;
   const options: ChipOption[] = [
     ...Array.from({ length: expanded ? YEARS_BACK + 1 : RECENT_YEARS }, (_, k) => String(thisYear - k)),
-    ...(expanded ? [] : [{ value: EARLIER, ghost: true }]),
     { value: 'Not sure', ghost: true },
   ];
   const setYear = (v: string | null) => setYears((y) => ({ ...y, [group]: v }));
@@ -87,11 +85,21 @@ export default function OnboardingOnset() {
     >
       <ChipGroup
         options={options}
-        ghosts={[EARLIER, 'Not sure']}
+        ghosts={['Not sure']}
         value={year}
-        onChange={(v) => (v === EARLIER ? setShowEarlier(true) : setYear(v))}
+        onChange={setYear}
         accessibilityLabel={`Year you first noticed ${area}`}
       />
+      {/* A button outside the year group, so arrow keys never trigger it; it stays on screen and toggles, so keyboard focus is not lost. */}
+      {older ? null : (
+        <Button
+          label={showEarlier ? 'Show fewer years' : 'Earlier years…'}
+          variant="text"
+          align="start"
+          onPress={() => setShowEarlier((v) => !v)}
+          accessibilityHint="Shows or hides the years before the last ten"
+        />
+      )}
       <View style={{ marginTop: space.xxl, gap: space.sm }}>
         <InlineError message={error} />
         <Button label={busy ? 'Saving…' : last ? 'Next' : 'Next area'} loading={busy} disabled={!year} onPress={save} />
