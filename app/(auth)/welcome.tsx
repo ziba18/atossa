@@ -46,11 +46,12 @@ export default function WelcomeScreen() {
           <Txt variant="body" color={colors.ink2}>
             {voice ? 'Talk or type' : 'Type'} about your symptoms in your own words. Atossa turns them into a short summary for your doctor.
           </Txt>
-          {short ? null : (
-          <Card style={styles.example}>
-            <Txt variant="caption" color={colors.ink2}>What you say</Txt>
-            <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>
-            <Txt variant="caption" color={colors.ink2}>What your doctor sees</Txt>
+          {/* Short phones: no quote, only the three chips, so the gap above the buttons is not empty; under 600 pt tall the buttons need the room. */}
+          {short && win.height < 600 ? null : (
+          <Card style={short ? styles.exampleShort : styles.example}>
+            {short ? null : <Txt variant="caption" color={colors.ink2}>What you say</Txt>}
+            {short ? null : <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>}
+            <Txt variant="caption" color={colors.ink2}>{short ? 'Your words become notes like these' : 'What your doctor sees'}</Txt>
             <View style={styles.tags}>
               {['Lower belly', '7/10 at worst', 'Since Tuesday'].map((t) => (
                 <View key={t} style={styles.tag}>
@@ -106,6 +107,7 @@ const styles = StyleSheet.create({
   // anchored actions (not above the headline).
   hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.lg },
   example: { gap: space.xs, marginTop: space.sm },
+  exampleShort: { gap: space.xs, marginTop: space.sm, paddingVertical: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   tag: { backgroundColor: colors.plumTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
   tagText: { fontWeight: '600' },
