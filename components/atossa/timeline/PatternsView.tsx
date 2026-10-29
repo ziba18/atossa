@@ -287,7 +287,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
                   const v = n || sp;
                   return (
                     <View key={w.from} style={styles.weekCol}>
-                      {v > 0 && (chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL) ? <Txt variant="caption" style={styles.weekNum}>{v}</Txt> : null}
+                      {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{v}</Txt> : null}
                       <View style={[styles.weekBar, { height: v ? 4 + v * 4 : 3 }, n ? { backgroundColor: colors.clay } : sp ? { backgroundColor: colors.clayTint, borderWidth: 1.5, borderColor: colors.clay } : { backgroundColor: colors.clayTint }]} />
                     </View>
                   );
