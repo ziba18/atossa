@@ -12,7 +12,7 @@ import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
 import { Icon } from '../../ui/Icon';
 import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
-import { todayKey } from '../../../lib/records/dates';
+import { formatDate, todayKey } from '../../../lib/records/dates';
 import {
   MIN_NOTE_DAYS, PATTERNS_RANGES, STRONG_FROM, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsModel, type PatternsRange,
 } from '../../../lib/records/patterns';
@@ -286,6 +286,16 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
                     </View>
                   );
                 })}
+              </View>
+            ) : null}
+            {m.weeks.length ? (
+              // Axis: the chart has no scale of its own, so name what a bar is and where the weeks start and end.
+              <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs }}>
+                  <Txt variant="caption">{formatDate(m.weeks[0].from, true)}</Txt>
+                  <Txt variant="caption">{formatDate(m.weeks[m.weeks.length - 1].to, true)}</Txt>
+                </View>
+                <Txt variant="caption" style={{ marginTop: space.xxs }}>One bar per week; {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? 'the number is' : 'taller means more'} days with bleeding{m.spottingDays ? ' (outlined bar: spotting only)' : ''} that week.</Txt>
               </View>
             ) : null}
           </PressableCard>
