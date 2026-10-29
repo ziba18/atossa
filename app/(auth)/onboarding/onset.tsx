@@ -11,6 +11,8 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 
 const ORDER: OnsetGroup[] = ['pain', 'bleeding', 'bowelBladder', 'fatigue', 'mood', 'skinHair'];
 const YEARS_BACK = 30;
+const RECENT_YEARS = 10;
+const EARLIER = 'Earlier…';
 
 /**
  * Step 4: "When did you first notice this?" once for each area she ticked. A year she picks (or "Not sure")
@@ -29,14 +31,19 @@ export default function OnboardingOnset() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const thisYear = new Date().getFullYear();
-  const options: ChipOption[] = useMemo(() => [
-    ...Array.from({ length: YEARS_BACK + 1 }, (_, k) => String(thisYear - k)),
-    { value: 'Not sure', ghost: true },
-  ], [thisYear]);
+  // The last ten years first; "Earlier…" opens the older ones (also open when an older year is already picked).
+  const [showEarlier, setShowEarlier] = useState(false);
 
   const group = list[i];
   if (!group) return null;
   const year = years[group] ?? null;
+  const older = year !== null && /^\d{4}$/.test(year) && thisYear - Number(year) >= RECENT_YEARS;
+  const expanded = showEarlier || older;
+  const options: ChipOption[] = [
+    ...Array.from({ length: expanded ? YEARS_BACK + 1 : RECENT_YEARS }, (_, k) => String(thisYear - k)),
+    ...(expanded ? [] : [{ value: EARLIER, ghost: true }]),
+    { value: 'Not sure', ghost: true },
+  ];
   const setYear = (v: string | null) => setYears((y) => ({ ...y, [group]: v }));
   const area = ONSET_GROUP_LABEL[group];
   const last = i === list.length - 1;
@@ -72,9 +79,9 @@ export default function OnboardingOnset() {
     >
       <ChipGroup
         options={options}
-        ghosts={['Not sure']}
+        ghosts={[EARLIER, 'Not sure']}
         value={year}
-        onChange={setYear}
+        onChange={(v) => (v === EARLIER ? setShowEarlier(true) : setYear(v))}
         accessibilityLabel={`Year you first noticed ${area}`}
       />
       <View style={{ marginTop: space.xxl, gap: space.sm }}>
