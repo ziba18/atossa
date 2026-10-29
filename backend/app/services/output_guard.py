@@ -1177,6 +1177,11 @@ _K_SIGN = r"\b(?:faint\w*|dizz\w*|(?:heart|pulse)\b[^.!?\n]{0,15}\b(?:racing|pou
 _K_QUIET = r"(?![\s\S]*\b(?:settled|lighter|fine now|months? (?:old|postpartum|after)|periods? (?:are |is )?back|first period|not sleeping)\b)"
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^{_K_QUIET}(?={_A}{_K_CTX})(?={_A}{_K_BLEED})(?={_A}{_K_SIGN})", _WHOLE.flags)
 
+# run16 (Safety S-273: "haemorrhaging" is a safe word to add): she says she is haemorrhaging now. Money, players, a past
+# haemorrhage stay quiet.
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\bhaem?orrhag\w*\s+(?:money|cash|players|staff|customers|subscribers|fans|points|votes)\b)"
+                    r"(?=[\s\S]*\b(?:i'?m|i am|am i|been|still|keep|now|started|i think i'?m|i'?ve been)?\s*(?:haem?orrhaging|hemorrhaging)\b)", _WHOLE.flags)
+
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
 
