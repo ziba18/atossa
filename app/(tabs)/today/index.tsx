@@ -28,7 +28,8 @@ function greeting(name: string | null | undefined): string {
   // 00:00-04:59 is neither morning nor evening for someone awake with symptoms.
   const part = hour < 5 ? 'Hello' : hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
   const first = isHumanName(name) ? name!.trim().split(/\s+/)[0] : '';
-  return first ? `${part}, ${first}` : part;
+  // Without a name a bare 'Morning' reads like a label, so spell the greeting out.
+  return first ? `${part}, ${first}` : part === 'Hello' ? part : `Good ${part.toLowerCase()}`;
 }
 
 export default function TodayScreen() {
