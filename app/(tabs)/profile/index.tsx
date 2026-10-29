@@ -180,7 +180,7 @@ export default function ProfileScreen() {
           // Zero-width spaces after @ and . let a long address wrap at those points on a narrow screen (the row's spoken label excludes it).
           detail={user?.email ? user.email.replace(/([@.])/g, '$1\u200B') : undefined}
           onPress={() => router.push('/(tabs)/profile/edit-profile' as any)}
-          accessibilityLabel={`${name || 'Your details'}. Edit your details`}
+          accessibilityLabel={`${name || 'Your details'} ${user?.email ? user.email.replace(/([@.])/g, '$1\u200B') : ''}. Edit your details`}
         />
       </Group>
 
@@ -215,7 +215,7 @@ export default function ProfileScreen() {
             detail={previewLine(kind, records) ?? 'Nothing added yet'}
             value={counts[kind] ? String(counts[kind]) : undefined}
             onPress={() => openList(kind)}
-            accessibilityLabel={`${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}. ${previewLine(kind, records) ?? ''}`}
+            accessibilityLabel={[KIND_INFO[kind].listTitle, previewLine(kind, records) ?? 'Nothing added yet', counts[kind] ? `${counts[kind]} saved` : ''].filter(Boolean).join(' ')}
           />
         ))}
       </Group>

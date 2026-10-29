@@ -87,7 +87,7 @@ export function GroupRow({
         {/* The trailing space keeps label and detail apart in the page text, so the spoken name can start with it (WCAG 2.5.3). */}
         <Txt variant="body">{detail || quote || stacked ? `${label} ` : label}</Txt>
         {stacked ? <Txt variant="secondary" style={styles.tabular}>{value}</Txt> : null}
-        {detail ? <Txt variant="secondary">{detail}</Txt> : null}
+        {detail ? <Txt variant="secondary">{value && !stacked ? `${detail} ` : detail}</Txt> : null}
         {quote ? <Quote numberOfLines={2}>{quote}</Quote> : null}
       </View>
       {value && !stacked ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
