@@ -1482,5 +1482,21 @@ false
 [
 "can't swallow big pills so asked for liquid",
 false
+],
+[
+"Burning in my chest like bad indigestion but much worse than normal, I've been sick twice and I'm sweating",
+true
+],
+[
+"Heartburn after the curry again, took a Gaviscon",
+false
+],
+[
+"Burning chest after coffee, a bit pale today",
+false
+],
+[
+"Bit of indigestion and bloating after lunch, normal for me",
+false
 ]
 ]

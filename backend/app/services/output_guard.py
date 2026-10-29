@@ -1115,6 +1115,13 @@ _CHEST_P = r"\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*|band|weight|elepha
 _CHEST_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|(?:left |right )?arm|neck|back|light ?headed|dizzy|short of breath|breathless|(?:feel\w* |being )sick)\b"
 _CHEST_QUIET = r"\b(?:after (?:the|a|my) (?:run|gym|workout|swim)|exercis\w*|from (?:my|a|the) (?:cold|cough)|coughing|boobs?|breasts?|period|bra|fine after|vaccine|indigestion after)\b"
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CHEST_QUIET})(?={_A}{_CHEST_P})(?={_A}{_CHEST_SIGN})", _WHOLE.flags)
+# run18 (own S-279 set 4, NHS gap 3): an indigestion-like burning chest is a heart-attack sign on nhs.uk/conditions/heart-attack/symptoms
+# (reviewed 31 Mar 2026: "a burning feeling in your chest"), but everyday heartburn is common, so it needs a STRONGER second sign
+# (sweating, clammy, grey skin, jaw, arm; "pale" alone is too common); feeling sick alone, Gaviscon/antacid, reflux or after food/coffee stay quiet.
+_CHEST_BURN = r"\b(?:burn\w*|indigestion|heartburn)\b[^.!?;]{0,30}\bchest\b|\bchest\b[^.!?;]{0,20}\bburn\w*"
+_CHEST_BURN_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|arms?)\b"
+_CHEST_BURN_QUIET = r"\b(?:gaviscon|rennie|antacid|after (?:the |my |a )?(?:curry|food|lunch|dinner|tea|meal|eating|coffee)|spicy|reflux)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CHEST_BURN_QUIET})(?!{_A}{_CHEST_QUIET})(?={_A}{_CHEST_BURN})(?={_A}{_CHEST_BURN_SIGN})", _WHOLE.flags)
 
 # run17 (Safety S-287): a FAST sign that has stopped still counts if it was recent. nhs.uk/conditions/stroke/symptoms (reviewed
 # 12 Sep 2024, fetched 29 Oct 2026): 999 if "you've had signs of a stroke within the last 24 hours even if they've now stopped".
