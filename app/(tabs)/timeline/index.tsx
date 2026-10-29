@@ -1,7 +1,7 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
+import { View, StyleSheet, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   AddButton, Button, Chip, ChipGroup, Sheet, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
@@ -324,14 +324,42 @@ function MonthView({
       />
       {summary ? <Txt variant="secondary" color={colors.ink2}>{summary}</Txt> : null}
       {noteDays || bleedingDays || spottingDays ? (
-        <Txt variant="caption">
-          {[
-            noteDays ? 'A circle is a day with a note. The small number under it is the strongest rating that day, out of 10; a dot means a note with no number.' : '',
-            [bleedingDays ? 'A solid red-brown bar under a day is bleeding.' : '', spottingDays ? 'A dashed bar is spotting.' : ''].filter(Boolean).join(' '),
-            'Tap a day to open it.',
-          ].filter(Boolean).join(' ')}
-        </Txt>
+        <View accessible accessibilityLabel={monthKeyLabel(noteDays > 0, bleedingDays > 0, spottingDays > 0)} style={{ gap: space.sm }}>
+          {noteDays ? (
+            <MonthKeyRow glyph={<View style={{ alignItems: 'center' }}><View style={keyStyles.disc}><Txt style={keyStyles.discNum}>7</Txt></View><Txt style={keyStyles.under}>8</Txt></View>}>
+              A day with a note; the number under it is the strongest rating, out of 10.
+            </MonthKeyRow>
+          ) : null}
+          {bleedingDays ? <MonthKeyRow glyph={<View style={keyStyles.solid} />}>Bleeding logged</MonthKeyRow> : null}
+          {spottingDays ? <MonthKeyRow glyph={<View style={keyStyles.dashed} />}>Spotting logged</MonthKeyRow> : null}
+        </View>
       ) : null}
     </View>
   );
 }
+
+function monthKeyLabel(notes: boolean, bleeding: boolean, spotting: boolean): string {
+  return [
+    notes ? 'Key. A circled day has a note; the number under it is the strongest rating that day, out of 10.' : '',
+    bleeding ? 'A solid bar under a day is bleeding.' : '',
+    spotting ? 'A dashed bar is spotting.' : '',
+    'Tap a day to open it.',
+  ].filter(Boolean).join(' ');
+}
+
+function MonthKeyRow({ glyph, children }: { glyph: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+      <View style={{ width: 40, alignItems: 'center' }}>{glyph}</View>
+      <Txt variant="secondary" color={colors.ink} style={{ flex: 1, minWidth: 0 }}>{children}</Txt>
+    </View>
+  );
+}
+
+const keyStyles = StyleSheet.create({
+  disc: { width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: colors.borderStrong, alignItems: 'center', justifyContent: 'center' },
+  discNum: { fontSize: 13, fontWeight: '600' },
+  under: { fontSize: 11, fontWeight: '700', marginTop: 1 },
+  solid: { width: 28, height: 4, backgroundColor: colors.clay },
+  dashed: { width: 28, height: 0, borderTopWidth: 2, borderStyle: 'dashed', borderColor: colors.clay },
+});
