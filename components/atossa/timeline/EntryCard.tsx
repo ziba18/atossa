@@ -132,6 +132,12 @@ export function EntryCard({
         >
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
+            {/* Under the card header, full text, shown by the wording trigger only (Safety run38 ruling 3). */}
+            {urgent ? (
+              <View style={styles.urgent}>
+                <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent}</Txt>
+              </View>
+            ) : null}
             {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will save to your account when you’re back online" /> : null}
             {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
@@ -141,11 +147,6 @@ export function EntryCard({
                 {facts ? (
                   <Txt variant="secondary" numberOfLines={3} style={styles.factText}>{facts}</Txt>
                 ) : null}
-              </View>
-            ) : null}
-            {urgent ? (
-              <View style={styles.urgent}>
-                <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent}</Txt>
               </View>
             ) : null}
           </View>
