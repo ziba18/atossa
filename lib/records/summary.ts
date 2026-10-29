@@ -651,7 +651,7 @@ function domainLines(
 
 /** Plain-text export of the same model (copy/paste into a portal or an email to oneself). */
 export function summaryToText(doc: DoctorDoc): string {
-  const lines = [doc.title, doc.meta, ''];
+  const lines = [doc.title, printedMeta(doc), ''];
   // Agenda first (blueprint §3.7a): priority line, then her questions; omitted entirely when empty.
   if (doc.agendaBlock) {
     lines.push(doc.agendaBlock.title.toUpperCase());
