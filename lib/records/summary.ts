@@ -1253,7 +1253,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.dated tr:last-child td { border-bottom: 0; }
   table.notes th:nth-child(1) { width: 84pt; } table.notes th:nth-child(2) { width: 74pt; } table.notes th:nth-child(3) { width: 62pt; } table.notes th:nth-child(4) { width: 90pt; }
   table.kv { width: 100%; border-collapse: collapse; border-bottom: 1pt solid ${C.ink}; margin-top: 4pt; }
-  table.kv th { width: 114pt; text-align: left; font-weight: 600; color: ${C.ink}; ${pt(T.meta)} padding: 1pt 6pt 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
+  table.kv th { width: 130pt; text-align: left; font-weight: 600; color: ${C.ink}; ${pt(T.meta)} padding: 1pt 6pt 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
   table.kv td { color: ${C.ink}; ${pt(T.body)} padding: 1pt 0; border-top: 0.5pt solid ${C.borderStrong}; }
   .recorded { color: ${C.ink2}; ${pt(T.meta)} margin: 0; padding: 3pt 0 0; }
   table.figs { width: 100%; border-collapse: collapse; margin-top: 3pt; }
