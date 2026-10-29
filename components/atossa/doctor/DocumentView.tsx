@@ -6,7 +6,7 @@
 //   'large'  — Show on screen: body 20/28, quotes 26/34, for handing the phone across the desk.
 // Only Sam's own words use the serif. Plum appears only in the heat-strip ramp, clay only for bleeding.
 import React from 'react';
-import { View, type TextStyle } from 'react-native';
+import { View, useWindowDimensions, type TextStyle } from 'react-native';
 import Svg, { Line } from 'react-native-svg';
 import { fonts } from '../../../constants/atossaUI';
 import { joinFacts } from '../../../lib/records/format';
@@ -41,7 +41,7 @@ const SIZES: Record<DocVariant, Scale> = {
     label: [13, 21], section: 18, item: 10, gap: 3, track: 8, rule: 1, labelW: 0,
   },
   large: {
-    pad: 20, title: [34, 41], meta: [17, 24], head: [20, 26], body: [20, 28], quote: [26, 34], lead: [26, 34],
+    pad: 20, title: [28, 34], meta: [17, 24], head: [20, 26], body: [20, 28], quote: [26, 34], lead: [26, 34],
     label: [17, 28], section: 28, item: 14, gap: 4, track: 12, rule: 1, labelW: 0,
   },
 };
@@ -118,12 +118,14 @@ function WordsTable({ quotes, st }: { quotes: DocQuote[]; st: St }) {
 }
 
 function Bars({ bars, st }: { bars: FreqBar[]; st: St }) {
+  // Under ~260 pt there is no room beside the name: 'worst x/10' drops to its own line instead of squeezing it.
+  const narrow = useWindowDimensions().width < 260;
   return (
     <View style={{ gap: st.s.gap * 3, marginTop: st.s.gap * 2 }}>
       {bars.map((b) => (
         <View key={b.label} accessible accessibilityLabel={joinFacts(barText(b), b.strength)}>
           {/* Name + days on the left, 'worst x/10' in its own right-aligned column so every row lines up and no middot dangles. */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', columnGap: st.s.gap * 3 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', columnGap: st.s.gap * 3, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
             {/* The label and the count wrap as whole blocks (no '·' that could end a line); the count never splits. */}
             <View style={{ flexShrink: 1, flexDirection: 'row', flexWrap: 'wrap', columnGap: st.s.gap * 3 }}>
               <Txt style={[st.body, st.strong]}>{b.label}</Txt>
