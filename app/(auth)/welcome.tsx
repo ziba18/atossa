@@ -73,9 +73,9 @@ export default function WelcomeScreen() {
         <Txt variant="caption" color={colors.ink2} style={{ marginBottom: short ? space.sm : space.xxs }}>
           You need a free account to use Atossa.
         </Txt>
-        {short ? null : <Txt variant="caption" color={colors.ink2} style={{ marginBottom: space.sm }}>
+        <Txt variant="caption" color={colors.ink2} style={{ marginBottom: space.sm }}>
           Atossa doesn’t diagnose or give medical advice.
-        </Txt>}
+        </Txt>
 
         <View style={styles.actions}>
           <Button label="Create an account" onPress={() => router.push('/(auth)/register')} />
