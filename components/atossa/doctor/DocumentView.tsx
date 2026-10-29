@@ -291,6 +291,10 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
                   <Txt style={st.quote}>{`“${curly(t.noticed)}”`}</Txt>
                 </Txt>
               ) : null}
+              <Txt style={st.body}>
+                <Txt style={st.muted}>{`${t.helped || 'Did it help? –'} · Side effects: `}</Txt>
+                {t.sideEffects ? <Txt style={st.quote}>{`“${curly(t.sideEffects)}”`}</Txt> : <Txt style={st.muted}>–</Txt>}
+              </Txt>
             </View>
           ))}
           {section.quotes.map((q) => <QuoteBlock key={q.date + q.text} q={q} st={st} />)}

@@ -1129,7 +1129,8 @@ function sectionInner(s: DocSection): string {
       return `<section>${head}${s.items.length ? `<p class="item">${s.items.map((c) => esc(countText(c))).join('<span class="sep"> · </span>')}</p>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     case 'tried': {
       // One row per treatment: name · dates · what she noticed (her words, serif).
-      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}</td></tr>`).join('');
+      // Her answer to "Did it help?" and her side-effects words sit on a second line of the same row ('–' when blank).
+      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}<div class="meta">${esc(t.helped || 'Did it help? –')} · Side effects: ${t.sideEffects ? `“${esc(curly(t.sideEffects))}”` : '–'}</div></td></tr>`).join('');
       return `<section>${head}${s.items.length ? `<table class="notes dated tried"><tbody>${rows}</tbody></table>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     }
     case 'appointments':
@@ -1246,6 +1247,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
   table.notes th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
   table.notes td { padding: 3pt 6pt 3pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
   table.notes td.serif { ${pt(T.body)} }
+  table.notes td .meta { ${pt(T.meta)} color: ${C.ink2}; margin-top: 1pt; }
   table.notes td.nw { white-space: nowrap; }
   table.dated td { padding: 3pt 6pt 3pt 0; }
   table.dated td:nth-child(1) { width: 66pt; } table.dated td:nth-child(2) { width: 96pt; }
