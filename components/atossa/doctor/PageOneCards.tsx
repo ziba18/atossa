@@ -90,7 +90,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
           {periods.runs.slice(0, 3).map((r) => (
             <View key={r.range}>
               <Txt variant="body">{r.range} · {plural(r.days, 'day')}</Txt>
-              {r.flows ? <Txt variant="secondary">{r.flows}</Txt> : null}
+              {r.flows ? <Txt variant="secondary">{r.flows.replace("Flow (chosen by the patient)", "Flow")}</Txt> : null}
             </View>
           ))}
         </View>
