@@ -63,7 +63,7 @@ export default function WelcomeScreen() {
         {short || narrow ? null : <View style={styles.steps} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
           {stepsFor(voice).map((st, i) => (
             <View key={st.word} style={styles.step}>
-              <View style={styles.stepNum}><Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt></View>
+              <View style={styles.stepNum}><Txt variant="caption" color={colors.ink} style={styles.tagText}>{i + 1}</Txt></View>
               <Txt variant="headline">{st.word}</Txt>
               <Txt variant="caption" color={colors.ink2}>{st.line}</Txt>
             </View>
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   heroLine: { fontSize: 34, lineHeight: 40 },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'flex-start', gap: 4 },
-  stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
+  stepNum: { width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: colors.ink2, alignItems: 'center', justifyContent: 'center' },
   // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
   // anchored actions (not above the headline).
   hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.lg },
