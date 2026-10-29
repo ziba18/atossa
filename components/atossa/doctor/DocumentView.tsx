@@ -149,14 +149,14 @@ function DatedItemBlock({ item, st }: { item: DatedItem; st: St }) {
   return (
     <View style={{ marginBottom: st.s.item }}>
       <Txt style={st.strong}>{joinFacts(keepYear(item.date, st), item.title)}</Txt>
-      {item.lines.map((l) =>
+      {item.lines.map((l, i) =>
         columns ? (
-          <View key={l.label} style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 1 }}>
+          <View key={`${l.label}-${i}`} style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 1 }}>
             <Txt style={[st.label, { width: st.s.labelW, paddingRight: 8 }]}>{l.label}</Txt>
             <Txt style={[st.body, { flex: 1 }]}>{l.text}</Txt>
           </View>
         ) : (
-          <View key={l.label} style={{ marginTop: st.s.gap * 2 }}>
+          <View key={`${l.label}-${i}`} style={{ marginTop: st.s.gap * 2 }}>
             <Txt style={st.label}>{l.label}</Txt>
             <Txt style={st.body}>{l.text}</Txt>
           </View>
