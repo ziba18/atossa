@@ -48,6 +48,7 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
 function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter) => void }) {
   const withB = m.days.filter((d) => d.bleeding).length; // same count as the 'days of bleeding' tile
   const without = m.days.filter((d) => d.logged && !d.bleeding).length;
+  const both = m.days.filter((d) => d.logged && d.bleeding).length; // bleeding days that also have a note
   const none = m.totalDays - withB - without;
   const parts: { key: string; label: string; n: number; color: string; opens?: TimelineFilter; hint?: string }[] = [
     { key: 'with', label: 'Bleeding logged', n: withB, color: colors.plum, opens: 'Bleeding', hint: 'Opens your bleeding days.' },
@@ -79,6 +80,11 @@ function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter
           );
         })}
       </View>
+      {m.noteDays !== without ? (
+        <Txt variant="caption" style={{ marginTop: space.xs }}>
+          {`${plural(m.noteDays, 'day')} with a note: ${without} with no bleeding, ${both} on bleeding days.`}
+        </Txt>
+      ) : null}
     </Card>
   );
 }
