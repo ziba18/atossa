@@ -1107,6 +1107,15 @@ _N_QUIET = (r"\b(?:usual|same as (?:always|every)|like always|hangover|sleeping 
             r"my (?:sister|mum|friend|brother|dad|partner)(?:'s)?\b[^.!?\n]{0,20}\bheadache|mum'?s headache)\b")
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_N_QUIET})(?={_A}\b{_N_HEAD})(?:{_N_SIGNS})", _WHOLE.flags)
 
+# run17 (Safety S-279, p168/p169 3/12 missed): a chest pressure word (crushing, pressure, heaviness, squeezing, band, weight) with
+# one more NHS heart-attack sign anywhere in the note (sweating, clammy, grey, jaw, arm, neck, back, lightheaded, dizzy, breathless,
+# sick). nhs.uk/conditions/heart-attack/symptoms: pressure, heaviness, tightness or squeezing across the chest, pain spreading to the
+# arms, jaw, neck, back or tummy, sweating, breathlessness, lightheaded, call 999. After exercise, a cold/cough or breasts stay quiet.
+_CHEST_P = r"\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*|band|weight|elephant)\b[^.!?;]{0,40}\b(?:chest)\b|\bchest\b[^.!?;]{0,25}\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*)\b"
+_CHEST_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|(?:left |right )?arm|neck|back|light ?headed|dizzy|short of breath|breathless|(?:feel\w* |being )sick)\b"
+_CHEST_QUIET = r"\b(?:after (?:the|a|my) (?:run|gym|workout|swim)|exercis\w*|from (?:my|a|the) (?:cold|cough)|coughing|boobs?|breasts?|period|bra|fine after|vaccine|indigestion after)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CHEST_QUIET})(?={_A}{_CHEST_P})(?={_A}{_CHEST_SIGN})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
