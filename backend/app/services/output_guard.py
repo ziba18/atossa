@@ -885,6 +885,32 @@ _WHOLE = re.compile(_WHOLE.pattern
                     + r"|^(?=[\s\S]*\b(?:sudden\w*|out of nowhere|all of a sudden)\b)(?=[\s\S]*(?:" + _HARDBELLY + r"))(?![\s\S]*\b(?:every period|as usual|from the gym)\b)", _WHOLE.flags)
 
 
+# run21 pelvic-pain PARAPHRASE concepts (own set pp-paraphrase-run21, committed before code; nhs.uk/conditions/pelvic-pain,
+# reviewed 24 Nov 2025, read 29 Oct 2026). A lower-tummy/pelvic pain context word AND one 999 sign said in plain speech:
+# passing out by its slang, shoulder-tip pain by its place, breathing trouble by its effect, heavy bleeding by pad/towel
+# speed or clot size, sudden confusion by repetition / nonsense / lost memory, and touch/move by what a jolt or a hand does.
+# Past/resolved or as-usual notes stay quiet (last month, nothing new, as always, usual, from the gym, unfit).
+_P_CTX = (r"\b(?:pelvi\w*|(?:lower|low) (?:tummy|belly|abdomen|down)|(?:tummy|belly|pain|ache|cramp\w*) (?:pain )?low down|pain down (?:low|below)|"
+          r"period[- ]type pain|low in my pelvis)\b")
+_P_QUIET = (r"(?![\s\S]*\b(?:last (?:month|period|time|year|week)|nothing new|as always|as usual|same as (?:always|every)|usual clots|from the gym|"
+            r"because i'?m unfit|exercises? (?:for the pain )?helped|helping|helped)\b)")
+_P_SIGN = (r"(?:\bblack(?:ed)? out\b|\bkeel(?:ed)? over\b|\bcame (?:round|to)\b|\bgone for a (?:few )?(?:seconds|second|minute)|"
+           r"\broom (?:is |keeps |kept |was )?spinning\b|\bsit on the floor before i (?:hit|fell)|"
+           r"\b(?:tip|top|point|end|edge) of (?:my |the )?(?:\w+ )?shoulder|\bshoulder (?:tip|point)\b|"
+           r"\bcan'?t (?:get|catch) (?:a full |my )?breath|\bcan'?t fill my lungs\b|\bgasping\b|\bbreath(?:ing)? (?:\w+ ){0,2}(?:fast and shallow|catches)|\bevery breath catches\b|"
+           r"\bpuffing\b[^.!?]{0,40}\b(?:lying|sitting|sofa|bed)\b|"
+           r"\bpad every (?:\d{1,2}|ten|fifteen|twenty|thirty) min|\bclots? (?:the size of|as big as) (?:a |an )?(?:plum|golf ?ball|lemon|orange|fist|egg)|"
+           r"\b(?:flooded|soaked|bled) (?:through )?(?:a |my |the )?(?:\w+ )?(?:pad|towel|jeans|sheets?)\b[^.!?]{0,40}\b(?:in (?:half an hour|\d+ min\w*|an hour|minutes)|sitting on it)|"
+           r"\bsoaked a towel\b|\bblood (?:just )?(?:pouring|gushing|streaming)\b|\b(?:gone|been|got) through [4-9] pads since\b|\bfar too much blood\b|"
+           r"\basked (?:her |him |them |you )?the same (?:thing|question) (?:\w+ )?(?:times|again and again|over and over)|\btalking (?:nonsense|gibberish)\b|"
+           r"\bwords came out (?:muddled|jumbled|wrong)\b[^.!?]{0,20}\b(?:all of a sudden|suddenly|out of nowhere)|\b(?:all of a sudden|suddenly|out of nowhere)\b[^.!?]{0,20}\bwords came out (?:muddled|jumbled)|"
+           r"\b(?:couldn'?t|can'?t|don'?t) (?:remember|work out) how i'?d? (?:got|get|ended up)\b|\bdidn'?t know it was (?:mon|tues|wednes|thurs|fri|satur|sun)day\b|"
+           r"\bevery (?:bump|jolt|step|movement)\b[^.!?]{0,30}\b(?:scream\w*|agony|cry|crying|through the roof)|"
+           r"\bshifting (?:at all )?(?:sends|makes)\b|\bfrozen in one position\b|"
+           r"\bcan'?t (?:bear|stand|let) (?:anyone|anything|the seatbelt|my clothes|clothes)[^.!?]{0,20}\b(?:press\w*|touch\w*|rest\w*)|\bcouldn'?t (?:even )?let the seatbelt rest)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _P_QUIET + r"(?=[\s\S]*" + _P_CTX + r")(?=[\s\S]*" + _P_SIGN + r")", _WHOLE.flags)
+
+
 # run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
 # (nhs.uk/conditions/meningitis: "get emergency medical help"). Stiff neck alone, light alone, or her usual migraine stay quiet.
 _NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
