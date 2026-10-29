@@ -102,12 +102,14 @@ export function sampleBuckets(): Buckets {
   const copy = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
   // Design preview only: ?seed=few keeps the six oldest notes (below the 7 that unlock "See your patterns").
   const few = typeof window !== 'undefined' && /[?&]seed=few\b/.test(window.location?.search ?? '');
+  // Design preview only: ?seed=one keeps only the newest note, no period days and no appointments (first-day screens).
+  const one = typeof window !== 'undefined' && /[?&]seed=one\b/.test(window.location?.search ?? '');
   // Design preview only: ?seed=noappt drops the appointments, to render the non-appointment-day screens.
   const noAppt = typeof window !== 'undefined' && /[?&]seed=noappt\b/.test(window.location?.search ?? '');
   return {
-    symptom: recs('symptom', copy(few ? [...SYMPTOMS].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6) : SYMPTOMS), (d) => d.date),
-    period_day: recs('period', copy(PERIOD_DAYS), (d) => d.date),
-    appointment: recs('appointment', copy(noAppt ? [] : APPOINTMENTS), (d) => d.date),
+    symptom: recs('symptom', copy(one ? [...SYMPTOMS].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 1) : few ? [...SYMPTOMS].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6) : SYMPTOMS), (d) => d.date),
+    period_day: recs('period', copy(one ? [] : PERIOD_DAYS), (d) => d.date),
+    appointment: recs('appointment', copy(noAppt || one ? [] : APPOINTMENTS), (d) => d.date),
     medicine: recs('medicine', copy(MEDICINES), (d) => d.started),
     history: recs('history', copy(HISTORY), (d) => d.date),
     doctor_note: [],
