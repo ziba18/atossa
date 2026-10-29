@@ -256,6 +256,7 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
     case 'periods':
       return (
         <>
+          {section.windowCount ? <Txt style={[st.body, { marginBottom: st.s.item }]}>{section.windowCount}</Txt> : null}
           {section.runs.map((r) => (
             <View key={r.range} style={{ marginBottom: st.s.item }}>
               <Txt style={st.body}>

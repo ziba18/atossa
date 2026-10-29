@@ -235,7 +235,7 @@ export interface DatedItem { date: string; title: string; lines: DocLine[]; inli
 export type DocSection =
   | { id: 'words'; title: string; quotes: DocQuote[]; more: string }
   | { id: 'frequency'; title: string; windowLabel: string; bars: FreqBar[]; strip: HeatStripModel; caption: string }
-  | { id: 'periods'; title: string; runs: PeriodRun[]; spotting: string }
+  | { id: 'periods'; title: string; runs: PeriodRun[]; spotting: string; /** Days of bleeding in the strip's window and how many also had a note (set only when the frequency section shows). */ windowCount: string }
   | { id: 'impacts' | 'sex' | 'mood' | 'eating'; title: string; items: CountItem[]; quotes: DocQuote[] }
   | { id: 'tried'; title: string; items: TriedItem[]; quotes: DocQuote[] }
   | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string; allergies: string }
@@ -698,6 +698,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   }
 
   // 2. How often and how strong — over the strip window (the range, or its last 93 days).
+  let bleedWindowLine = '';
   if (notes.length) {
     const cappedFrom = inclusiveDays(from, to) > STRIP_MAX_DAYS ? addDays(to, -(STRIP_MAX_DAYS - 1)) : from;
     // Days before the first entry were never recorded, so they are not shown as days with no note: the
@@ -736,6 +737,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const bleedDaysInWindow = days.filter((d) => d.bleeding).length;
     const spotDays = days.filter((d) => d.spotting).length;
     const windowLabel = formatRange(stripFrom, to, 'always');
+    if (bleedDaysInWindow && noteDays) {
+      bleedWindowLine = `Bleeding was logged on ${bleedDaysInWindow} ${bleedDaysInWindow === 1 ? 'day' : 'days'} in ${windowLabel}` +
+        (bleedDaysInWindow === 1
+          ? (bleedOverlap ? '; it also had a note.' : '; it had no note.')
+          : bleedOverlap ? `; ${bleedOverlap} of them also had a note.` : '; none of them also had a note.');
+    }
     if (noteDays) {
       all.push({
         id: 'frequency',
@@ -750,12 +757,6 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         },
         caption:
           `Notes were logged on ${noteDays} of ${total} days.` +
-          (bleedDaysInWindow
-            ? ` Bleeding was logged on ${bleedDaysInWindow} ${bleedDaysInWindow === 1 ? 'day' : 'days'}` +
-              (bleedDaysInWindow === 1
-                ? (bleedOverlap ? '; it also had a note.' : '; it had no note.')
-                : bleedOverlap ? `; ${bleedOverlap} of them also had a note.` : '; none of them also had a note.')
-            : '') +
           (spotDays ? ` Spotting logged on ${plural(spotDays, 'day')}.` : '') +
           (moreZones ? ` ${moreZones} more ${moreZones === 1 ? 'area was' : 'areas were'} marked on fewer days.` : ''),
       });
@@ -782,6 +783,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       title: 'Periods logged',
       runs,
       spotting: spottingDays.length ? `Spotting logged: ${spottingDays.map((d) => formatShortDate(d, 'always')).join(', ')}` : '',
+      windowCount: bleedWindowLine,
     });
   }
 
@@ -1113,7 +1115,7 @@ function sectionInner(s: DocSection): string {
         <p class="meta">${esc(joinFacts(s.caption, s.strip.windowNote))}</p></section>`;
     }
     case 'periods':
-      return `<section>${head}${s.runs.map((r) => `<div class="item"><p><span class="strong">${esc(r.range)}</span> · ${esc(daysText(r.days))}${r.flows ? ` · ${esc(r.flows)}` : ''}</p>${r.notes.map(quoteHtml).join('')}</div>`).join('')}${s.spotting ? `<p>${esc(s.spotting)}</p>` : ''}</section>`;
+      return `<section>${head}${s.windowCount ? `<p>${esc(s.windowCount)}</p>` : ''}${s.runs.map((r) => `<div class="item"><p><span class="strong">${esc(r.range)}</span> · ${esc(daysText(r.days))}${r.flows ? ` · ${esc(r.flows)}` : ''}</p>${r.notes.map(quoteHtml).join('')}</div>`).join('')}${s.spotting ? `<p>${esc(s.spotting)}</p>` : ''}</section>`;
     case 'impacts': case 'sex': case 'mood': case 'eating':
       return `<section>${head}${s.items.length ? `<p class="item">${s.items.map((c) => esc(countText(c))).join('<span class="sep"> · </span>')}</p>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     case 'tried': {
