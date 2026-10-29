@@ -43,6 +43,7 @@ export default function TodayScreen() {
   const load = useRecordsStore((s) => s.load);
   const loading = useRecordsStore((s) => s.loading);
   const setTimelineMode = useTimelineSession((s) => s.setMode);
+  const setOpenDay = useTimelineSession((s) => s.setOpenDay);
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
   // Capture first on every phone (owner decision, 28 Oct): a one-line chip, the capture card, the 14-day strip, then the quick rows.
@@ -52,6 +53,7 @@ export default function TodayScreen() {
       <RecentStrip
         symptoms={symptoms}
         flush
+        onDayPress={(key) => { setTimelineMode('list'); setOpenDay(key); router.push('/(tabs)/timeline' as any); }}
         onPatterns={noteCount(symptoms) >= 7 ? () => { setTimelineMode('patterns'); router.push('/(tabs)/timeline' as any); } : undefined}
       />
     </View>

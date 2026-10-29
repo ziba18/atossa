@@ -15,6 +15,9 @@ interface TimelineSession {
   /** Patterns week bar tapped: the list scrolls to the first week group inside this day range (consumed once). */
   focusWeek: { from: string; to: string } | null;
   setFocusWeek: (w: { from: string; to: string } | null) => void;
+  /** A day tapped on Today's strip: Timeline opens that day's sheet (consumed once). */
+  openDay: string | null;
+  setOpenDay: (d: string | null) => void;
   setMode: (mode: TimelineMode) => void;
   setFilter: (filter: TimelineFilter) => void;
 }
@@ -24,6 +27,8 @@ export const useTimelineSession = create<TimelineSession>((set) => ({
   filter: 'All',
   focusWeek: null,
   setFocusWeek: (focusWeek) => set({ focusWeek }),
+  openDay: null,
+  setOpenDay: (openDay) => set({ openDay }),
   setMode: (mode) => set({ mode }),
   setFilter: (filter) => set({ filter }),
 }));

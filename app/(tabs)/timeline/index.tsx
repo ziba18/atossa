@@ -45,7 +45,7 @@ const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 export default function TimelineScreen() {
   const router = useRouter();
   usePageTitle('Timeline');
-  const { mode, setMode, filter, setFilter, focusWeek, setFocusWeek } = useTimelineSession();
+  const { mode, setMode, filter, setFilter, focusWeek, setFocusWeek, openDay, setOpenDay } = useTimelineSession();
   const scrollRef = useRef<ScrollViewInstance | null>(null);
   const symptom = useRecordsStore((s) => s.records.symptom);
   const loadError = useRecordsStore((s) => s.error);
@@ -67,6 +67,8 @@ export default function TimelineScreen() {
     return { y: t.y, m0: t.m0 };
   });
   const [day, setDay] = useState<string | null>(null);
+  // A day tapped on Today's strip opens its sheet here.
+  React.useEffect(() => { if (openDay) { setDay(openDay); setOpenDay(null); } }, [openDay, setOpenDay]);
   const [bleedingFor, setBleedingFor] = useState<{ date?: string } | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
