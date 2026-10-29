@@ -250,6 +250,7 @@ export function ChipGroup(props: ChipGroupProps) {
     return (
       <View
         key={v}
+        style={props.scroll ? undefined : { maxWidth: '100%' }}
         onLayout={props.scroll ? (e) => {
           const { x, width } = e.nativeEvent.layout;
           xs.current[v] = { x, w: width };
@@ -399,7 +400,7 @@ const styles = StyleSheet.create({
 
   chip: {
     minHeight: heights.chip, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.borderStrong,
-    paddingHorizontal: space.md, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent',
+    paddingHorizontal: space.md, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', maxWidth: '100%',
   },
   // Selected border is 2px: trim padding by 1 so the chip doesn't grow.
   chipSelected: { borderWidth: 2, borderColor: colors.ink, backgroundColor: colors.ink, paddingHorizontal: space.md - 1 },
