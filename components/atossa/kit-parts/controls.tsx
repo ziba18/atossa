@@ -110,7 +110,7 @@ export function AddButton({ label, onPress }: { label: string; onPress: () => vo
 // ---- Chips --------------------------------------------------------------------------------
 
 /**
- * 44-tall pill. Outline borderStrong; selected = plumTint + 2px plum border + plum 600 text.
+ * 44-tall pill. Outline borderStrong; selected = ink fill + white text (same as the selected tab).
  * `ghost` is for the always-offered non-answers: "Not sure", "It varies", "Skip".
  */
 export function Chip({
@@ -402,13 +402,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent',
   },
   // Selected border is 2px: trim padding by 1 so the chip doesn't grow.
-  chipSelected: { borderWidth: 2, borderColor: colors.plum, backgroundColor: colors.plumTint, paddingHorizontal: space.md - 1 },
+  chipSelected: { borderWidth: 2, borderColor: colors.ink, backgroundColor: colors.ink, paddingHorizontal: space.md - 1 },
   // Ghost answers (Not sure / It varies / Skip): same outline as chips (a hairline read as
   // disabled — review 1), told apart by ink2 text.
   chipGhost: { borderColor: colors.borderStrong },
-  // Selected keeps weight 500 so neighbours never reflow (V25); tint + 2px ring mark it.
+  // Selected keeps weight 500 so neighbours never reflow (V25); the ink fill marks it.
   chipText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.ink },
-  chipTextSelected: { color: colors.plum },
+  chipTextSelected: { color: colors.white },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   chipRow: { flexDirection: 'row', gap: space.xs, paddingRight: space.xxl },
   bleed: { marginHorizontal: -layout.gutter },
