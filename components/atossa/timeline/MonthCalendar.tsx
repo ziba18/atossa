@@ -29,7 +29,7 @@ export interface DayMark {
 }
 
 // Seven columns must stay clear of each other: at the 200% browser zoom widths (under ~280 px) the discs shrink.
-const DISC = Dimensions.get('window').width < 280 ? 28 : 36;
+const DISC = Dimensions.get('window').width < 240 ? 22 : Dimensions.get('window').width < 280 ? 28 : 36;
 const RING = 1.5;
 
 export function MonthCalendar({
