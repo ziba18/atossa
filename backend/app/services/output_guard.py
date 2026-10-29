@@ -1442,6 +1442,17 @@ _HEAVY_USUAL_Q = re.compile(r"\b(?:normal for me|as usual|as expected|same as (?
 _HEAVY_USUAL_CTRL = re.compile(r"\b(?:faint\w*|dizz\w*|light-?headed|pass(?:ed|ing)? out|black(?:ed)? out|pale|vision|racing|pounding|breath\w*|chest|every (?:hour|half|30|20|15)|an hour|nothing like|not like|worse than|never (?:had|been|bled)|first time|scared|frightened|soaking|soaked|flooding|pregnan\w*|can'?t stand|cannot stand|clots? (?:bigger|larger|the size of (?:a|an) (?:egg|fist|orange|lemon|golf|tennis|ball)))\b", re.I)
 
 
+# S-349 proto (run 41): FAST signs phrased as loss of use ("half my face wont move and my left hand is useless";
+# "my right hand is useless and my words are muddled"). Two different parts, or one part plus speech trouble.
+_ST_LOSS = r"(?:useless|dead|won'?t (?:work|move|lift)|wont (?:work|move|lift)|not working|stopped working|gone limp|limp)"
+_ST_PART = r"(?:face|hand|arm|leg|side|mouth)"
+_ST_SPEECH = r"\b(?:words? (?:are |is |came out |coming out )?(?:muddled|jumbled|garbled|wrong|mixed up)|can'?t (?:speak|talk|find (?:my |the )?words)|speech (?:is )?(?:muddled|garbled))\b"
+_ST_QUIET = r"(?![\s\S]*\b(?:slept on|sleeping on|pins and needles|gone after|numb from|fell asleep|after (?:the )?gym|cramp)\b)"
+_ST_F = rf"(?=[\s\S]*\b(?:face|mouth)\b[^.!?\n]{{0,25}}\b{_ST_LOSS}\b)"
+_ST_L = rf"(?=[\s\S]*\b(?:hand|arm|leg)\b[^.!?\n]{{0,25}}\b{_ST_LOSS}\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^{_ST_QUIET}{_ST_F}{_ST_L}|^{_ST_QUIET}{_ST_L}(?=[\s\S]*{_ST_SPEECH})", _WHOLE.flags)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     kind = _emergency_kind(user_text)
