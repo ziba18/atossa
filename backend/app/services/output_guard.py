@@ -1059,7 +1059,7 @@ def _o_tok(h: int) -> str:
             + r"(?:am|pm|:[0-5]\d| ?(?:am|pm|o'?clock))?(?![\d/])(?! ?(?:out of|weeks?|days?|hours?|hrs?|mins?|minutes|tablets?|pills?|paracetamol|co-?codamol|lots|doses?|times|more|at|of|x\b|mg|ml))")
 
 
-_O_SEP = r"[^.!?]{1,30}?"  # a list of times split over lines still counts
+_O_SEP = r"[^.!?;]{1,30}?"  # a list of times split over lines still counts
 _O_CLOCK = "|".join(_o_tok(a) + _O_SEP + "(?:" + "|".join(
     _o_tok((a + d1 - 1) % 12 + 1) + _O_SEP + "(?:" + "|".join(_o_tok((a + d1 + d2 - 1) % 12 + 1) for d2 in (1, 2, 3)) + ")"
     for d1 in (1, 2, 3)) + ")" for a in range(1, 13))
@@ -1074,8 +1074,12 @@ _O_SOON = (r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:\d{1,2}|ten|twenty|thi
            r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) (?:after|later)\b|"
            r"\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) later\b[^.!?\n]{0,15}\b(?:another|more|again)\b|\bat the same time\b")
 _O_QUIET = (r"(?![\s\S]*\b(?:no (?:other )?(?:paracetamol|tablets)|without paracetamol|instead of|i had nothing|(?:my|his|her) (?:son|daughter|mum|dad|partner|husband|wife|child|baby)\b[^.!?\n]{0,25}\b(?:took|takes|had)|"
-            r"for my (?:son|daughter|child|baby|kids?)|in the cupboard|in my bag|(?:\d|four|five|six|eight) hours apart|pack of)\b)")
-_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + _O_QUIET + rf"(?={_A}\b{_O_PARA}\b)(?:(?={_A}(?:{_O_CLOCK}))|(?={_A}(?:{_O_MANY}))|(?={_A}(?:{_O_SOON})))"
+            r"for my (?:son|daughter|child|baby|kids?)|in the cupboard|in my bag|(?:\d|four|five|six|eight) hours apart|pack of|"
+            # a question about mixing or dosing is not a report of having done it
+            r"(?:can|could|should) i|is it (?:ok|okay|safe|fine|alright) to|safe to|am i allowed to) (?:\w+ ){0,3}(?:take|have|mix|use|give)\b)")
+_O_DOSED = r"(?:" + _O_PARA[3:-1] + r"|took|taken|had|doses?|tablets?|pills?)"   # the time list sits in a dosing sentence
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + _O_QUIET + rf"(?={_A}\b{_O_PARA}\b)(?:(?={_A}\b{_O_DOSED}\b[^.!?;]{{0,40}}?(?:{_O_CLOCK}))"
+                    + rf"|(?={_A}(?:{_O_CLOCK})[^.!?;]{{0,30}}\b{_O_PARA})|(?={_A}(?:{_O_MANY}))|(?={_A}(?:{_O_SOON})))"
                     + r"|^" + _OD_QUIET + _O_QUIET + rf"(?:{_O_TWO})", _WHOLE.flags)
 
 # run15 A62 (class n, concept rule like A59): a headache word anywhere x one NHS 999 headache sign anywhere in the note.
