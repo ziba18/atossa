@@ -745,7 +745,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         strip: {
           from: stripFrom, to, label: windowLabel, days,
           windowNote: stripFrom === from ? ''
-            : stripFrom > cappedFrom ? 'Starts near your first entry; earlier days were not recorded.'
+            : stripFrom > cappedFrom ? 'Starts near the first entry; earlier days were not recorded.'
             : `Shows the last ${total} days of the range.`,
         },
         caption:
@@ -926,6 +926,9 @@ export const daysText = (n: number) => plural(n, 'day');
 // ---- PDF / print HTML -----------------------------------------------------------------------
 
 /** Document colours (ink on white). Plum only in the heat-strip; clay only for bleeding. */
+/** Secondary text on the printed page: 10.3:1 on white (the screen's ink2 is 7.4:1), so key labels hold up in greyscale print. */
+const PRINT_INK2 = '#473B57';
+
 export const DOC_COLORS = {
   ink: colors.ink, ink2: colors.ink2, ink3: colors.ink3, hairline: colors.hairline,
   borderStrong: colors.borderStrong, track: colors.sunken, clay: colors.clay, clayTint: colors.clayTint,
@@ -1094,7 +1097,7 @@ function sectionInner(s: DocSection): string {
       const worstIn = (t: string) => /worst (\d+)\/10/.exec(t)?.[1];
       const rows = s.bars.map((b, i) => {
         const w = worstIn(b.strength ?? '');
-        return `<tr${i === 0 ? ' class="all"' : ''}><td class="area">${esc(b.label)}</td><td class="num">${b.days} of ${b.total} days</td><td class="num">${w ? `${w}/10` : 'Not recorded'}</td><td>${esc(b.worstDate ?? '')}</td></tr>`;
+        return `<tr${i === 0 ? ' class="all"' : ''}><td class="area">${esc(i === 0 && b.label === 'Days with a note' ? 'Any area' : b.label)}</td><td class="num">${b.days} of ${b.total} days</td><td class="num">${w ? `${w}/10` : 'Not recorded'}</td><td>${esc(b.worstDate ?? '')}</td></tr>`;
       }).join('');
       const bars = `<table class="figs"><thead><tr><th>Area</th><th class="num">Days with a note</th><th class="num">Highest rating</th><th>Date of highest</th></tr></thead><tbody>${rows}</tbody></table>`;
       const bleedKey =
@@ -1214,16 +1217,16 @@ export function summaryToHtml(doc: DoctorDoc): string {
   .serif { font-family: ${SANS}; font-style: normal; font-weight: 400; ${pt(T.quote)} }
   .serif.lead { ${pt(T.lead)} }
   .q { margin: 0 0 ${T.item}pt; break-inside: avoid; }
-  .meta { color: ${C.ink2}; ${pt(T.meta)} }
-  .muted { color: ${C.ink2}; }
+  .meta { color: ${PRINT_INK2}; ${pt(T.meta)} }
+  .muted { color: ${PRINT_INK2}; }
   .strong { font-weight: 600; }
   .sep { color: ${C.ink3}; }
   .sub { color: ${C.ink2}; ${pt(T.meta)} font-weight: 600; margin: 2pt 0 3pt; }
   .item { margin: 0 0 ${T.item}pt; break-inside: avoid; }
   table.dl { border-collapse: collapse; margin-top: 1pt; width: 100%; }
-  table.dl th { width: 112pt; padding: 0 8pt 1pt 0; text-align: left; vertical-align: baseline; font-weight: 400; color: ${C.ink2}; ${pt(T.label)} }
+  table.dl th { width: 112pt; padding: 0 8pt 1pt 0; text-align: left; vertical-align: baseline; font-weight: 400; color: ${PRINT_INK2}; ${pt(T.label)} }
   table.dl td { padding: 0 0 1pt; vertical-align: baseline; }
-  table.areas th { ${pt(T.meta)} width: 132pt; white-space: nowrap; } table.areas td { ${pt(T.meta)} color: ${C.ink}; } table.areas td.muted { color: ${C.ink2}; }
+  table.areas th { ${pt(T.meta)} width: 132pt; white-space: nowrap; } table.areas td { ${pt(T.meta)} color: ${C.ink}; } table.areas td.muted { color: ${PRINT_INK2}; }
   table.notes { width: 100%; border-collapse: collapse; table-layout: fixed; }
   table.notes th { text-align: left; font-weight: 600; color: ${C.ink2}; ${pt(T.meta)} padding: 0 6pt 3pt 0; border-bottom: 0.75pt solid ${C.borderStrong}; }
   table.notes td { padding: 3pt 6pt 3pt 0; vertical-align: top; border-bottom: 0.5pt solid ${C.borderStrong}; break-inside: avoid; ${pt(T.meta)} color: ${C.ink}; }
