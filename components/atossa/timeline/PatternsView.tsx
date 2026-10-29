@@ -396,5 +396,5 @@ const styles = StyleSheet.create({
   weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.ink2 },
   barHead: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 0, justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.sunken, overflow: 'hidden' },
-  fill: { height: 8, borderRadius: 4, backgroundColor: severityRamp[2] },
+  fill: { height: 8, borderRadius: 4, backgroundColor: severityRamp[3] },
 });
