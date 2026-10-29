@@ -1047,6 +1047,36 @@ _T_SIGNS = "|".join([
     f"(?={_A}{_T_HEAD})(?={_A}{_T_SICK})", rf"(?={_A}\bsick (?:\d+|three|four|five) times)(?={_A}{_T_SWELL})"])
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}(?:{_T_NOT}))(?!{_A}{_T_RES})(?={_A}{_T_CTX})(?:{_T_SIGNS})", _WHOLE.flags)
 
+# run15 A61 (class o, concept rule beside _OD_SIGN): the NHS paracetamol limits as arithmetic instead of phrase templates.
+# nhs.uk/medicines/paracetamol-for-adults (read 29 Oct 2026): 1 or 2 tablets a dose, at least 4 hours between doses, no more
+# than 4 doses (8 tablets) in 24 hours; cold and flu remedies also contain paracetamol. Fires on (a) 3+ clock times each
+# 1-3 hours after the last, (b) 5+ lots/doses/times or a 9th+ tablet of the day, (c) two different paracetamol-containing
+# products in one note (Day Nurse + Night Nurse is the packet's own plan, quiet), (d) another dose minutes or 1-3 hours later.
+def _o_tok(h: int) -> str:
+    w = r"(?:12|midnight|midday|noon|twelve)" if h == 12 else f"(?:{h}|{['one','two','three','four','five','six','seven','eight','nine','ten','eleven'][h - 1]})"
+    return (r"(?<![\d/.,:])(?<!day )(?<!cd )(?:half (?:past )?)?" + w
+            + r"(?:am|pm|:[0-5]\d| ?(?:am|pm|o'?clock))?(?![\d/])(?! ?(?:out of|weeks?|days?|hours?|hrs?|mins?|minutes|tablets?|pills?|paracetamol|co-?codamol|lots|doses?|times|more|at|of|x\b|mg|ml))")
+
+
+_O_SEP = r"[^.!?]{1,30}?"  # a list of times split over lines still counts
+_O_CLOCK = "|".join(_o_tok(a) + _O_SEP + "(?:" + "|".join(
+    _o_tok((a + d1 - 1) % 12 + 1) + _O_SEP + "(?:" + "|".join(_o_tok((a + d1 + d2 - 1) % 12 + 1) for d2 in (1, 2, 3)) + ")"
+    for d1 in (1, 2, 3)) + ")" for a in range(1, 13))
+_O_PARA = r"(?:paracetamol|co-?codamol|solpadeine|lemsip\w*|night nurse|day nurse|beechams|cold (?:and|&) flu|sudafed|panadol|calpol)"
+_O_PRODS = ["paracetamol", "co-?codamol", "solpadeine", r"lemsip\w*", "night nurse", "day nurse", "beechams", "cold (?:and|&) flu", "sudafed", "panadol"]
+_O_TWO = "|".join(rf"(?=[\s\S]*\b{p}\b)(?=[\s\S]*\b(?:{'|'.join(q for q in _O_PRODS if q != p and {p, q} != {'night nurse', 'day nurse'})})\b)" for p in _O_PRODS)
+_O_MANY = (r"\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten|eleven|twelve) (?:lots|doses|times)\b[^.!?\n]{0,30}\b" + _O_PARA + r"|\b" + _O_PARA
+           + r"\b[^.!?\n]{0,30}\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten) (?:lots|doses|times)\b|\b(?:9|1\d|2\d)(?:st|nd|rd|th) (?:\w+ )?(?:" + _O_PARA[3:-1] + r"|tablets?|pills?|doses?)\b"
+           + r"|\b(?:9|1\d|2\d) (?:paracetamol|co-?codamol|tablets|pills)\b[^.!?\n]{0,15}\b(?:in (?:the last|a|one) (?:day|24 hours)|since (?:yesterday|this morning|last night|breakfast|lunch))\b"
+           + r"|\bevery (?:3|three) hours\b")
+_O_SOON = (r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:\d{1,2}|ten|twenty|thirty|forty|a few) (?:minutes|mins)\b (?:after|later)|"
+           r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) (?:after|later)\b|"
+           r"\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) later\b[^.!?\n]{0,15}\b(?:another|more|again)\b|\bat the same time\b")
+_O_QUIET = (r"(?![\s\S]*\b(?:no (?:other )?(?:paracetamol|tablets)|without paracetamol|instead of|i had nothing|(?:my|his|her) (?:son|daughter|mum|dad|partner|husband|wife|child|baby)\b[^.!?\n]{0,25}\b(?:took|takes|had)|"
+            r"for my (?:son|daughter|child|baby|kids?)|in the cupboard|in my bag|(?:\d|four|five|six|eight) hours apart|pack of)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + _O_QUIET + rf"(?={_A}\b{_O_PARA}\b)(?:(?={_A}(?:{_O_CLOCK}))|(?={_A}(?:{_O_MANY}))|(?={_A}(?:{_O_SOON})))"
+                    + r"|^" + _OD_QUIET + _O_QUIET + rf"(?:{_O_TWO})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
