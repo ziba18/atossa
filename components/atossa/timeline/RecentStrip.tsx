@@ -12,6 +12,7 @@ import type { Rec, SymptomData } from '../../../types/records';
 
 const MAX_DAYS = 14;
 const MIN_DAYS = 7;
+const FEW_DAYS = 5;
 /** Narrowest a day cell may get before the strip drops to fewer days (digit stays legible). */
 const MIN_CELL = 28;
 const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -21,7 +22,7 @@ interface Cell { key: string; letter: string; worst: number | null; noted: boole
 export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; onPatterns?: () => void; onMonth?: () => void }) {
   const [inner, setInner] = useState(0);
   // Narrow screens / big text: show the last 7 days instead of squeezing 14 cells.
-  const days = inner > 0 && inner < MAX_DAYS * MIN_CELL ? MIN_DAYS : MAX_DAYS;
+  const days = inner > 0 && inner < MIN_DAYS * MIN_CELL ? FEW_DAYS : inner > 0 && inner < MAX_DAYS * MIN_CELL ? MIN_DAYS : MAX_DAYS;
   const { cells, noteDays } = useMemo(() => {
     const today = todayKey();
     const out: Cell[] = [];
