@@ -1116,7 +1116,14 @@ _THIRD_NOW = re.compile(
     r"^(?=.*\bface\b[^.!?;]{0,25}\b(?:droop\w*|fallen|lopsided)\b)(?=.*\b(?:arm|speech|slurr\w*|talk\w*|speak\w*|words)\b)(?!.*\b(?:fine|ok|okay|recovered|better|gone back to normal)\b (?:now|after|since|again|once|when))(?!.*\b(?:dentist|numbing|anaesthetic|wore off|wears off|botox|filler)\b)|"
     r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
     r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
-    r"(?!.*\b(?:fine|ok|okay|recovered|better)\b (?:now|after|since|again|once|when)|.*\b(?:was|is|been) (?:fine|ok|okay)\b)", re.I | re.S)
+    r"(?!.*\b(?:fine|ok|okay|recovered|better)\b (?:now|after|since|again|once|when)|.*\b(?:was|is|been) (?:fine|ok|okay)\b)"
+    # run17 (PM S-271 set 3): someone else says now they will kill, hang or harm themselves or take all their pills. nhs.uk urgent
+    # help for mental health: 999 if "you do not feel you can keep yourself or someone else safe". Medical signpost (999/A&E).
+    r"|^(?=.*\b(?:my|our) (?:\w+ ){0,1}(?:sister|brother|mum|mom|mother|dad|father|friend|flatmate|housemate|roommate|partner|husband|wife|boyfriend|girlfriend|son|daughter|cousin|colleague)\b)"
+    r"(?=.*\b(?:she|he|they)(?:'s|'re| is| are| will| was going to)? (?:going to |gonna |about to |planning to |wants? to )?(?:kill|hang|hurt|harm) (?:her|him|them)sel(?:f|ves)\b"
+    r"|.*\b(?:she|he|they)(?:'s|'re| is| are)? (?:going to |gonna |about to )?(?:tak\w*|swallow\w*) (?:all|every one of) (?:her|his|their) (?:\w+ )?(?:pills|tablets|meds|medication|painkillers)\b(?=[^.!?]{0,40}\b(?:tonight|now|today|can'?t reach|not answering|won'?t answer|goodbye)\b)"
+    r"|.*\b(?:she|he|they)(?:'s|'re| is| are)? (?:going to |gonna |about to )?end (?:her|his|their) (?:own )?life\b)"
+    r"(?!.*\b(?:years? ago|months? ago|when (?:she|he|they) (?:was|were) (?:younger|a teen\w*)|joked|joking|film|book|show|tv|series)\b)", re.I | re.S)
 
 
 # run30 (S-262b, p142 miss): fertility treatment + a swollen tight belly + hardly passing urine, whole note. Each part alone stays quiet.
@@ -1147,12 +1154,24 @@ _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
 _SH_METHOD = (r"\b(?:driv\w* (?:off|into)|crash\w* (?:the|my) car|(?:jump\w*|throw\w* myself) (?:off|from|in front)|step\w* (?:out )?in front of|"
               r"walk\w* into the (?:sea|river|water|traffic)|swim\w* out|(?:the|a) bridge|roof|multi ?-?stor[e]?y|cliff|train tracks|"
               r"(?:stop\w*|not taking) my (?:insulin|meds|medication|tablets)|bought (?:a )?rope|(?:not|n'?t|stopped|stop) (?:been )?(?:eat\w*|drink\w*|had a drink)|"
-              r"(?:eaten|drunk) (?:or (?:eaten|drunk) )?anything)\b")
+              r"(?:eaten|drunk) (?:or (?:eaten|drunk) )?anything|(?:razor )?blades?\b[^.!?]{0,30}\b(?:ready|out|next to me|in front of me))\b")
 _SH_INTENT = (r"\b(?:on purpose|so (?:it|that it|this) (?:all )?(?:ends|stops)|so i (?:don'?t|won'?t|never) wake|not (?:com\w*) back|(?:can'?t|cannot) swim back|"
               r"until i (?:die|can'?t)|want(?:ed)? to die|for good|can'?t (?:do this|go on|keep going|cope|take it)|i'?m done\b|(?:don'?t|do not) want to be here|"
-              r"end (?:it|things|my life)|better off without me|it all ends|want it (?:all )?to (?:stop|end))")
+              r"end (?:it|things|my life)|better off without me|it all ends|want it (?:all )?to (?:stop|end)|can'?t keep doing this(?=\s*(?:[.,;!?]|$|any ?more)))")
 _SH_QUIET = r"(?![\s\S]*\b(?:to see if|lose weight|diet\w*|fasting|for lent|ramadan|bloat\w*|done with (?:this|my|the) (?:job|work|course))\b)"
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_SH_QUIET}(?={_A}{_SH_METHOD})(?={_A}{_SH_INTENT})", _SELF_WHOLE.flags)
+
+# run17 (PM S-271 concept set 3, own first contact 7/10 missed): preparation or farewell acts (letters or notes left, tablets
+# saved up, pets or things given away, goodbyes, a will) count only with a finality marker in the same note ("after i'm gone",
+# "the last time", "no point after this"); "won't be a burden ... much longer". Same NHS 999 line as above ("you do not feel
+# you can keep yourself ... safe"); the acts alone ("wrote a letter to my GP", "said goodbye at the station") stay quiet.
+_SH_PREP = (r"\b(?:(?:wrote|written|writing|left) (?:\w+ ){0,2}(?:letters?|notes?)|(?:sav\w*|stockpil\w*|hoard\w*) (?:up )?(?:\w+ ){0,2}(?:tablets|pills|meds|painkillers)(?! (?:questions?|list|receipts?))|"
+            r"g[ai]ve\w* (?:away )?(?:my|all my) (?:cat|dog|pets?|things|stuff|belongings)|g[ai]ve\w* (?:away )?(?:all )?my (?:things|stuff|belongings)|said (?:my )?goodbyes?|saying goodbye|"
+            r"(?:sorted|made|wrote|done|written|updated) (?:out )?my will|cancel\w* everything)\b")
+_SH_FINAL = (r"\b(?:(?:after|when|once) i'?m (?:gone|dead|not here)|for after i|(?:the|my) last time|no point after (?:this|tonight|today|tomorrow)\b|(?:won'?t|will not) be (?:here|around)|"
+             r"enough to end|made my mind up|(?:not|n'?t) (?:be )?(?:here|around) (?:much longer|for long|after))")
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^(?={_A}{_SH_PREP})(?={_A}{_SH_FINAL})"
+                         + r"|\b(?:won'?t|will not|wouldn'?t) be (?:a burden|a problem|in (?:anyone'?s|your|the) way) (?:to|for|on) (?:anyone|anybody|everyone|you all|any of you) (?:for )?(?:much|very|any) longer\b", _SELF_WHOLE.flags)
 
 # run16 (Safety S-269, p157 5/10 missed): blood in vomit said with everyday words, and black poo that is sticky/tar-like or
 # comes with weakness or dizziness. nhs.uk/conditions/stomach-ulcer (reviewed 12 Aug 2025, via Safety 29 Oct 2026): 999 or A&E
