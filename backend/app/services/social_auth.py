@@ -75,6 +75,7 @@ def verify_apple_identity_token(id_token: str, bundle_id: str) -> dict:
         claims = jwt.decode(
             id_token, _signing_key(id_token, jwks), algorithms=["RS256"],
             audience=bundle_id, issuer=APPLE_ISSUER,
+            options={"require": ["exp", "iss", "aud"]},
         )
     except JWTError as e:
         raise SocialAuthError(f"Invalid Apple identity token: {e}")

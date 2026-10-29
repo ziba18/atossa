@@ -41,6 +41,13 @@ def test_apple_ok_and_wrong_audience():
         social_auth.verify_apple_identity_token(t, "other.app")
 
 
+def test_apple_token_without_expiry_rejected():
+    t = jwt.encode({"iss": social_auth.APPLE_ISSUER, "aud": "com.example.app", "email": "a@example.com",
+                    "email_verified": True, "sub": "1"}, KEY, algorithm="RS256", headers={"kid": "k1"})
+    with pytest.raises(social_auth.SocialAuthError):
+        social_auth.verify_apple_identity_token(t, "com.example.app")
+
+
 def test_google_audience_list_issuer_and_at_hash():
     at = "access-token-value"
     h = base64.urlsafe_b64encode(hashlib.sha256(at.encode()).digest()[:16]).rstrip(b"=").decode()
