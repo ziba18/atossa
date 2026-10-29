@@ -752,7 +752,9 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
           `Notes were logged on ${noteDays} of ${total} days.` +
           (bleedDaysInWindow
             ? ` Bleeding was logged on ${bleedDaysInWindow} ${bleedDaysInWindow === 1 ? 'day' : 'days'}` +
-              (bleedOverlap ? `; ${bleedOverlap === 1 ? '1 of them also had a note' : `${bleedOverlap} of them also had a note`}.` : '; none of them also had a note.')
+              (bleedDaysInWindow === 1
+                ? (bleedOverlap ? '; it also had a note.' : '; it had no note.')
+                : bleedOverlap ? `; ${bleedOverlap} of them also had a note.` : '; none of them also had a note.')
             : '') +
           (spotDays ? ` Spotting logged on ${plural(spotDays, 'day')}.` : '') +
           (moreZones ? ` ${moreZones} more ${moreZones === 1 ? 'area was' : 'areas were'} marked on fewer days.` : ''),
