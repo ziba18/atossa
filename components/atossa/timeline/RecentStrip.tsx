@@ -42,7 +42,7 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
 
   const label = `Last ${days} days: notes on ${noteDays} ${noteDays === 1 ? 'day' : 'days'}`;
   return (
-    <Card style={[styles.card, flush && { marginTop: 0 }]}>
+    <Card tone={flush ? 'default' : 'selected'} style={[styles.card, flush && { marginTop: 0 }]}>
       <View style={styles.head}>
         <Txt variant="groupLabel">Last {days} days</Txt>
         <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : `${noteDays} ${noteDays === 1 ? 'day' : 'days'} with notes`}</Txt>
@@ -51,12 +51,12 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
         {cells.map((c) => {
           return (
             <View key={c.key} style={styles.col}>
-              <View style={[styles.cell, c.noted ? styles.cellNoted : null]}>
+              <View style={[styles.cell, !flush && styles.cellOnTint, c.noted ? styles.cellNoted : null]}>
                 {c.worst != null ? (
                   <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
                 ) : c.noted ? <View style={styles.dot} /> : null}
               </View>
-              <Txt variant="caption" color={colors.ink3} style={styles.letter}>{c.letter}</Txt>
+              <Txt variant="caption" color={flush ? colors.ink3 : colors.ink2} style={styles.letter}>{c.letter}</Txt>
             </View>
           );
         })}
@@ -88,12 +88,13 @@ const styles = StyleSheet.create({
     width: '100%', aspectRatio: 1, borderRadius: 8, borderWidth: 1,
     borderColor: colors.hairline, backgroundColor: colors.canvas, alignItems: 'center', justifyContent: 'center',
   },
+  cellOnTint: { backgroundColor: 'transparent', borderColor: colors.borderStrong },
   cellNoted: { borderColor: colors.ink2, backgroundColor: colors.surface },
   digit: { fontWeight: '700', fontSize: 13, fontVariant: ['tabular-nums', 'lining-nums'] },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.ink2 },
   letter: { fontSize: 12 },
   patterns: {
     flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44,
-    borderTopWidth: 1, borderTopColor: colors.hairline, marginTop: space.xs, paddingTop: space.xs,
+    borderTopWidth: 1, borderTopColor: colors.borderStrong, marginTop: space.xs, paddingTop: space.xs,
   },
 });
