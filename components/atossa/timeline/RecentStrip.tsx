@@ -61,7 +61,7 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
           );
         })}
       </View>
-      <Txt variant="caption" color={colors.ink2}>Number: strongest rating that day, of 10.</Txt>
+      <Txt variant="caption" color={colors.ink2}>{flush ? 'Number: strongest rating that day, out of 10. Blank: no note.' : 'Number: strongest rating that day, of 10.'}</Txt>
       {onPatterns || onMonth ? (
         <Pressable
           onPress={onPatterns ?? onMonth}
