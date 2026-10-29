@@ -14,6 +14,7 @@ import {
 } from '../../../components/atossa/records/recordKinds';
 import { useCountUp } from '../../../components/atossa/capture/TodayCards';
 import { nextAppointment } from '../../../components/atossa/capture/AppointmentCard';
+import { DOMAINS, ONSET_GROUP_LABEL, onsetFromHistory, type OnsetGroup } from '../../../lib/records/summary';
 import { formatRecordDateInline, formatShortDate, noteCount, notesLabel } from '../../../lib/records/format';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -91,6 +92,14 @@ export default function ProfileScreen() {
       ? `On ${formatShortDate(noteDates[0])}`
       : `${formatShortDate(noteDates[0])} to ${formatShortDate(noteDates[noteDates.length - 1])}`
     : '';
+  // "First noticed" per area, as she saved it (a year, "not sure", or her own words); never worked out from her notes.
+  const onsets = onsetFromHistory(records.history);
+  const onsetGroups = (Object.keys(onsets) as OnsetGroup[]).sort((a, b) => DOMAINS.findIndex((d) => d.id === a) - DOMAINS.findIndex((d) => d.id === b));
+  const onsetLine = onsetGroups.map((g) => {
+    const o = onsets[g]!;
+    const heading = DOMAINS.find((d) => d.id === g)?.heading ?? ONSET_GROUP_LABEL[g];
+    return `${heading} ${o.year ? `around ${o.year}` : o.words ? `“${o.words}”` : 'not sure'}`;
+  }).join(' · ');
   // Preview only: Restore follows an explicit "cleared" flag (module-level so it survives the
   // screen remounting), not "are there any records" — adding one after clearing must not hide it.
   const [sampleCleared, setSampleClearedState] = useState(previewCleared);
@@ -174,6 +183,18 @@ export default function ProfileScreen() {
           accessibilityLabel={`${name || 'Your details'}. Edit your details`}
         />
       </Group>
+
+      {onsetGroups.length ? (
+        <Group style={{ marginTop: space.md }}>
+          <GroupRow
+            icon="calendar"
+            label="First noticed"
+            detail={onsetLine}
+            onPress={() => router.push({ pathname: '/(auth)/onboarding/onset', params: { groups: onsetGroups.join(','), edit: '1' } } as any)}
+            accessibilityLabel={`First noticed. ${onsetLine}. Edit`}
+          />
+        </Group>
+      ) : null}
 
       <Group style={{ marginTop: space.md }}>
         <GroupRow

@@ -6,7 +6,7 @@ import { Button, ChipGroup, InlineError, type ChipOption } from '../../../compon
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { track } from '../../../lib/analytics';
 import { todayKey } from '../../../lib/records/dates';
-import { ONSET_GROUP_LABEL, ONSET_TYPE, type OnsetGroup } from '../../../lib/records/summary';
+import { ONSET_GROUP_LABEL, ONSET_TYPE, onsetFromHistory, type OnsetGroup } from '../../../lib/records/summary';
 import { useRecordsStore } from '../../../stores/recordsStore';
 
 const ORDER: OnsetGroup[] = ['pain', 'bleeding', 'bowelBladder', 'fatigue', 'mood', 'skinHair'];
@@ -21,12 +21,18 @@ const EARLIER = 'Earlier…';
  */
 export default function OnboardingOnset() {
   const router = useRouter();
-  const { groups } = useLocalSearchParams<{ groups?: string }>();
+  const { groups, edit } = useLocalSearchParams<{ groups?: string; edit?: string }>();
   const create = useRecordsStore((s) => s.create);
   const list = useMemo(() => ORDER.filter((g) => (groups ?? '').split(',').includes(g)), [groups]);
   const [i, setI] = useState(0);
   // Years picked so far, by area, so Back and Next never lose an answer.
-  const [years, setYears] = useState<Record<string, string | null>>({});
+  const history = useRecordsStore((s) => s.records.history);
+  const [years, setYears] = useState<Record<string, string | null>>(() => {
+    // Opened from Profile: start from the year she already saved for each area.
+    if (!edit) return {};
+    const on = onsetFromHistory(history);
+    return Object.fromEntries(Object.entries(on).map(([g, o]) => [g, o?.year ? String(o.year) : o?.notSure ? 'Not sure' : null]));
+  });
   const saved = useRef<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -50,7 +56,8 @@ export default function OnboardingOnset() {
 
   const advance = () => {
     setError('');
-    if (last) { track('Onboarding Step Completed', { step: 'onset' }); router.push('/(auth)/onboarding/reminders'); }
+    if (last && edit) router.back(); // opened from Profile: return there, not on to Reminders
+    else if (last) { track('Onboarding Step Completed', { step: 'onset' }); router.push('/(auth)/onboarding/reminders'); }
     else setI(i + 1);
   };
   const save = async () => {
