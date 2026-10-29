@@ -127,13 +127,13 @@ function CountUp({ value }: { value: number }) {
 }
 
 /** One number with a label under it; the row of three sits above the charts. */
-function StatTile({ value, label, onPress, hint, wide, zeroLabel }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean; zeroLabel?: string }) {
+function StatTile({ value, label, onPress, hint, wide, zeroLabel, hero }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean; zeroLabel?: string; hero?: boolean }) {
   // A zero that means "nothing logged" reads as a sentence, not a big 0.
   const none = value === 0 && !!zeroLabel;
   return (
     <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={wide ? styles.tileWide : styles.tile}>
       <View style={wide ? styles.tileRow : undefined}>
-        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={styles.tileNum}><CountUp value={value} /></Txt>}
+        {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={hero ? styles.tileNumHero : styles.tileNum}><CountUp value={value} /></Txt>}
         {none ? null : <Txt variant="caption" style={wide ? { flexShrink: 1 } : { marginTop: 2 }}>{label}</Txt>}
       </View>
     </PressableCard>
@@ -203,7 +203,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
         <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
-          <StatTile wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
+          <StatTile hero wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
           <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
           <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
         </View>
@@ -384,7 +384,8 @@ const styles = StyleSheet.create({
   tile: { flex: 1, alignItems: 'flex-start', minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
   tileWide: { paddingHorizontal: space.md, paddingVertical: space.sm },
   tileRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  tileNum: { fontSize: 32, lineHeight: 38 },
+  tileNum: { fontSize: 26, lineHeight: 32 },
+  tileNumHero: { fontSize: 44, lineHeight: 50 },
   numRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs, marginTop: space.xxs },
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },
   yAxis: { width: 22, height: BAR_AREA },
