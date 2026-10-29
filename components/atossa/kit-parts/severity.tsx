@@ -122,8 +122,13 @@ export function SeverityRow({
         style={[styles.captions, { paddingLeft: captionPad, paddingRight: captionPad + lastInset }]}
         aria-hidden
       >
-        <Txt variant="caption">0 = none</Txt>
-        <Txt variant="caption">10 = worst</Txt>
+        {/* In 2+ rows 0 and 10 are not at the row ends, so the ends can't be labelled in place: one line says both. */}
+        {rows.length > 1 ? <Txt variant="caption" style={{ flex: 1, textAlign: 'center' }}>0 = none · 10 = worst</Txt> : (
+          <>
+            <Txt variant="caption">0 = none</Txt>
+            <Txt variant="caption">10 = worst</Txt>
+          </>
+        )}
       </View>
     </View>
   );

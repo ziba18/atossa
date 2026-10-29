@@ -91,6 +91,7 @@ export default function TodayScreen() {
           <Button
             label="Talk it through instead"
             variant="text"
+            align="start"
             small
             onPress={() => router.push('/(tabs)/today/chat' as any)}
             accessibilityHint="Opens a chat. It can’t diagnose; you can turn it into a note for your doctor"
@@ -102,6 +103,7 @@ export default function TodayScreen() {
         <Button
           label="Help now"
           variant="text"
+          align="start"
           small
           onPress={() => router.push({ pathname: '/(tabs)/profile/help-now', params: { from: 'Today' } } as any)}
           accessibilityHint="Opens phone numbers for urgent help"
