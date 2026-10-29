@@ -1066,20 +1066,20 @@ _O_CLOCK = "|".join(_o_tok(a) + _O_SEP + "(?:" + "|".join(
 _O_PARA = r"(?:paracetamol|co-?codamol|solpadeine|lemsip\w*|night nurse|day nurse|beechams|cold (?:and|&) flu|sudafed|panadol|calpol)"
 _O_PRODS = ["paracetamol", "co-?codamol", "solpadeine", r"lemsip\w*", "night nurse", "day nurse", "beechams", "cold (?:and|&) flu", "sudafed", "panadol"]
 _O_TWO = "|".join(rf"(?=[\s\S]*\b{p}\b)(?=[\s\S]*\b(?:{'|'.join(q for q in _O_PRODS if q != p and {p, q} != {'night nurse', 'day nurse'})})\b)" for p in _O_PRODS)
-_O_MANY = (r"\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten|eleven|twelve) (?:lots|doses|times)\b[^.!?\n]{0,30}\b" + _O_PARA + r"|\b" + _O_PARA
-           + r"\b[^.!?\n]{0,30}\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten) (?:lots|doses|times)\b|\b(?:9|1\d|2\d)(?:st|nd|rd|th) (?:\w+ )?(?:" + _O_PARA[3:-1] + r"|tablets?|pills?|doses?)\b"
+_O_MANY = (r"\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten|eleven|twelve) (?:lots|doses)\b[^.!?\n]{0,30}\b" + _O_PARA + r"|\b" + _O_PARA
+           + r"\b[^.!?\n]{0,30}\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten) (?:lots|doses)\b|\b(?:9|1\d|2\d)(?:st|nd|rd|th) (?:\w+ )?(?:" + _O_PARA[3:-1] + r"|tablets?|pills?|doses?)\b"
            + r"|\b(?:9|1\d|2\d) (?:paracetamol|co-?codamol|tablets|pills)\b[^.!?\n]{0,15}\b(?:in (?:the last|a|one) (?:day|24 hours)|since (?:yesterday|this morning|last night|breakfast|lunch))\b"
            + r"|\bevery (?:3|three) hours\b")
 _O_SOON = (r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:\d{1,2}|ten|twenty|thirty|forty|a few) (?:minutes|mins)\b (?:after|later)|"
            r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) (?:after|later)\b|"
            r"\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) later\b[^.!?\n]{0,15}\b(?:another|more|again)\b|\bat the same time\b")
 _O_QUIET = (r"(?![\s\S]*\b(?:no (?:other )?(?:paracetamol|tablets)|without paracetamol|instead of|i had nothing|(?:my|his|her) (?:son|daughter|mum|dad|partner|husband|wife|child|baby)\b[^.!?\n]{0,25}\b(?:took|takes|had)|"
-            r"for my (?:son|daughter|child|baby|kids?)|in the cupboard|in my bag|(?:\d|four|five|six|eight) hours apart|pack of|"
+            r"for my (?:son|daughter|child|baby|kids?)|in the cupboard|in my bag|(?:\d|four|five|six|eight) hours apart|pack of|swapp\w*|switch\w*|changed (?:from|to)|bought|not (?:to )?(?:take|taking)\b[^.!?\n]{0,25}\b(?:with|on top)|"
             # a question about mixing or dosing is not a report of having done it
-            r"(?:can|could|should) i|is it (?:ok|okay|safe|fine|alright) to|safe to|am i allowed to) (?:\w+ ){0,3}(?:take|have|mix|use|give)\b)")
+            r"(?:(?:can|could|should) i|is it (?:ok|okay|safe|fine|alright) to|safe to|am i allowed to) (?:\w+ ){0,3}(?:take|have|mix|use|give))\b)")
 _O_DOSED = r"(?:" + _O_PARA[3:-1] + r"|took|taken|had|doses?|tablets?|pills?)"   # the time list sits in a dosing sentence
-_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + _O_QUIET + rf"(?={_A}\b{_O_PARA}\b)(?:(?={_A}\b{_O_DOSED}\b[^.!?;]{{0,40}}?(?:{_O_CLOCK}))"
-                    + rf"|(?={_A}(?:{_O_CLOCK})[^.!?;]{{0,30}}\b{_O_PARA})|(?={_A}(?:{_O_MANY}))|(?={_A}(?:{_O_SOON})))"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + _O_QUIET + rf"(?={_A}\b{_O_PARA}\b)(?:(?={_A}\b{_O_DOSED}\b[^.!?;,]{{0,25}}?(?:{_O_CLOCK}))"
+                    + rf"|(?={_A}(?:{_O_CLOCK})\s+(?:of )?{_O_PARA})|(?={_A}(?:{_O_MANY}))|(?={_A}(?:{_O_SOON})))"
                     + r"|^" + _OD_QUIET + _O_QUIET + rf"(?:{_O_TWO})", _WHOLE.flags)
 
 # run15 A62 (class n, concept rule like A59): a headache word anywhere x one NHS 999 headache sign anywhere in the note.
