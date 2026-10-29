@@ -48,7 +48,7 @@ export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, 
     <Card tone={flush ? 'default' : 'selected'} style={[styles.card, flush && { marginTop: 0 }]}>
       <View style={styles.head}>
         <Txt variant="groupLabel">Last {days} days</Txt>
-        <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : `${noteDays} ${noteDays === 1 ? 'day' : 'days'} with notes`}</Txt>
+        <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : (noteDays === 1 ? '1 day with a note' : `${noteDays} days with notes`)}</Txt>
       </View>
       <View style={[styles.row, wrap && { flexWrap: 'wrap', rowGap: 6 }]} onLayout={(e) => setInner(e.nativeEvent.layout.width)} {...(onDayPress ? null : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label })}>
         {cells.map((c) => {
