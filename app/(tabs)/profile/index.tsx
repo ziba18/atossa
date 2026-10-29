@@ -171,6 +171,7 @@ export default function ProfileScreen() {
         onPress={total === 0 ? undefined : () => router.push('/(tabs)/timeline' as any)}
         accessibilityHint="Opens Timeline"
         keepSub
+        filled
       />
 
       <Group style={{ marginTop: space.md }}>

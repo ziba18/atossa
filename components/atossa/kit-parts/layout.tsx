@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type Layo
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
-import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
+import { colors, severityRamp, fonts, heights, layout, radii, shadows, space } from '../../../constants/atossaUI';
 import { useAuthStore } from '../../../stores/authStore';
 import { isHumanName } from '../../../lib/humanName';
 import { Icon, type IconName } from '../../ui/Icon';
@@ -175,7 +175,7 @@ export function Card({
 
 /** Tappable Card with a chevron-right (ink3, 20) and a pressed state. */
 export function PressableCard({
-  children, onPress, chevron = true, edge, accessibilityLabel, accessibilityHint, accessibilityActions, onAccessibilityAction, style,
+  children, onPress, chevron = true, edge, accessibilityLabel, accessibilityHint, accessibilityActions, onAccessibilityAction, style, chevronColor,
 }: {
   children: React.ReactNode;
   onPress: () => void;
@@ -187,6 +187,7 @@ export function PressableCard({
   accessibilityActions?: { name: string; label: string }[];
   onAccessibilityAction?: (name: string) => void;
   style?: StyleProp<ViewStyle>;
+  chevronColor?: string;
 }) {
   return (
     <Pressable
@@ -200,7 +201,7 @@ export function PressableCard({
     >
       {edge ? <View style={styles.clayEdge} /> : null}
       <View style={{ flex: 1, minWidth: 0 }}>{children}</View>
-      {chevron ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+      {chevron ? <Icon name="chevron-right" size={20} color={chevronColor ?? colors.ink3} /> : null}
     </Pressable>
   );
 }
@@ -210,7 +211,7 @@ export function PressableCard({
  * line and a secondary sub-line. Pass `onPress` to make the whole card a PressableCard.
  */
 export function HeroNumber({
-  big, line, sub, onPress, accessibilityHint, keepSub,
+  big, line, sub, onPress, accessibilityHint, keepSub, filled,
 }: {
   big?: string;
   line: string;
@@ -219,6 +220,8 @@ export function HeroNumber({
   accessibilityHint?: string;
   /** Keep the sub-line on short screens (screens with no capture prompt to protect, e.g. Profile). */
   keepSub?: boolean;
+  /** Deep Iris fill with white text (white on #3F23A8 is about 10:1; #E6DDFB sub-line about 7:1): the screen's one hero object. */
+  filled?: boolean;
 }) {
   // Under ~240 pt wide (200% text) 17 pt "appointment" no longer fits the column and breaks mid-word.
   const winW = useWindowDimensions().width;
@@ -231,19 +234,20 @@ export function HeroNumber({
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? (
-        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, borderWidth: 1.5, borderColor: colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, borderWidth: 1.5, borderColor: filled ? colors.white : colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
           <Txt variant="numeral" style={short ? { fontSize: 28, lineHeight: 32 } : compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
         </View>
       ) : null}
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
       <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: short ? 90 : 130, gap: space.xxs }}>
-        <Txt variant="headline" style={narrow ? { fontSize: 15, lineHeight: 20 } : undefined}>{line}</Txt>
-        {short && !keepSub ? null : <Txt variant="secondary">{sub}</Txt>}
+        <Txt variant="headline" style={[narrow ? { fontSize: 15, lineHeight: 20 } : null, filled ? { color: colors.white } : null]}>{line}</Txt>
+        {short && !keepSub ? null : <Txt variant="secondary" style={filled ? { color: severityRamp[0] } : undefined}>{sub}</Txt>}
       </View>
     </View>
   );
-  if (!onPress) return <Card>{body}</Card>;
-  return <PressableCard onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
+  const heroStyle = filled ? { backgroundColor: severityRamp[4], borderColor: severityRamp[4] } : undefined;
+  if (!onPress) return <Card style={heroStyle}>{body}</Card>;
+  return <PressableCard style={heroStyle} chevronColor={filled ? colors.white : undefined} onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
 }
 
 /** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
