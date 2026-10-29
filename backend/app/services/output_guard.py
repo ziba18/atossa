@@ -145,6 +145,9 @@ def _norm(text: str) -> str:
     # stretched letters ("sooo heavily") and doubled spaces ("chest  pain")
     t = re.sub(r"([A-Za-z])\1{2,}", r"\1", t)
     t = re.sub(r"\b(ive|im|cant|dont|doesnt|didnt|isnt|wasnt|havent|hasnt|couldnt|wouldnt|shouldnt|arent|wont)\b", lambda m: {"ive": "i've", "im": "i'm"}.get(m.group(1).lower(), m.group(1)[:-1] + "'" + m.group(1)[-1:]), t, flags=re.I)  # typed without apostrophes
+    # run26 A76 (speech-to-text): apostrophe-less "shes/hes/babys" and an unhyphenated "co codamol" read as typed
+    t = re.sub(r"\b(shes|hes|babys|thats|theres|youre|theyre)\b", lambda m: {"shes": "she's", "hes": "he's", "babys": "baby's", "thats": "that's", "theres": "there's", "youre": "you're", "theyre": "they're"}[m.group(1).lower()], t, flags=re.I)
+    t = re.sub(r"\bco codamol\b", "co-codamol", t, flags=re.I)
     t = re.sub(r"[^\S\n]+", " ", t)  # tabs and runs of spaces become one space (newlines stay: they end a clause)
     # dictation fillers ("um i cant like breathe") and "wanna"/"gonna"
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)

@@ -34,6 +34,10 @@ function normalise(text: string): string {
   // stretched letters ("sooo heavily") and doubled spaces ("chest  pain"); mirrors backend `_norm`
   t = t.replace(/([A-Za-z])\1{2,}/g, '$1');
   t = t.replace(/\b(ive|im|cant|dont|doesnt|didnt|isnt|wasnt|havent|hasnt|couldnt|wouldnt|shouldnt|arent|wont)\b/gi, (m) => { const l = m.toLowerCase(); return l === 'ive' ? "i've" : l === 'im' ? "i'm" : m.slice(0, -1) + "'" + m.slice(-1); });
+  // run26 A76 (speech-to-text): apostrophe-less "shes/hes/babys" and an unhyphenated "co codamol"; mirrors backend `_norm`
+  const APOS: Record<string, string> = { shes: "she's", hes: "he's", babys: "baby's", thats: "that's", theres: "there's", youre: "you're", theyre: "they're" };
+  t = t.replace(/\b(shes|hes|babys|thats|theres|youre|theyre)\b/gi, (m) => APOS[m.toLowerCase()]);
+  t = t.replace(/\bco codamol\b/gi, 'co-codamol');
   t = t.replace(/[^\S\n]+/g, ' ');
   // dictation fillers ("um i cant like breathe") and "wanna"; mirrors backend `_norm`
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
