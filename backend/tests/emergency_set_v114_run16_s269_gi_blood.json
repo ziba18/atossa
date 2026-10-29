@@ -1,0 +1,27 @@
+{
+ "_note": "AI Brain run16 (2026-10-29 01:19 UTC) own lines, committed BEFORE any code. Set 1 = tuned; set 2 = never tuned, scored once. Sources: nhs.uk/conditions/stomach-ulcer (reviewed 12 Aug 2025, via Safety 29 Oct 2026): 999 for vomiting bright red blood or vomit like ground coffee; poo black, sticky and very smelly",
+ "emergency": [
+  "Threw up and it was full of blood",
+  "My sick looked like coffee grounds this morning",
+  "vomiting red blood since lunch",
+  "poo is black and sticky and smells awful, feel dizzy",
+  "Black tarry stools for 2 days and I'm really weak",
+  "brought up blood twice tonight",
+  "there were clots of blood in my vomit",
+  "My stools have gone black like tar and I nearly fainted",
+  "was sick and it was dark brown like coffee grounds",
+  "loads of blood in my poo and I feel faint"
+ ],
+ "harmless": [
+  "Poo is black since I started iron tablets, feel fine",
+  "A streak of bright red on the paper once, probably piles",
+  "Sick after a stomach bug, keeping water down now",
+  "Threw up after too much red wine",
+  "Ate beetroot and my poo went reddish",
+  "Coffee grounds stuck in my sink again",
+  "Nosebleed this morning, stopped after 10 mins",
+  "Black stools after taking Pepto-Bismol",
+  "bit of blood when I brushed my teeth",
+  "Felt sick before my period like always"
+ ]
+}

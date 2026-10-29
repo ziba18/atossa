@@ -1139,6 +1139,32 @@ _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
                          + r"|^(?=[\s\S]*\b(?:ending|end) it\b(?! with\b)(?! for\b))(?=[\s\S]*\b(?:can'?t (?:take|cope|do this|go on)|tired of (?:the )?(?:pain|everything|this))\b)"
                          + r"|^(?=[\s\S]*\b(?:want(?:ed)?|wanna|going) to (?:just )?(?:not be here|disappear)\b)(?=[\s\S]*\b(?:any ?more|tonight|at all|for good|forever)\b)(?=[\s\S]*\b(?:(?:load|pile|box|packet|bottle|strip) of (?:tablets|pills|painkillers|meds)|(?:tablets|pills|blade|rope)\b[^.!?]{0,20}\b(?:in front of me|next to me|beside me))\b)", _SELF_WHOLE.flags)
 
+# run16 (Safety S-271, p159 3/10 missed): indirect self-harm = a method or place (vehicle, height, water, stopping food/insulin)
+# x an intent marker, whole note. nhs.uk where-to-get-urgent-help-for-mental-health (via Safety, read 29 Oct 2026): 999 if
+# "you do not feel you can keep yourself ... safe". A method or place alone ("drove past the bridge") or a diet stays quiet.
+_SH_METHOD = (r"\b(?:driv\w* (?:off|into)|crash\w* (?:the|my) car|(?:jump\w*|throw\w* myself) (?:off|from|in front)|step\w* (?:out )?in front of|"
+              r"walk\w* into the (?:sea|river|water|traffic)|swim\w* out|(?:the|a) bridge|roof|multi ?-?stor[e]?y|cliff|train tracks|"
+              r"(?:stop\w*|not taking) my (?:insulin|meds|medication|tablets)|bought (?:a )?rope|(?:not|n'?t|stopped|stop) (?:been )?(?:eat\w*|drink\w*|had a drink)|"
+              r"(?:eaten|drunk) (?:or (?:eaten|drunk) )?anything)\b")
+_SH_INTENT = (r"\b(?:on purpose|so (?:it|that it|this) (?:all )?(?:ends|stops)|so i (?:don'?t|won'?t|never) wake|not (?:com\w*) back|(?:can'?t|cannot) swim back|"
+              r"until i (?:die|can'?t)|want(?:ed)? to die|for good|can'?t (?:do this|go on|keep going|cope|take it)|i'?m done\b|(?:don'?t|do not) want to be here|"
+              r"end (?:it|things|my life)|better off without me|it all ends|want it (?:all )?to (?:stop|end))")
+_SH_QUIET = r"(?![\s\S]*\b(?:to see if|lose weight|diet\w*|fasting|for lent|ramadan|bloat\w*|done with (?:this|my|the) (?:job|work|course))\b)"
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_SH_QUIET}(?={_A}{_SH_METHOD})(?={_A}{_SH_INTENT})", _SELF_WHOLE.flags)
+
+# run16 (Safety S-269, p157 5/10 missed): blood in vomit said with everyday words, and black poo that is sticky/tar-like or
+# comes with weakness or dizziness. nhs.uk/conditions/stomach-ulcer (reviewed 12 Aug 2025, via Safety 29 Oct 2026): 999 or A&E
+# for vomiting bright red blood or vomit like ground coffee, or poo that is black, sticky and very smelly. Black poo after iron
+# tablets, bismuth or liquorice with no other sign, a nosebleed or bleeding gums stay quiet.
+_GI_WEAK = r"(?:faint\w*|dizz\w*|weak|pale|shaky|light ?-?headed|clammy)"
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?![\s\S]*\b(?:nose ?bleed\w*|gums?|teeth|tooth|lolly|wine|beetroot)\b)(?=[\s\S]*\b(?:threw up|thrown up|throwing up|been sick|was sick|vomited|brought up|bringing up|sick)\b[^.!?\n]{0,40}\bblood\b)"
+                    + r"|^(?![\s\S]*\b(?:iron|ferrous|pepto\S*|bismuth|liquorice|blueberr\w*)\b(?![\s\S]*\b" + _GI_WEAK + r"\b))(?=[\s\S]*\b(?:poo|poos|stools?|motions)\b[^.!?\n]{0,25}\b(?:black|tar\w*)\b|[\s\S]*\bblack\b[^.!?\n]{0,10}\b(?:sticky|tar\w*)\b)"
+                    + r"(?=[\s\S]*\b(?:sticky|smell\w*|tar\w*|" + _GI_WEAK[3:-1] + r")\b)", _WHOLE.flags)
+# figures of speech and medicine side effects the lists react to (run16: own S-271 / S-269 quiet lines)
+_IDIOM = re.compile(_IDIOM.pattern + r"|\b(?:commute|deadline|shift|journey|my boss|the kids|this week)\b[^.!?]{0,15}\bkill(?:ing|s)? me\b"
+                    + r"|\bblack (?:poo|poos|stools?|motions?) (?:after|since|from) (?:taking |starting |eating )?(?:pepto\S*|bismuth|iron|ferrous \w+|liquorice)\b(?![\s\S]*\b" + _GI_WEAK + r"\b)", _IDIOM.flags)
+
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
 
