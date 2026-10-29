@@ -1133,6 +1133,14 @@ _NOSE_SIGN = (r"\b(?:(?:1[6-9]|[2-9]\d) ?min\w*|half an hour|an hour|hours?|(?:w
 _NOSE_QUIET = r"\b(?:stopped|eased|settled|went away|fine now|picked|years? ago)\b"
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_NOSE_QUIET})(?={_A}{_NOSE})(?={_A}{_NOSE_SIGN})", _WHOLE.flags)
 
+# run17 (Safety S-286, cut part): nhs.uk/conditions/cuts-and-grazes (reviewed 2 Apr 2026, fetched 29 Oct 2026): 999 or A&E if you
+# "cannot stop the bleeding", "the blood comes out in spurts", or "something stuck in the cut, such as a shard of glass".
+_CUT = r"\b(?:cut|gash\w*|wound|slice[dn]?)\b"
+_CUT_SIGN = (r"\b(?:spurt\w*|pumping|(?:can'?t|cannot|won'?t|will not|isn'?t) stop(?:ping)? (?:the )?bleed\w*|blood (?:won'?t|will not|isn'?t) stop\w*|"
+             r"(?:glass|metal|shard)\b[^.!?;]{0,20}\b(?:stuck|still in|in it))\b")
+_CUT_QUIET = r"\b(?:paper cut|plaster|stopped|scab|healed|years? ago|haircut|cut down|cut back|cut out)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CUT_QUIET})(?={_A}{_CUT})(?={_A}{_CUT_SIGN})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
