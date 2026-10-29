@@ -3,7 +3,7 @@
 // Each chart has a text equivalent that a screen reader reads first, and each card opens the
 // Timeline list filtered to what it counts.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
@@ -27,13 +27,15 @@ const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
 /** One horizontal bar per label: fill = days / total, count always written. */
 function Bars({ rows, total }: { rows: { label: string; days: number }[]; total: number }) {
+  // Counts share one right column on phones; under 340 pt the label would wrap to three lines, so the count may drop below it instead.
+  const roomy = useWindowDimensions().width >= 340;
   return (
     <View style={{ gap: space.sm }}>
       {rows.map((r) => (
         <View key={r.label} style={{ gap: 4 }}>
-          <View style={styles.barHead}>
-            <Txt variant="body" style={{ flexShrink: 1, flex: 1 }}>{r.label}</Txt>
-            <Txt variant="body" style={{ flexShrink: 0, marginLeft: 'auto', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
+          <View style={[styles.barHead, !roomy && { flexWrap: 'wrap' }]}>
+            <Txt variant="body" style={roomy ? { flexShrink: 1, flex: 1 } : { flexShrink: 1 }}>{r.label}</Txt>
+            <Txt variant="body" style={{ flexShrink: roomy ? 0 : 1, marginLeft: 'auto', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
