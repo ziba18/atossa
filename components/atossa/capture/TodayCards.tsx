@@ -271,7 +271,7 @@ export function HeroNumberCard() {
     bigN = total; target = '/(tabs)/doctor'; hint = 'Opens For my doctor';
     line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
     const tail = total > 0 ? 'Opens your summary' : 'Add a note and it appears in your summary';
-    sub = who ? `${who} · ${tail}` : tail;
+    sub = who || tail; // the chevron says it opens; the name alone keeps the line to one row at 390
   } else if (soon) {
     bigN = daysAway; target = '/(tabs)/doctor'; hint = 'Opens For my doctor';
     line = daysAway === 1 ? 'day until your appointment' : 'days until your appointment';
