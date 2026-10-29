@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { space } from '../../../constants/atossaUI';
 import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/atossa/kit';
 import { haptics } from '../../../lib/haptics';
@@ -26,6 +26,8 @@ function inRange(text: string, min: number, max: number): number | null {
 }
 
 export default function EditProfileScreen() {
+  // Under ~240 pt (200% text on a small phone) three date boxes side by side are too narrow to read: stack them.
+  const narrow = useWindowDimensions().width < 240;
   usePageTitle('My details');
   const { profile, fetchProfile } = useAuthStore();
   const dob = profile?.date_of_birth ? parseKey(profile.date_of_birth) : null;
@@ -77,10 +79,10 @@ export default function EditProfileScreen() {
 
         <View>
           <FieldLabel label="Date of birth" optional />
-          <View style={{ flexDirection: 'row', gap: space.xs }}>
-            <TextField label="Day" subLabel value={day} onChangeText={digits(setDay)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
-            <TextField label="Month" subLabel value={month} onChangeText={digits(setMonth)} keyboardType="number-pad" maxLength={2} style={{ flex: 1 }} />
-            <TextField label="Year" subLabel value={year} onChangeText={digits(setYear)} keyboardType="number-pad" maxLength={4} style={{ flex: 1.4 }} />
+          <View style={{ flexDirection: narrow ? 'column' : 'row', gap: space.xs }}>
+            <TextField label="Day" subLabel value={day} onChangeText={digits(setDay)} keyboardType="number-pad" maxLength={2} style={narrow ? undefined : { flex: 1 }} />
+            <TextField label="Month" subLabel value={month} onChangeText={digits(setMonth)} keyboardType="number-pad" maxLength={2} style={narrow ? undefined : { flex: 1 }} />
+            <TextField label="Year" subLabel value={year} onChangeText={digits(setYear)} keyboardType="number-pad" maxLength={4} style={narrow ? undefined : { flex: 1.4 }} />
           </View>
         </View>
 
