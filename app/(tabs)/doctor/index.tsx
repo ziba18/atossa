@@ -361,7 +361,8 @@ export default function DoctorScreen() {
             minHeight: heights.secondary, paddingVertical: space.sm,
           }}
         >
-          <Icon name="settings" size={24} color={colors.plum} />
+          {/* Under ~240 pt (200% text on a small phone) the icon is dropped so "Customise" is not broken mid-word. */}
+          {winWidth < 240 ? null : <Icon name="settings" size={24} color={colors.plum} />}
           <View style={{ flex: 1 }}>
             <Txt variant="headline">Customise this summary</Txt>
             <Txt variant="secondary">{joinFacts(visitType ?? 'Any visit', printedRange(doc).split(' · ')[0])}</Txt>
