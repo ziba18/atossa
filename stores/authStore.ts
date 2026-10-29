@@ -29,7 +29,8 @@ interface AuthState {
   register: (email: string, password: string, display_name?: string) => Promise<void>;
   loginWithApple: (idToken: string, displayName?: string | null, authorizationCode?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  signOut: (opts?: { keepOutbox?: boolean }) => Promise<void>;
+  signOutEverywhere: () => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
   deleteAccount: () => Promise<void>;
 }
@@ -110,14 +111,23 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
   },
 
-  signOut: async () => {
-    await clearOutbox(); // notes still waiting to send belong to this account
+  signOut: async (opts) => {
+    // Notes still waiting to send belong to this account. When the session simply ran out (not the person's choice)
+    // they are kept: each item stores its user id and is sent only after that same account signs in again.
+    if (!opts?.keepOutbox) await clearOutbox();
     await clearSnapshot(); // the offline copy of her records too
     await deleteLastSharedPdf();
     const id = useAuthStore.getState().user?.id;
     if (id) await clearLocalChats(id);
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });
+  },
+
+  // Ends every session on every device (server bumps the account's token version), then signs out here.
+  // Throws if the server cannot be reached, so the caller can say so instead of pretending it worked.
+  signOutEverywhere: async () => {
+    await api.post('/auth/logout-all');
+    await useAuthStore.getState().signOut();
   },
 
   deleteAccount: async () => {
