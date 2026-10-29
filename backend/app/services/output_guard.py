@@ -1125,6 +1125,14 @@ _FAST_RECENT = r"\b(?:earlier|this (?:morning|afternoon|evening)|tonight|today|l
 _FAST_QUIET = r"\b(?:dentist|numbing|anaesthetic|slept on|sleeping on|lying on|pins and needles|nerves|presentation|drunk|wine|years? ago|months? ago|weeks? ago|typing|gym|weights)\b"
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_FAST_QUIET})(?={_A}{_FAST_SIGN})(?={_A}{_FAST_RECENT})", _WHOLE.flags)
 
+# run17 (Safety S-286, nosebleed part): nhs.uk/conditions/nosebleed (reviewed 5 Dec 2023, fetched 29 Oct 2026): A&E if it "lasts
+# longer than 10 to 15 minutes", "the bleeding seems excessive", swallowing a lot of blood, weak or dizzy, or difficulty breathing.
+_NOSE = r"\b(?:nose ?bleed\w*|nose (?:has been |is |keeps )?(?:pouring|bleeding|gushing|pissing)(?: (?:with )?blood)?)\b"
+_NOSE_SIGN = (r"\b(?:(?:1[6-9]|[2-9]\d) ?min\w*|half an hour|an hour|hours?|(?:won'?t|will not|isn'?t|not) stop\w*|(?:keeps|still) (?:going|bleeding)|"
+              r"swallow\w* (?:a lot of |loads of )?blood|(?:feel\w* |feeling )?(?:weak|dizzy|faint)|pouring|gushing)\b")
+_NOSE_QUIET = r"\b(?:stopped|eased|settled|went away|fine now|picked|years? ago)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_NOSE_QUIET})(?={_A}{_NOSE})(?={_A}{_NOSE_SIGN})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
