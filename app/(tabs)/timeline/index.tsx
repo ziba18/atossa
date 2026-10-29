@@ -108,7 +108,7 @@ export default function TimelineScreen() {
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : failed ? null : mode === 'list' ? (
-        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
+        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} onDayPress={setDay} />
       ) : mode === 'patterns' ? (
         <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
       ) : (
@@ -143,8 +143,9 @@ export default function TimelineScreen() {
 // ---- List -----------------------------------------------------------------------------------
 
 function ListView({
-  feed, symptoms, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef,
+  feed, symptoms, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef, onDayPress,
 }: {
+  onDayPress: (key: string) => void;
   focusWeek: { from: string; to: string } | null;
   onFocused: () => void;
   scrollRef: React.RefObject<ScrollViewInstance | null>;
@@ -220,7 +221,7 @@ function ListView({
       </Sheet>
       {/* The strip counts symptom notes, so it only shows where those are on the list. */}
       {(filter === 'All' || filter === 'Symptoms') && !short ? (
-        <RecentStrip symptoms={symptoms} twoRows />
+        <RecentStrip symptoms={symptoms} twoRows onDayPress={onDayPress} />
       ) : null}
       {groups.length === 0 && filter !== 'All' ? (
         <Txt variant="secondary" style={{ marginTop: space.xxxl }}>

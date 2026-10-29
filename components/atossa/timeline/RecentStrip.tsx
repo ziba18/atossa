@@ -7,7 +7,7 @@ import { Card, Txt } from '../kit';
 import { Icon } from '../../ui/Icon';
 import { colors, space } from '../../../constants/atossaUI';
 import { addDays, parseKey, todayKey } from '../../../lib/records/dates';
-import { worstOf } from '../../../lib/records/format';
+import { formatDay, worstOf } from '../../../lib/records/format';
 import type { Rec, SymptomData } from '../../../types/records';
 
 const MAX_DAYS = 14;
@@ -19,7 +19,7 @@ const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 interface Cell { key: string; letter: string; worst: number | null; noted: boolean }
 
-export function RecentStrip({ symptoms, flush, twoRows, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; twoRows?: boolean; onPatterns?: () => void; onMonth?: () => void }) {
+export function RecentStrip({ symptoms, flush, twoRows, onDayPress, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; twoRows?: boolean; onDayPress?: (key: string) => void; onPatterns?: () => void; onMonth?: () => void }) {
   const [inner, setInner] = useState(0);
   // Narrow screens / big text: show the last 7 days instead of squeezing 14 cells.
   // With twoRows (Timeline, which has the height) the 14 days stay: two rows of 7 instead of dropping to 7.
@@ -50,8 +50,26 @@ export function RecentStrip({ symptoms, flush, twoRows, onPatterns, onMonth }: {
         <Txt variant="groupLabel">Last {days} days</Txt>
         <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : `${noteDays} ${noteDays === 1 ? 'day' : 'days'} with notes`}</Txt>
       </View>
-      <View style={[styles.row, wrap && { flexWrap: 'wrap', rowGap: 6 }]} onLayout={(e) => setInner(e.nativeEvent.layout.width)} accessible accessibilityRole="image" accessibilityLabel={label}>
+      <View style={[styles.row, wrap && { flexWrap: 'wrap', rowGap: 6 }]} onLayout={(e) => setInner(e.nativeEvent.layout.width)} {...(onDayPress ? null : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label })}>
         {cells.map((c) => {
+          const body = (
+            <>
+              <View style={[styles.cell, !flush && styles.cellOnTint, c.noted ? styles.cellNoted : null]}>
+                {c.worst != null ? (
+                  <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
+                ) : c.noted ? <View style={styles.dot} /> : <View style={styles.dash} />}
+              </View>
+              <Txt variant="caption" color={flush ? colors.ink3 : colors.ink2} style={styles.letter}>{c.letter}</Txt>
+            </>
+          );
+          const colStyle = [styles.col, wrap && { flexBasis: `${100 / MIN_DAYS - 1}%`, flexGrow: 0 }];
+          if (onDayPress) {
+            return (
+              <Pressable key={c.key} onPress={() => onDayPress(c.key)} accessibilityRole="button" accessibilityLabel={`${formatDay(c.key, 'always')}, ${c.worst != null ? `at worst ${c.worst} out of 10` : c.noted ? 'note, no rating' : 'no note'}`} accessibilityHint="Shows this day" style={colStyle as any}>
+                {body}
+              </Pressable>
+            );
+          }
           return (
             <View key={c.key} style={[styles.col, wrap && { flexBasis: `${100 / MIN_DAYS - 1}%`, flexGrow: 0 }]}>
               <View style={[styles.cell, !flush && styles.cellOnTint, c.noted ? styles.cellNoted : null]}>
