@@ -16,9 +16,9 @@ export function classifyExportError(e: unknown): ExportFailure {
 let lastUri: string | null = null;
 
 /** Re-checks the password, fetches the export and opens the share sheet / download. Throws on failure. */
-export async function downloadAllNotes(email: string, password: string): Promise<void> {
-  // Sign-in call only to prove it is her; its tokens are not stored.
-  await api.post('/auth/login', { email, password });
+export async function downloadAllNotes(email: string, password: string | null): Promise<void> {
+  // Sign-in call only to prove it is her; its tokens are not stored. Apple/Google-only accounts have no password: the session token is the proof.
+  if (password !== null) await api.post('/auth/login', { email, password });
   const body = await api.get<unknown>('/me/export');
   const text = buildExportFile(body);
   const name = exportFileName();

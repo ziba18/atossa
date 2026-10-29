@@ -100,7 +100,7 @@ def login_with_google(body: SocialAuthRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
-    return current_user
+    return UserResponse(id=str(current_user.id), email=current_user.email, has_password=bool(current_user.hashed_password))
 
 
 @router.post("/refresh", response_model=TokenResponse)

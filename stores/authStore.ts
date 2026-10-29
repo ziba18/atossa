@@ -13,6 +13,8 @@ export interface AuthSession {
 export interface AuthUser {
   id: string;
   email: string;
+  /** false for Apple/Google-only accounts, which have no password to re-check */
+  has_password?: boolean;
 }
 
 interface AuthState {

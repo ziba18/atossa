@@ -32,6 +32,8 @@ class SocialAuthRequest(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: str
+    # True when the account has a password (not Apple/Google only); never the hash itself
+    has_password: bool = True
 
     class Config:
         from_attributes = True

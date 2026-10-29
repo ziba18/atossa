@@ -129,13 +129,14 @@ export default function ProfileScreen() {
     }
   };
 
+  const noPassword = user?.has_password === false;
   const onExport = async () => {
     if (IS_PREVIEW) { setExportPw(''); setExportDone(true); return; } // preview: shows the done state, downloads nothing
     if (exportBusy || !user?.email) return;
     setExportBusy(true);
     setExportError('');
     try {
-      await downloadAllNotes(user.email, exportPw);
+      await downloadAllNotes(user.email, noPassword ? null : exportPw);
       setExportPw('');
       setExportDone(true);
     } catch (e) {
@@ -295,7 +296,7 @@ export default function ProfileScreen() {
                 One file with everything you’ve saved: your notes, periods, appointments, medicines and history, in your words. It downloads to this device, to keep or share as you choose.
               </Txt>
             </View>
-            <TextField
+            {noPassword ? null : <TextField
               label="Your password"
               hint="Asked so no one else can download your notes."
               value={exportPw}
@@ -307,10 +308,10 @@ export default function ProfileScreen() {
               textContentType="password"
               returnKeyType="done"
               onSubmitEditing={onExport}
-            />
+            />}
             {exportError ? <InlineError message={exportError} /> : null}
             <View style={{ gap: space.xs }}>
-              <Button label={exportBusy ? 'Making your file…' : 'Download'} variant="primary" onPress={onExport} disabled={!exportPw || exportBusy} />
+              <Button label={exportBusy ? 'Making your file…' : 'Download'} variant="primary" onPress={onExport} disabled={(!noPassword && !exportPw) || exportBusy} />
               <Button label="Cancel" variant="text" onPress={() => { setExporting(false); setExportPw(''); setExportError(''); }} />
             </View>
 
