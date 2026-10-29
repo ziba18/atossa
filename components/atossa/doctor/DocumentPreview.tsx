@@ -174,8 +174,8 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md, rowGap: space.xs }}>
             {doc.sections.map((sec) => (
               <View key={sec.id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.xs, flexBasis: '100%' }}>
-                <View aria-hidden style={{ marginTop: 2 }}><Icon name="check" size={16} color={colors.ink3} /></View>
-                <Txt variant="secondary" style={{ flex: 1 }}>{sec.title}</Txt>
+                <View aria-hidden style={{ marginTop: 2 }}><Icon name="check" size={18} color={colors.ink} /></View>
+                <Txt variant="secondary" color={colors.ink} style={{ flex: 1 }}>{sec.title}</Txt>
               </View>
             ))}
           </View>
