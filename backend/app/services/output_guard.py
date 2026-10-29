@@ -258,6 +258,10 @@ _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|did
                   r"nor|none|n'?t|not even|hardly|a bit|slightly|a little|bit of a)\b|\bn't\b", re.I)
 _PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|in year \d{1,2}\b(?![^.]*\b(?:today|now|just|this (?:morning|afternoon)|tonight)\b)|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger|(?:1[0-9]|[5-9])(?! ?(?:weeks?|days?|hours?|minutes?|mins?|months?|am|pm|o'?clock|%|:|\.\d)))|(?:fainted|passed out|blacked out|collapsed) aged (?:1[0-9]|[5-9]))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
+_OTHER_NOW = re.compile(r"\b(?:right now|now|just now|at the moment|currently|still|is|isn'?t|are|aren'?t|won'?t|can'?t|keeps?|has gone|have gone)\b", re.I)
+_REPORTED = re.compile(r"\b(?:told|tells?|says?|said|reckons?|thinks?|thought)\b", re.I)   # someone else giving information
+_AGE_PAST = re.compile(r"\bwhen (?:i|he|she|they|we) (?:was|were) (?:\d{1,2}|a (?:kid|child|teen\w*|baby|toddler|student))\b", re.I)
+_IN_CARE = re.compile(r"\b(?:in hospital|being looked after|on the ward|in a&e|at a&e|doctors? (?:is|are) with)\b", re.I)   # already being cared for
 _BODY = [
     r"can'?t (?:breathe|catch my breath|get (?:any )?air)(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
     r"(?:tight|crushing) chest", r"faint(?:ed|ing)?", r"passed out|blacked out|black(?:ing)? out", r"collaps\w+",
@@ -448,7 +452,13 @@ def _hits(rx, text: str) -> bool:
         for m in rx.finditer(clause):
             before = clause[: m.start()]
             after = clause[m.end():]
-            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
+            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or _is_past(clause) or _RESOLVED.search(after):
+                continue
+            # run19 (S-307, structure not phrases): another person as the subject stays quiet UNLESS the same clause says it
+            # is happening now, so every existing urgent concept also fires for "my mum can't breathe" (NHS when-to-call-999)
+            if _OTHER.search(before) and (not _OTHER_NOW.search(clause) or _REPORTED.search(clause) or _IN_CARE.search(text)):
+                continue
+            if _AGE_PAST.search(clause):
                 continue
             return True
     return False
@@ -466,7 +476,7 @@ _IDIOM = re.compile(
     # everyday uses of words the lists react to: "faint" as an adjective, a blocked nose, a figure of speech,
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
     r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
-    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?(?:through|thru) (?:my )?nose\b"
+    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?(?:through|thru) (?:my |her |his |their )?nose\b"
     r"|\b(?:legs?|arms?|feet|foot|hands?)\b[^.!?;]{0,12}\b(?:fell|gone|went|going) (?:to )?(?:asleep|sleep|dead)\b|\bpins and needles\b|\bcan'?t (?:stand|get) up from (?:the )?(?:sofa|couch|chair)\b"
     r"|\bagony\b[^.!?]{0,25}\bfrom (?:the |my )?(?:gym|running|a run|workout|lifting|exercise|squats)\b"
     r"|\b(?:exams?|homework|revision|work|my job|school|the heat|traffic|this (?:weather|heat|queue|wait|essay))\b[^.!?]{0,15}\bkill(?:ing|s)? me\b"
