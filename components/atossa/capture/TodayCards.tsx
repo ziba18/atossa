@@ -299,7 +299,7 @@ export function HeroNumberCard() {
   }
   return (
     <HeroNumber
-      big={String(count)} line={line} sub={sub}
+      big={String(count)} line={line} sub={sub} keepSub={Boolean(next && !soon)}
       onPress={() => router.push(target as any)}
       accessibilityHint={hint}
     />
