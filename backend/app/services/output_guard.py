@@ -939,6 +939,20 @@ _PP_SIGN = (r"(?:\b(?:hear\w*|see|seeing|saw|smell\w*)\b[^.!?]{0,60}\b(?:(?:aren
 _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PP_QUIET + r"(?=[\s\S]*" + _PP_CTX + r")(?=[\s\S]*" + _PP_SIGN + r")", _WHOLE.flags)
 
 
+# run22 S-331 (Safety ruling s331-pp2-concept-classes.md rows 1-3; own set s331-pelvic-classes-run22 committed before code; NHS pelvic pain
+# 999 list: heavy bleeding, fainting/collapse, confusion). Pad speed as a count in a short time; coming round on a floor / keeling over with
+# a bleeding or pain word; confusion by repetition or disorientation only with an operation, birth, fever or severe-pain context.
+_PAD_SPEED = (r"\b(?:two|three|four|five|six|several|[2-9]) (?:\w+ ){0,2}(?:pads?|tampons?|towels?)\b[^.!?]{0,40}?\b(?:in|within|under)"
+              r"(?: (?:about|under|less than|just over))? (?:an? hour(?: and a half)?|half an hour|(?:one|two|1|2) hours?|\d+ min\w*)\b")
+_FLOOR = r"\b(?:woke (?:up )?on the (?:\w+ )?floor|came (?:round|to) on the (?:\w+ )?floor|keel\w* over)\b"
+_REPEAT = (r"\b(?:keeps? asking (?:me )?the same (?:question|thing)|(?:does ?n'?t|does not|did ?n'?t|did not) know what (?:day|year|month) it is|"
+           r"(?:does ?n'?t|does not) know where (?:she|he) is|losing (?:her|his) words)\b")
+_REPEAT_CTX = r"\b(?:operation|surgery|op|fever|temperature|burning up|gave birth|had (?:the|her|my) baby|severe pain|agony)\b"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:as usual|like i always|years ago|last year)\b)(?=[\s\S]*" + _PAD_SPEED + r")"
+                    + r"|^(?![\s\S]*\b(?:years ago|last year|as a (?:child|teen\w*))\b)(?=[\s\S]*" + _FLOOR + r")(?=[\s\S]*\b(?:flooding|bleed\w*|blood|pain|agony)\b)"
+                    + r"|^(?=[\s\S]*" + _REPEAT + r")(?=[\s\S]*" + _REPEAT_CTX + r")", _WHOLE.flags)
+
+
 # run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
 # (nhs.uk/conditions/meningitis: "get emergency medical help"). Stiff neck alone, light alone, or her usual migraine stay quiet.
 _NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
