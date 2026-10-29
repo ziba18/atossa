@@ -95,14 +95,26 @@ you across other apps or websites.</p>
 <h2>How it is protected</h2>
 <p>Information travels between the app and our server over encrypted connections (HTTPS).
 Your sign-in is kept in your phone's secure storage. Only the account that created a record
-can read it through the app.</p>
+can read it through the app. If you are offline, a note waits on your phone until it can be
+sent, and a copy of your records is kept on your phone; both are removed when you sign out
+or delete your account.</p>
+
+<h2>Why we use it</h2>
+<p>We keep your notes and records because you ask us to: that is the service. Because they
+are health information, we also ask for your agreement on the <strong>Before you start</strong>
+screen. You can take that agreement back at any time by deleting your account.</p>
 
 <h2>Keeping and deleting your information</h2>
 <p>We keep your information for as long as you have an account. You can delete your account
 at any time in the app: <strong>Profile &rarr; Delete account</strong>. That permanently
 deletes your account and everything you've saved, straight away. Copies can remain in our
-providers' backups for a short time before they are overwritten. You can also email us to ask
-for a copy of your information, to correct it, or to delete it.</p>
+providers' backups, if they keep any, for a short time before they are overwritten. You can
+also email us to ask for a copy of your information, to correct it, or to delete it. If you
+email us, we will reply within one month.</p>
+
+<h2>If you are unhappy</h2>
+<p>Tell us using the email address at the top of this page and we will look into it and tell
+you the outcome. You can also complain to the Information Commissioner's Office at ico.org.uk.</p>
 
 <h2>Children</h2>
 <p>Atossa is not meant for children under 16, and we don't knowingly collect their
