@@ -733,7 +733,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
 
     const moreZones = Math.max(0, zoneDays(windowNotes).length - MAX_ZONE_ROWS);
     const bleedOverlap = [...byDay.keys()].filter((d) => bleedSet.has(d)).length;
-    const bleedInWindow = days.some((d) => d.bleeding);
+    const bleedDaysInWindow = days.filter((d) => d.bleeding).length;
     const spotDays = days.filter((d) => d.spotting).length;
     const windowLabel = formatRange(stripFrom, to, 'always');
     if (noteDays) {
@@ -749,10 +749,11 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
             : `Shows the last ${total} days of the range.`,
         },
         caption:
-          `Notes were logged on ${noteDays} of ${total} days` +
-          (bleedInWindow
-            ? bleedOverlap ? `; ${bleedOverlap} of those ${bleedOverlap === 1 ? 'was a bleeding day' : 'were bleeding days'}.` : '; none of those were bleeding days.'
-            : '.') +
+          `Notes were logged on ${noteDays} of ${total} days.` +
+          (bleedDaysInWindow
+            ? ` Bleeding was logged on ${bleedDaysInWindow} ${bleedDaysInWindow === 1 ? 'day' : 'days'}` +
+              (bleedOverlap ? `; ${bleedOverlap === 1 ? '1 of them also had a note' : `${bleedOverlap} of them also had a note`}.` : '; none of them also had a note.')
+            : '') +
           (spotDays ? ` Spotting logged on ${plural(spotDays, 'day')}.` : '') +
           (moreZones ? ` ${moreZones} more ${moreZones === 1 ? 'area was' : 'areas were'} marked on fewer days.` : ''),
       });
