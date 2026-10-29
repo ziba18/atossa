@@ -74,7 +74,7 @@ export default function WelcomeScreen() {
         </View>}
 
         <Txt variant="caption" color={colors.ink2} style={{ marginBottom: short ? space.sm : space.xxs }}>
-          You need a free account to use Atossa.
+          Free to use. Nothing to buy inside the app. You need an account.
         </Txt>
         <Txt variant="caption" color={colors.ink2} style={{ marginBottom: space.sm }}>
           Atossa doesn’t diagnose or give medical advice.
