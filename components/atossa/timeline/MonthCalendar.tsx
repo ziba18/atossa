@@ -7,7 +7,7 @@
 //   any note  = 5 plum dot under the day
 //   today     = 1.5 ink ring
 // Empty days are plain. No streaks, no "missed" states, no animation.
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions, Dimensions } from 'react-native';
 import { IconButton, Txt } from '../kit';
 import { colors, fonts, radii, space } from '../../../constants/atossaUI';
@@ -121,17 +121,11 @@ function DayCell({
   const spotting = mark?.bleeding === 'spotting';
   // A day with a note is one neutral outline; the strongest rating is the number printed under it (no shade carries meaning).
   const hasNote = (mark?.notes ?? 0) > 0 || mark?.worst != null;
+  const [down, setDown] = useState(false);
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      accessibilityRole="button"
-      accessibilityLabel={a11yLabel(dayKey, mark, isToday)}
-      accessibilityHint={disabled ? undefined : 'Shows this day'}
-      accessibilityState={{ disabled }}
-      style={styles.cell}
-    >
-      {({ pressed }) => (
+    // The day is a picture (digits, bars); the button is a transparent layer over it, so it holds no text that could differ from its name.
+    <View style={styles.cell}>
+      {(() => { const pressed = down; return (
         <>
           <View style={styles.discWrap}>
             {/* Today ring sits outside a filled/hatched disc so both read. */}
@@ -165,8 +159,19 @@ function DayCell({
             ? <Txt maxFontSizeMultiplier={1.2} style={styles.rating}>{mark.worst}</Txt>
             : <View style={[styles.dot, !mark?.notes && { opacity: 0 }]} />}
         </>
-      )}
-    </Pressable>
+      ); })()}
+      <Pressable
+        onPress={onPress}
+        onPressIn={() => setDown(true)}
+        onPressOut={() => setDown(false)}
+        disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={a11yLabel(dayKey, mark, isToday)}
+        accessibilityHint={disabled ? undefined : 'Shows this day'}
+        accessibilityState={{ disabled }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+    </View>
   );
 }
 
