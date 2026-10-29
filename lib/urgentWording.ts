@@ -37,7 +37,7 @@ function normalise(text: string): string {
   // run26 A76 (speech-to-text): apostrophe-less "shes/hes/babys" and an unhyphenated "co codamol"; mirrors backend `_norm`
   const APOS: Record<string, string> = { shes: "she's", hes: "he's", babys: "baby's", thats: "that's", theres: "there's", youre: "you're", theyre: "they're" };
   t = t.replace(/\b(shes|hes|babys|thats|theres|youre|theyre)\b/gi, (m) => APOS[m.toLowerCase()]);
-  t = t.replace(/\bco codamol\b/gi, 'co-codamol');
+  t = t.replace(/\bco codamol\b/gi, 'co-codamol').replace(/\bflu like\b/gi, 'flu-like');
   t = t.replace(/[^\S\n]+/g, ' ');
   // dictation fillers ("um i cant like breathe") and "wanna"; mirrors backend `_norm`
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
