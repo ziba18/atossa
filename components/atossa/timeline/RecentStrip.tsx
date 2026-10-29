@@ -19,10 +19,12 @@ const LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 interface Cell { key: string; letter: string; worst: number | null; noted: boolean }
 
-export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; onPatterns?: () => void; onMonth?: () => void }) {
+export function RecentStrip({ symptoms, flush, twoRows, onPatterns, onMonth }: { symptoms: Rec<SymptomData>[]; flush?: boolean; twoRows?: boolean; onPatterns?: () => void; onMonth?: () => void }) {
   const [inner, setInner] = useState(0);
   // Narrow screens / big text: show the last 7 days instead of squeezing 14 cells.
-  const days = inner > 0 && inner < MIN_DAYS * MIN_CELL ? FEW_DAYS : inner > 0 && inner < MAX_DAYS * MIN_CELL ? MIN_DAYS : MAX_DAYS;
+  // With twoRows (Timeline, which has the height) the 14 days stay: two rows of 7 instead of dropping to 7.
+  const wrap = !!twoRows && inner >= MIN_DAYS * MIN_CELL && inner < MAX_DAYS * MIN_CELL;
+  const days = wrap ? MAX_DAYS : inner > 0 && inner < MIN_DAYS * MIN_CELL ? FEW_DAYS : inner > 0 && inner < MAX_DAYS * MIN_CELL ? MIN_DAYS : MAX_DAYS;
   const { cells, noteDays } = useMemo(() => {
     const today = todayKey();
     const out: Cell[] = [];
@@ -48,10 +50,10 @@ export function RecentStrip({ symptoms, flush, onPatterns, onMonth }: { symptoms
         <Txt variant="groupLabel">Last {days} days</Txt>
         <Txt variant="secondary" style={{ flexShrink: 1, textAlign: 'right' }}>{noteDays === 0 ? (symptoms.length > 0 ? 'No notes in these days' : 'No notes yet') : `${noteDays} ${noteDays === 1 ? 'day' : 'days'} with notes`}</Txt>
       </View>
-      <View style={styles.row} onLayout={(e) => setInner(e.nativeEvent.layout.width)} accessible accessibilityRole="image" accessibilityLabel={label}>
+      <View style={[styles.row, wrap && { flexWrap: 'wrap', rowGap: 6 }]} onLayout={(e) => setInner(e.nativeEvent.layout.width)} accessible accessibilityRole="image" accessibilityLabel={label}>
         {cells.map((c) => {
           return (
-            <View key={c.key} style={styles.col}>
+            <View key={c.key} style={[styles.col, wrap && { flexBasis: `${100 / MIN_DAYS - 1}%`, flexGrow: 0 }]}>
               <View style={[styles.cell, !flush && styles.cellOnTint, c.noted ? styles.cellNoted : null]}>
                 {c.worst != null ? (
                   <Txt variant="caption" color={colors.ink} style={styles.digit}>{c.worst}</Txt>
