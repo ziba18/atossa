@@ -36,7 +36,7 @@ export default function ShowOnScreen() {
   };
 
   return (
-    <Modal visible animationType={Platform.OS === 'web' ? 'none' : 'slide'} presentationStyle="fullScreen" onRequestClose={close} statusBarTranslucent>
+    <Modal {...({ accessibilityLabel: "Summary on screen" } as object)} visible animationType={Platform.OS === 'web' ? 'none' : 'slide'} presentationStyle="fullScreen" onRequestClose={close} statusBarTranslucent>
       {/* RN Modal renders outside the app's provider tree on native, so give it its own insets. */}
       <SafeAreaProvider>
         <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: colors.surface }}>
