@@ -78,15 +78,19 @@ export function SummaryThumb({ doc, width = 96 }: { doc: DoctorDoc; width?: numb
   const pages = pagesFor(docHeight);
   return (
     <View style={{ alignItems: 'center', gap: space.xxs }}>
-      <Pressable
-        onPress={() => setOpen(true)}
-        accessibilityRole="button"
-        accessibilityLabel={`Page 1 of ${pages}, open summary`}
-        accessibilityHint="Opens the summary at a size you can read"
-        style={({ pressed }) => [{ width, height, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, overflow: 'hidden', opacity: pressed ? 0.85 : 1 }, shadows.hero]}
-      >
-        <PageCrop doc={doc} width={width - 2} height={height - 2} onHeight={setDocHeight} />
-      </Pressable>
+      {/* The page is a picture: the button is a transparent layer over it, so it holds no text that could differ from its name. */}
+      <View style={[{ width, height, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, overflow: 'hidden' }, shadows.hero]}>
+        <View aria-hidden pointerEvents="none">
+          <PageCrop doc={doc} width={width - 2} height={height - 2} onHeight={setDocHeight} />
+        </View>
+        <Pressable
+          onPress={() => setOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={`Page 1 of ${pages}, open summary`}
+          accessibilityHint="Opens the summary at a size you can read"
+          style={({ pressed }) => [{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: pressed ? 'rgba(255,255,255,0.15)' : 'transparent' }]}
+        />
+      </View>
       <Txt variant="caption">{`Page 1 of ${pages}`}</Txt>
       <ReaderSheet doc={doc} open={open} onClose={() => setOpen(false)} />
     </View>
