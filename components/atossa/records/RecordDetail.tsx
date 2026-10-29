@@ -390,7 +390,7 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
       {!ahead || hasAfter ? (
         <>
           <SectionTitle title="After the appointment" style={{ marginTop: space.xs, marginBottom: 0 }} />
-          <TextField label="I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
+          <TextField label="I was told" optional hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
           <TextField label="Tests or prescriptions" optional multiline value={d.tests} onChangeText={(tests) => set({ tests })} />
           <TextField label="What happens next" optional multiline value={d.next} onChangeText={(next) => set({ next })} />
         </>
@@ -433,7 +433,7 @@ function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
             precision={d.datePrecision}
             onChange={(date, datePrecision) => set({ date, datePrecision })}
           />
-          <TextField label="What I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
+          <TextField label="What I was told" optional hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
           <TextField label="What was done" optional multiline value={d.done} onChangeText={(done) => set({ done })} />
           <TextField label="Result" optional hint="How it went, in your own words" multiline value={d.result} onChangeText={(result) => set({ result })} />
         </>
