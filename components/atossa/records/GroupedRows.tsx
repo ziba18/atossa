@@ -79,12 +79,13 @@ export function GroupRow({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join('. ')}
+      accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join(' ')}
       style={({ pressed }) => [styles.row, tight && { gap: space.xs }, tint && { backgroundColor: colors.plumTint }, pressed && { backgroundColor: colors.canvas }]}
     >
       {icon && !tight ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
       <View style={styles.text}>
-        <Txt variant="body">{label}</Txt>
+        {/* The trailing space keeps label and detail apart in the page text, so the spoken name can start with it (WCAG 2.5.3). */}
+        <Txt variant="body">{detail || quote || stacked ? `${label} ` : label}</Txt>
         {stacked ? <Txt variant="secondary" style={styles.tabular}>{value}</Txt> : null}
         {detail ? <Txt variant="secondary">{detail}</Txt> : null}
         {quote ? <Quote numberOfLines={2}>{quote}</Quote> : null}

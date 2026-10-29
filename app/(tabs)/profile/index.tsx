@@ -236,7 +236,7 @@ export default function ProfileScreen() {
         />
       </Group>
 
-      <GroupHeading title="Your data" style={{ marginTop: space.xxl }} />
+      <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
       <Card>
         <View style={{ gap: space.sm }}>
           {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
