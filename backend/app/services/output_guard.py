@@ -901,8 +901,11 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:no|not|haven'?t been|isn
 # NHS 111 if you've taken more paracetamol than it says on the packet or leaflet" (Safety run28 ruling: the one fixed line).
 _PK = r"(?:paracetamol|co-?codamol|painkillers?|ibuprofen|codeine|solpadeine|lemsip|night nurse|beechams)"
 _PK_COMBO = r"(?:lemsip|night nurse|beechams|cold and flu|co-?codamol|solpadeine|sudafed max)"
+# run16 (Data o-v2 false fire "paracetamol at 7, 11, 3 and 7, two each time"): four clock times only count when two
+# neighbours are 1-3 hours apart; four doses 4+ hours apart is inside the NHS limit (nhs.uk/medicines/paracetamol-for-adults).
+_O4_SHORT = "|".join(rf"(?<!\d){a}(?:am|pm)?[,\s]+(?:and\s+)?{(a + d - 1) % 12 + 1}(?!\d)" for a in range(1, 13) for d in (1, 2, 3))
 _OD_SIGN = (r"(?:(?:lost (?:track|count) of|not sure|no idea|can'?t remember) how many (?:\w+ ){0,2}" + _PK + r"\b|\bkept taking (?:them|it|more)\b|"
-            r"\bat \d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+(?:and\s+)?\d{1,2}\b|more (?:\w+ ){0,2}than (?:it says on |what )?(?:the |my )?(?:packet|leaflet|box|label)(?: says)?|"
+            r"\bat (?=[\d\s,apmnd]{0,30}?(?:" + _O4_SHORT + r"))\d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+(?:and\s+)?\d{1,2}\b|more (?:\w+ ){0,2}than (?:it says on |what )?(?:the |my )?(?:packet|leaflet|box|label)(?: says)?|"
             r"\b" + _PK + r"\b[^.!?\n,]{0,40}\bevery (?:hour|two hours|2 hours|1 hour|one hour|half an hour|30 minutes)\b|"
             r"\b(?:[3-9]|three|four|five|six) (?:\w+ )?(?:paracetamol|painkillers|co-?codamol|tablets|pills) (?:at once|at a time|in one go)\b|"
             r"\b(?:finished|took|had|taken|swallowed) (?:off )?the rest of (?:the |my )?(?:packet|box|strip)\b|"
