@@ -47,7 +47,7 @@ export default function ShowOnScreen() {
               zIndex: 1,
             }}
           >
-            <Button label="Done" icon="x" variant="secondary" onPress={close} accessibilityLabel="Close Show on screen" style={{ paddingHorizontal: space.xl }} />
+            <Button label="Done" icon="x" variant="secondary" onPress={close} accessibilityLabel="Done, close Show on screen" style={{ paddingHorizontal: space.xl }} />
           </View>
           {doc.empty ? (
             <EmptyState message="Nothing to share yet." />
