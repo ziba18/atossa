@@ -531,7 +531,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:pelvi\w+|tummy|belly|abdom\w+)\b.{0,40}\b(?:pain|ache)\b.{0,60}\b(?:temperature of (?:3[89]|4\d)|shivering|very high temperature)\b|"
                     r"\b(?:temperature of (?:3[89]|4\d)|shivering)\b.{0,60}\bpelvi\w+ pain\b|"
                     r"\b(?:touch|press)\w*\b.{0,40}\bgetting worse\b|\bgetting worse\b.{0,40}\b(?:touch|press)\w*\b|"
-                    r"\bpelvi\w+ pain\b.{0,40}\b(?:confused|disorientated)\b|\b(?:confused|disorientated)\b.{0,40}\bpelvi\w+ pain\b|"
+                    r"\bpelvi\w+ pain\b.{0,40}\b(?:confused|disorientated)\b(?! (?:about|by|over|with|as to|whether|which|what|how)\b)|\b(?:confused|disorientated)\b(?! (?:about|by|over|with|as to|whether|which|what|how)\b).{0,40}\bpelvi\w+ pain\b|"
                     # run 01 (S-149): a lot of one's own tablets, then feeling strange/unwell; pain so bad she was sick and shaking
                     r"\b(?:took|taken|swallowed) (?:a lot|loads|a load|lots|too many) of (?:my |the )?(?:\w+ ){0,2}(?:tablets|pills|painkillers|meds|medication)\b.{0,60}\b(?:strange|weird|odd|drowsy|sick|dizzy|not right)\b|"
                     r"\bpain\b.{0,15}\bso bad\b.{0,30}\b(?:sick|vomit\w*|threw up)\b.{0,30}\bshaking\b|"
@@ -876,6 +876,22 @@ _WHOLE = re.compile(_WHOLE.pattern
                     + r"|^(?=[\s\S]*" + _NOWEE + r")(?=[\s\S]*\b(?:fever|temperature|temp|shiver\w*|shaking|burning (?:hot|up))\b)(?![\s\S]*\b(?:no (?:temperature|fever|temp)|all fine now)\b)"
                     + r"|^(?=[\s\S]*(?:" + _ACC_OD + r"))"
                     + r"|^(?=[\s\S]*\b(?:sudden\w*|out of nowhere|all of a sudden)\b)(?=[\s\S]*(?:" + _HARDBELLY + r"))(?![\s\S]*\b(?:every period|as usual|from the gym)\b)", _WHOLE.flags)
+
+
+# run20 S-317 (Safety run36 ruling; nhs.uk/conditions/pelvic-pain, reviewed 24 Nov 2025: 999 for pelvic pain with sudden
+# confusion, or severe pain getting worse that hurts to move or touch). Two concepts, whole note, chronic-day words stay quiet:
+# (1) SUDDEN confusion: an onset word next to confusion / not knowing where or what day / not making sense ("confused about" stays quiet);
+# (2) NEW FAST change (within hours, came on fast, worse every hour, from nothing) AND it hurts to touch/move or she cannot stand/walk/move.
+_ONSET = r"(?:sudden(?:ly)?|all of a sudden|out of nowhere|without warning)"
+_CONFUSE = (r"(?:confus\w*(?! (?:about|by|over|with|as to|whether|which|what|how)\b)|disorient\w*|(?:didn'?t|did not|don'?t|do not) know (?:where i (?:was|am)|what day|who)|"
+            r"(?:not|wasn'?t|isn'?t) making (?:any )?sense)")
+_FAST = (r"(?:(?:in|within|over) (?:the )?(?:last |past )?(?:(?:an?|one|a couple of|a few|two|three|\d) )?hours?\b|came on (?:fast|quickly|suddenly)|"
+         r"(?:worse|worsening) (?:every|by the|each) hour|(?:from|went from) nothing to|(?:started|began|came on) (?:a couple of|a few|two|three|\d) hours ago)")
+_TOUCHMOVE = (r"(?:(?:hurts?|agony|painful|can'?t bear|cannot bear)\b[^.!?]{0,30}\b(?:touch\w*|press\w*|seatbelt|duvet|clothes|move|moving)\b|"
+              r"\btouching (?:it|my)\b|can'?t (?:walk|stand|move)\b|without (?:holding|crying)|can'?t bear (?:the |anyone |anything )?(?:\w+ )?(?:on|touching) it)")
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*(?:\b" + _ONSET + r"\b[^.!?]{0,40}\b" + _CONFUSE + r"|\b" + _CONFUSE + r"[^.!?]{0,20}\b" + _ONSET + r"\b))"
+                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*" + _FAST + r")(?=[\s\S]*" + _TOUCHMOVE + r")(?![\s\S]*\b(?:as usual|same as always|every (?:month|period)|usual (?:flare|endo))\b)", _WHOLE.flags)
 
 
 # run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
