@@ -1308,6 +1308,21 @@ _WHOLE = re.compile(_WHOLE.pattern + rf"|^{_K_QUIET}(?={_A}{_K_CTX})(?={_A}{_K_B
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\bhaem?orrhag\w*\s+(?:money|cash|players|staff|customers|subscribers|fans|points|votes)\b)"
                     r"(?=[\s\S]*\b(?:i'?m|i am|am i|been|still|keep|now|started|i think i'?m|i'?ve been)?\s*(?:haem?orrhaging|hemorrhaging)\b)", _WHOLE.flags)
 
+# run20 S-317 (Safety run36 ruling; nhs.uk/conditions/pelvic-pain, reviewed 24 Nov 2025: 999 for pelvic pain with sudden
+# confusion, or severe pain getting worse that hurts to move or touch). Two concepts, whole note, chronic-day words stay quiet:
+# (1) SUDDEN confusion: an onset word next to confusion / not knowing where or what day / not making sense ("confused about" stays quiet);
+# (2) NEW FAST change (within hours, came on fast, worse every hour, from nothing) AND it hurts to touch/move or she cannot stand/walk/move.
+_ONSET = r"(?:sudden(?:ly)?|all of a sudden|out of nowhere|without warning)"
+_CONFUSE = (r"(?:confus\w*(?! (?:about|by|over|with|as to|whether|which|what|how)\b)|disorient\w*|(?:didn'?t|did not|don'?t|do not) know (?:where i (?:was|am)|what day|who)|"
+            r"(?:not|wasn'?t|isn'?t) making (?:any )?sense)")
+_FAST = (r"(?:(?:in|within|over) (?:the )?(?:last |past )?(?:(?:an?|one|a couple of|a few|two|three|\d) )?hours?\b|came on (?:fast|quickly|suddenly)|"
+         r"(?:worse|worsening) (?:every|by the|each) hour|(?:from|went from) nothing to|(?:started|began|came on) (?:a couple of|a few|two|three|\d) hours ago)")
+_TOUCHMOVE = (r"(?:(?:hurts?|agony|painful|can'?t bear|cannot bear)\b[^.!?]{0,30}\b(?:touch\w*|press\w*|seatbelt|duvet|clothes|move|moving)\b|"
+              r"\btouching (?:it|my)\b|can'?t (?:walk|stand|move)\b|without (?:holding|crying)|can'?t bear (?:the |anyone |anything )?(?:\w+ )?(?:on|touching) it)")
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*(?:\b" + _ONSET + r"\b[^.!?]{0,40}\b" + _CONFUSE + r"|\b" + _CONFUSE + r"[^.!?]{0,20}\b" + _ONSET + r"\b))"
+                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*" + _FAST + r")(?=[\s\S]*" + _TOUCHMOVE + r")(?![\s\S]*\b(?:as usual|same as always|every (?:month|period)|usual (?:flare|endo))\b)", _WHOLE.flags)
+
 # S-325 prototype: asthma attack in plain words (NHS: getting worse, reliever not helping, no inhaler). Whole-text, because _CLAUSE splits at "and".
 _RELIEVER = r"\b(?:inhaler|reliever|puffs?|blue one)\b"
 _NOHELP = r"\b(?:still|isn'?t (?:helping|touching|working)|not (?:helping|touching|working)|did(?:n'?t| nothing)|did nothing|nothing|no (?:use|help|effect)|empty|ran out|(?:max|maximum))\b"
