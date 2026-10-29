@@ -231,7 +231,7 @@ export function HeroNumber({
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? (
-        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, borderWidth: 1.5, borderColor: colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
           <Txt variant="numeral" style={short ? { fontSize: 28, lineHeight: 32 } : compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
         </View>
       ) : null}
