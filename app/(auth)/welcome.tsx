@@ -38,8 +38,8 @@ export default function WelcomeScreen() {
 
         <View style={styles.hero}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>
-            Say how it feels.{'\n'}
-            <Txt variant="hero" color={colors.plum} style={short || win.width < 380 ? undefined : styles.heroLine}>Walk in with a record.</Txt>
+            Note how you feel.{'\n'}
+            <Txt variant="hero" color={colors.plum} style={short || win.width < 380 ? undefined : styles.heroLine}>Bring a summary.</Txt>
           </Txt>
           <Txt variant="body" color={colors.ink2}>
             {voice ? 'Talk or type' : 'Type'} about your symptoms in your own words. Atossa turns them into a short summary for your doctor.
@@ -70,6 +70,9 @@ export default function WelcomeScreen() {
           ))}
         </View>}
 
+        <Txt variant="caption" color={colors.ink2} style={{ marginBottom: short ? space.sm : space.xxs }}>
+          You need a free account to use Atossa.
+        </Txt>
         {short ? null : <Txt variant="caption" color={colors.ink2} style={{ marginBottom: space.sm }}>
           Atossa doesn’t diagnose or give medical advice.
         </Txt>}
