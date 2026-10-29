@@ -73,7 +73,7 @@ type St = ReturnType<typeof useStyles>;
  * Phone sizes: keep a date's year on the same line as its month ("Wed 23 Sep 2026" never wraps
  * to an orphan "2026"). The A4 page keeps plain spaces, like the PDF.
  */
-const keepYear = (t: string, st: St) => (st.s.labelW > 0 ? t : t.replace(/ (\d{4})\b/g, '\u00a0$1'));
+const keepYear = (t: string, st: St) => (st.s.labelW > 0 ? t : t.replace(/\b(\d{1,2}) ([A-Z][a-z]{2})\b/g, '$1\u00a0$2').replace(/ (\d{4})\b/g, '\u00a0$1'));
 
 function QuoteBlock({ q, st }: { q: DocQuote; st: St }) {
   // No facts → the date sits on the quote's line (as in the PDF); otherwise a meta line under it.
