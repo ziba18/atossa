@@ -81,7 +81,7 @@ export function SummaryThumb({ doc, width = 96 }: { doc: DoctorDoc; width?: numb
       <Pressable
         onPress={() => setOpen(true)}
         accessibilityRole="button"
-        accessibilityLabel="Preview of page 1 of your summary"
+        accessibilityLabel={`Page 1 of ${pages}, open summary`}
         accessibilityHint="Opens the summary at a size you can read"
         style={({ pressed }) => [{ width, height, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, overflow: 'hidden', opacity: pressed ? 0.85 : 1 }, shadows.hero]}
       >

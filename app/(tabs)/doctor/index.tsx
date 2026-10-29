@@ -133,7 +133,7 @@ export default function DoctorScreen() {
   // Web at desktop width: preview (the document) on the right, controls always open on the left.
   const desk = Platform.OS === 'web' && winWidth >= 1024;
   // Under ~240 pt wide (200% text on a small phone) a sticky bar plus the tab bar leaves no room for the summary: the bar moves to the end of the page.
-  const inlineBar = winWidth < 240 || winHeight < 450;
+  const inlineBar = winWidth < 240 || winHeight < 600; // at 568 pt the pinned bar left less than one card row
   const nothingYet = doc.empty && doc.available.length === 0;
   // An appointment today: the note field sits above the Customise fold (phone layout) so it is hard to miss.
   // Phones with notes and an appointment: page 1 itself rides the appointment card, above the fold (PRD doctor-v2 §21).
