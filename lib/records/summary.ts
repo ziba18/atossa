@@ -752,7 +752,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         strip: {
           from: stripFrom, to, label: windowLabel, days,
           windowNote: stripFrom === from ? ''
-            : stripFrom > cappedFrom ? 'Starts near the first entry; earlier days were not recorded.'
+            : stripFrom > cappedFrom ? `Covers ${windowLabel}.`
             : `Shows the last ${total} days of the range.`,
         },
         caption:
@@ -777,13 +777,15 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     };
   });
   const spottingDays = bleedDays.filter((d) => bleedingStatus(d) === 'spotting').map((d) => d.date).sort();
-  if (runs.length || spottingDays.length) {
+  // No bleeding at all in a range that has notes is still said, so a GP can tell "none logged" from "left out".
+  const noBleeding = !runs.length && !spottingDays.length && notes.length > 0;
+  if (runs.length || spottingDays.length || noBleeding) {
     all.push({
       id: 'periods',
       title: 'Periods logged',
       runs,
       spotting: spottingDays.length ? `Spotting logged: ${spottingDays.map((d) => formatShortDate(d, 'always')).join(', ')}` : '',
-      windowCount: bleedWindowLine,
+      windowCount: noBleeding ? 'No bleeding was logged in this range.' : bleedWindowLine,
     });
   }
 
@@ -1107,8 +1109,7 @@ function sectionInner(s: DocSection): string {
       const bleedKey =
         (s.strip.days.some((d) => d.bleeding) ? ` <span class="key"></span> = ${STRIP_BLEED_KEY}.` : '') +
         (s.strip.days.some((d) => d.spotting) ? ` <span class="key spot"></span> = ${STRIP_SPOT_KEY}.` : '');
-      const top = s.bars[0]?.worstOn;
-      const topLine = top ? `<p class="meta" style="margin-top:3pt">Highest rating given: ${esc(top)}.</p>` : '';
+      const topLine = '';
       return `<section>${head}${bars}${topLine}
         <div class="strip">${stripSvg(s.strip)}</div>
         <p class="meta">${esc(STRIP_KEY)}${bleedKey}</p>
