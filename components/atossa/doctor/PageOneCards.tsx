@@ -85,6 +85,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
     cards.push(
       <Card key="periods">
         <Txt variant="groupLabel">{periods.title}</Txt>
+        {periods.windowCount ? <Txt variant="secondary" style={{ marginTop: space.xs }}>{periods.windowCount}</Txt> : null}
         <View style={{ gap: space.sm, marginTop: space.sm }}>
           {periods.runs.slice(0, 3).map((r) => (
             <View key={r.range}>
