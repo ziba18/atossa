@@ -151,6 +151,8 @@ def _norm(text: str) -> str:
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
     t = re.sub(r"\b(took|taken|to|is|was|am|and|but|so|just|really|had|has|with|my|then)\s+like\s+(?!being\b|i\b|i'm\b|i\u2019m\b|something\b|a (?:bang|knife|stabbing|hammer|vice|weight|punch)\b|there\b|it\b)", r"\1 ", t, flags=re.I)  # run28 S-246: "took like a whole packet", "want to like not be here"
     t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
+    # S-272 dictation slip: "took to many tablets" = "too many" (only after a taking verb)
+    t = re.sub(r"\b(took|taken|taking|had|swallowed) to (many|much)\b", r"\1 too \2", t, flags=re.I)
     # dictated number words (S-223): tens ("twenty", "thirty five"), "thirty nine point two", and small counts before pads/tampons/tablets
     _units = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
     _tens = {"twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90}

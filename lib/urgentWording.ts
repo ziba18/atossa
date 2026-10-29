@@ -40,6 +40,8 @@ function normalise(text: string): string {
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
   t = t.replace(/\b(took|taken|to|is|was|am|and|but|so|just|really|had|has|with|my|then)\s+like\s+(?!being\b|i\b|i'm\b|i\u2019m\b|something\b|a (?:bang|knife|stabbing|hammer|vice|weight|punch)\b|there\b|it\b)/gi, '$1 ');
   t = t.replace(/\bwanna\b/gi, 'want to');
+  // S-272 dictation slip: "took to many tablets" = "too many" (only after a taking verb); mirrors backend `_norm`
+  t = t.replace(/\b(took|taken|taking|had|swallowed) to (many|much)\b/gi, '$1 too $2');
   // dictated number words (S-223); mirrors backend `_norm`
   const UNITS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
   const TENS: Record<string, number> = { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
