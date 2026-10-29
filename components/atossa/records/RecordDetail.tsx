@@ -61,7 +61,7 @@ function missing(kind: RecordDataKind, d: Draft): string {
 function cleaned(kind: RecordDataKind, d: Draft): AnyData {
   if (kind === 'medicine') {
     const m = d as MedicineData;
-    return { ...m, name: m.name.trim(), dose: m.dose?.trim() ?? '', happened: m.happened.trim() };
+    return { ...m, name: m.name.trim(), dose: m.dose?.trim() ?? '', happened: m.happened.trim(), sideEffects: m.sideEffects?.trim() ?? '' };
   }
   if (kind === 'appointment') {
     const a = d as AppointmentData;
@@ -348,6 +348,13 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
         multiline
         value={d.happened}
         onChangeText={(happened) => set({ happened })}
+      />
+      <TextField
+        label="Side effects"
+        hint="Optional, in your own words"
+        multiline
+        value={d.sideEffects ?? ''}
+        onChangeText={(sideEffects) => set({ sideEffects })}
       />
     </>
   );
