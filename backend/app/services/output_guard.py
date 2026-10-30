@@ -372,6 +372,14 @@ _SELF += [
     _MEDS + r" (?:saved|stashed|hidden|stockpiled|put by)(?: up| away)?\b.{0,40}\btonight'?s the night\b|" + _MEDS + r" (?:saved|stashed|stockpiled) up\b(?![^.]{0,30}\b(?:for (?:the |my )?(?:holiday|trip|travel)|in case)\b)",
     r"(?:won'?t|will not|not going to) be (?:here|around|alive) (?:for (?:it|that|them|christmas|her|his)|by then|next (?:week|month|year)|much longer|any ?more|for long)\b(?![^.]{0,30}\b(?:holiday|away|abroad|work|trip|hospital|course)\b)",
 ]
+# B53 (run39, PM plain-999 classes; nhs.uk when-to-call-999, read 2026-10-30): choking said by its effect, a collapse said as
+# 'went down ... isn't getting up', an asthma attack the inhaler is not easing, a chest gripped (carer register).
+_BODY += [
+    r"\b(?:stuck|lodged) in (?:my|his|her|their|the) (?:throat|windpipe)\b[^.!?;]{0,40}\b(?:can'?t|cannot|won'?t) (?:cough|get|breathe|swallow|speak)\w*|\bcan'?t cough it (?:out|up)\b",
+    r"\b(?:went|gone|dropped|keeled) (?:down|over)\b(?! with\b)[^.!?;]{0,30}\b(?:isn'?t|is not|not|won'?t|can'?t|hasn'?t) (?:getting up|get up|got up|moving|answering|responding|waking)\b",
+    r"\b(?:asthma|inhaler)\b[^.!?;]{0,30}\b(?:isn'?t|is not|not|still not|won'?t) (?:easing|helping|working|touching it)\b(?![^.!?;]{0,30}\b(?:empty|run out|ran out|expired|old one)\b)",
+    r"\b(?:gripping|clutching|grabbing|clasping) (?:his|her|their|my|at (?:his|her|their|my)) chest\b(?![^.!?;]{0,25}\b(?:laugh\w*|giggl\w*|joke\w*|drama\w*)\b)",
+]
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
 # run 27 set p129 (first contact 4/10 missed): "everyone would be better off if I wasn't around", "nobody will notice when I'm gone", tablets lined up beside "no point"
 _SELF += [
