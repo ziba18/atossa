@@ -270,6 +270,14 @@ _REPORTED = re.compile(r"\b(?:told|(?<!can't )(?<!cant )(?<!cannot )tells?|says?
                        # run20 (Safety p209 false on run19): "my partner is worried about his chest tightness" reports a worry, not an event now
                        r"|\b(?:is|are|'s|'re|gets?|got) (?:a bit |really |very |so )?(?:worried|anxious|concerned|nervous|stressed) about\b", re.I)   # someone else giving information
 _LIVE_REPORT = re.compile(r"\b(?:just (?:rang|called|texted|messaged)|on my way|right now|at the moment|as we speak|cannot get up|can'?t get up)\b", re.I)
+# B43b (run38): a report of a state that is true NOW is not hearsay: "Tom says he can't breathe", "my son told me his chest
+# is tight", "she said Dad has collapsed", "he thinks he swallowed ..." (nhs.uk when-to-call-999, read 30 Oct 2026). Needs a
+# third-person pronoun/name + present tense (or just-happened collapse/overdose) right after the verb; "says she had", "said
+# it was", "says I ..." stay hearsay.
+_LIVE_REPORT = re.compile(_LIVE_REPORT.pattern + r"|\b(?:says|tells me|is telling me|keeps saying|told me|said|texted|messaged)\b (?:that )?(?:\w+ ){0,1}"
+                          r"(?:(?:she|he|they)(?:'s(?! (?:had|been))|'re| is| are| can'?t| cannot| isn'?t| won'?t)|(?:his|her|their) \w+ (?:is|are|feels?|has gone)|\w+ has (?:just )?(?:collapsed|fainted|passed out|stopped breathing))\b"
+                          r"(?![^.!?;]{0,60}\b(?:fine|ok|okay|better|alright|all right|recovered|checked|sorted|settled)\b)"
+                          r"|\b(?:thinks?|reckons?) (?:she|he|they) (?:has |have |'s |'ve |just )?(?:swallowed|taken|took|overdosed)\b", re.I)
 _AGE_PAST = re.compile(r"\bwhen (?:i|he|she|they|we) (?:was|were) (?:\d{1,2}|a (?:kid|child|teen\w*|baby|toddler|student))\b", re.I)
 _IN_CARE = re.compile(r"\b(?:in hospital|being looked after|on the ward|in a&e|at a&e|doctors? (?:is|are) with)\b", re.I)   # already being cared for
 _BODY = [
