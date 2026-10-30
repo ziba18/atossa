@@ -1624,6 +1624,7 @@ _CE_ZONE = re.compile(r"\b(?:bum|bottom|buttocks?|inner thighs?|saddle|private a
 _CE_DEF = re.compile(r"\b(?:numb\w*|can'?t feel|cannot feel|couldn'?t feel|no feeling|tingl\w+|pins and needles|cushion)\b", re.I)
 _CE_CTRL = re.compile(r"\b(?:loss of control|lost control|can'?t control|couldn'?t control|wet myself|soiled myself|incontinen\w+|leak\w* (?:wee|urine|poo|stool)|can'?t (?:pee|wee)|cannot (?:pee|wee)|can'?t tell when|couldn'?t feel (?:myself )?pass\w+|can'?t feel the toilet paper|bladder not working)\b", re.I)
 _CE_VETO = re.compile(r"\b(?:usual|same as|cross-?legged|after (?:a )?(?:long )?run|physio|sat on|chair|can still feel|feel everything|feel normal\w*|fine after|fine now|goes? away|went away|all better|better now|for years|been the same|only the|oh wait|last week|flight|cycling|yoga|jeans|\bshy\b|air ?con\w*)\b", re.I)
+_CE_WIPE = re.compile(r"\b(?:wip(?:e|ing)|toilet paper)\b", re.I)
 _CE_VETO_CTRL = re.compile(r"\b(?:since the baby|when I sneez\w*|laugh\w*|period|pregnan\w+|postnatal|after (?:the |my )?birth)\b", re.I)
 # A veto word is ignored when the note says the sign is new or getting worse ("but now", "won't go", "getting worse", "started").
 _CE_NEWSIGN = re.compile(r"(?<!fine )(?<!better )(?<!well )\bnow\b|\bnew\b|\bsuddenly\b|getting worse|worse and worse|won'?t go|not going away|\bstarted\b|\bbegan\b|since (?:this morning|last night|yesterday)", re.I)
@@ -1632,7 +1633,11 @@ _CE_NEWSIGN = re.compile(r"(?<!fine )(?<!better )(?<!well )\bnow\b|\bnew\b|\bsud
 def _cauda_lay(t: str) -> bool:
     t = t.replace("\u2019", "'")
     new = bool(_CE_NEWSIGN.search(t))
-    return bool((new or not _CE_VETO.search(t)) and _CE_BACK.search(t)
+    if not (new or not _CE_VETO.search(t)):
+        return False
+    if _CE_ZONE.search(t) and _CE_DEF.search(t) and _CE_WIPE.search(t):
+        return True
+    return bool(_CE_BACK.search(t)
                 and ((_CE_ZONE.search(t) and _CE_DEF.search(t)) or (_CE_CTRL.search(t) and (new or not _CE_VETO_CTRL.search(t)))))
 
 
