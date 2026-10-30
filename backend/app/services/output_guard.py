@@ -1596,6 +1596,17 @@ def _preg_shoulder(t: str) -> bool:
                 and not _MS_NOT.search(t))
 
 
+_EC_LATE = re.compile(r"\b(?:missed (?:a |my |the )?period|period (?:is |was |has )?(?:late|overdue)|late period|(?:copper )?(?:coil|iud|ius)|positive (?:pregnancy )?test)\b", re.I)
+_EC_SIDE = re.compile(r"\b(?:one side|one-sided|(?:left|right) side|(?:low )?on the (?:left|right))\b", re.I)
+_EC_SEV = re.compile(r"\b(?:sharp|stabb\w*|severe|agony|agonising|excruciating|unbearable|sudden)\b", re.I)
+_EC_VETO = re.compile(r"\b(?:no pain|not painful|without pain|usual|as normal|ovulat\w*|fine now|gone|went away|last (?:month|year|cycle))\b", re.I)
+
+
+def _late_one_side(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_EC_LATE.search(t) and _EC_SIDE.search(t) and _EC_SEV.search(t) and not _EC_VETO.search(t))
+
+
 def _stroke_lay(t: str) -> bool:
     t = _SK_NEG.sub(" ", t.replace("\u2019", "'"))
     n = 0
@@ -1753,7 +1764,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _cauda_lay(user_text) or _rigors(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _late_one_side(user_text) or _plain999(_norm(user_text)) or _cauda_lay(user_text) or _rigors(user_text)):
         return "medical"
     return kind
 

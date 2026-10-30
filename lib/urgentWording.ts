@@ -226,7 +226,8 @@ function strokeLay(t0: string): boolean {
   return n >= 2 || SK_ONSET.test(t) || (face && SK_SIDE.test(t));
 }
 
-const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDEF_SRC), CE_CTRL = mk(P.CECTRL_SRC), CE_VETO = mk(P.CEVETO_SRC), CE_VETO_CTRL = mk(P.CEVETOCTRL_SRC), CE_NEW = mk(P.CENEWSIGN_SRC), CE_WIPE = mk(P.CEWIPE_SRC), RG_NOFEV = mk(P.RGNOFEV_SRC);
+const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDEF_SRC), CE_CTRL = mk(P.CECTRL_SRC), CE_VETO = mk(P.CEVETO_SRC), CE_VETO_CTRL = mk(P.CEVETOCTRL_SRC), CE_NEW = mk(P.CENEWSIGN_SRC), CE_WIPE = mk(P.CEWIPE_SRC), RG_NOFEV = mk(P.RGNOFEV_SRC), EC_LATE = mk(P.ECLATE_SRC), EC_SIDE = mk(P.ECSIDE_SRC), EC_SEV = mk(P.ECSEV_SRC), EC_VETO = mk(P.ECVETO_SRC);
+const lateOneSide = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return EC_LATE.test(t) && EC_SIDE.test(t) && EC_SEV.test(t) && !EC_VETO.test(t); };
 // S-401 (backend _cauda_lay): back pain with saddle-area numbness or lost bladder / bowel control.
 const caudaLay = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); const nw = CE_NEW.test(t); return (nw || !CE_VETO.test(t)) && ((CE_ZONE.test(t) && CE_DEF.test(t) && CE_WIPE.test(t)) || CE_BACK.test(t) && ((CE_ZONE.test(t) && CE_DEF.test(t)) || (CE_CTRL.test(t) && (nw || !CE_VETO_CTRL.test(t))))); };
 const RG_FEV = mk(P.RGFEV_SRC), RG_UNC = mk(P.RGUNC_SRC), RG_VETO = mk(P.RGVETO_SRC);
@@ -277,7 +278,7 @@ export function urgentSignpost(text: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || caudaLay(text) || rigors(text))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || lateOneSide(text) || plain999(normalise(text)) || caudaLay(text) || rigors(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
