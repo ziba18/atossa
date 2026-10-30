@@ -81,8 +81,9 @@ export function GroupRow({
         <Txt variant="body">{label}</Txt>
         {detail ? <Txt variant="secondary">{detail}</Txt> : null}
         {quote ? <Quote numberOfLines={2}>{quote}</Quote> : null}
+        {tight && value ? <Txt variant="secondary" style={styles.tabular}>{value}</Txt> : null}
       </View>
-      {value ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
+      {value && !tight ? <Txt variant="body" color={colors.ink3} style={styles.tabular}>{value}</Txt> : null}
       {chevron ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
     </Pressable>
   );
