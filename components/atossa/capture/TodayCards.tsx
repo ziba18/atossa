@@ -258,7 +258,7 @@ export function HeroNumberCard() {
     if (days === 0) {
       big = String(count);
       line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
-      const tail = total > 0 ? 'Opens your summary' : 'Add a note and it appears in your summary';
+      const tail = total > 0 ? 'Open your summary' : 'Add a note and it appears in your summary';
       sub = who ? `${who} · ${tail}` : tail;
     } else {
       big = String(count);
