@@ -118,6 +118,8 @@ function DayCell({
   const solid = mark?.bleeding === 'bleeding';
   const spotting = mark?.bleeding === 'spotting';
   const tint = !solid && !spotting && mark?.worst != null ? severityColor(mark.worst) : null;
+  // A bleeding day with a number keeps it: small shaded chip on the disc (digit inside, never colour only).
+  const chip = solid && mark?.worst != null ? severityColor(mark.worst) : null;
   return (
     <Pressable
       onPress={onPress}
@@ -163,6 +165,11 @@ function DayCell({
               </Txt>
             </View>
           </View>
+          {chip ? (
+            <View pointerEvents="none" style={[styles.chip, { backgroundColor: chip.bg }]}>
+              <Txt maxFontSizeMultiplier={1.2} style={[styles.chipNum, { color: chip.fg }]}>{mark?.worst}</Txt>
+            </View>
+          ) : null}
           <View style={[styles.dot, !mark?.notes && { opacity: 0 }]} />
         </>
       )}
@@ -204,6 +211,11 @@ const styles = StyleSheet.create({
   band: { position: 'absolute', top: 4, height: DISC, backgroundColor: colors.clay },
   /** Clear centre for the spotting numeral, so the hatch never runs through the digits. */
   spotClear: { position: 'absolute', width: DISC - 12, height: DISC - 12, borderRadius: radii.pill, backgroundColor: colors.canvas },
+  chip: {
+    position: 'absolute', top: 2, right: '50%', marginRight: -26, minWidth: 16, height: 16, borderRadius: 8,
+    borderWidth: 1, borderColor: colors.surface, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2,
+  },
+  chipNum: { fontSize: 10, lineHeight: 12, fontWeight: '600' },
   discWrap: { width: DISC, height: DISC, alignItems: 'center', justifyContent: 'center' },
   disc: { width: DISC, height: DISC, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   todayRing: {

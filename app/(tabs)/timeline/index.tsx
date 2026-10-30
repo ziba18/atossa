@@ -307,7 +307,7 @@ function MonthView({
         <Txt variant="caption">
           {[
             noteDays ? 'A darker day had a higher number. A dot under a day means a note.' : '',
-            [bleedingDays ? 'Solid red-brown days are bleeding.' : '', spottingDays ? 'A hatched outline is spotting.' : ''].filter(Boolean).join(' '),
+            [bleedingDays ? 'Solid red-brown days are bleeding; a small number on one is that day\u2019s pain.' : '', spottingDays ? 'A hatched outline is spotting.' : ''].filter(Boolean).join(' '),
             'Tap a day to open it.',
           ].filter(Boolean).join(' ')}
         </Txt>
