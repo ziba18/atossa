@@ -221,7 +221,12 @@ export interface TriedItem {
   helped: string;
   /** Side effects in her words; '' when none given. */
   sideEffects: string;
+  /** Days at 7/10 or more in equal windows either side of the start date (whole days, counts only);
+   *  null when the start is not an exact day or there are too few days on record before it. */
+  beforeSince: BeforeSince | null;
 }
+/** `len` days before the start date vs `len` days from it; written = days with any note, so a reader sees the denominator. */
+export interface BeforeSince { len: number; before: number; since: number; writtenBefore: number; writtenSince: number }
 export interface DatedItem { date: string; title: string; lines: DocLine[] }
 
 export type DocSection =
@@ -575,6 +580,41 @@ export function summaryToText(doc: DoctorDoc): string {
   return lines.join('\n').replace(/\u2060/g, '');
 }
 
+const WINDOW_MAX = 42;
+const WINDOW_MIN = 14;
+const HIGH_PAIN = 7;
+const WRITTEN_MIN = 7;
+
+/** Equal windows either side of `started`: up to 42 whole days, never reaching before her first entry or past
+ *  the stop date / today. Under 14 days either side there is nothing fair to compare, so no numbers. */
+export function beforeSinceOf(all: SymptomData[], started: string, end: string, today: string): BeforeSince | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(started) || started > today) return null;
+  const first = all.map((s) => s.date).sort()[0];
+  if (!first || first >= started) return null;
+  const stop = end < today ? end : today;
+  const len = Math.min(WINDOW_MAX, diffDays(first, started), inclusiveDays(started, stop));
+  if (len < WINDOW_MIN) return null;
+  const beforeFrom = addDays(started, -len);
+  const sinceTo = addDays(started, len - 1);
+  const count = (a: string, b: string) => {
+    const peak = new Map<string, number>();
+    for (const s of all) {
+      if (s.date < a || s.date > b) continue;
+      peak.set(s.date, Math.max(peak.get(s.date) ?? -1, peakOf(s) ?? -1));
+    }
+    return { written: peak.size, high: [...peak.values()].filter((v) => v >= HIGH_PAIN).length };
+  };
+  const b = count(beforeFrom, addDays(started, -1));
+  const a = count(started, sinceTo);
+  // A window with next to nothing written would read as "no bad days" when it is just empty.
+  if (b.written < WRITTEN_MIN || a.written < WRITTEN_MIN) return null;
+  return { len, before: b.high, since: a.high, writtenBefore: b.written, writtenSince: a.written };
+}
+
+export function beforeSinceText(b: BeforeSince): string {
+  return `Days at 7/10 or more: ${b.before} of ${b.len} days before · ${b.since} of ${b.len} days from the start (days written: ${b.writtenBefore} before, ${b.writtenSince} since)`;
+}
+
 export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions): DoctorDoc {
   const { from, to, today } = options;
   const include = options.include ?? {};
@@ -703,6 +743,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     noticed: clean(m.happened),
     helped: m.helped ? `Did it help? ${m.helped}` : '',
     sideEffects: clean(m.sideEffects),
+    beforeSince: m.startedPrecision === 'exact' ? beforeSinceOf(input.symptoms.map((r) => r.data), m.started, m.stopped || today, today) : null,
   }));
   const triedQuotes = notes.filter((s) => clean(s.tried)).slice(0, 3).map((s) => quoteOf(s, clean(s.tried), false));
   if (tried.length || triedQuotes.length) all.push({ id: 'tried', title: 'What I’ve tried', items: tried, quotes: triedQuotes });
@@ -978,7 +1019,7 @@ function sectionInner(s: DocSection): string {
       return `<section>${head}${s.items.length ? `<p class="item">${s.items.map((c) => esc(countText(c))).join('<span class="sep"> · </span>')}</p>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     case 'tried': {
       // One row per treatment: name · dates · what she noticed (her words, serif).
-      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}</td></tr>`).join('');
+      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}${t.beforeSince ? `<br><span class="meta">${esc(beforeSinceText(t.beforeSince))}</span>` : ''}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}</td></tr>`).join('');
       return `<section>${head}${s.items.length ? `<table class="notes dated tried"><tbody>${rows}</tbody></table>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     }
     case 'appointments':
