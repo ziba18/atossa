@@ -1631,7 +1631,7 @@ _CE_NEWSIGN = re.compile(r"(?<!fine )(?<!better )(?<!well )\bnow\b|\bnew\b|\bsud
 
 
 # nhs.uk back-pain / sciatica A&E list: leg weakness with lost bladder or bowel control needs no back word to be urgent.
-_CE_LEGWEAK = re.compile(r"\b(?:(?:my |both )?legs?|feet|foot)\b[^.!?]{0,30}\b(?:weak\w*|gave way|giving way|numb\w*|heavy|dead|won'?t work)\b|\b(?:weak\w*|numb\w*) (?:in |down )?(?:both |my )?(?:legs?|feet)\b", re.I)
+_CE_LEGWEAK = re.compile(r"\b(?:(?:my |both )?legs?|feet|foot)\b[^.!?]{0,30}\b(?:weak\w*|gave way|giving way|numb\w*|heavy|dead|won'?t work)\b|\b(?:weak\w*|numb\w*) (?:in |down )?(?:both |my )?(?:legs?|feet)\b|\b(?:can'?t|cannot|couldn'?t) feel (?:my |both |either )?(?:legs?|feet)\b", re.I)
 _CE_UNAWARE = re.compile(r"\b(?:without (?:knowing|realising|realizing|noticing|feeling)|didn'?t (?:know|realise|realize|notice|feel)|not knowing)\b", re.I)
 
 
