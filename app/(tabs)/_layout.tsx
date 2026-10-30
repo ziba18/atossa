@@ -5,6 +5,7 @@ import { MainTabBar } from '../../components/atossa/MainTabBar';
 import { CaptureSheet } from '../../components/atossa/capture/CaptureSheet';
 import { colors } from '../../constants/atossaUI';
 import { useAuthStore } from '../../stores/authStore';
+import { consumeSessionExpired } from '../../lib/sessionLoss';
 import { useRecordsStore } from '../../stores/recordsStore';
 
 export default function TabsLayout() {
@@ -15,7 +16,7 @@ export default function TabsLayout() {
   useEffect(() => {
     const store = useRecordsStore.getState();
     if (!userId) {
-      store.reset();
+      store.reset(consumeSessionExpired());
       return;
     }
     if (loadedFor && loadedFor !== userId) store.reset();
