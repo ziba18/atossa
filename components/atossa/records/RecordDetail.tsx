@@ -340,12 +340,14 @@ function MedicineFields({ d, set, isNew, symptoms }: { d: MedicineData; set: Set
       {win ? (
         <View style={{ gap: space.xs }} accessible accessibilityLabel={beforeSinceText(win)}>
           {([['Before', win.before], ['Since starting', win.since]] as const).map(([label, n]) => (
-            <View key={label} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-              <Txt variant="secondary" style={{ width: 104 }}>{label}</Txt>
-              <View style={{ flex: 1, height: 10, borderRadius: 5, backgroundColor: colors.sunken }}>
+            <View key={label} style={{ gap: 4 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: space.sm }}>
+                <Txt variant="secondary" style={{ flexShrink: 1 }}>{label}</Txt>
+                <Txt variant="secondary">{n} of {win.len}</Txt>
+              </View>
+              <View style={{ height: 10, borderRadius: 5, backgroundColor: colors.sunken }}>
                 <View style={{ width: `${Math.round((n / win.len) * 100)}%`, height: 10, borderRadius: 5, backgroundColor: severityRamp[3] }} />
               </View>
-              <Txt variant="secondary" style={{ width: 72, textAlign: 'right' }}>{n} of {win.len}</Txt>
             </View>
           ))}
           <Txt variant="secondary">Days at 7/10 or more, {win.len} days either side of the start (days written: {win.writtenBefore} and {win.writtenSince}).</Txt>
