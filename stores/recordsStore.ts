@@ -27,7 +27,8 @@ interface RecordsState {
   /** ISO time of the saved copy on screen when the last load had no connection; null when the data is live. */
   offlineCopyFrom: string | null;
   load: (userId: string) => Promise<void>;
-  reset: () => void;
+  /** keepLocal: a session expiry, not a sign-out; the outbox and offline copy stay for the same account. */
+  reset: (keepLocal?: boolean) => void;
   /** Send notes saved while offline; safe to call any time (one run at a time, each note once). */
   flushOutbox: () => Promise<void>;
   create: <K extends RecordKind>(kind: K, data: DataMap[K]) => Promise<Rec<DataMap[K]>>;
@@ -147,10 +148,10 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
     }
   },
 
-  reset: () => {
+  reset: (keepLocal = false) => {
     // Sign-out / account switch: queued notes belong to the old account. Not on a cold start (nothing loaded yet),
     // where the tabs layout also calls reset() before the session has restored.
-    if (get().loadedFor) {
+    if (get().loadedFor && !keepLocal) {
       void clearOutbox();
       void clearSnapshot();
     }

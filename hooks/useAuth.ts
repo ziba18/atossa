@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { api, clearTokens, getStoredAccessToken, setSessionExpiredHandler } from '../lib/api';
+import { markSessionExpired } from '../lib/sessionLoss';
+import { api, ApiError, clearTokens, getStoredAccessToken, setSessionExpiredHandler } from '../lib/api';
 import { useAuthStore, type AuthUser } from '../stores/authStore';
 import { syncDailyLogReminder } from '../lib/notifications';
 import type { Profile } from '../types/database';
@@ -13,7 +14,8 @@ function startAuthInit() {
   authInitStarted = true;
 
   setSessionExpiredHandler(() => {
-    useAuthStore.getState().signOut();
+    markSessionExpired(); // keeps the notes still waiting to send; a manual sign-out clears them
+    useAuthStore.getState().signOut({ keepLocal: true });
   });
 
   // Design preview: signed in as "Sam" immediately, no tokens, no network.
@@ -42,8 +44,9 @@ function startAuthInit() {
       setUser(user);
       setProfile(profile);
       setSession({ access_token: token });
-    } catch {
-      await clearTokens();
+    } catch (e) {
+      // Only a rejected session ends it. No signal or a sleeping server must not delete the tokens.
+      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) await clearTokens();
       setSession(null);
     }
   })();
