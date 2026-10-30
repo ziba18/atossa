@@ -1650,6 +1650,35 @@ def _stroke_slot(t: str) -> bool:
     return core >= 1 or (other >= 2 and bool(_SL_ONSET.search(t)))
 
 
+# B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
+# choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
+# same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
+_PL_STATE = re.compile(
+    r"\b(?:(?:is|was|am|are|'s|'re|'m) )?(?:(?:not|isn'?t|aren'?t|wasn'?t|barely|hardly) (?:really |properly )?breathing|stopped breathing|(?:has|have|'s|'ve) stopped breathing|can'?t breathe at all"
+    r"|having (?:a|another) (?:stroke|heart attack|seizure|fit)\b(?! of)(?! (?:assessment|scan|test|check|review|clinic|appointment|risk|follow))"
+    r"|choking\b(?! (?:up|back|on (?:my|his|her|their|the) words|laugh\w*))"
+    r"|(?:is|was|went|gone|found (?:him|her|them|my \w+)|knocked|lying|still|'s) unconscious|unresponsive|(?:isn'?t|not) responding\b(?! to)|wo?n'?t wake(?: up)?|can'?t wake (?:him|her|them)(?: up)?"
+    r"|(?:fit|seizure|fitting|convuls\w+)\b[^.!?;]{0,30}\b(?:won'?t stop|wo?n'?t stop|hasn'?t stopped|not stopp\w+|still going|(?:over |more than |for )?(?:5|five|6|six|7|seven|8|eight|9|nine|10|ten|fifteen|15) (?:minutes|mins))"
+    r"|been (?:fitting|seizing|convulsing) for)", re.I)
+_PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
+_PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
+_PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
+_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|was indigestion|in hospital|on the ward|recovered|doing well)\b", re.I)
+
+
+def _plain999(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    for clause in re.split(r"[.!?;\n]+", t):
+        m = _PL_STATE.search(clause)
+        if not m or _PL_QUIET.search(clause) or _is_past(clause):
+            continue
+        before = clause[: m.start()]
+        if _PL_NEG.search(before) or _PL_HYPO.search(before) or not _PL_SUBJ.search(before + " " + m.group(0)):
+            continue
+        return True
+    return False
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     kind = _emergency_kind(user_text)
@@ -1666,7 +1695,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text))):
         return "medical"
     return kind
 

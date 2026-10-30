@@ -242,6 +242,20 @@ function strokeSlot(t0: string): boolean {
   return core >= 1 || (other >= 2 && SL_ONSET.test(t));
 }
 
+// B23 (backend _plain999): plain 999 words about anyone now (subject x state in one clause); idioms, hypotheticals,
+// history, sleep pauses and pets stay quiet.
+const PL_STATE = mk(P.PLSTATE_SRC), PL_SUBJ = mk(P.PLSUBJ_SRC), PL_NEG = mk(P.PLNEG_SRC), PL_HYPO = mk(P.PLHYPO_SRC), PL_QUIET = mk(P.PLQUIET_SRC);
+function plain999(t0: string): boolean {
+  for (const clause of t0.replace(/\u2019/g, "'").split(/[.!?;\n]+/)) {
+    const m = PL_STATE.exec(clause);
+    if (!m || PL_QUIET.test(clause) || isPast(clause)) continue;
+    const before = clause.slice(0, m.index);
+    if (PL_NEG.test(before) || PL_HYPO.test(before) || !PL_SUBJ.test(before + ' ' + m[0])) continue;
+    return true;
+  }
+  return false;
+}
+
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(text: string): string | null {
   let line = signpostOnce(text);
@@ -252,7 +266,7 @@ export function urgentSignpost(text: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
