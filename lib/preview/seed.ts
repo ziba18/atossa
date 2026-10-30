@@ -90,6 +90,21 @@ export function sampleBuckets(): Buckets {
     return { symptom: [], period_day: [], appointment: [], medicine: [], history: [], doctor_note: [] };
   }
   const copy = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
+  // Design preview only: /…?seed=tx adds a daily-ish note history and one exact-date medicine, so the
+  // treatment detail screen shows its before/since bars (Sam's own records are too sparse to compare).
+  if (typeof window !== 'undefined' && /[?&]seed=tx\b/.test(window.location?.search ?? '')) {
+    const day = (n: number) => new Date(Date.parse('2026-09-24T00:00:00Z') - n * 86400000).toISOString().slice(0, 10);
+    const dense = Array.from({ length: 84 }, (_, i) => symptom(day(i), 'Low down ache.', 'Lower belly', i > 40 ? (i % 3 === 0 ? 8 : 4) : (i % 7 === 0 ? 7 : 3), 'Most of the day', false, ''));
+    const tx: MedicineData = { name: 'Mefenamic acid', dose: '500 mg', started: day(40), startedPrecision: 'exact', stopped: '', stoppedPrecision: 'exact', happened: 'Took the edge off.', helped: 'A little' };
+    return {
+      symptom: recs('symptom', dense, (d) => d.date),
+      period_day: recs('period', copy(PERIOD_DAYS), (d) => d.date),
+      appointment: recs('appointment', copy(APPOINTMENTS), (d) => d.date),
+      medicine: recs('medicine', [tx, ...copy(MEDICINES)], (d) => d.started),
+      history: recs('history', copy(HISTORY), (d) => d.date),
+      doctor_note: [],
+    };
+  }
   return {
     symptom: recs('symptom', copy(SYMPTOMS), (d) => d.date),
     period_day: recs('period', copy(PERIOD_DAYS), (d) => d.date),
