@@ -1665,6 +1665,17 @@ _NW_SIGN = re.compile(r"\b(?:confus\w+|drows\w+|shak\w+|fever\w*|temperature|bur
 _NW_VETO = re.compile(r"\b(?:meeting|flight|long drive|on the plane|fasting|wasn'?t thirsty|slept|asleep)\b", re.I)
 
 
+# S-438 (Safety run 51, nhs.uk/conditions/sepsis 'feel like you might die' + physical sign; pink frothy phlegm). Standalone.
+_VS_DIE = re.compile(r"\b(?:going to die|about to die|might die|think i'?m dying|feel(?:s|ing)? like (?:i'?m |she'?s |he'?s |they'?re )?(?:dying|slipping away)|slipping away)\b", re.I)
+_VS_SIGN = re.compile(r"\b(?:burning up|temperature (?:of |is |at )?(?:3[89]|4\d)|fever\w*|shiver\w*|blotchy|mottled|clammy and (?:cold|sweaty)|can'?t breathe|struggling to breathe|confus\w+)\b", re.I)
+_VS_FROTH = re.compile(r"\bpink(?:,? and)? (?:foam\w*|froth\w*)|\b(?:foam\w*|froth\w*) (?:and )?pink|\bdrowning in my own (?:chest|lungs)\b", re.I)
+
+
+def _vague_sepsis(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_VS_FROTH.search(t) or (_VS_DIE.search(t) and _VS_SIGN.search(t)))
+
+
 def _no_wee(t: str) -> bool:
     t = t.replace("\u2019", "'")
     return bool(_NW_NONE.search(t) and _NW_LONG.search(t) and _NW_SIGN.search(t) and not _NW_VETO.search(t))
@@ -1789,7 +1800,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _cauda_lay(user_text) or _no_wee(user_text) or _rigors(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _cauda_lay(user_text) or _no_wee(user_text) or _vague_sepsis(user_text) or _rigors(user_text)):
         return "medical"
     return kind
 

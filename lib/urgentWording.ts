@@ -231,6 +231,9 @@ const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDE
 const caudaLay = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); const nw = CE_NEW.test(t); return (nw || !CE_VETO.test(t)) && ((CE_ZONE.test(t) && CE_DEF.test(t) && CE_WIPE.test(t)) || (CE_LEGWEAK.test(t) && CE_CTRL.test(t) && (nw || !CE_VETO_CTRL.test(t)) && (CE_UNAWARE.test(t) || !CE_VETO_CTRL.test(t))) || (CE_ZONE.test(t) && CE_DEF.test(t) && CE_CTRL.test(t) && (nw || !CE_VETO_CTRL.test(t))) || CE_BACK.test(t) && ((CE_ZONE.test(t) && CE_DEF.test(t)) || (CE_CTRL.test(t) && (nw || !CE_VETO_CTRL.test(t))))); };
 const RG_FEV = mk(P.RGFEV_SRC), RG_UNC = mk(P.RGUNC_SRC), RG_VETO = mk(P.RGVETO_SRC);
 const NW_NONE = mk(P.NWNONE_SRC), NW_LONG = mk(P.NWLONG_SRC), NW_SIGN = mk(P.NWSIGN_SRC), NW_VETO = mk(P.NWVETO_SRC);
+const VS_DIE = mk(P.VSDIE_SRC), VS_SIGN = mk(P.VSSIGN_SRC), VS_FROTH = mk(P.VSFROTH_SRC);
+// S-438 (backend _vague_sepsis): 'going to die' wording with a physical sign, or pink frothy phlegm.
+const vagueSepsis = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return VS_FROTH.test(t) || (VS_DIE.test(t) && VS_SIGN.test(t)); };
 // S-436 (backend _no_wee): no wee for a day with confusion, shaking, fever or swelling.
 const noWee = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return NW_NONE.test(t) && NW_LONG.test(t) && NW_SIGN.test(t) && !NW_VETO.test(t); };
 // S-398 (backend _rigors): high temperature with uncontrollable shaking or shivering.
@@ -279,7 +282,7 @@ export function urgentSignpost(text: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || caudaLay(text) || noWee(text) || rigors(text))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || caudaLay(text) || noWee(text) || vagueSepsis(text) || rigors(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
