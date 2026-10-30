@@ -85,5 +85,7 @@ def test_informal_phrasings_from_unseen_set():
     from app.services.output_guard import emergency_kind
     assert emergency_kind("I just want to disappear forever") == "self_harm"
     for t in ["I've had a seizure", "can't wake my partner up", "been bleeding for 3 weeks non stop and i feel so weak",
-              "i took a load of co-codamol i dont know why", "omg the pain is unreal i think im gonna be sick and pass out"]:
+              "omg the pain is unreal i think im gonna be sick and pass out"]:
         assert emergency_kind(t) == "medical", t
+    # B52 (run39): an overdose already taken is an act; it now shows the self-harm line (999 + Samaritans), not the medical one
+    assert emergency_kind("i took a load of co-codamol i dont know why") == "self_harm"

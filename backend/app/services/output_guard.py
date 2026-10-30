@@ -1793,6 +1793,8 @@ def _emergency_kind(user_text: str):
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
         return "self_harm"
+    if _sh_act(user_text):
+        return "self_harm"  # B52 (run39): an overdose taken, self-injury bleeding, a plan for tonight, a relayed threat; any subject
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
     # ("i tried to kill myself last year and i want to do it again") is the highest-risk case, not history.
     if (_SELF_RX.search(user_text) or _SELF_HARM_RX.search(user_text)) and _AGAIN.search(user_text):
@@ -1918,3 +1920,41 @@ def reply_shape(text: str) -> list[str]:
     if not sents:
         tags.append("empty")
     return tags
+
+
+# B52 (run39, PM 21:5x selfharm-blind 9/10 missed): an ACT, not a thought, said by anyone (first person or relayed): an
+# overdose already taken (verb + amount word + medicine), self-injury that is bleeding and not stopping, a plan for
+# tonight, a relayed threat ('she says she's going to kill herself'). nhs.uk 'Help for suicidal thoughts' (reviewed
+# 26 Apr 2024, read 2026-10-30): call 999 or go to A&E 'if you have seriously harmed yourself, for example by taking a
+# drug overdose'. Sentence-level, any subject; negation / past / accident / routine dose in the same sentence stay quiet.
+_SH_MEDS = r"(?:" + _MEDS[3:-1] + r"|ibuprofen|antidepressants?|sertraline|citalopram|fluoxetine|diazepam|zopiclone|aspirin|tabs|anti-?depressants?|(?:his|her|their|my) (?:\w+ )?(?:pills|tablets|meds))"
+_SH_AMOUNT = (r"(?:a (?:whole |full |entire )?(?:box|packet|pack|bottle|strip|tub|blister)s?|(?:two|three|four|several|a few|[2-9]) (?:whole )?(?:boxes|packets|packs|bottles|strips)|"
+              r"half (?:a|the) (?:box|packet|bottle|strip|pack)|(?:about |around |over |like |maybe )?(?:[1-9]\d|\d{3})(?! ?(?:mg|ml|g|mcg)\b)|(?:twenty|thirty|forty|fifty|fifteen|a hundred)|"
+              r"loads? of|a load of|(?<!\d )lots of|a lot of|a handful|handfuls|too many|all (?:of )?(?:his|her|their|my|the|them|these)|every (?:one|single one|pill|tablet)|the (?:whole|entire|rest of the) (?:lot|box|packet|bottle|pack))")
+_SH_ACT = re.compile(
+    r"\b(?:(?:took|taken|swallowed|downed|necked|had|has had|'s had)\b[^.!?\n]{0,12}?\b" + _SH_AMOUNT + r"\b(?:(?!\bwith\b)[^.!?\n]){0,35}?\b" + _SH_MEDS + r"\b"
+    r"|(?:has|have|'s|'ve|just|had|i)\s+overdosed\b|(?:took|taken|had) an overdose\b"
+    r"|(?:cut|slashed|sliced|slit)\b[^.!?\n]{0,20}\b(?:arms?|wrists?|thighs?|legs?|deep|deeper|myself|himself|herself|themselves)\b[^.!?\n]{0,40}\b(?:(?:won'?t|will not|isn'?t|hasn'?t|has not|not|can'?t) (?:stop\w*)|blood everywhere|bleeding (?:heavily|badly|loads|a lot)|pouring)"
+    r"|(?:says?|said|told (?:me|us)|texted|messaged|keeps saying|threaten\w*)\b[^.!?\n]{0,30}\b(?:he|she|they)(?:'s|'re| is| are| was)? (?:going to|gonna|wants? to|will|'ll|is about to|about to|wants to) (?:kill (?:himself|herself|themselves)|end (?:it|his life|her life|their life|things)|take (?:his|her|their) (?:own )?life|hurt (?:himself|herself|themselves)|die\b(?! of| laughing| for)|jump\b(?! in| on| at| for))"
+    r"|\b(?:he|she|they|my (?:\w+ ){0,2}(?:sister|brother|mum|mom|dad|son|daughter|friend|partner|boyfriend|girlfriend|husband|wife|flatmate))(?:'s|'re| is| are) (?:going to|gonna|about to|threatening to) (?:kill (?:himself|herself|themselves)|take (?:his|her|their) (?:own )?life|end (?:his|her|their) life)\b"
+    r"|\b(?:he|she|they|my (?:\w+ ){0,2}(?:sister|brother|mum|mom|dad|son|daughter|friend|partner|boyfriend|girlfriend|husband|wife|flatmate))\b[^.!?\n]{0,15}\bwants? to die\b(?! of| laughing| for)(?=[^.!?\n]{0,40}\b(?:rope|tablets|pills|knife|blade|tonight|bridge|plan|note|goodbye)\b)"
+    r"|\b(?:tonight|this evening)\b[^.!?\n]{0,20}\b(?:i'?m|i am|going to|gonna|i'?ll|i will)\s+(?:going to |gonna )?(?:do it|end it|go through with it)\b(?=[\s\S]{0,60}\b(?:made up my mind|decided|for good|no going back|goodbye|ready|nobody can stop|can'?t stop me)\b)"
+    r"|\b(?:planned|planning) (?:it|to do it|my death|my suicide) for (?:tonight|this evening)\b|(?:do|doing) it tonight when (?:everyone|everybody|they)(?:'s| is| are|'re) (?:asleep|out|gone|in bed))", re.I)
+_SH_ACT_QUIET = re.compile(
+    r"\b(?:by (?:mistake|accident)|accidental\w*|chopping|cooking|shaving|slipped|fell|falling|off (?:his|her|my) bike|broken glass|"
+    r"for the (?:week|month|day|course)|(?:new|repeat|next) prescription|as (?:prescribed|directed)|(?:like|as) the (?:gp|doctor|pharmacist|nurse)|the (?:gp|doctor|pharmacist|nurse) (?:said|told|gave|prescribed)|"
+    r"over the (?:week|month|year|course)|in (?:a|one|the) (?:week|month|year)|this (?:week|month|year)|since (?:march|april|may|june|july|august|september|october|november|december|january|february)|per day|a day\b|each day|every day|daily|"
+    r"essay|homework|laundry|washing|ironing|revision|project|marathon|run\b|workout|jigsaw|exam|homework|presentation)\b", re.I)
+
+
+def _sh_act(text: str) -> bool:
+    text = text[:_WHOLE_SCAN_CAP]
+    for m in _SH_ACT.finditer(text):
+        starts = [i for i, c in enumerate(text[: m.start()]) if c in ".;!?\n"]
+        start = starts[-1] + 1 if starts else 0
+        ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
+        sentence = text[start:(m.end() + ends[0] if ends else len(text))]
+        if _NEG.search(_NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1]) or _is_past(sentence) or _SH_ACT_QUIET.search(sentence):
+            continue
+        return True
+    return False

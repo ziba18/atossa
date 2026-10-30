@@ -112,6 +112,8 @@ function isPast(clause: string): boolean {
 const WHOLE = new RegExp(P.WHOLE_SRC, 'is');
 // run08 v80: wish to be dead + worked out how, one sentence (same past/negation checks as WHOLE).
 const SELFW = new RegExp(P.SELFW_SRC, 'i');
+// B52 (run39, backend _sh_act): an act said by anyone (overdose taken, self-injury bleeding, plan for tonight, relayed threat).
+const SHACT = new RegExp(P.SHACT_SRC, 'gi'), SHACTQ = new RegExp(P.SHACTQ_SRC, 'i');
 // run13 (A54, backend _BIRTH_TIME): the birth and its time phrase are context, not the symptom's time.
 const BIRTH_TIME = /\b(?:had (?:the|my) baby|gave birth|given birth|(?:the |my )?baby (?:was )?born)\b(?: (?:\w+ ){0,2}(?:ago|last (?:week|month)|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day))?/gi;
 
@@ -123,6 +125,18 @@ function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
   const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
   const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
   return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence.replace(BIRTH_TIME, ' ')) || OTHER.test(text.slice(0, m.index)));
+}
+
+function shAct(text: string): boolean {
+  const t = text.slice(0, 20000);
+  for (const m of t.matchAll(SHACT)) {
+    const from = t.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
+    const end = t.slice(m.index! + m[0].length).search(/[.;!?\n]/);
+    const sentence = t.slice(from, end < 0 ? undefined : m.index! + m[0].length + end);
+    if (NEG.test(t.slice(Math.max(0, m.index! - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(sentence) || SHACTQ.test(sentence)) continue;
+    return true;
+  }
+  return false;
 }
 
 const THIRD = new RegExp(P.THIRD_SRC, 'is');
@@ -281,6 +295,7 @@ function signpostOnce(text: string): string | null {
   const t = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
   if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
+  if (shAct(t)) return SELF_HARM_SIGNPOST; // B52 (run39)
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
