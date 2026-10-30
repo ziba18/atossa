@@ -1599,7 +1599,7 @@ def _preg_shoulder(t: str) -> bool:
 _EC_LATE = re.compile(r"\b(?:missed (?:a |my |the )?period|period (?:is |was |has )?(?:late|overdue)|late period|(?:copper )?(?:coil|iud|ius)|positive (?:pregnancy )?test)\b", re.I)
 _EC_SIDE = re.compile(r"\b(?:one side|one-sided|(?:left|right) side|(?:low )?on the (?:left|right))\b", re.I)
 _EC_SEV = re.compile(r"\b(?:sharp|stabb\w*|severe|agony|agonising|excruciating|unbearable|sudden)\b", re.I)
-_EC_VETO = re.compile(r"\b(?:no pain|not painful|without pain|usual|as normal|ovulat\w*|fine now|gone|went away|last (?:month|year|cycle))\b", re.I)
+_EC_VETO = re.compile(r"\b(?:no pain|not painful|without pain|(?<!not )(?<!n't )usual|as normal|ovulat\w*|fine now|gone|went away|last (?:month|year|cycle))\b", re.I)
 
 
 def _late_one_side(t: str) -> bool:
