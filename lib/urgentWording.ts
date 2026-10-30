@@ -228,13 +228,15 @@ function strokeLay(t0: string): boolean {
 
 // B16 (backend _stroke_slot / _stroke_old): body part x deficit in one sentence; dizzy / confused / falling only beside
 // another sign; an episode 2-14 days old (Safety C13) is not the 999 block.
-const SL_FACE = mk(P.SLFACE_SRC), SL_SIDEW = mk(P.SLSIDEW_SRC), SL_MOTOR = mk(P.SLMOTOR_SRC), SL_EYE = mk(P.SLEYE_SRC), SL_SPEECH = mk(P.SLSPEECH_SRC), SL_HEAD = mk(P.SLHEAD_SRC), SL_OTHER = new RegExp(P.SLOTHER_SRC, 'gi'), SL_ONSET = mk(P.SLONSET_SRC), SL_BENIGN = mk(P.SLBENIGN_SRC), SL_OLD = mk(P.SLOLD_SRC);
+const SL_FACE = mk(P.SLFACE_SRC), SL_SIDEW = mk(P.SLSIDEW_SRC), SL_MOTOR = mk(P.SLMOTOR_SRC), SL_EYE = mk(P.SLEYE_SRC), SL_SPEECH = mk(P.SLSPEECH_SRC), SL_HEAD = mk(P.SLHEAD_SRC), SL_OTHER = new RegExp(P.SLOTHER_SRC, 'gi'), SL_ONSET = mk(P.SLONSET_SRC), SL_BENIGN = mk(P.SLBENIGN_SRC), SL_OLD = mk(P.SLOLD_SRC), SL_ARMUP = mk(P.SLARMUP_SRC), SL_BILAT = new RegExp(P.SLBILAT_SRC, 'gi');
 const strokeOld = (t: string) => SL_OLD.test(t.replace(/\u2019/g, "'"));
 function strokeSlot(t0: string): boolean {
   const t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   const rest = [SL_EYE, SL_SPEECH, SL_HEAD].filter((r) => r.test(t)).length;
   const other = new Set(Array.from(t.matchAll(SL_OTHER), (m) => m[0].toLowerCase().slice(0, 4))).size;
-  const motor = SL_FACE.test(t) || (SL_MOTOR.test(t) && (SL_SIDEW.test(t) || SL_ONSET.test(t) || rest > 0 || other > 0));
+  // B16c (backend _stroke_slot): one arm that can't be lifted/kept up fires whatever the cause; both-sided eyelids are not a droop.
+  if (SL_ARMUP.test(t) && !SL_OLD.test(t)) return true;
+  const motor = SL_FACE.test(t.replace(SL_BILAT, ' ')) || (SL_MOTOR.test(t.replace(SL_BILAT, ' ')) && (SL_SIDEW.test(t) || SL_ONSET.test(t) || rest > 0 || other > 0));
   const core = rest + (motor ? 1 : 0);
   if (SL_OLD.test(t) || (SL_BENIGN.test(t) && core + Math.min(other, 1) < 2)) return false;
   return core >= 1 || (other >= 2 && SL_ONSET.test(t));

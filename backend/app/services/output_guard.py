@@ -1626,6 +1626,13 @@ _SL_BENIGN = re.compile(r"\b(?:dentist|dental|injection|anaesthe\w*|wearing off|
 _SL_OLD = re.compile(r"\b(?:(?:\d+|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|a few|few|couple of|a couple of) days? (?:ago|back|before)|last week|(?:a|one|two) weeks? ago|a week ago|on (?:mon|tues|wednes|thurs|fri|satur|sun)day|the other day|at the weekend|last weekend)\b", re.I)
 
 
+# B16c (AI Brain run33, prd/help-now R15.7, nhs.uk/conditions/bells-palsy 999 box): one arm that can't be lifted or kept up
+# is a sign whatever cause she gives; eyelids / eyes / both cheeks heavy or puffy on BOTH sides are not the one-sided droop.
+_SL_ARMUP = re.compile(r"\b(?:can'?t|cant|cannot|couldn'?t|could not|unable to|won'?t|wouldn'?t|doesn'?t|didn'?t) (?:even )?(?:lift|raise|keep|hold|get|put)(?: (?:up|my|his|her|their|the|left|right|one))* arm\b(?! (?:and|or) (?:my |his |her )?(?:other|left|right) arm)|\b(?:my|his|her|their|left|right|one) arm\b[^.!?;]{0,15}\b(?:won'?t|wouldn'?t|doesn'?t|didn'?t|can'?t) (?:stay|go|lift|raise|keep) (?:up|in the air)\b", re.I)
+_SL_BILAT = re.compile(r"\bboth (?:eyelids|eyes|cheeks|sides of (?:my|his|her|their|the) face)\b|\b(?:eyelids|eyes)\b"
+                       r"|\b(?:smile|face|mouth)(?: is| looks?| looked| was| seems?)? (?:the same|normal\w*|fine|ok|okay|even|symmetrical)\b|\bcan smile (?:normally|fine|ok)\b", re.I)
+
+
 def _stroke_old(t: str) -> bool:
     return bool(_SL_OLD.search(t.replace("’", "'")))
 
@@ -1634,7 +1641,9 @@ def _stroke_slot(t: str) -> bool:
     t = _SK_NEG.sub(" ", t.replace("’", "'"))
     rest = sum(bool(r.search(t)) for r in (_SL_EYE, _SL_SPEECH, _SL_HEAD))
     other = len({m.group(0).lower()[:4] for m in _SL_OTHER.finditer(t)})
-    motor = bool(_SL_FACE.search(t) or (_SL_MOTOR.search(t) and (_SL_SIDEW.search(t) or _SL_ONSET.search(t) or rest or other)))
+    if _SL_ARMUP.search(t) and not _SL_OLD.search(t):
+        return True
+    motor = bool(_SL_FACE.search(_SL_BILAT.sub(" ", t)) or (_SL_MOTOR.search(_SL_BILAT.sub(" ", t)) and (_SL_SIDEW.search(t) or _SL_ONSET.search(t) or rest or other)))
     core = rest + motor
     if _SL_OLD.search(t) or (_SL_BENIGN.search(t) and core + min(other, 1) < 2):
         return False
