@@ -15,6 +15,7 @@ export const SKSAG_SRC = String.raw`\b(?:sag\w*|droop\w*|lopsided)\b`;
 export const MSPREG_SRC = String.raw`pregnan\w+|weeks along|\bpositive test\b|early pregnancy|expecting a baby`;
 export const MSBLEED_SRC = String.raw`bleed\w*|spotting|blood`;
 export const MSSHOULDER_SRC = String.raw`shoulder[^.!?]{0,25}(?:ach\w*|pain\w*|hurt\w*|sore|throb\w*|stab\w*)|(?:ach\w*|pain\w*|hurt\w*|sore|throb\w*|stab\w*)[^.!?]{0,25}shoulder`;
+export const MSFUNC_SRC = String.raw`(?:can'?t|cannot|couldn'?t|could not|unable to) (?:do (?:anything|a thing|my job|daily)|focus|concentrate|function|watch|read|get dressed|look after)|stops? me (?:doing|from)|too (?:bad|painful) to (?:sit|watch|read|do|focus)|had to leave work`;
 export const MSNOT_SRC = String.raw`not pregnant|no chance|negative|my sister|my friend|my mum|my wife|\bshe\b|\bher\b|gym|lifting|sleep\w* on|gums|nose\w*|tooth|teeth|brush\w*|knee|graz\w+|scratch\w*|\bcut\b|piles|haemorrhoid\w*`;
 export const MSNEGB_SRC = String.raw`\b(?:no|without|not|zero|nothing|never) (?:\w+ ){0,2}(?:bleed\w*|spotting|blood)`;
 export const FSFLOW_SRC = String.raw`(?:pads?|tampons?)[^.!?]{0,25}(?:every|each|an?) (?:half[- ]hour|30 min\w*|hour|15 min\w*)|(?:every|each) (?:half[- ]hour|hour)[^.!?]{0,25}(?:pads?|tampons?)|soak\w* (?:through )?(?:a |my |the )?(?:pads?|tampons?)|bleeding through (?:a |my |the )?(?:pads?|tampons?)|flooding`;

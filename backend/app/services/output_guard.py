@@ -1564,8 +1564,13 @@ _MS_NOT = re.compile(r"not pregnant|no chance|negative|my sister|my friend|my mu
 _MS_NEGB = re.compile(r"\b(?:no|without|not|zero|nothing|never) (?:\w+ ){0,2}(?:bleed\w*|spotting|blood)", re.I)
 
 
+# A91 (AI Brain run31, same nhs.uk 999 card): severe pain said by its effect, "cannot do daily tasks or focus on TV or reading a book".
+_MS_FUNC = re.compile(r"(?:can'?t|cannot|couldn'?t|could not|unable to) (?:do (?:anything|a thing|my job|daily)|focus|concentrate|function|watch|read|get dressed|look after)|stops? me (?:doing|from)|too (?:bad|painful) to (?:sit|watch|read|do|focus)|had to leave work", re.I)
+
+
 def _preg_shoulder(t: str) -> bool:
-    return bool(_MS_PREG.search(t) and _MS_BLEED.search(_MS_NEGB.sub(" ", t)) and _MS_SHOULDER.search(t) and not _MS_NOT.search(t))
+    return bool(_MS_PREG.search(t) and _MS_BLEED.search(_MS_NEGB.sub(" ", t)) and (_MS_SHOULDER.search(t) or _MS_FUNC.search(t))
+                and not _MS_NOT.search(t))
 
 
 def _stroke_lay(t: str) -> bool:
