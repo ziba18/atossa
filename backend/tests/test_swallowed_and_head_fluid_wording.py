@@ -32,3 +32,8 @@ def test_reduced_baby_movements_and_diabetes_danger_signs():
     for t in ["baby shower on saturday, not moving house though", "my mum is diabetic and checks her sugar twice a day",
               "baby kicked all evening, so active tonight"]:
         assert not is_emergency(t), t
+
+
+def test_sudden_tearing_pain_chest_back():
+    assert is_emergency("suddenly a tearing pain from my chest through to my back")
+    assert not is_emergency("ripped my back muscle at the gym suddenly")
