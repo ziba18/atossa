@@ -612,7 +612,7 @@ export function beforeSinceOf(all: SymptomData[], started: string, end: string, 
 }
 
 export function beforeSinceText(b: BeforeSince): string {
-  return `Days at 7/10 or more: ${b.before} of ${b.len} days before · ${b.since} of ${b.len} days from the start (days written: ${b.writtenBefore} before, ${b.writtenSince} since)`;
+  return `Days at 7/10 or more: ${b.before} of ${b.len} before · ${b.since} of ${b.len} since starting (days written: ${b.writtenBefore} and ${b.writtenSince})`;
 }
 
 export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions): DoctorDoc {

@@ -16,7 +16,7 @@ test('equal windows: 42 days each side, counts only', () => {
   assert.equal(b.len, 42);
   assert.equal(b.before, 42);
   assert.equal(b.since, 0);
-  assert.match(beforeSinceText(b), /42 of 42 days before · 0 of 42 days from the start/);
+  assert.match(beforeSinceText(b), /42 of 42 before · 0 of 42 since starting/);
 });
 
 test('too little before the start, a future start or a short course: no numbers', () => {
