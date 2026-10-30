@@ -2,7 +2,7 @@
 // border-strong outline (radius 14), like the other text fields, with an optional mic.
 // The mic only shows where on-device dictation works (not in Expo Go or on web).
 import React, { useRef, useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View, useWindowDimensions } from 'react-native';
 import { colors, heights, radii, space, type as typeScale } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
 import { haptics } from '../../../lib/haptics';
@@ -21,7 +21,9 @@ export function AgendaField({
   const [focused, setFocused] = useState(false);
   const [opened, setOpened] = useState(false);
   // Collapsed to one line until it holds words or has focus (keeps the digits card above the fold).
-  const boxH = typeScale.body.lineHeight! * (focused || value.length > 0 ? 2 : 1) + space.sm * 2;
+  // Very narrow screens wrap the placeholder to two lines, so the empty box gets two lines too.
+  const narrow = useWindowDimensions().width < 260;
+  const boxH = typeScale.body.lineHeight! * (focused || value.length > 0 || narrow ? 2 : 1) + space.sm * 2;
   const dictation = useDictation((transcript) => {
     const joined = [base.current.trim(), transcript.trim()].filter(Boolean).join(' ');
     onChange(joined);
