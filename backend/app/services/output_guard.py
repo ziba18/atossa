@@ -1759,7 +1759,7 @@ _S343_SIGN = re.compile(r"\b(?:shak\w+|shiver\w*|freezing|cold|sleepy|drowsy|hot
 _QUIET347 = re.compile(r"\b(?:thermometer|broken|texts?|messages?|phone|up early|for nursery|for school|mondays?|any more|anymore|retired|dinosaurs?|imagination|smell|teething|for long|stand the)\b", re.I)
 
 _S364_CTX = re.compile(r"\b(?:miscarriage|lost the pregnancy|lost my pregnancy|pregnancy loss|medical management|post-?partum|post-?natal|since (?:the )?delivery|after (?:the )?(?:delivery|birth)|(?:weeks?|days?) after having (?:my|the) (?:baby|son|daughter)|had the baby)\b", re.I)
-_S364_HEAVY = re.compile(r"\b(?:(?:pad|towel)s?\b[^.;!?]{0,25}\b(?:each|every|per) (?:thirty|30|twenty|20|fifteen|15|ten|10|forty|40)\b[^.;!?]{0,12}\bmin\w*|(?:plum|orange|lemon|golf ball|egg|fist)[- ]sized (?:lumps?|clots?)|(?:much|a lot|far) heavier\b[^.;!?]{0,60}\b(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b|(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b[^.;!?]{0,60}\b(?:much|a lot|far) heavier\b|gushing[^.;!?]{0,60}\b(?:grey|gray|dizz\w+|woozy|faint\w*))", re.I)
+_S364_HEAVY = re.compile(r"\b(?:(?:pad|towel)s?\b[^.;!?]{0,25}\b(?:each|every|per) (?:thirty|30|twenty|20|fifteen|15|ten|10|forty|40)\b[^.;!?]{0,12}\bmin\w*|(?:pad|towel)s?\b[^.;!?]{0,25}\b(?:each|every|per) half[- ](?:an[- ])?hour\b|(?:plum|orange|lemon|golf ball|egg|fist)[- ]sized (?:lumps?|clots?)|(?:much|a lot|far) heavier\b[^.;!?]{0,60}\b(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b|(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b[^.;!?]{0,60}\b(?:much|a lot|far) heavier\b|gushing[^.;!?]{0,60}\b(?:grey|gray|dizz\w+|woozy|faint\w*))", re.I)
 _S364_QUIET = re.compile(r"\b(?:no clots?|not heavy|stopped|used to|last year|years? ago)\b", re.I)
 
 _S365 = re.compile(
