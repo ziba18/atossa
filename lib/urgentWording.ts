@@ -81,7 +81,7 @@ const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES =
 // run19 (S-307, backend _hits): another person as subject is quiet unless the clause says it is happening now.
 const LIVE_REPORT = mk(P.LIVEREPORT_SRC), FAINT_WORD = new RegExp('^(?:' + P.FAINTWORD_SRC + ')$', 'i'), FAINT_REC = mk(P.FAINTREC_SRC);
 const OTHER_NOW = mk(P.OTHERNOW_SRC), REPORTED = mk(P.REPORTED_SRC), AGE_PAST = mk(P.AGEPAST_SRC), IN_CARE = mk(P.INCARE_SRC);
-const HEAVY_PHRASE = new RegExp(P.HEAVYPHRASE_SRC, 'gi'), HEAVY_USUAL_Q = mk(P.HEAVYUSUALQ_SRC), HEAVY_USUAL_CTRL = mk(P.HEAVYUSUALCTRL_SRC);
+const HEAVY_PHRASE = new RegExp(P.HEAVYPHRASE_SRC, 'gi'), HEAVY_USUAL_Q = mk(P.HEAVYUSUALQ_SRC), HEAVY_USUAL_CTRL = mk(P.HEAVYUSUALCTRL_SRC), SEC_ENDED = mk(P.SECENDED_SRC), SEC_STILL = mk(P.SECSTILL_SRC), SUDDEN_PAIN = new RegExp(P.SUDDENPAIN_SRC, 'gi');
 const BLOOD346 = mk(P.BLOOD346_SRC), SIGN346 = mk(P.SIGN346_SRC), PAST_Q346 = mk(P.PASTQ346_SRC), BAD346 = mk(P.BAD346_SRC), CANTSTAND346 = mk(P.CANTSTAND346_SRC);
 const WAKE342 = mk(P.WAKE342_SRC), EYES342 = mk(P.EYES342_SRC), HOT342 = mk(P.HOT342_SRC), SIGN342 = mk(P.SIGN342_SRC), MORN342 = mk(P.MORN342_SRC);
 const NEG342 = new RegExp(P.NEG342_SRC, 'gi'), S343 = mk(P.S343_SRC), S343_SIGN = mk(P.S343SIGN_SRC), QUIET347 = mk(P.QUIET347_SRC);
@@ -273,6 +273,7 @@ export function urgentSignpost(text: string): string | null {
   let line = signpostOnce(text);
   // S-347 (backend emergency_kind): a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on the
   // heavy phrase alone; it is blanked and the note re-read. Any faint / pale / hourly-pad / worse-than-usual word keeps it.
+  if (line === URGENT_SIGNPOST && SEC_ENDED.test(text) && !SEC_STILL.test(text)) line = signpostOnce(text.replace(SUDDEN_PAIN, 'pain'));
   if (line === URGENT_SIGNPOST && HEAVY_USUAL_Q.test(text) && !HEAVY_USUAL_CTRL.test(text)) line = signpostOnce(text.replace(HEAVY_PHRASE, 'bleeding'));
   if (line === URGENT_SIGNPOST && pregLightBox(text)) line = null;
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.

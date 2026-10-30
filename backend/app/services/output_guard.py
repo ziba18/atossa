@@ -1748,6 +1748,11 @@ def _plain999(t: str) -> bool:
     return False
 
 
+_SEC_ENDED = re.compile(r"\b(?:lasted|only lasted|for|about|just|only)\s+(?:a few|a couple of|\d+|one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty)\s+seconds?\b", re.I)
+_SEC_STILL = re.compile(r"\b(?:still|keeps?|kept|won'?t|not stopp\w+|hasn'?t|haven'?t|can'?t|cannot|couldn'?t|unable|collaps\w+|faint\w*|pass(?:ed|ing)? out|dizz\w+|vomit\w*|bleed\w*|blood|shoulder|breath\w*|chest|fever|temperature|worse)\b", re.I)
+_SUDDEN_PAIN = re.compile(r"\bsudden(?:ly)? (?:sharp |stabbing )?pain\b", re.I)
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     kind = _emergency_kind(user_text)
@@ -1755,6 +1760,10 @@ def emergency_kind(user_text: str):
     # the heavy phrase is blanked and the rest of the note is judged as before. Any faint / pale / hourly-pad / worse-than-usual word keeps it urgent.
     if kind == "medical" and _HEAVY_USUAL_Q.search(user_text) and not _HEAVY_USUAL_CTRL.search(user_text):
         kind = _emergency_kind(_HEAVY_PHRASE.sub("bleeding", user_text))
+    # S-420(a): a stated duration of seconds that has ended ("sudden sharp pain ... lasted ten seconds") is not urgent on the
+    # "sudden pain" words alone; the phrase is blanked and the rest of the note is judged as before.
+    if kind == "medical" and _SEC_ENDED.search(user_text) and not _SEC_STILL.search(user_text):
+        kind = _emergency_kind(_SUDDEN_PAIN.sub("pain", user_text))
     # run11 (S-240 follow-up): a line break between clauses must not hide a self-harm plan ("Better off without me on the
     # team,\nand I've got a plan for tonight"): the note is re-read with line breaks as commas, for self-harm only.
     if kind is None and "\n" in user_text and _emergency_kind(user_text.replace("\n", ", ")) == "self_harm":
