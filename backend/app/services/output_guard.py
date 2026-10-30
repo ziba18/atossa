@@ -539,7 +539,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:double|extra|too much)\b.{0,25}\b(?:pills|tablets|dose|medication)\b.{0,60}\b(?:drowsy|very sleepy|strange|can'?t stay awake)\b|"
                     r"\bdiabet\w+\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\b(?:shaking|blurr\w+|confused|sweating)\b|\b(?:shaking|blurr\w+|confused|sweating)\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\bdiabet\w+|"
                     r"\b(?:sudden|terrible|severe)\b.{0,25}\bback\b.{0,40}\bsweat\w*|"
-                    r"\bstiff neck\b.{0,80}\b(?:light hurts|hurts my eyes|rash|(?<!no )(?<!without )(?<!without a )(?<!not )(?<!not a )(?<!no sign of )high temperature|(?<!no )(?<!without )(?<!without a )(?<!not )(?<!not a )(?<!no sign of )fever)|\b(?:high temperature|fever)\b.{0,60}\bstiff neck\b|"
+                    r"\bstiff neck\b.{0,80}\b(?:light hurts|hurts my eyes|rash|can'?t look at (?:the )?light|light (?:is )?(?:hurting|painful)|confus\w+|drowsy|hard to wake|(?<!no )(?<!without )(?<!without a )(?<!not )(?<!not a )(?<!no sign of )high temperature|(?<!no )(?<!without )(?<!without a )(?<!not )(?<!not a )(?<!no sign of )fever)|\b(?:high temperature|fever)\b.{0,60}\bstiff neck\b|"
                     r"\b(?:tight|pain|pressure|band|crush\w*|squeez\w+)\b.{0,25}\bchest\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left )?(?:jaw|arm)\b|"
                     r"\b(?:stabbing|agony|agonising|screaming)\b.{0,60}\b(?:curled up|on the floor|can'?t move)\b|"
                     r"\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b|"
@@ -1735,11 +1735,14 @@ _PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|a
 _PL_QUIET = re.compile(r"\b(?:through (?:my|his|her|their|the) (?:nose|mouth)|(?:holding|hold|held) (?:my|his|her|their) breath|dream\w*|nightmare\w*|yoga|pilates|in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|was indigestion|in hospital|on the ward|recovered|doing well)\b", re.I)
 
 
+_PL_BLUE = re.compile(r"\b(?:went blue|turned blue|going blue|blue lips|grey|unresponsive|collapsed|not responding|won'?t wake)\b", re.I)
+
+
 def _plain999(t: str) -> bool:
     t = t.replace("\u2019", "'")
     for clause in re.split(r"[.!?;\n]+", t):
         m = _PL_STATE.search(clause)
-        if not m or _PL_QUIET.search(clause) or _is_past(clause):
+        if not m or (_PL_QUIET.search(clause) and not _PL_BLUE.search(clause)) or _is_past(clause):
             continue
         before = clause[: m.start()]
         if _PL_NEG.search(before) or _PL_HYPO.search(before) or not _PL_SUBJ.search(before + " " + m.group(0)):
@@ -1749,7 +1752,7 @@ def _plain999(t: str) -> bool:
 
 
 _SEC_ENDED = re.compile(r"\b(?:lasted|only lasted|for|about|just|only)\s+(?:a few|a couple of|\d+|one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty)\s+seconds?\b", re.I)
-_SEC_STILL = re.compile(r"\b(?:still|keeps?|kept|won'?t|not stopp\w+|hasn'?t|haven'?t|can'?t|cannot|couldn'?t|unable|collaps\w+|faint\w*|pass(?:ed|ing)? out|dizz\w+|vomit\w*|bleed\w*|blood|shoulder|breath\w*|chest|fever|temperature|worse)\b", re.I)
+_SEC_STILL = re.compile(r"\b(?:cold|clammy|pale|sweat\w*|pregnan\w*|vision|blurr\w+|blue|confus\w+|drows\w+|numb\w*|weak\w*|sick|nause\w+|burning|hot|shak\w+|tight|crushing|pressure|still|keeps?|kept|won'?t|not stopp\w+|hasn'?t|haven'?t|can'?t|cannot|couldn'?t|unable|collaps\w+|faint\w*|pass(?:ed|ing)? out|dizz\w+|vomit\w*|bleed\w*|blood|shoulder|breath\w*|chest|fever|temperature|worse)\b", re.I)
 _SUDDEN_PAIN = re.compile(r"\bsudden(?:ly)? (?:sharp |stabbing )?pain\b", re.I)
 
 

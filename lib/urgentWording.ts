@@ -256,11 +256,11 @@ function strokeSlot(t0: string): boolean {
 
 // B23 (backend _plain999): plain 999 words about anyone now (subject x state in one clause); idioms, hypotheticals,
 // history, sleep pauses and pets stay quiet.
-const PL_STATE = mk(P.PLSTATE_SRC), PL_SUBJ = mk(P.PLSUBJ_SRC), PL_NEG = mk(P.PLNEG_SRC), PL_HYPO = mk(P.PLHYPO_SRC), PL_QUIET = mk(P.PLQUIET_SRC);
+const PL_STATE = mk(P.PLSTATE_SRC), PL_SUBJ = mk(P.PLSUBJ_SRC), PL_NEG = mk(P.PLNEG_SRC), PL_HYPO = mk(P.PLHYPO_SRC), PL_QUIET = mk(P.PLQUIET_SRC), PL_BLUE = mk(P.PLBLUE_SRC);
 function plain999(t0: string): boolean {
   for (const clause of t0.replace(/\u2019/g, "'").split(/[.!?;\n]+/)) {
     const m = PL_STATE.exec(clause);
-    if (!m || PL_QUIET.test(clause) || isPast(clause)) continue;
+    if (!m || (PL_QUIET.test(clause) && !PL_BLUE.test(clause)) || isPast(clause)) continue;
     const before = clause.slice(0, m.index);
     if (PL_NEG.test(before) || PL_HYPO.test(before) || !PL_SUBJ.test(before + ' ' + m[0])) continue;
     return true;

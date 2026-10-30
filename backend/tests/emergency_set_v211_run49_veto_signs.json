@@ -1,0 +1,17 @@
+{
+ "note": "Safety run49 veto audit: a veto word must not hide a sign written next to it. Own lines.",
+ "emergency": [
+  "sudden sharp pain in my belly for ten seconds, now I feel really cold and clammy",
+  "sudden sharp pain for a few seconds and I think I'm pregnant",
+  "sudden sharp pain on my right lasted ten seconds then my vision went blurry",
+  "stiff neck, no fever but I can't look at the light and I'm confused",
+  "she stopped breathing through her nose and then went blue and unresponsive",
+  "sudden sharp pain lasted ten seconds and my lips went blue",
+  "shortness of breath on the stairs and my lips went blue",
+  "felt faint, it passed, then crushing chest pain"
+ ],
+ "harmless": [
+  "sudden sharp pain on my right side lasted ten seconds, then nothing",
+  "stiff neck from the gym, no fever, felt fine after a hot shower"
+ ]
+}
