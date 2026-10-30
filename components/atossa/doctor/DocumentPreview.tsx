@@ -102,6 +102,7 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
   const { width: screenW } = useWindowDimensions();
+  const narrow = screenW < 260;
   // The on-screen page runs about 15% longer than the PDF's compact tables. Measured on Sam's seed (real Chromium PDF vs
   // this height): 2.18 / 1.96 / 1.68 / 1.17 screen pages printed as 2 / 2 / 2 / 1 pages, each at or just under the
   // estimate (design/a4-gap.md, run 22). Never lower the factor without re-measuring.
@@ -151,14 +152,14 @@ export function DocumentPreview({ doc, tall, noCard }: { doc: DoctorDoc; tall?: 
               opacity: pressed ? 0.85 : 1,
             }, shadows.hero]}
           >
-            <View aria-hidden style={{ width: 44, height: 56, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
+            {narrow ? null : <View aria-hidden style={{ width: 44, height: 56, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="file-text" size={22} color={colors.plum} />
-            </View>
-            <View style={{ flex: 1 }}>
+            </View>}
+            <View style={{ flex: 1, minWidth: 0 }}>
               <Txt variant="headline">See the full page</Txt>
-              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${printedRange(doc).split(' · ')[0].replace(/ /g, "\u00A0")}`}</Txt>
+              <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${printedRange(doc).split(' · ')[0].replace(/ /g, narrow ? ' ' : "\u00A0")}`}</Txt>
             </View>
-            <View aria-hidden><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
+            <View aria-hidden style={{ flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
           </Pressable>}
         </View>
       )}
