@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import type {
-  AppointmentData, HistoryData, HistoryType, MedicineData, Rec,
+  AppointmentData, HistoryData, HistoryType, MedicineData, Rec, SymptomData,
 } from '../../../types/records';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { haptics } from '../../../lib/haptics';
@@ -11,6 +11,7 @@ import {
   Button, ChipGroup, ConfirmCard, FieldLabel, EmptyState, InlineError, ScreenLarge, SectionTitle, TextField, Txt, showToast,
 } from '../kit';
 import { todayKey } from '../../../lib/records/dates';
+import { beforeSinceOf, beforeSinceText } from '../../../lib/records/summary';
 import { useScrollRef } from '../timeline/navigation';
 import { UrgentNote, textOf } from '../UrgentNote';
 import { RecordDateField } from './RecordDateField';
@@ -107,6 +108,7 @@ export function RecordDetail({
   const isNew = id === 'new';
   const records = useRecordsStore((s) => s.records[kind] as Rec<AnyData>[]);
   const loadedFor = useRecordsStore((s) => s.loadedFor);
+  const symptoms = useRecordsStore((s) => s.records.symptom);
   const create = useRecordsStore((s) => s.create);
   const update = useRecordsStore((s) => s.update);
   const remove = useRecordsStore((s) => s.remove);
@@ -250,7 +252,7 @@ export function RecordDetail({
         />
       ) : null}
       <View style={{ gap: space.xl }}>
-        {kind === 'medicine' ? <MedicineFields d={draft as MedicineData} set={set} isNew={isNew} /> : null}
+        {kind === 'medicine' ? <MedicineFields d={draft as MedicineData} set={set} isNew={isNew} symptoms={symptoms.map((r) => r.data)} /> : null}
         {kind === 'appointment' ? <AppointmentFields d={draft as AppointmentData} set={set} /> : null}
         {kind === 'history' ? <HistoryFields d={draft as HistoryDraft} set={set} /> : null}
 
@@ -293,7 +295,9 @@ export function RecordDetail({
 
 type SetFn = (patch: Partial<Draft>) => void;
 
-function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew: boolean }) {
+function MedicineFields({ d, set, isNew, symptoms }: { d: MedicineData; set: SetFn; isNew: boolean; symptoms: SymptomData[] }) {
+  const today = todayKey();
+  const win = !isNew && d.startedPrecision === 'exact' && d.started ? beforeSinceOf(symptoms, d.started, d.stopped || today, today) : null;
   return (
     <>
       <UrgentNote text={textOf(d)} />
@@ -333,6 +337,7 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
         value={d.happened}
         onChangeText={(happened) => set({ happened })}
       />
+      {win ? <Txt variant="secondary">{beforeSinceText(win)}</Txt> : null}
     </>
   );
 }
