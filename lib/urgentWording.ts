@@ -208,7 +208,7 @@ function hit(pattern: RegExp, text: string): boolean {
       const before = clause.slice(0, m.index);
       const after = clause.slice(m.index + m[0].length);
       if (!(NEG.test(before.slice(-40).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(clause) || RES.test(after)
-        || (OTHER.test(before) && (!OTHER_NOW.test(clause) || (REPORTED.test(clause) && !LIVE_REPORT.test(clause)) || IN_CARE.test(text))) || AGE_PAST.test(clause)
+        || (OTHER.test(before) && (!OTHER_NOW.test(clause) || (REPORTED.test(before) && !LIVE_REPORT.test(clause)) || IN_CARE.test(text))) || AGE_PAST.test(clause)
         || (FAINT_WORD.test(m[0]) && FAINT_REC.test(text)))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }

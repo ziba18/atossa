@@ -490,7 +490,7 @@ def _hits(rx, text: str) -> bool:
                 continue
             # run19 (S-307, structure not phrases): another person as the subject stays quiet UNLESS the same clause says it
             # is happening now, so every existing urgent concept also fires for "my mum can't breathe" (NHS when-to-call-999)
-            if _OTHER.search(before) and (not _OTHER_NOW.search(clause) or (_REPORTED.search(clause) and not _LIVE_REPORT.search(clause)) or _IN_CARE.search(text)):
+            if _OTHER.search(before) and (not _OTHER_NOW.search(clause) or (_REPORTED.search(before) and not _LIVE_REPORT.search(clause)) or _IN_CARE.search(text)):
                 continue
             if _AGE_PAST.search(clause):
                 continue
