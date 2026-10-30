@@ -73,7 +73,7 @@ const mk = (src: string) => new RegExp(src, 'i');
 const S364CTX = mk(P.S364CTX_SRC), S364HEAVY = mk(P.S364HEAVY_SRC), S364QUIET = mk(P.S364QUIET_SRC), S365 = mk(P.S365_SRC), S365QUIET = mk(P.S365QUIET_SRC);
 const PD_FAMILY = new RegExp(P.PDFAM_SRC, 'gi'), PD_CTX = mk(P.PDCTX_SRC), PD_SECOND = mk(P.PDSECOND_SRC), PD_SICK = mk(P.PDSICK_SRC), PD_FEVER = mk(P.PDFEVER_SRC), PD_USUAL = mk(P.PDUSUAL_SRC), PD_RES = mk(P.PDRES_SRC);
 // B6 (backend _pd_second): sick needs a usual marker to go quiet; fever words need usual AND settled.
-const pdSecond = (t: string) => PD_SECOND.test(t) || (PD_SICK.test(t) && !PD_USUAL.test(t)) || (PD_FEVER.test(t) && !(PD_USUAL.test(t) && PD_RES.test(t)));
+const pdSecond = (t: string) => PD_SECOND.test(t) || (mk(P.MSPREG_SRC).test(t) && !mk(P.MSNOT_SRC).test(t)) || (PD_SICK.test(t) && !PD_USUAL.test(t)) || (PD_FEVER.test(t) && !(PD_USUAL.test(t) && PD_RES.test(t)));
 const SK_FACE = mk(P.SKFACE_SRC), SK_FACE_FX = mk(P.SKFACEFX_SRC), SK_SPEECH = mk(P.SKSPEECH_SRC), SK_SPEECH_FX = mk(P.SKSPEECHFX_SRC), SK_LIMB = mk(P.SKLIMB_SRC), SK_LIMB_FX = mk(P.SKLIMBFX_SRC), SK_SIDE = mk(P.SKSIDE_SRC), SK_ONSET = mk(P.SKONSET_SRC), SK_BENIGN = mk(P.SKBENIGN_SRC), SK_SAG = mk(P.SKSAG_SRC), SK_NEG = new RegExp(P.SKNEG_SRC, 'gi');
 const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SELF2 = mk(P.SELF2_SRC);
 const LASTREL = new RegExp('^(?:' + P.LASTREL_SRC + ')$', 'i'), PRESENT = mk(P.PRESENT_SRC);
@@ -208,6 +208,12 @@ function flowShock(t: string): boolean {
 // S-381 + A91 (backend _preg_shoulder): pregnant + bleeding + shoulder pain, or pain that stops daily tasks.
 const MS_NEGB = new RegExp(P.MSNEGB_SRC, 'gi'), MS_PREG = mk(P.MSPREG_SRC), MS_BLEED = mk(P.MSBLEED_SRC), MS_SHOULDER = mk(P.MSSHOULDER_SRC), MS_FUNC = mk(P.MSFUNC_SRC), MS_NOT = mk(P.MSNOT_SRC);
 const pregShoulder = (t: string) => MS_PREG.test(t) && MS_BLEED.test(t.replace(MS_NEGB, ' ')) && (MS_SHOULDER.test(t) || MS_FUNC.test(t)) && !MS_NOT.test(t);
+// B19 / prd/help-now §16 (backend _preg_light_box): pregnant + light bleeding + mild pain + still functioning = 111 box, not 999.
+const PB_LIGHT = mk(P.PBLIGHT_SRC), PB_OK = mk(P.PBOK_SRC), PB_SEV = mk(P.PBSEV_SRC), PB_WORDS = new RegExp(P.PBWORDS_SRC, 'gi');
+const pregLightBox = (t0: string) => {
+  const t = t0.replace(/\u2019/g, "'");
+  return MS_PREG.test(t) && PB_LIGHT.test(t) && PB_OK.test(t) && !PB_SEV.test(t) && !MS_NOT.test(t) && signpostOnce(t.replace(PB_WORDS, ' ')) === null;
+};
 function strokeLay(t0: string): boolean {
   const t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   let n = 0;
@@ -240,6 +246,7 @@ export function urgentSignpost(text: string): string | null {
   // S-347 (backend emergency_kind): a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on the
   // heavy phrase alone; it is blanked and the note re-read. Any faint / pale / hourly-pad / worse-than-usual word keeps it.
   if (line === URGENT_SIGNPOST && HEAVY_USUAL_Q.test(text) && !HEAVY_USUAL_CTRL.test(text)) line = signpostOnce(text.replace(HEAVY_PHRASE, 'bleeding'));
+  if (line === URGENT_SIGNPOST && pregLightBox(text)) line = null;
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.

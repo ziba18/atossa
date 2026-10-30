@@ -1491,7 +1491,7 @@ _PD_RESOLVED = re.compile(r"settled|kick(?:ed|s) in|helped|eased|better (?:after
 
 def _pd_second(t: str) -> bool:
     usual = bool(_PD_USUAL.search(t))
-    return bool(_PD_SECOND.search(t) or (_PD_SICK.search(t) and not usual)
+    return bool(_PD_SECOND.search(t) or (_MS_PREG.search(t) and not _MS_NOT.search(t)) or (_PD_SICK.search(t) and not usual)
                 or (_PD_FEVER.search(t) and not (usual and _PD_RESOLVED.search(t))))
 
 
@@ -1555,7 +1555,9 @@ def _flow_shock(t: str) -> bool:
 
 
 # S-381 (Safety run 45, nhs.uk/conditions/miscarriage 999 card, reviewed 31 Mar 2026): pregnant + vaginal bleeding + shoulder pain.
-_MS_PREG = re.compile(r"pregnan\w+|weeks along|\bpositive test\b|early pregnancy|expecting a baby", re.I)
+# B19 (AI Brain run33, PM 04:11): "I'm 9 weeks", "expecting," count as a pregnancy marker; with one, no period-day/cramps
+# suppressor applies (_pd_second) and pain that stops her standing is the 999 card's "cannot do daily tasks".
+_MS_PREG = re.compile(r"pregnan\w+|weeks (?:along|gone)|\bpositive (?:pregnancy )?test\b|early pregnancy|expecting a baby|\bexpecting\b(?! (?:my|a period|the|it|to|that|him|them|you|me|some|her|an?\b))|\b(?:i'?m|im|i am|about|at|around) (?:\d{1,2}|six|seven|eight|nine|ten|eleven|twelve) (?:\+\d )?weeks?\b(?! (?:post|since|after|ago|into|of|off|on|in|late|overdue|out|now|back|before|and \d))", re.I)
 _MS_BLEED = re.compile(r"bleed\w*|spotting|blood", re.I)
 _MS_SHOULDER = re.compile(r"shoulder[^.!?]{0,25}(?:ach\w*|pain\w*|hurt\w*|sore|throb\w*|stab\w*)|(?:ach\w*|pain\w*|hurt\w*|sore|throb\w*|stab\w*)[^.!?]{0,25}shoulder", re.I)
 _MS_NOT = re.compile(r"not pregnant|no chance|negative|my sister|my friend|my mum|my wife|\bshe\b|\bher\b|gym|lifting|sleep\w* on|gums|nose\w*|tooth|teeth|brush\w*|knee|graz\w+|scratch\w*|\bcut\b|piles|haemorrhoid\w*", re.I)
@@ -1565,7 +1567,22 @@ _MS_NEGB = re.compile(r"\b(?:no|without|not|zero|nothing|never) (?:\w+ ){0,2}(?:
 
 
 # A91 (AI Brain run31, same nhs.uk 999 card): severe pain said by its effect, "cannot do daily tasks or focus on TV or reading a book".
-_MS_FUNC = re.compile(r"(?:can'?t|cannot|couldn'?t|could not|unable to) (?:do (?:anything|a thing|my job|daily)|focus|concentrate|function|watch|read|get dressed|look after)|stops? me (?:doing|from)|too (?:bad|painful) to (?:sit|watch|read|do|focus)|had to leave work", re.I)
+_MS_FUNC = re.compile(r"(?:can'?t|cannot|couldn'?t|could not|unable to) (?:do (?:anything|a thing|my job|daily)|focus|concentrate|function|watch|read|get dressed|look after)|stops? me (?:doing|from)|too (?:bad|painful) to (?:sit|watch|read|do|focus)|had to leave work|(?:can'?t|cant|cannot|couldn'?t|unable to) (?:even )?(?:stand|finish|get up)|(?:had to |have to )?l(?:ie|ay|ying)(?: down)? on the (?:\w+ )?floor|(?:much|far|way) worse than (?:any|a|my|normal)|but (?:much|far|way) worse|can'?t do anything but", re.I)
+
+
+# B19 / prd/help-now §16 (nhs.uk/conditions/miscarriage, reviewed 31 Mar 2026): pregnant + LIGHT bleeding/spotting + mild or no
+# pain + still doing her day is the "call your maternity unit or NHS 111" box, not 999. Only when every 999 sign is absent and
+# the note is not urgent once the pregnancy and bleeding words are blanked; bare "pregnant and bleeding" stays 999.
+_PB_LIGHT = re.compile(r"\b(?:spott\w*|light(?: pink| brown| red)? (?:bleed\w*|blood)|(?:a )?(?:little|tiny|small amount of|bit of|few drops of|drop of|smear of|touch of)(?: light)?(?: pink| brown| red)? (?:bleed\w*|blood|spotting)|pink (?:blood|discharge)|brown (?:blood|discharge|spotting))", re.I)
+_PB_OK = re.compile(r"\b(?:mild\w*|slight\w*|no pain|not (?:much |really )?painful|(?:little |few )?twinges?|dull ache|bit (?:of a )?(?:crampy|achy|sore)|otherwise (?:fine|normal|ok|okay|well)|feel (?:fine|ok|okay|well)|carrying on|still (?:at work|working|doing|going)|working (?:from home )?(?:fine|as normal|normally)|can do everything|as normal|getting on with)\b", re.I)
+_PB_SEV = re.compile(r"\b(?:severe|heavy|heavier|soak\w*|clots?|gush\w*|pour\w*|faint\w*|dizz\w*|light-?headed|woozy|shoulder|worst|agony|agonising|unbearable|excruciating|intense|so bad|strong|sharp|stabb\w*|one side|one-sided|collaps\w*|pass(?:ed|ing)? out|pale|clammy|grey|vomit\w*|being sick|fever|temperature|shiver\w*|can'?t|cant|cannot|couldn'?t|unable|floor|curl\w*|doubled|worse|getting more|through (?:a |my )?pad)\b", re.I)
+_PB_WORDS = re.compile(_MS_PREG.pattern + r"|" + _PB_LIGHT.pattern + r"|\b(?:bleed\w*|blood|spotting)\b", re.I)
+
+
+def _preg_light_box(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_MS_PREG.search(t) and _PB_LIGHT.search(t) and _PB_OK.search(t) and not _PB_SEV.search(t) and not _MS_NOT.search(t)
+                and _emergency_kind(_PB_WORDS.sub(" ", t)) is None)
 
 
 def _preg_shoulder(t: str) -> bool:
@@ -1635,6 +1652,8 @@ def emergency_kind(user_text: str):
     # team,\nand I've got a plan for tonight"): the note is re-read with line breaks as commas, for self-harm only.
     if kind is None and "\n" in user_text and _emergency_kind(user_text.replace("\n", ", ")) == "self_harm":
         return "self_harm"
+    if kind == "medical" and _preg_light_box(user_text):
+        return None
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
