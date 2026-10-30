@@ -1019,7 +1019,7 @@ function sectionInner(s: DocSection): string {
       return `<section>${head}${s.items.length ? `<p class="item">${s.items.map((c) => esc(countText(c))).join('<span class="sep"> · </span>')}</p>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     case 'tried': {
       // One row per treatment: name · dates · what she noticed (her words, serif).
-      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}${t.beforeSince ? `<br><span class="meta">${esc(beforeSinceText(t.beforeSince))}</span>` : ''}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}</td></tr>`).join('');
+      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}</td></tr>${t.beforeSince ? `<tr><td colspan="3" class="meta">${esc(beforeSinceText(t.beforeSince))}</td></tr>` : ''}`).join('');
       return `<section>${head}${s.items.length ? `<table class="notes dated tried"><tbody>${rows}</tbody></table>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     }
     case 'appointments':
