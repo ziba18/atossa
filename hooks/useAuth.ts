@@ -36,19 +36,28 @@ function startAuthInit() {
       return;
     }
 
-    try {
-      const [user, profile] = await Promise.all([
-        api.get<AuthUser>('/auth/me'),
-        api.get<Profile>('/me'),
-      ]);
-      setUser(user);
-      setProfile(profile);
-      setSession({ access_token: token });
-    } catch (e) {
-      // Only a rejected session ends it. No signal or a sleeping server must not delete the tokens.
-      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) await clearTokens();
-      setSession(null);
+    // A sleeping free-tier server or a weak signal fails the first try: wait on the opening screen and try again
+    // before giving up. Only a rejected session (401/403) ends it and deletes the tokens.
+    const waits = [0, 4000, 10000];
+    for (let i = 0; i < waits.length; i++) {
+      if (waits[i]) await new Promise((r) => setTimeout(r, waits[i]));
+      try {
+        const [user, profile] = await Promise.all([
+          api.get<AuthUser>('/auth/me'),
+          api.get<Profile>('/me'),
+        ]);
+        setUser(user);
+        setProfile(profile);
+        setSession({ access_token: token });
+        return;
+      } catch (e) {
+        if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
+          await clearTokens();
+          break;
+        }
+      }
     }
+    setSession(null);
   })();
 }
 
