@@ -1518,16 +1518,19 @@ _SK_SAG = re.compile(r"\b(?:sag\w*|droop\w*|lopsided)\b", re.I)
 
 # S-372 (Safety run 45, nhs.uk/conditions/pelvic-inflammatory-disease-pid 999 card, reviewed 17 Dec 2025): pelvic / lower-belly /
 # period pain with fever words, or with being sick / very unwell and NO period word, is the 999 block. Only when nothing else fired.
-_PF_PAIN = re.compile(r"pelvic|lower (?:tummy|belly|abdom\w*)|period pain|cramp\w*|low down|womb|ovar\w*", re.I)
-_PF_FEVER = re.compile(r"(?:high|raised) temperature|\bfever(?:ish)?\b(?!\s+dream)|burning up|hot and cold|(?:hot|cold),? (?:and|or) (?:cold|hot|shiver\w*)|(?:shiver(?:y|ing)|chills)(?![^.!?]{0,40}(?:air ?con\w*|cinema|weather|freezing|heating|the rain|outside|walk home|shower|bath\b|pool|swim\w*))|shaking (?:all over|uncontrollably|with (?:chills|cold|fever))|(?:whole |my )?body (?:is |was )?shaking", re.I)
+_PF_PAIN = re.compile(r"pelvic|pelvis|lower (?:tummy|belly|abdom\w*)|period pain|cramp\w*|low down|womb|ovar\w*", re.I)
+_PF_FEVER = re.compile(r"(?:high|raised) temperature|(?:running|got|have|has) a temperature|(?:temperature (?:of |is |at )?|temp (?:of |is |at ))(?:3[89]|40)(?:\.\d)?\b|\bfever(?:ish)?\b(?!\s+dream)|burning up|hot and cold|(?:hot|cold),? (?:and|or) (?:cold|hot|shiver\w*)|(?:shiver(?:y|ing)|chills)(?![^.!?]{0,40}(?:air ?con\w*|cinema|weather|freezing|heating|the rain|outside|walk home|shower|bath\b|pool|swim\w*))|shaking (?:all over|uncontrollably|with (?:chills|cold|fever))|(?:whole |my )?body (?:is |was )?shaking", re.I)
 _PF_SICK = re.compile(r"throwing up|vomit\w*|(?:been|being|keep being|keeps? being) sick(?! of| and tired)|very unwell|really unwell", re.I)
 _PF_PERIOD = re.compile(r"period|menstrua\w+|time of the month", re.I)
 _PF_NEG = re.compile(r"hot water bottle|\b(?:no|without|not|zero) (?:\w+ ){0,1}(?:fever\w*|temperature|vomit\w*|chills|shaking|shivering)\b|(?:vomit\w*|been sick|sick|threw up) (?:just )?(?:once|one time|a single time)", re.I)
 
 
 # run31: resolved the same day (saved v33 coil line) -> quiet
-_PF_FINE = re.compile(r"\b(?:fine|ok|okay|better|normal|good) now|otherwise (?:fine|ok|okay|well)|back to normal|all settled|gone by (?:the )?(?:evening|morning|night|bedtime|lunch\w*|tea\w*)", re.I)
-_PF_STRICT = re.compile(r"pelvic|womb|ovar\w*|period pain", re.I)
+_PF_FINE = re.compile(r"\b(?:fine|ok|okay|better|normal|good) now|otherwise (?:fine|ok|okay|well)|back to normal|all settled|gone by (?:the )?(?:evening|morning|night|bedtime|lunch\w*|tea\w*)"
+    # run35 (plan row 3): the fever is over or the work-up is already done ('the fever went after two days', 'in August, the scan was clear')
+    r"|\bfever (?:went|had gone|has gone|is gone|passed|settled|broke)\b|\b(?:scan|tests?|bloods?|swabs?) (?:was|were|came back) (?:clear|normal|fine|negative)\b"
+    r"|\b(?:was|were) (?:feverish|hot)\b[^.!?]{0,20}\bin (?:january|february|march|april|may|june|july|august|september|october|november|december)\b|\bin (?:january|february|march|april|may|june|july|august|september|october|november|december)\b[^.!?]{0,20}\bwas (?:feverish|hot)\b", re.I)
+_PF_STRICT = re.compile(r"pelvic|pelvis|womb|ovar\w*|period pain", re.I)
 _PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
 
 
