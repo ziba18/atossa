@@ -1466,9 +1466,22 @@ _WHOLE = re.compile(_WHOLE.pattern + rf"|^{_ST_QUIET}{_ST_F}{_ST_L}|^{_ST_QUIET}
 
 # S-371 (Safety run 44): period pain / heavy-flow words alone are the ordinary bad day, not the 999 block (nhs.uk/symptoms/period-pain has no 999 card).
 # With a period word in the note, those phrases are blanked and the note is judged again; a second sign (faint, dizzy, pregnancy, one-sided, fever...) keeps it.
-_PD_FAMILY = re.compile(r"in agony|agoni[sz]ing|agony|doubled over|crying on the (?:bathroom )?floor|screaming|excruciating|unbearable|off the scale|can'?t (?:straighten|stand up straight|stand up|walk)|severe (?:sudden )?(?:pain|belly|abdominal|pelvic)|worst pain|worst (?:I'?ve|i have) ever|pain (?:is|was) (?:10|ten)(?:/| out of )(?:10|ten)|(?:10|ten)(?:/| out of )(?:10|ten)|(?:pads?|tampons?)[^.]{0,20}(?:every|each|an) (?:half )?(?:hour|30 minutes)|(?:every|each) (?:half )?hour|soak\w* (?:through )?(?:a |my |an? )?(?:pads?|tampons?|towel)\w*|(?:very |really |so )?heav(?:y|ily) bleeding|bleeding (?:really |very |so )?heav(?:y|ily)|clots[^.]{0,30}|(?:sick|nauseous)[^.]{0,20}pain|pain[^.]{0,30}(?:sick|sweaty)|feel(?:ing)? (?:sick|nauseous) and (?:sweaty|clammy)", re.I)
-_PD_CTX = re.compile(r"\b(?:period|periods|cramp\w*|menstrua\w+|day [1-5]\b|first day|time of the month|usual for me|same as (?:always|every month|last month)|normal for me|typical day|as always|like always|every month|first (?:two|2|few) days)\b", re.I)
-_PD_SECOND = re.compile(r"pregn\w+|periods? (?:have )?stopped|haven'?t had a period|menopaus\w*|post-?menopaus\w*|sweat\w*|being sick|been sick|sleepy|muddled|wet myself|rock hard|in minutes|spinning|pound\w*|heart|breath\w*|curled up|faint\w*|pass(?:ed|ing) out|blacked out|collaps\w+|dizz\w+|light-?headed|grey|gray|clammy|racing|pale|can'?t stand without|room (?:going|goes|went) dark|late|missed period|weeks? (?:late|pregnant)|positive (?:pregnancy )?test|pregnan\w+|one[- ]sided|right side|left side|shoulder|sudden\w*|out of nowhere|fever|shiver\w*|shak\w+|chills|confus\w+|not like (?:my )?usual|different (?:to|from) (?:my )?usual|worse than ever|coil|after (?:the|my) (?:op|operation|birth|miscarriage)|cold and", re.I)
+_PD_FAMILY = re.compile(r"in agony|agoni[sz]ing|curled up(?: in a ball)?|(?:lying |lay |lie |laying )?on the (?:bathroom |kitchen )?floor|can'?t move|could(?:n'?t| not) (?:walk|move|stand)|pain (?:is|was) (?:really |so |very )?intense|bleeding through\w*(?: to)?(?: my)?(?: \w+)?|agony|doubled over|crying on the (?:bathroom )?floor|screaming|excruciating|unbearable|off the scale|can'?t (?:straighten|stand up straight|stand up|walk)|severe (?:sudden )?(?:pain|belly|abdominal|pelvic)|worst pain|worst (?:I'?ve|i have) ever|pain (?:is|was) (?:10|ten)(?:/| out of )(?:10|ten)|(?:10|ten)(?:/| out of )(?:10|ten)|(?:pads?|tampons?)[^.]{0,20}(?:every|each|an) (?:half )?(?:hour|30 minutes)|(?:every|each) (?:half )?hour|soak\w* (?:through )?(?:a |my |an? )?(?:pads?|tampons?|towel)\w*|(?:very |really |so )?heav(?:y|ily) bleeding|bleeding (?:really |very |so )?heav(?:y|ily)|clots[^.]{0,30}|(?:sick|nauseous)[^.]{0,20}pain|pain[^.]{0,30}(?:sick|sweaty)|feel(?:ing)? (?:sick|nauseous) and (?:sweaty|clammy)", re.I)
+_PD_CTX = re.compile(r"\b(?:period|periods|cramp\w*|menstrua\w+|day [1-5]\b|day (?:one|two|three|four|five)|(?:second|third) day|first day|time of the month|usual for me|same as (?:always|every month|last month)|normal for me|typical day|as always|like always|every month|first (?:two|2|few) days)\b", re.I)
+_PD_SECOND = re.compile(r"pregn\w+|periods? (?:have )?stopped|haven'?t had a period|menopaus\w*|post-?menopaus\w*|sleepy|muddled|wet myself|rock hard|in minutes|spinning|pound\w*|heart|breath\w*|faint\w*|pass(?:ed|ing) out|blacked out|collaps\w+|dizz\w+|light-?headed|grey|gray|clammy|racing|pale|can'?t stand without|room (?:going|goes|went) dark|late|missed period|weeks? (?:late|pregnant)|positive (?:pregnancy )?test|pregnan\w+|one[- ]sided|right side|left side|shoulder|sudden\w*|out of nowhere|shak\w+|confus\w+|not like (?:my )?usual|different (?:to|from) (?:my )?usual|worse than ever|coil|after (?:the|my) (?:op|operation|birth|miscarriage)", re.I)
+# B6 (AI Brain run30, PM 01:48): being sick with the pain is the usual bad day only with a usual-month marker; fever words
+# (nhs.uk/conditions/pelvic-inflammatory-disease-pid 999 card, reviewed 17 Dec 2025: hot, cold or shivery, very high temperature)
+# stay a second sign unless the note says both that it is usual AND that it settled (PRD help-now R10.4).
+_PD_SICK = re.compile(r"being sick|been sick|throw\w* up|threw up|vomit\w*", re.I)
+_PD_FEVER = re.compile(r"sweat\w*|fever\w*|shiver\w*|chills|cold and|hot and cold|temperature|(?:feel\w*|felt|so|really|very|burning) hot\b", re.I)
+_PD_USUAL = re.compile(r"like I always (?:get|have)|(?:like|same as) (?:always|every month|most months|last month)|every month|normal for me|usual for me|as (?:usual|always)|like always|happens every (?:month|period)|no worse than (?:normal|usual)|my usual", re.I)
+_PD_RESOLVED = re.compile(r"settled|kick(?:ed|s) in|helped|eased|better (?:after|now|once)|took the edge off|(?:feel|feeling) (?:ok|okay|fine|better) now", re.I)
+
+
+def _pd_second(t: str) -> bool:
+    usual = bool(_PD_USUAL.search(t))
+    return bool(_PD_SECOND.search(t) or (_PD_SICK.search(t) and not usual)
+                or (_PD_FEVER.search(t) and not (usual and _PD_RESOLVED.search(t))))
 
 
 # S-349b (Safety run 44): stroke signs said by their effect (nhs.uk/conditions/stroke/symptoms FAST). Standalone; fires only when the engine found nothing.
@@ -1513,7 +1526,7 @@ def emergency_kind(user_text: str):
     # team,\nand I've got a plan for tonight"): the note is re-read with line breaks as commas, for self-harm only.
     if kind is None and "\n" in user_text and _emergency_kind(user_text.replace("\n", ", ")) == "self_harm":
         return "self_harm"
-    if kind == "medical" and _PD_CTX.search(user_text) and not _PD_SECOND.search(user_text) \
+    if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
     if kind is None and _stroke_lay(user_text):

@@ -71,7 +71,9 @@ function normalise(text: string): string {
 // Same decision as the backend `_hits`: a match counts unless its clause is negated, in the past, about someone else or resolved.
 const mk = (src: string) => new RegExp(src, 'i');
 const S364CTX = mk(P.S364CTX_SRC), S364HEAVY = mk(P.S364HEAVY_SRC), S364QUIET = mk(P.S364QUIET_SRC), S365 = mk(P.S365_SRC), S365QUIET = mk(P.S365QUIET_SRC);
-const PD_FAMILY = new RegExp(P.PDFAM_SRC, 'gi'), PD_CTX = mk(P.PDCTX_SRC), PD_SECOND = mk(P.PDSECOND_SRC);
+const PD_FAMILY = new RegExp(P.PDFAM_SRC, 'gi'), PD_CTX = mk(P.PDCTX_SRC), PD_SECOND = mk(P.PDSECOND_SRC), PD_SICK = mk(P.PDSICK_SRC), PD_FEVER = mk(P.PDFEVER_SRC), PD_USUAL = mk(P.PDUSUAL_SRC), PD_RES = mk(P.PDRES_SRC);
+// B6 (backend _pd_second): sick needs a usual marker to go quiet; fever words need usual AND settled.
+const pdSecond = (t: string) => PD_SECOND.test(t) || (PD_SICK.test(t) && !PD_USUAL.test(t)) || (PD_FEVER.test(t) && !(PD_USUAL.test(t) && PD_RES.test(t)));
 const SK_FACE = mk(P.SKFACE_SRC), SK_FACE_FX = mk(P.SKFACEFX_SRC), SK_SPEECH = mk(P.SKSPEECH_SRC), SK_SPEECH_FX = mk(P.SKSPEECHFX_SRC), SK_LIMB = mk(P.SKLIMB_SRC), SK_LIMB_FX = mk(P.SKLIMBFX_SRC), SK_SIDE = mk(P.SKSIDE_SRC), SK_ONSET = mk(P.SKONSET_SRC), SK_BENIGN = mk(P.SKBENIGN_SRC), SK_SAG = mk(P.SKSAG_SRC), SK_NEG = new RegExp(P.SKNEG_SRC, 'gi');
 const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SELF2 = mk(P.SELF2_SRC);
 const LASTREL = new RegExp('^(?:' + P.LASTREL_SRC + ')$', 'i'), PRESENT = mk(P.PRESENT_SRC);
@@ -203,7 +205,7 @@ export function urgentSignpost(text: string): string | null {
   // heavy phrase alone; it is blanked and the note re-read. Any faint / pale / hourly-pad / worse-than-usual word keeps it.
   if (line === URGENT_SIGNPOST && HEAVY_USUAL_Q.test(text) && !HEAVY_USUAL_CTRL.test(text)) line = signpostOnce(text.replace(HEAVY_PHRASE, 'bleeding'));
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
-  if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !PD_SECOND.test(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
+  if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
   if (line === null && strokeLay(text)) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
