@@ -1630,12 +1630,19 @@ _CE_VETO_CTRL = re.compile(r"\b(?:since the baby|when I sneez\w*|laugh\w*|period
 _CE_NEWSIGN = re.compile(r"(?<!fine )(?<!better )(?<!well )\bnow\b|\bnew\b|\bsuddenly\b|getting worse|worse and worse|won'?t go|not going away|\bstarted\b|\bbegan\b|since (?:this morning|last night|yesterday)", re.I)
 
 
+# nhs.uk back-pain / sciatica A&E list: leg weakness with lost bladder or bowel control needs no back word to be urgent.
+_CE_LEGWEAK = re.compile(r"\b(?:(?:my |both )?legs?|feet|foot)\b[^.!?]{0,30}\b(?:weak\w*|gave way|giving way|numb\w*|heavy|dead|won'?t work)\b|\b(?:weak\w*|numb\w*) (?:in |down )?(?:both |my )?(?:legs?|feet)\b", re.I)
+_CE_UNAWARE = re.compile(r"\b(?:without (?:knowing|realising|realizing|noticing|feeling)|didn'?t (?:know|realise|realize|notice|feel)|not knowing)\b", re.I)
+
+
 def _cauda_lay(t: str) -> bool:
     t = t.replace("\u2019", "'")
     new = bool(_CE_NEWSIGN.search(t))
     if not (new or not _CE_VETO.search(t)):
         return False
     if _CE_ZONE.search(t) and _CE_DEF.search(t) and _CE_WIPE.search(t):
+        return True
+    if _CE_LEGWEAK.search(t) and _CE_CTRL.search(t) and (new or not _CE_VETO_CTRL.search(t)) and (_CE_UNAWARE.search(t) or not _CE_VETO_CTRL.search(t)):
         return True
     return bool(_CE_BACK.search(t)
                 and ((_CE_ZONE.search(t) and _CE_DEF.search(t)) or (_CE_CTRL.search(t) and (new or not _CE_VETO_CTRL.search(t)))))
