@@ -309,7 +309,10 @@ _BODY = [
     r"can'?t stand up", r"(?<!lost the )(?<!lost my )(?<!ended the )(?<!ended my )pregnan\w+.{0,60}(?:bleed|(?<!no )pain|spotting)|(?:bleed|(?<!no )pain|spotting).{0,60}(?<!lost the )(?<!lost my )pregnan\w+",
     r"(?:\d{1,2}|\w{3,8}) weeks pregnant.{0,60}(?:pain|bleed|spotting)", r"pregnan\w+.{0,80}(?:one[- ]sided|on one side|shoulder)|(?:one[- ]sided|on one side|shoulder).{0,80}pregnan\w+", r"positive (?:pregnancy )?test.{0,60}(?:pain|bleed)", r"high fever.{0,40}(?:severe|pain)|(?:severe|pain).{0,40}high fever",
     # NHS "pelvic pain" 999 list (nhs.uk/conditions/pelvic-pain, read 2026-10-26)
-    r"sudden(?:ly)? (?:feel |felt |am |got |become |became )?(?:confused|disori\w+)|confused and (?:dizzy|disori\w+)",
+    # B35 (run34): sudden confusion in carer words (nhs.uk when-to-call-999 'sudden confusion'); "suddenly confused by the letter / which day" is not it
+    r"sudden(?:ly)? (?:feel |felt |am |got |become |became |gone |went |really |very |so |all )*(?:confused|disori\w+|muddled)(?! (?:about|by|with|which|why|whether|over|what|at|as to)\b)|confused and (?:dizzy|disori\w+)|"
+    r"(?:confused|disori\w+|muddled)\b(?! (?:about|by|with|which|why|whether|over|what|at)\b)[^.!?;]{0,30}\b(?:out of nowhere|all of a sudden|suddenly)\b|(?:all of a sudden|out of nowhere)\b[^.!?;]{0,20}\b(?:confused|disori\w+|muddled)\b(?! (?:about|by|with|which|why|whether|over|what|at)\b)|"
+    r"(?:doesn'?t|does not|can'?t work out|cannot work out) (?:know )?where (?:she|he|they) (?:is|are)\b|(?:doesn'?t|does not|didn'?t|did not) recogni[sz]e (?:me|us|her|him|them|his|her)\b",
     r"(?:severe|sharp|intense).{0,40}(?:light-?headed|dizz\w+)|(?:light-?headed|dizz\w+).{0,40}(?:severe|intense)",
     r"(?:very |really |so )pale.{0,40}(?:sick|dizz\w+|faint\w*|sharp)",
 ]
