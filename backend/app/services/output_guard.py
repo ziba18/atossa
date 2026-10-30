@@ -263,6 +263,8 @@ _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|did
 _PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|in year \d{1,2}\b(?![^.]*\b(?:today|now|just|this (?:morning|afternoon)|tonight)\b)|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger|(?:1[0-9]|[5-9])(?! ?(?:weeks?|days?|hours?|minutes?|mins?|months?|am|pm|o'?clock|%|:|\.\d)))|(?:fainted|passed out|blacked out|collapsed) aged (?:1[0-9]|[5-9]))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
 _OTHER_NOW = re.compile(r"\b(?:right now|now|just now|at the moment|currently|still|is|isn'?t|are|aren'?t|won'?t|can'?t|keeps?|has gone|have gone)\b", re.I)
+# B30 (run34): the carer register says "now" with a contraction: "she's coughing up blood", "they're struggling", "my mum's got ..."
+_OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:she|he|they)'(?:s|re)\b(?! (?:had|been fine|always|never|usually))|\b\w+'s (?:got|getting|having|\w+ing)\b", re.I)
 _REPORTED = re.compile(r"\b(?:told|tells?|says?|said|reckons?|thinks?|thought)\b"
                        # run20 (Safety p209 false on run19): "my partner is worried about his chest tightness" reports a worry, not an event now
                        r"|\b(?:is|are|'s|'re|gets?|got) (?:a bit |really |very |so )?(?:worried|anxious|concerned|nervous|stressed) about\b", re.I)   # someone else giving information
