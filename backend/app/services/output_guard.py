@@ -265,7 +265,8 @@ _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|collea
 _OTHER_NOW = re.compile(r"\b(?:right now|now|just now|at the moment|currently|still|is|isn'?t|are|aren'?t|won'?t|can'?t|keeps?|has gone|have gone)\b", re.I)
 # B30 (run34): the carer register says "now" with a contraction: "she's coughing up blood", "they're struggling", "my mum's got ..."
 _OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:she|he|they)'(?:s|re)\b(?! (?:had|been fine|always|never|usually))|\b\w+'s (?:got|getting|having|\w+ing)\b", re.I)
-_REPORTED = re.compile(r"\b(?:told|tells?|says?|said|reckons?|thinks?|thought)\b"
+_REPORTED = re.compile(r"\b(?:told|(?<!can't )(?<!cant )(?<!cannot )tells?|says?|said|reckons?|thinks?|thought)\b"   # B35: "can't tell me what year it is" is a sign, not hearsay
+                       r""
                        # run20 (Safety p209 false on run19): "my partner is worried about his chest tightness" reports a worry, not an event now
                        r"|\b(?:is|are|'s|'re|gets?|got) (?:a bit |really |very |so )?(?:worried|anxious|concerned|nervous|stressed) about\b", re.I)   # someone else giving information
 _LIVE_REPORT = re.compile(r"\b(?:just (?:rang|called|texted|messaged)|on my way|right now|at the moment|as we speak|cannot get up|can'?t get up)\b", re.I)
