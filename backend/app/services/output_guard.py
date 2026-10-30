@@ -304,7 +304,7 @@ _BODY = [
     r"bleeding (?:a )?(?:huge|massive|lot|loads)(?! (?:more|heavier) than (?:usual|normal|before|i (?:usually|normally)))", r"clots (?:the size|as big|bigger)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)", r"severe (?:sudden )?(?:pain|belly|abdominal|pelvic)",
     r"worst pain(?!\s+(?:today|this (?:week|month|cycle|morning|afternoon|evening)|of the (?:day|week|month|year|cycle)|so far|was (?:at|during|on|after|around|about|a|an|day|\d)|(?:today )?(?:is|was) (?:about |around )?(?:a |an )?\d))|worst (?:I'?ve|i have) ever|pain (?:came|comes) on suddenly|sudden(?:ly)? (?:stabbing|sharp|severe|intense)",
     r"excruciating|unbearable", r"pain is (?:10|ten)(?:/| out of )(?:10|ten)", r"(?:10|ten)(?:/| out of )(?:10|ten) pain",
-    r"can'?t stand up", r"pregnan\w+.{0,60}(?:bleed|pain|spotting)|(?:bleed|pain|spotting).{0,60}pregnan\w+",
+    r"can'?t stand up", r"(?<!lost the )(?<!lost my )(?<!ended the )(?<!ended my )pregnan\w+.{0,60}(?:bleed|(?<!no )pain|spotting)|(?:bleed|(?<!no )pain|spotting).{0,60}(?<!lost the )(?<!lost my )pregnan\w+",
     r"(?:\d{1,2}|\w{3,8}) weeks pregnant.{0,60}(?:pain|bleed|spotting)", r"pregnan\w+.{0,80}(?:one[- ]sided|on one side|shoulder)|(?:one[- ]sided|on one side|shoulder).{0,80}pregnan\w+", r"positive (?:pregnancy )?test.{0,60}(?:pain|bleed)", r"high fever.{0,40}(?:severe|pain)|(?:severe|pain).{0,40}high fever",
     # NHS "pelvic pain" 999 list (nhs.uk/conditions/pelvic-pain, read 2026-10-26)
     r"sudden(?:ly)? (?:feel |felt |am |got |become |became )?(?:confused|disori\w+)|confused and (?:dizzy|disori\w+)",
@@ -488,7 +488,7 @@ _IDIOM = re.compile(
     r"|\b(?:(?:lower |upper )?back|tum|tummy|stomach|stomache|belly|head|neck|legs?|hips?|ovar(?:y|ies)|side|boobs?|breasts?|womb|pelvis|bum|knees?|feet|joints?|insides|guts)(?:\s+on (?:the|my) (?:left|right)(?: side)?)?(?:'s(?: been)?|\s+(?:is|are|was|were|has been|have been))?(?:\s+still)?(?:\s+(?:really|absolutely|literally|actually|just|properly))?\s+kill(?:ing|s|ed)? me\b"
     # everyday uses of words the lists react to: "faint" as an adjective, a blocked nose, a figure of speech,
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
-    r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
+    r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort|streak|streaks|trace|traces|mark|marks|tinge|hint|headache)\b"
     r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?(?:through|thru) (?:my |her |his |their )?nose\b"
     r"|\b(?:legs?|arms?|feet|foot|hands?)\b[^.!?;]{0,12}\b(?:fell|gone|went|going) (?:to )?(?:asleep|sleep|dead)\b|\bpins and needles\b|\bcan'?t (?:stand|get) up from (?:the )?(?:sofa|couch|chair)\b"
     r"|\bagony\b[^.!?]{0,25}\bfrom (?:the |my )?(?:gym|running|a run|workout|lifting|exercise|squats)\b"
@@ -828,7 +828,8 @@ _PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had
          # run25 (own set voice-pp5class-run25, committed before code): childbirth is a recent procedure for the fever rule
          # (nhs.uk/conditions/sepsis; speech-to-text writes "c section" and "had the baby nine days ago")
          r"(?:had|have had) (?:the|my) baby(?! (?:jab|vaccin|clinic|check|group|class|shower))|gave birth|given birth|since (?:the|my) birth|"
-         r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b)\b")
+         r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b|"
+         r"(?:since|after|following) (?:the |my )?(?:delivery|miscarriage|pregnancy loss|medical management)|post-?partum|post-?natal)\b")
 _PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|(?:had (?:the|my) baby|gave birth|given birth|since (?:the|my) birth)[^.;!?\n]{0,40}?(?:last year|a year ago|(?:years?|months?) ago|(?:back )?in (?:19|20)\d\d|last (?:spring|summer|autumn|winter))|(?:had (?:the|my) baby|gave birth|given birth) (?:back )?in (?:january|february|march|april|may|june|july|august|september|october|november|december)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|fine since|from the cold|gone by|went away|settled|family history|(?:friend|sister|mum|mom|mother|partner|daughter|cousin|colleague) (?:had|has had|is having) (?:(?:a|an|her)\b[^.!?\n]{0,20})?(?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|c-?section))\b)"
 _BACK = r"(?:back(?:'s| is| has)? (?:\w+ ){0,3}(?:pain|ache|hurts?|agony|bad|gone|killing|went)|back pain|bad back|my back went|lower back|sciatica)"
 _SADDLE = (r"(?:numb\w* (?:around|in|down|under) (?:my )?(?:bottom|bum|genitals|vagina|down there|privates|groin|anus)|numb\w* between my legs|"
@@ -1505,6 +1506,18 @@ _S343_SIGN = re.compile(r"\b(?:shak\w+|shiver\w*|freezing|cold|sleepy|drowsy|hot
 
 _QUIET347 = re.compile(r"\b(?:thermometer|broken|texts?|messages?|phone|up early|for nursery|for school|mondays?|any more|anymore|retired|dinosaurs?|imagination|smell|teething|for long|stand the)\b", re.I)
 
+_S364_CTX = re.compile(r"\b(?:miscarriage|lost the pregnancy|lost my pregnancy|pregnancy loss|medical management|post-?partum|post-?natal|since (?:the )?delivery|after (?:the )?(?:delivery|birth)|(?:weeks?|days?) after having (?:my|the) (?:baby|son|daughter)|had the baby)\b", re.I)
+_S364_HEAVY = re.compile(r"\b(?:(?:pad|towel)s?\b[^.;!?]{0,25}\b(?:each|every|per) (?:thirty|30|twenty|20|fifteen|15|ten|10|forty|40)\b[^.;!?]{0,12}\bmin\w*|(?:plum|orange|lemon|golf ball|egg|fist)[- ]sized (?:lumps?|clots?)|(?:much|a lot|far) heavier\b[^.;!?]{0,60}\b(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b|(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b[^.;!?]{0,60}\b(?:much|a lot|far) heavier\b|gushing[^.;!?]{0,60}\b(?:grey|gray|dizz\w+|woozy|faint\w*))", re.I)
+_S364_QUIET = re.compile(r"\b(?:no clots?|not heavy|stopped|used to|last year|years? ago)\b", re.I)
+
+_S365 = re.compile(
+    r"^(?=[\s\S]*\b(?:(?:weeks?|days?) late|missed (?:a |my )?period|late period|test (?:came up |was |came back )?positive)\b)(?=[\s\S]*\b(?:one side|one-sided|stabb\w*|sharp)\b)(?=[\s\S]*\b(?:shoulder|arm meets (?:my )?neck|tip of (?:my )?shoulder)\b)"
+    r"|^(?=[\s\S]*\b(?:unable to stand|can'?t stand|cannot stand|stuck on the (?:floor|tiles|toilet|bathroom))\b)(?=[\s\S]*\b(?:stabb\w*|agony|severe|not easing|won'?t ease)\b)"
+    r"|^(?=[\s\S]*\b(?:heart (?:is )?(?:going like|racing|pounding)|racing heart)\b)(?=[\s\S]*\b(?:sweaty|clammy|chilly|cold sweat)\b)(?=[\s\S]*\b(?:bleeding|blood)\b[^.;!?]{0,40}\b(?:hasn'?t slowed|not slowing|won'?t stop|still)\b)"
+    r"|^(?=[\s\S]*\b(?:can'?t (?:tell|say) (?:me )?what day|same question (?:again|over)|(?:asks|asked) me [\w ]{0,20}again and again|doesn'?t know where)\b)(?=[\s\S]*\b(?:burning up|fever|hot to touch|shiver\w*|shaking)\b)"
+    r"|^(?=[\s\S]*\b(?:through (?:the |my )?(?:night )?pads?)\b)(?=[\s\S]*\b(?:jeans|trousers|clothes|skirt|sheets)\b)(?=[\s\S]*\b(?:can'?t stop|won'?t stop|an hour|hour)\b)", re.I)
+_S365_QUIET = re.compile(r"\b(?:negative|not pregnant|no fever|nothing sharp|not sharp|for years|sometimes|stiff|since (?:her|his) (?:stroke|operation)|last year)\b", re.I)
+
 def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
     # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
@@ -1526,7 +1539,13 @@ def _emergency_kind(user_text: str):
         return "medical"
     if (_THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) or _THIRD_CHILD.search(user_text[:_WHOLE_SCAN_CAP])) and not _is_past(user_text):
         return "medical"
-    if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
+    if _S364_CTX.search(user_text) and _S364_HEAVY.search(user_text) and not _S364_QUIET.search(user_text):
+        return "medical"  # S-364 prototype: after a loss or birth, bleeding heavy again with a shock sign or big clots
+    if _S365.search(user_text) and not _S364_QUIET.search(user_text) and not _S365_QUIET.search(user_text):
+        return "medical"  # S-365 prototype
+    if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I) \
+            and not (re.search(r"\b(?:lost|ended) (?:the|my) pregnancy\b|\bpregnancy (?:loss|ended)\b", user_text, re.I)
+                     and not re.search(r"\b(?:severe|sharp|one-sided|worse|stabbing|soaking|gushing|heavy|dizz\w+|faint\w*)\b", user_text, re.I)):
         return "medical"
     if not _QUIET347.search(user_text) and _S343.search(user_text) and _S343_SIGN.search(user_text) and not _PAST_Q346.search(user_text):
         return "medical"  # S-343/S-344 prototype

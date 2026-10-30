@@ -70,6 +70,7 @@ function normalise(text: string): string {
 
 // Same decision as the backend `_hits`: a match counts unless its clause is negated, in the past, about someone else or resolved.
 const mk = (src: string) => new RegExp(src, 'i');
+const S364CTX = mk(P.S364CTX_SRC), S364HEAVY = mk(P.S364HEAVY_SRC), S364QUIET = mk(P.S364QUIET_SRC), S365 = mk(P.S365_SRC), S365QUIET = mk(P.S365QUIET_SRC);
 const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SELF2 = mk(P.SELF2_SRC);
 const LASTREL = new RegExp('^(?:' + P.LASTREL_SRC + ')$', 'i'), PRESENT = mk(P.PRESENT_SRC);
 const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES = mk(P.RES_SRC);
@@ -202,7 +203,11 @@ function signpostOnce(text: string): string | null {
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
   if (procFever(t.slice(0, 20000)) || otherHistRescue(t)) return URGENT_SIGNPOST;
   if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
-  if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
+  // S-364 / S-365 (backend _emergency_kind): after a loss or birth heavy bleeding with a shock sign or large clots; five shock / ectopic / confusion shapes
+  if (S364CTX.test(t) && S364HEAVY.test(t) && !S364QUIET.test(t)) return URGENT_SIGNPOST;
+  if (S365.test(t) && !S364QUIET.test(t) && !S365QUIET.test(t)) return URGENT_SIGNPOST;
+  if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)
+    && !(/\b(?:lost|ended) (?:the|my) pregnancy\b|\bpregnancy (?:loss|ended)\b/i.test(t) && !/\b(?:severe|sharp|one-sided|worse|stabbing|soaking|gushing|heavy|dizz\w+|faint\w*)\b/i.test(t))) return URGENT_SIGNPOST;
   // S-342 / S-343 / S-346 prototypes (backend _emergency_kind, Safety run 40-41)
   if (!QUIET347.test(t) && S343.test(t) && S343_SIGN.test(t) && !PAST_Q346.test(t)) return URGENT_SIGNPOST;
   if (!QUIET347.test(t) && hardToWake342(t)) return URGENT_SIGNPOST;
