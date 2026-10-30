@@ -3,14 +3,16 @@
  "emergency": [
   "I have a copper coil and missed my period, now sharp pain one side",
   "period is late and I have sudden stabbing pain on the left side",
-  "positive test, severe pain on the right side"
+  "positive test, severe pain on the right side",
+  "she is fitting and won't stop",
+  "he has been fitting for ten minutes"
  ],
  "harmless": [
   "period late, usual stress, no pain",
   "ovulation twinge on the right side, sharp but comes every month",
-  "my period was late last month, back to normal, pain on one side of my head"
- ],
- "known_false_fire_on_base": [
-  "coil fitted last month, sharp pinch on the right side during the fitting, gone now"
+  "my period was late last month, back to normal, pain on one side of my head",
+  "coil fitted last month, sharp pinch on the right side during the fitting, gone now",
+  "I have a bridesmaid dress fitting tomorrow, nervous about the cramps",
+  "after the fitting my back hurt, took ibuprofen"
  ]
 }
