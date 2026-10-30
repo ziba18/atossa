@@ -1639,8 +1639,22 @@ def _stroke_old(t: str) -> bool:
     return bool(_SL_OLD.search(t.replace("’", "'")))
 
 
+# B24 (run34): one leg only, lasting more than a day, with a stated back / sciatica cause and no sudden-onset word is the nhs.uk
+# sciatica 'see a GP' box, not the stroke block (stroke signs count 'within the last 24 hours'). Never for a face, arm, hand, speech or eye sign (R15.7).
+_SL_LEGONLY = re.compile(r"\b(?:legs?|foot|feet|toes?|thigh|calf|knee)\b", re.I)
+_SL_UPPER = re.compile(r"\b(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|eyes?|vision|sight|arms?|hands?|fingers?|grip|speech|voice|words?|talk\w*|speak\w*|both legs)\b", re.I)
+_SL_LONG = re.compile(r"\b(?:(?:\d+|two|three|four|five|six|seven|eight|nine|ten|a few|few|couple of|a couple of) (?:days|weeks?|months?)|for (?:days|weeks|months|a week|a month|ages)|(?:a )?fortnight|since (?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|the weekend|last (?:week|month)|my (?:back|disc)\b[^.!?;]{0,15}))\b", re.I)
+_SL_BACKCAUSE = re.compile(r"\b(?:sciatica|slipped disc|disc|bad back|back pain|lower back|my back (?:went|is|has)|back(?:'s| is)? (?:\w+ ){0,2}(?:pain|killing|bad|went)|lifting|nerve from my back|physio)\b", re.I)
+
+
+def _leg_long_back(t: str) -> bool:
+    return bool(_SL_LEGONLY.search(t) and not _SL_UPPER.search(t) and _SL_LONG.search(t) and _SL_BACKCAUSE.search(t) and not _SL_ONSET.search(t))
+
+
 def _stroke_slot(t: str) -> bool:
     t = _SK_NEG.sub(" ", t.replace("’", "'"))
+    if _leg_long_back(t):
+        return False
     rest = sum(bool(r.search(t)) for r in (_SL_EYE, _SL_SPEECH, _SL_HEAD))
     other = len({m.group(0).lower()[:4] for m in _SL_OTHER.finditer(t)})
     if _SL_ARMUP.search(t) and not _SL_OLD.search(t):
