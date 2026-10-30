@@ -411,7 +411,7 @@ _EMERGENCY = re.compile(
     r"can'?t keep (?:any )?(?:water|fluids?|anything) down|(?:trouble|difficulty|problems?) (?:getting|catching) (?:my )?breath|(?:trouble|difficulty|problems?) breathing|lips? (?:look|looks|are|is|have gone) (?:blue|grey|gray)|"
     r"passing (?:fresh |bright red |lots of |loads of |a lot of )?blood\b(?! clots?)|blood in (?:my )?(?:vomit|poo|stool)|"
     r"(?:my )?face (?:has |had |is |just )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
-    r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
+    r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)(?! (?:about|over) (?!(?:the |a )?(?:last|past|weekend|night|morning|day|hour|few|\d+|ten|five|half)\b))(?! because (?:i|we|you)\b)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
     r"can'?t breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath(?![^.;!?]{0,30}\b(?:laugh\w*|giggl\w*|after (?:a |the |my |some )?(?:run|jog|gym|workout|exercise|sprint|stairs|walk|swim|dancing|dance)|running|jogging|climbing (?:the |a few |three |two )?(?:flights? of )?stairs|(?:up|down) the stairs|excitement|excited)\b)|struggling to breathe|chest pain|coughing up blood|"
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
@@ -558,7 +558,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # run 01 (S-150, probe 10: 5/12 missed): sudden vision change in one eye, cauda equina wording, seizure, confusion with fever, waters breaking
                     r"\b(?:blurr\w*|lost|loss of|double) vision\b (?:came on |started |began )?(?:suddenly|all of a sudden)\b|\bsudden(?:ly)? (?:\w+ ){0,2}(?:blurr\w*|lost|double) vision\b|\bvision\b.{0,15}\b(?:went|goes|gone)\b.{0,15}\b(?:blurr\w+|black|dark|double)\b.{0,30}\b(?:one eye|suddenly)\b|\bblurr\w+ in one eye\b|"
                     r"\bcan'?t tell when i need (?:a |to )?(?:wee|pee|poo|go)\b|\bcan'?t (?:control|feel) (?:my )?(?:bladder|bowels?)\b|\bnumb\b.{0,40}\b(?:bladder|bowels?|between my legs)\b|"
-                    r"\b(?:had|having) (?:a )?(?:fit|seizure)\b(?! of)|\bconvuls\w+|\bshaking\b.{0,40}\bbit my tongue\b|\bbit my tongue\b.{0,40}\bshaking\b|"
+                    r"\b(?:had|having) (?:a )?(?:fit|seizure)\b(?! of)(?! (?:about|over) (?!(?:the |a )?(?:last|past|weekend|night|morning|day|hour|few|\d+|ten|five|half)\b))(?! because (?:i|we|you)\b)|\bconvuls\w+|\bshaking\b.{0,40}\bbit my tongue\b|\bbit my tongue\b.{0,40}\bshaking\b|"
                     r"\b(?:confused|forgetting where i am|disorientated)\b(?! about\b).{0,60}\b(?:high temperature|fever)\b(?! has (?:gone|settled|come down))|\b(?:high temperature|fever)\b.{0,60}\b(?:confused(?! about\b)|forgetting where i am|disorientated)\b|"
                     r"\bwaters (?:have |just )?broke\b|\bmy waters (?:have )?(?:broken|gone)\b|"
                     # run 01 (S-152, probe 11: 10/10 missed): painkiller overdose by count, stomach bleeding signs after painkillers, opioid mixed with alcohol or doubled, slow breathing, swollen lips
@@ -1676,8 +1676,8 @@ def _stroke_slot(t: str) -> bool:
 # same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
 _PL_STATE = re.compile(
     r"\b(?:(?:is|was|am|are|'s|'re|'m) )?(?:(?:not|isn'?t|aren'?t|wasn'?t|barely|hardly) (?:really |properly )?breathing|stopped breathing|(?:has|have|'s|'ve) stopped breathing|can'?t breathe at all"
-    r"|having (?:a|another) (?:stroke|heart attack|seizure|fit)\b(?! of)(?! (?:assessment|scan|test|check|review|clinic|appointment|risk|follow))"
-    r"|choking\b(?! (?:up|back|on (?:my|his|her|their|the) words|laugh\w*))"
+    r"|having (?:a|another) (?:stroke|heart attack|seizure|fit)\b(?! of)(?! (?:assessment|scan|test|check|review|clinic|appointment|risk|follow))(?! (?:about|over) (?!(?:the |a )?(?:last|past|weekend|night|morning|day|hour|few|\d+|ten|five|half)\b))(?! because (?:i|we|you)\b)"
+    r"|choking\b(?! (?:up|back|on (?:my|his|her|their|the) words|laugh\w*|on (?:all )?(?:this|the|my|these) (?:paperwork|work|admin|emails?|bills?|debt|deadlines?|stress)))"
     r"|(?:is|was|went|gone|found (?:him|her|them|my \w+)|knocked|lying|still|'s) unconscious|unresponsive|(?:isn'?t|not) responding\b(?! to)|wo?n'?t wake(?: up)?|can'?t wake (?:him|her|them)(?: up)?"
     r"|(?:fit|seizure|fitting|convuls\w+)\b[^.!?;]{0,30}\b(?:won'?t stop|wo?n'?t stop|hasn'?t stopped|not stopp\w+|still going|(?:over |more than |for )?(?:5|five|6|six|7|seven|8|eight|9|nine|10|ten|fifteen|15) (?:minutes|mins))"
     r"|been (?:fitting|seizing|convulsing) for"
@@ -1690,7 +1690,7 @@ _PL_STATE = re.compile(
 _PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
 _PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
 _PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
-_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|was indigestion|in hospital|on the ward|recovered|doing well)\b", re.I)
+_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|was indigestion|in hospital|on the ward|recovered|doing well|phone|laptop|computer|tablet|ipad|app|screen|website|wifi|router|printer|engine|server)\b", re.I)
 
 
 def _plain999(t: str) -> bool:
