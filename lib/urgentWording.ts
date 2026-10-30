@@ -209,9 +209,9 @@ function flowShock(t: string): boolean {
 const MS_NEGB = new RegExp(P.MSNEGB_SRC, 'gi'), MS_PREG = mk(P.MSPREG_SRC), MS_BLEED = mk(P.MSBLEED_SRC), MS_SHOULDER = mk(P.MSSHOULDER_SRC), MS_FUNC = mk(P.MSFUNC_SRC), MS_NOT = mk(P.MSNOT_SRC);
 const pregShoulder = (t: string) => MS_PREG.test(t) && MS_BLEED.test(t.replace(MS_NEGB, ' ')) && (MS_SHOULDER.test(t) || MS_FUNC.test(t)) && !MS_NOT.test(t);
 const SK_EYE = mk(P.SKEYE_SRC), SK_BLUR2 = mk(P.SKBLUR2_SRC), SK_FALL = mk(P.SKFALL_SRC), SK_DAYS_AGO = mk(P.SKDAYSAGO_SRC);
-const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDEF_SRC), CE_CTRL = mk(P.CECTRL_SRC), CE_VETO = mk(P.CEVETO_SRC);
+const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDEF_SRC), CE_CTRL = mk(P.CECTRL_SRC), CE_VETO = mk(P.CEVETO_SRC), CE_VETO_CTRL = mk(P.CEVETOCTRL_SRC);
 // S-401 (backend _cauda_lay): back pain with saddle-area numbness or lost bladder / bowel control.
-const caudaLay = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return !CE_VETO.test(t) && CE_BACK.test(t) && ((CE_ZONE.test(t) && CE_DEF.test(t)) || CE_CTRL.test(t)); };
+const caudaLay = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return !CE_VETO.test(t) && CE_BACK.test(t) && ((CE_ZONE.test(t) && CE_DEF.test(t)) || (CE_CTRL.test(t) && !CE_VETO_CTRL.test(t))); };
 const RG_FEV = mk(P.RGFEV_SRC), RG_UNC = mk(P.RGUNC_SRC), RG_VETO = mk(P.RGVETO_SRC);
 // S-398 (backend _rigors): high temperature with uncontrollable shaking or shivering.
 const rigors = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return RG_FEV.test(t) && RG_UNC.test(t) && !RG_VETO.test(t); };
