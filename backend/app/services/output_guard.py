@@ -455,7 +455,7 @@ def _is_past(clause: str) -> bool:
 
 
 _FAINT_WORD = re.compile(r"faint(?:ed|ing)?", re.I)
-_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b", re.I)
+_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|feeling) (?:a bit |slightly |very |quite )?faint\b[^.!?]{0,60}\b(?:it|that) (?:soon |quickly )?passed\b|\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b", re.I)
 
 
 def _hits(rx, text: str) -> bool:
@@ -520,8 +520,10 @@ _IDIOM = re.compile(
 _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left |right )?(?:jaw|arm)\b|"
                     # blind set v11 (2026-10-27): NHS 111/999 wording for DVT/PE, meningitis, stroke, cauda equina, acute abdomen
                     r"\b(?:stomach|belly|tummy|abdomen)\b.{0,15}\brock[- ]hard\b|"
-                    r"\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b.{0,80}\b(?:breathless|short of breath|can'?t breathe)|"
-                    r"\b(?:breathless|short of breath)\b.{0,80}\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b|"
+                    r"\b(?:leg|calf|thigh)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b.{0,80}\b(?:breathless|short of breath|can'?t breathe)|"
+                    r"\b(?:swollen|swelling|ballooned)\b.{0,25}\b(?:leg|calf|thigh)\b.{0,80}\b(?:breathless|short of breath|can'?t breathe)|"
+                    r"\b(?:breathless|short of breath)\b.{0,80}\b(?:leg|calf|thigh)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b|"
+                    r"\b(?:breathless|short of breath)\b.{0,80}\b(?:swollen|swelling|ballooned)\b.{0,25}\b(?:leg|calf|thigh)\b|"
                     r"\bhalf (?:of )?my face\b.{0,30}\bnumb|\bwords\b.{0,25}\b(?:coming out|came out|are|were) (?:wrong|jumbled|garbled)|"
                     r"\bcan'?t feel my (?:legs?|feet|arms?)\b|"
                     r"\bblood\b.{0,30}\b(?:coming out|pouring|rushing)\b.{0,40}\b(?:fast|quickly|so much)\b|\bgoing (?:grey|gray|white)\b|"
@@ -1522,7 +1524,7 @@ _PF_NEG = re.compile(r"hot water bottle|\b(?:no|without|not|zero) (?:\w+ ){0,1}(
 # run31: resolved the same day (saved v33 coil line) -> quiet
 _PF_FINE = re.compile(r"\b(?:fine|ok|okay|better|normal|good) now|otherwise (?:fine|ok|okay|well)|back to normal|all settled|gone by (?:the )?(?:evening|morning|night|bedtime|lunch\w*|tea\w*)", re.I)
 _PF_STRICT = re.compile(r"pelvic|womb|ovar\w*|period pain", re.I)
-_PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
+_PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sore throat|tonsil\w*|sinus\w*|toothache|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
 
 
 def _pelvic_fever(t: str) -> bool:
@@ -1655,7 +1657,7 @@ _SL_SPEECH = re.compile(r"\b(?:speech|voice|words?|talk\w*|speak\w*|sentences?|t
 _SL_HEAD = re.compile(r"\b(?:worst|most severe|most painful) headache (?:of (?:my|his|her|their) li(?:fe|ves)|ever|I'?ve ever had)|\bsudden(?:ly)? (?:severe|terrible|blinding|awful|agonising|excruciating) headache", re.I)
 _SL_OTHER = re.compile(r"\b(?:dizz\w*|spinning|fell over|falling (?:over|to one side)|lean\w* (?:over )?(?:to|towards) (?:one side|the left|the right|the side)|keeps? (?:leaning|falling)|confused|muddled|vomit\w*|being sick)\b", re.I)
 _SL_ONSET = re.compile(r"\b(?:sudden\w*|out of (?:nowhere|the blue)|all of a sudden|just now|came on|minutes? ago|this morning|last night|woke (?:up )?with)\b", re.I)
-_SL_BENIGN = re.compile(r"\b(?:dentist|dental|injection|anaesthe\w*|wearing off|wear off|slept on|sleeping on|fell asleep on|lying on|sat on|pins and needles|always|usual\w*|years? ago|months? ago|bell'?s palsy|gym|leg day|workout|carrying|shopping|sprain\w*|physio\w*|vaccin\w*|jab|cramp|had (?:a few|some|too many) (?:drinks|pints)|after (?:a few |some )?drinks|nervous|anxious|exhausted|crying|migraine|aura|neurologist|screens?|contacts|stood up too fast|period|cold|typ\w+|crossed|cross-legged|sitting|tired|run|on my feet|moving house|shaking it|game|last (?:year|month)|imagination|joking|lol|haha|stress\w*|for (?:months|years|weeks)|every (?:morning|day|night)|GP knows|toddler|cute|chill?i\w*|spicy|since (?:I|he|she|they) (?:broke|hurt|injured|had|sprained)|since (?:my|his|her|their) (?:op|operation|surgery|accident|injury|fall|break)|in the (?:summer|spring|autumn|winter)|(?:from|after) the (?:jab|vaccine|flu jab|chilli|cold|op|operation|walk|train))\b", re.I)
+_SL_BENIGN = re.compile(r"\b(?:photos?|selfie|picture|mirror|camera|filter|dentist|dental|injection|anaesthe\w*|wearing off|wear off|slept on|sleeping on|fell asleep on|lying on|sat on|pins and needles|always|usual\w*|years? ago|months? ago|bell'?s palsy|gym|leg day|workout|carrying|shopping|sprain\w*|physio\w*|vaccin\w*|jab|cramp|had (?:a few|some|too many) (?:drinks|pints)|after (?:a few |some )?drinks|nervous|anxious|exhausted|crying|migraine|aura|neurologist|screens?|contacts|stood up too fast|period|cold|typ\w+|crossed|cross-legged|sitting|tired|run|on my feet|moving house|shaking it|game|last (?:year|month)|imagination|joking|lol|haha|stress\w*|for (?:months|years|weeks)|every (?:morning|day|night)|GP knows|toddler|cute|chill?i\w*|spicy|since (?:I|he|she|they) (?:broke|hurt|injured|had|sprained)|since (?:my|his|her|their) (?:op|operation|surgery|accident|injury|fall|break)|in the (?:summer|spring|autumn|winter)|(?:from|after) the (?:jab|vaccine|flu jab|chilli|cold|op|operation|walk|train))\b", re.I)
 _SL_OLD = re.compile(r"\b(?:(?:\d+|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|a few|few|couple of|a couple of) days? (?:ago|back|before)|last week|(?:a|one|two) weeks? ago|a week ago|on (?:mon|tues|wednes|thurs|fri|satur|sun)day|the other day|at the weekend|last weekend)\b", re.I)
 
 
@@ -1736,6 +1738,19 @@ _S365 = re.compile(
     r"|^(?=[\s\S]*\b(?:through (?:the |my )?(?:night )?pads?)\b)(?=[\s\S]*\b(?:jeans|trousers|clothes|skirt|sheets)\b)(?=[\s\S]*\b(?:can'?t stop|won'?t stop|an hour|hour)\b)", re.I)
 _S365_QUIET = re.compile(r"\b(?:negative|not pregnant|no fever|nothing sharp|not sharp|for years|sometimes|stiff|since (?:her|his) (?:stroke|operation)|last year)\b", re.I)
 
+# S-407 (Safety run 48, nhs.uk/symptoms/fever-in-children reviewed 3 Jan 2024 -> 999 list: not responding like normal, not interested in feeding):
+# a baby or child marker, a fever word and floppy / not responding / not feeding in one note.
+_BABY407 = re.compile(r"\b(?:baby|babies|infant|newborn|toddler|\d+ (?:weeks?|months?)[- ]old|(?:my|our) (?:son|daughter|little one|little girl|little boy|child|girl|boy))\b", re.I)
+_FEV407 = re.compile(r"\b(?:fever(?:ish)?|high temperature|temperature of (?:3[89]|4\d)|(?:3[89]|4[01])\.\d|burning up|hot to the touch|feels? (?:very )?hot)\b", re.I)
+_FLOP407 = re.compile(r"\b(?:floppy|limp|lifeless|unresponsive|not responding|barely responding|not (?:interested in|taking|feeding)(?: (?:her|his|the|any))? ?(?:feeds?|milk|bottle|feeding)?|won'?t (?:feed|take (?:her|his|the|any) (?:bottle|milk|feeds?))|refus\w+ (?:all |every )?(?:feeds?|milk|bottle))\b", re.I)
+_NOT407 = re.compile(r"\b(?:I have a (?:fever|temperature)|I'?ve got a (?:fever|temperature)|my (?:own )?temperature|I am (?:feverish|hot))\b", re.I)
+
+
+def _baby_fever407(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_BABY407.search(t) and _FEV407.search(t) and _FLOP407.search(t) and not _NOT407.search(t))
+
+
 def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
     # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
@@ -1769,6 +1784,8 @@ def _emergency_kind(user_text: str):
         return "medical"  # S-343/S-344 prototype
     if not _QUIET347.search(user_text) and _hard_to_wake342(user_text):
         return "medical"  # S-342 prototype (Safety run 40)
+    if not _QUIET347.search(user_text) and _baby_fever407(user_text):
+        return "medical"  # S-407 (Safety run 48)
     # S-346 prototype (Safety run 40): heavy blood in plain words with a sign word; "so bad I can't stand"; pain with can't stand/walk
     _t = user_text
     if not _PAST_Q346.search(_t):

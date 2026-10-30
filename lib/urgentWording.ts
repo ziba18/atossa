@@ -86,6 +86,12 @@ const BLOOD346 = mk(P.BLOOD346_SRC), SIGN346 = mk(P.SIGN346_SRC), PAST_Q346 = mk
 const WAKE342 = mk(P.WAKE342_SRC), EYES342 = mk(P.EYES342_SRC), HOT342 = mk(P.HOT342_SRC), SIGN342 = mk(P.SIGN342_SRC), MORN342 = mk(P.MORN342_SRC);
 const NEG342 = new RegExp(P.NEG342_SRC, 'gi'), S343 = mk(P.S343_SRC), S343_SIGN = mk(P.S343SIGN_SRC), QUIET347 = mk(P.QUIET347_SRC);
 
+// S-407 (backend _baby_fever407): baby / child marker + fever word + floppy / not responding / not feeding.
+const BABY407 = mk(P.BABY407_SRC), FEV407 = mk(P.FEV407_SRC), FLOP407 = mk(P.FLOP407_SRC), NOT407 = mk(P.NOT407_SRC);
+function babyFever407(t0: string): boolean {
+  const t = t0.replace(/\u2019/g, "'");
+  return BABY407.test(t) && FEV407.test(t) && FLOP407.test(t) && !NOT407.test(t);
+}
 // Mirrors backend `_hard_to_wake342` (S-342): hard to wake / can't keep eyes open with a fever or floppy/confused sign.
 function hardToWake342(t: string): boolean {
   t = t.replace(/\u2019/g, "'");
@@ -281,6 +287,7 @@ function signpostOnce(text: string): string | null {
   // S-342 / S-343 / S-346 prototypes (backend _emergency_kind, Safety run 40-41)
   if (!QUIET347.test(t) && S343.test(t) && S343_SIGN.test(t) && !PAST_Q346.test(t)) return URGENT_SIGNPOST;
   if (!QUIET347.test(t) && hardToWake342(t)) return URGENT_SIGNPOST;
+  if (!QUIET347.test(t) && babyFever407(t)) return URGENT_SIGNPOST;
   if (!PAST_Q346.test(t) && ((BLOOD346.test(t) && SIGN346.test(t)) || BAD346.test(t)
     || (!QUIET347.test(t) && CANTSTAND346.test(t) && /\bpain\b|\bhurts?\b|\bbleed\w*/i.test(t)))) return URGENT_SIGNPOST;
   return null;
