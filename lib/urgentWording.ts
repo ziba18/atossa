@@ -186,6 +186,28 @@ function hit(pattern: RegExp, text: string): boolean {
   return false;
 }
 
+// S-372 (backend _pelvic_fever): pelvic / period pain with fever words, or with being sick / very unwell and no period word.
+const PF_PAIN = mk(P.PFPAIN_SRC), PF_FEVER = mk(P.PFFEVER_SRC), PF_SICK = mk(P.PFSICK_SRC), PF_PERIOD = mk(P.PFPERIOD_SRC), PF_NEG = new RegExp(P.PFNEG_SRC, 'gi');
+const PF_FINE = mk(P.PFFINE_SRC), PF_STRICT = mk(P.PFSTRICT_SRC), PF_GASTRO = mk(P.PFGASTRO_SRC);
+function pelvicFever(t0: string): boolean {
+  if (!PF_PAIN.test(t0)) return false;
+  const t = t0.replace(/\u2019/g, "'").replace(PF_NEG, ' ');
+  const strict = PF_STRICT.test(t);
+  if (PF_FINE.test(t)) return false;
+  if (PF_GASTRO.test(t) && !strict) return false;
+  if (PF_FEVER.test(t)) return true;
+  return PF_SICK.test(t) && strict && !PF_PERIOD.test(t);
+}
+// S-377 (backend _flow_shock): a heavy-flow phrase with a shock pair (cold + shaky, shaky + weak, cold + weak).
+const FS_FLOW = mk(P.FSFLOW_SRC), FS_COLD = mk(P.FSCOLD_SRC), FS_SHAKY = mk(P.FSSHAKY_SRC), FS_WEAK = mk(P.FSWEAK_SRC), FS_BENIGN = mk(P.FSBENIGN_SRC);
+function flowShock(t: string): boolean {
+  if (!FS_FLOW.test(t) || FS_BENIGN.test(t)) return false;
+  const c = FS_COLD.test(t), s = FS_SHAKY.test(t), w = FS_WEAK.test(t);
+  return (c && s) || (s && w) || (c && w);
+}
+// S-381 (backend _preg_shoulder): pregnant + bleeding + shoulder pain.
+const MS_NEGB = new RegExp(P.MSNEGB_SRC, 'gi'), MS_PREG = mk(P.MSPREG_SRC), MS_BLEED = mk(P.MSBLEED_SRC), MS_SHOULDER = mk(P.MSSHOULDER_SRC), MS_NOT = mk(P.MSNOT_SRC);
+const pregShoulder = (t: string) => MS_PREG.test(t) && MS_BLEED.test(t.replace(MS_NEGB, ' ')) && MS_SHOULDER.test(t) && !MS_NOT.test(t);
 function strokeLay(t0: string): boolean {
   const t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   let n = 0;
@@ -207,7 +229,7 @@ export function urgentSignpost(text: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && strokeLay(text)) line = URGENT_SIGNPOST;
+  if (line === null && (strokeLay(text) || pelvicFever(text) || flowShock(text) || pregShoulder(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
