@@ -1464,6 +1464,44 @@ _ST_NQUIET = r"(?![\s\S]*\b(?:dentist|injection|anaesthetic|epidural|sitting|cro
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^{_ST_QUIET}{_ST_F}{_ST_L}|^{_ST_QUIET}{_ST_L}(?=[\s\S]*{_ST_SPEECH})|^{_ST_QUIET}{_ST_NQUIET}{_ST_SUDDEN}{_ST_N}", _WHOLE.flags)
 
 
+# S-371 (Safety run 44): period pain / heavy-flow words alone are the ordinary bad day, not the 999 block (nhs.uk/symptoms/period-pain has no 999 card).
+# With a period word in the note, those phrases are blanked and the note is judged again; a second sign (faint, dizzy, pregnancy, one-sided, fever...) keeps it.
+_PD_FAMILY = re.compile(r"in agony|agoni[sz]ing|agony|doubled over|crying on the (?:bathroom )?floor|screaming|excruciating|unbearable|off the scale|can'?t (?:straighten|stand up straight|stand up|walk)|severe (?:sudden )?(?:pain|belly|abdominal|pelvic)|worst pain|worst (?:I'?ve|i have) ever|pain (?:is|was) (?:10|ten)(?:/| out of )(?:10|ten)|(?:10|ten)(?:/| out of )(?:10|ten)|(?:pads?|tampons?)[^.]{0,20}(?:every|each|an) (?:half )?(?:hour|30 minutes)|(?:every|each) (?:half )?hour|soak\w* (?:through )?(?:a |my |an? )?(?:pads?|tampons?|towel)\w*|(?:very |really |so )?heav(?:y|ily) bleeding|bleeding (?:really |very |so )?heav(?:y|ily)|clots[^.]{0,30}|(?:sick|nauseous)[^.]{0,20}pain|pain[^.]{0,30}(?:sick|sweaty)|feel(?:ing)? (?:sick|nauseous) and (?:sweaty|clammy)", re.I)
+_PD_CTX = re.compile(r"\b(?:period|periods|cramp\w*|menstrua\w+|day [1-5]\b|first day|time of the month|usual for me|same as (?:always|every month|last month)|normal for me|typical day|as always|like always|every month|first (?:two|2|few) days)\b", re.I)
+_PD_SECOND = re.compile(r"pregn\w+|periods? (?:have )?stopped|haven'?t had a period|menopaus\w*|post-?menopaus\w*|sweat\w*|being sick|been sick|sleepy|muddled|wet myself|rock hard|in minutes|spinning|pound\w*|heart|breath\w*|curled up|faint\w*|pass(?:ed|ing) out|blacked out|collaps\w+|dizz\w+|light-?headed|grey|gray|clammy|racing|pale|can'?t stand without|room (?:going|goes|went) dark|late|missed period|weeks? (?:late|pregnant)|positive (?:pregnancy )?test|pregnan\w+|one[- ]sided|right side|left side|shoulder|sudden\w*|out of nowhere|fever|shiver\w*|shak\w+|chills|confus\w+|not like (?:my )?usual|different (?:to|from) (?:my )?usual|worse than ever|coil|after (?:the|my) (?:op|operation|birth|miscarriage)|cold and", re.I)
+
+
+# S-349b (Safety run 44): stroke signs said by their effect (nhs.uk/conditions/stroke/symptoms FAST). Standalone; fires only when the engine found nothing.
+_SK_FACE = re.compile(r"\b(?:face|cheek|lip|mouth|smile|grin|eyelid|eye\s*lid)\b", re.I)
+_SK_FACE_FX = re.compile(r"\b(?:sag\w*|droop\w*|lopsided|crooked|uneven|numb\w*|no (?:sensation|feeling)|(?:won'?t|doesn'?t|can'?t|cant)\s+(?:move|lift|smile)|(?:half|side|corner)[^.]{0,25}(?:lifts?|moves?|hangs?|falls?))", re.I)
+_SK_SPEECH = re.compile(r"\b(?:speech|voice|words?|talking|speaking|sentence|tongue)\b", re.I)
+_SK_SPEECH_FX = re.compile(r"\b(?:scrambl\w+|slurr\w+|garbl\w+|mushy|thick|nonsense|(?:came|coming) out (?:wrong|garbled|scrambled)|stopped coming|can'?t find the (?:right )?words|sound\w* (?:drunk|strange|odd|funny|slow))", re.I)
+_SK_LIMB = re.compile(r"\b(?:arm|hand|leg|grip)\b", re.I)
+_SK_LIMB_FX = re.compile(r"\b(?:dead|limp|heavy|weak\w*|buckl\w+|gave way|won'?t (?:take|bear)|can'?t (?:lift|grip|hold|feel)|wouldn'?t grip|dropped|numb\w*)\b", re.I)
+_SK_SIDE = re.compile(r"\b(?:one side|left|right|half|down (?:one|the) side|whole side)\b", re.I)
+_SK_ONSET = re.compile(r"\b(?:sudden\w*|just now|came on|began|minutes? (?:ago|back)|a few minutes|twenty minutes|an hour (?:ago|back)|woke (?:up )?(?:with|and)|mid[- ]sentence|out of nowhere|all of a sudden|was fine)\b", re.I)
+_SK_BENIGN = re.compile(r"\b(?:months?|always|every (?:morning|day|week|night|month)|usual|braces|long shift|shift|crossed|crossing|sat on|sitting on|pins and needles|fine now|back to normal|sleeping on|lying on|normal again|last week|yesterday|months? ago|years? ago|dentist|dental|filling|injection|anaesthe\w+|wearing off|slept on|pins and needles|gym|workout|marathon|run|sore muscles|photo|angle)\b", re.I)
+_SK_NEG = re.compile(r"\b(?:no|not|without|nor|never)\s+(?:\w+\s+){0,2}(?:numb\w*|weak\w*|sensation|feeling|droop\w*|slurr\w*)", re.I)
+_SK_SAG = re.compile(r"\b(?:sag\w*|droop\w*|lopsided)\b", re.I)
+
+
+def _stroke_lay(t: str) -> bool:
+    t = _SK_NEG.sub(" ", t.replace("\u2019", "'"))
+    n = 0
+    if _SK_FACE.search(t) and _SK_FACE_FX.search(t):
+        n += 1
+    if _SK_SAG.search(t) and _SK_FACE.search(t) and not _SK_BENIGN.search(t):
+        n += 2
+    if _SK_SPEECH.search(t) and _SK_SPEECH_FX.search(t):
+        n += 1
+    if _SK_LIMB.search(t) and _SK_LIMB_FX.search(t):
+        n += 1
+    if n == 0 or (_SK_BENIGN.search(t) and n < 2):
+        return False
+    face = bool(_SK_FACE.search(t) and _SK_FACE_FX.search(t))
+    return n >= 2 or bool(_SK_ONSET.search(t)) or (face and bool(_SK_SIDE.search(t)))
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     kind = _emergency_kind(user_text)
@@ -1475,6 +1513,11 @@ def emergency_kind(user_text: str):
     # team,\nand I've got a plan for tonight"): the note is re-read with line breaks as commas, for self-harm only.
     if kind is None and "\n" in user_text and _emergency_kind(user_text.replace("\n", ", ")) == "self_harm":
         return "self_harm"
+    if kind == "medical" and _PD_CTX.search(user_text) and not _PD_SECOND.search(user_text) \
+            and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
+        return None
+    if kind is None and _stroke_lay(user_text):
+        return "medical"
     return kind
 
 
