@@ -1604,6 +1604,17 @@ def _cauda_lay(t: str) -> bool:
     return bool(not _CE_VETO.search(t) and _CE_BACK.search(t) and ((_CE_ZONE.search(t) and _CE_DEF.search(t)) or _CE_CTRL.search(t)))
 
 
+# S-398 (Safety run 47, nhs.uk/conditions/sepsis adult symptoms: high temperature with uncontrollable shivering). Standalone; fires only when nothing else did.
+_RG_FEV = re.compile(r"\b(?:fever|high temperature|temperature of (?:3[89]|4\d)|burning up)\b", re.I)
+_RG_UNC = re.compile(r"\b(?:can'?t|cannot|won'?t|couldn'?t) (?:stop|control) (?:the |my )?(?:shak\w+|shiver\w*)|\buncontrollabl\w+ (?:shak\w+|shiver\w*)|\b(?:shak\w+|shiver\w*) (?:uncontrollabl\w+|and can'?t stop|won'?t stop)", re.I)
+_RG_VETO = re.compile(r"\b(?:no|without|not|never)\s+(?:\w+\s+){0,2}(?:fever|shak\w+|shiver\w*)|\b(?:flu|cold|covid|usual|normal for me|anxiety|panic)\b|\bcoffee|\bcaffeine", re.I)
+
+
+def _rigors(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_RG_FEV.search(t) and _RG_UNC.search(t) and not _RG_VETO.search(t))
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     kind = _emergency_kind(user_text)
@@ -1618,7 +1629,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (_stroke_lay(user_text) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _cauda_lay(user_text)):
+    if kind is None and (_stroke_lay(user_text) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _cauda_lay(user_text) or _rigors(user_text)):
         return "medical"
     return kind
 
