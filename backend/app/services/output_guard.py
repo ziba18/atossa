@@ -1661,7 +1661,7 @@ _RG_NOFEV = re.compile(r"\b(?:no|without|not|never|don'?t have|haven'?t got|hasn
 # S-436 (Safety run 51, nhs.uk/conditions/sepsis adult signs: not passing urine for a day, with confusion / shaking / fever / swelling). Standalone.
 _NW_NONE = re.compile(r"\b(?:haven'?t|hasn'?t|not|no|can'?t|cannot|couldn'?t) (?:had |passed |been able to |able to |managed to )?(?:a |any )?(?:wee|pee|urine)\b", re.I)
 _NW_LONG = re.compile(r"\b(?:all day|(?:1[2-9]|2\d) hours|a whole day|24 hours|since (?:yesterday|last night|the morning before)|since yesterday morning|all night and)\b", re.I)
-_NW_SIGN = re.compile(r"\b(?:confus\w+|drows\w+|shak\w+|fever\w*|temperature|burning up|clammy|breathless|swollen|sore|awful|faint\w*|dizz\w+|vomit\w+|freezing)\b", re.I)
+_NW_SIGN = re.compile(r"\b(?:confus\w+|drows\w+|shak\w+|fever\w*|temperature|burning up|clammy|breathless|swollen|awful|faint\w*|dizz\w+|vomit\w+|freezing)\b", re.I)
 _NW_VETO = re.compile(r"\b(?:meeting|flight|long drive|on the plane|fasting|wasn'?t thirsty|slept|asleep)\b", re.I)
 
 
