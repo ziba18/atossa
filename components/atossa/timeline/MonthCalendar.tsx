@@ -119,8 +119,8 @@ function DayCell({
   const spotting = mark?.bleeding === 'spotting';
   const tint = !solid && !spotting && mark?.worst != null ? severityColor(mark.worst) : null;
   // A bleeding day with a number keeps it: small shaded chip on the disc (digit inside, never colour only).
-  // Hidden on very narrow screens, where the chip would sit on the numerals; the spoken label still has it.
-  const roomForChip = useWindowDimensions().width >= 300;
+  // Hidden below 340 pt (320 pt phones crowd the numerals), where the chip would sit on the numerals; the spoken label still has it.
+  const roomForChip = useWindowDimensions().width >= 340;
   const chip = solid && roomForChip && mark?.worst != null ? severityColor(mark.worst) : null;
   return (
     <Pressable
