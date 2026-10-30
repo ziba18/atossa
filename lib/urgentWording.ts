@@ -226,10 +226,10 @@ function strokeLay(t0: string): boolean {
   return n >= 2 || SK_ONSET.test(t) || (face && SK_SIDE.test(t));
 }
 
-const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDEF_SRC), CE_CTRL = mk(P.CECTRL_SRC), CE_VETO = mk(P.CEVETO_SRC), CE_VETO_CTRL = mk(P.CEVETOCTRL_SRC), CE_NEW = mk(P.CENEWSIGN_SRC), CE_WIPE = mk(P.CEWIPE_SRC), RG_NOFEV = mk(P.RGNOFEV_SRC), EC_LATE = mk(P.ECLATE_SRC), EC_SIDE = mk(P.ECSIDE_SRC), EC_SEV = mk(P.ECSEV_SRC), EC_VETO = mk(P.ECVETO_SRC);
+const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDEF_SRC), CE_CTRL = mk(P.CECTRL_SRC), CE_VETO = mk(P.CEVETO_SRC), CE_VETO_CTRL = mk(P.CEVETOCTRL_SRC), CE_NEW = mk(P.CENEWSIGN_SRC), CE_WIPE = mk(P.CEWIPE_SRC), CE_LEGWEAK = mk(P.CELEGWEAK_SRC), CE_UNAWARE = mk(P.CEUNAWARE_SRC), RG_NOFEV = mk(P.RGNOFEV_SRC), EC_LATE = mk(P.ECLATE_SRC), EC_SIDE = mk(P.ECSIDE_SRC), EC_SEV = mk(P.ECSEV_SRC), EC_VETO = mk(P.ECVETO_SRC);
 const lateOneSide = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return EC_LATE.test(t) && EC_SIDE.test(t) && EC_SEV.test(t) && !EC_VETO.test(t); };
 // S-401 (backend _cauda_lay): back pain with saddle-area numbness or lost bladder / bowel control.
-const caudaLay = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); const nw = CE_NEW.test(t); return (nw || !CE_VETO.test(t)) && ((CE_ZONE.test(t) && CE_DEF.test(t) && CE_WIPE.test(t)) || CE_BACK.test(t) && ((CE_ZONE.test(t) && CE_DEF.test(t)) || (CE_CTRL.test(t) && (nw || !CE_VETO_CTRL.test(t))))); };
+const caudaLay = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); const nw = CE_NEW.test(t); return (nw || !CE_VETO.test(t)) && ((CE_ZONE.test(t) && CE_DEF.test(t) && CE_WIPE.test(t)) || (CE_LEGWEAK.test(t) && CE_CTRL.test(t) && (nw || !CE_VETO_CTRL.test(t)) && (CE_UNAWARE.test(t) || !CE_VETO_CTRL.test(t))) || CE_BACK.test(t) && ((CE_ZONE.test(t) && CE_DEF.test(t)) || (CE_CTRL.test(t) && (nw || !CE_VETO_CTRL.test(t))))); };
 const RG_FEV = mk(P.RGFEV_SRC), RG_UNC = mk(P.RGUNC_SRC), RG_VETO = mk(P.RGVETO_SRC);
 // S-398 (backend _rigors): high temperature with uncontrollable shaking or shivering.
 const rigors = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return RG_FEV.test(t) && RG_UNC.test(t) && ((CE_NEW.test(t) && !RG_NOFEV.test(t)) || !RG_VETO.test(t)); };
