@@ -119,7 +119,9 @@ function DayCell({
   const spotting = mark?.bleeding === 'spotting';
   const tint = !solid && !spotting && mark?.worst != null ? severityColor(mark.worst) : null;
   // A bleeding day with a number keeps it: small shaded chip on the disc (digit inside, never colour only).
-  const chip = solid && mark?.worst != null ? severityColor(mark.worst) : null;
+  // Hidden on very narrow screens, where the chip would sit on the numerals; the spoken label still has it.
+  const roomForChip = useWindowDimensions().width >= 300;
+  const chip = solid && roomForChip && mark?.worst != null ? severityColor(mark.worst) : null;
   return (
     <Pressable
       onPress={onPress}
@@ -164,12 +166,12 @@ function DayCell({
                 {day}
               </Txt>
             </View>
+            {chip ? (
+              <View pointerEvents="none" style={[styles.chip, { backgroundColor: chip.bg }]}>
+                <Txt maxFontSizeMultiplier={1.2} style={[styles.chipNum, { color: chip.fg }]}>{mark?.worst}</Txt>
+              </View>
+            ) : null}
           </View>
-          {chip ? (
-            <View pointerEvents="none" style={[styles.chip, { backgroundColor: chip.bg }]}>
-              <Txt maxFontSizeMultiplier={1.2} style={[styles.chipNum, { color: chip.fg }]}>{mark?.worst}</Txt>
-            </View>
-          ) : null}
           <View style={[styles.dot, !mark?.notes && { opacity: 0 }]} />
         </>
       )}
@@ -212,7 +214,7 @@ const styles = StyleSheet.create({
   /** Clear centre for the spotting numeral, so the hatch never runs through the digits. */
   spotClear: { position: 'absolute', width: DISC - 12, height: DISC - 12, borderRadius: radii.pill, backgroundColor: colors.canvas },
   chip: {
-    position: 'absolute', top: 2, right: '50%', marginRight: -26, minWidth: 16, height: 16, borderRadius: 8,
+    position: 'absolute', top: -2, right: -6, minWidth: 16, height: 16, borderRadius: 8,
     borderWidth: 1, borderColor: colors.surface, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2,
   },
   chipNum: { fontSize: 10, lineHeight: 12, fontWeight: '600' },
