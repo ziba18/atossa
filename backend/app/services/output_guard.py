@@ -460,7 +460,7 @@ def _is_past(clause: str) -> bool:
 
 
 _FAINT_WORD = re.compile(r"faint(?:ed|ing)?", re.I)
-_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b", re.I)
+_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|feeling) (?:a bit |slightly |very |quite )?faint\b[^.!?]{0,60}\b(?:it|that) (?:soon |quickly )?passed\b|\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b", re.I)
 
 
 def _hits(rx, text: str) -> bool:
@@ -1527,7 +1527,7 @@ _PF_NEG = re.compile(r"hot water bottle|\b(?:no|without|not|zero) (?:\w+ ){0,1}(
 # run31: resolved the same day (saved v33 coil line) -> quiet
 _PF_FINE = re.compile(r"\b(?:fine|ok|okay|better|normal|good) now|otherwise (?:fine|ok|okay|well)|back to normal|all settled|gone by (?:the )?(?:evening|morning|night|bedtime|lunch\w*|tea\w*)", re.I)
 _PF_STRICT = re.compile(r"pelvic|womb|ovar\w*|period pain", re.I)
-_PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
+_PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sore throat|tonsil\w*|sinus\w*|toothache|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
 
 
 def _pelvic_fever(t: str) -> bool:
