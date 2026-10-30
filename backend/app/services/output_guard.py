@@ -1595,7 +1595,7 @@ def _stroke_lay(t: str) -> bool:
 # dizziness / spinning / confusion / falling only count beside another sign. Safety C13 time window: an episode 2-14 days
 # old ("three days ago", "last week", "on Monday") is not the 999 block, so this rule and _stroke_lay stay quiet for it.
 _SL_PART = r"(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|arms?|hands?|fingers?|legs?|grip|(?:left|right|one|whole|that|other) side|half (?:of )?(?:my|his|her|their|the) (?:body|face))"
-_SL_DEF = r"(?:numb\w*|weak\w*|dead(?! tired)|heavy|floppy|flops?|flopp\w+|limp|useless|droop\w*|sag\w*|hang\w*|lopsided|crooked|lower on (?:one|that|the|his|her|my) side|(?:looks?|is|was) lower|drained|clumsy|dragg\w*|gave way|like lead|not mine|(?:won'?t|wouldn'?t|can'?t|couldn'?t|cannot|doesn'?t|didn'?t|did not|would not|will not|could not) (?:move|lift|stay up|hold|grip|feel|do what|work|go up|raise|smile)|only (?:goes|went|lifts?|moves?) (?:up )?on one side)"
+_SL_DEF = r"(?:numb\w*|weak\w*|dead(?! tired)|heavy|floppy|flops?|flopp\w+|limp|useless|droop\w*|sag\w*|hang\w*|lopsided|crooked|dropp\w+ (?:on|down on|at) (?:one|the (?:left|right)|that) side|lower on (?:one|that|the|his|her|my) side|(?:looks?|is|was) lower|drained|clumsy|dragg\w*|gave way|like lead|not mine|(?:won'?t|wouldn'?t|can'?t|couldn'?t|cannot|doesn'?t|didn'?t|did not|would not|will not|could not) (?:move|lift|stay up|hold|grip|feel|do what|work|go up|raise|smile)|only (?:goes|went|lifts?|moves?) (?:up )?on one side)"
 _SL_FACEPART = r"(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|half (?:of )?(?:my|his|her|their|the) face)"
 _SL_FACE = re.compile(r"\b" + _SL_FACEPART + r"\b[^.!?;]{0,40}?\b" + _SL_DEF + r"|\b" + _SL_DEF + r"\b[^.!?;]{0,25}?\b" + _SL_FACEPART + r"\b", re.I)
 _SL_SIDEW = re.compile(r"\b(?:left|right|one side|one arm|one leg|one hand|half|whole side|that side|the other)\b", re.I)
@@ -1619,7 +1619,8 @@ def _stroke_slot(t: str) -> bool:
     other = len({m.group(0).lower()[:4] for m in _SL_OTHER.finditer(t)})
     motor = bool(_SL_FACE.search(t) or (_SL_MOTOR.search(t) and (_SL_SIDEW.search(t) or _SL_ONSET.search(t) or rest or other)))
     core = rest + motor
-    if _SL_OLD.search(t) or (_SL_BENIGN.search(t) and core + min(other, 1) < 2):
+    face_side = bool(_SL_FACE.search(t) and _SL_SIDEW.search(t))  # nhs.uk Bell's palsy / stroke: one-sided face droop stays in the 999 box whatever the stated cause
+    if _SL_OLD.search(t) or (_SL_BENIGN.search(t) and not face_side and core + min(other, 1) < 2):
         return False
     return core >= 1 or (other >= 2 and bool(_SL_ONSET.search(t)))
 
