@@ -427,7 +427,7 @@ export function GlyphLine({
 }: { icon: IconName; text: string; clay?: boolean; variant?: 'caption' | 'secondary' }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
-      <Icon name={icon} size={20} color={clay ? colors.clay : colors.ink} />
+      <View style={{ flexShrink: 0 }}><Icon name={icon} size={20} color={clay ? colors.clay : colors.ink} /></View>
       <Txt variant={variant} style={{ flexShrink: 1 }}>{text}</Txt>
     </View>
   );

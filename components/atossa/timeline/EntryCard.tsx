@@ -116,7 +116,7 @@ export function EntryCard({
       const urgent = urgentSignpost(textOf(s));
       const kindWord = s.source === 'voice' ? 'Voice note' : s.source === 'quick' ? 'Rough day' : 'Note';
       const time = timeOf(item.rec, s.date);
-      const top = hideDate ? (time || kindWord) : [formatDay(s.date), time].filter(Boolean).join(' · ');
+      const top = hideDate ? (time || kindWord) : [formatDay(s.date), time].filter(Boolean).join('\u00A0·\u00A0');
       const strengthA11y = tag != null ? `${tag} out of 10${tagWord ? ` ${tagWord}` : ''}` : '';
       return (
         <PressableCard
