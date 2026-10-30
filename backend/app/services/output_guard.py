@@ -1499,13 +1499,18 @@ def _pd_second(t: str) -> bool:
 _SK_FACE = re.compile(r"\b(?:face|cheek|lip|mouth|smile|grin|eyelid|eye\s*lid)\b", re.I)
 _SK_FACE_FX = re.compile(r"\b(?:sag\w*|droop\w*|lopsided|crooked|uneven|numb\w*|no (?:sensation|feeling)|(?:won'?t|doesn'?t|can'?t|cant)\s+(?:move|lift|smile)|(?:half|side|corner)[^.]{0,25}(?:lifts?|moves?|hangs?|falls?))", re.I)
 _SK_SPEECH = re.compile(r"\b(?:speech|voice|words?|talking|speaking|sentence|tongue)\b", re.I)
-_SK_SPEECH_FX = re.compile(r"\b(?:scrambl\w+|slurr\w+|garbl\w+|mushy|thick|nonsense|(?:came|coming) out (?:wrong|garbled|scrambled)|stopped coming|can'?t find the (?:right )?words|sound\w* (?:drunk|strange|odd|funny|slow))", re.I)
+_SK_SPEECH_FX = re.compile(r"\b(?:scrambl\w+|slurr\w+|garbl\w+|mushy|thick|nonsense|jumbl\w+|won'?t come out|(?:talk|speak)\w* like (?:he|she|they|I)(?:'?s|'?re|'?m| is| are| am| was)? drunk|(?:came|coming) out (?:wrong|garbled|scrambled)|stopped coming|can'?t find the (?:right )?words|sound\w* (?:drunk|strange|odd|funny|slow))", re.I)
 _SK_LIMB = re.compile(r"\b(?:arm|hand|leg|grip)\b", re.I)
-_SK_LIMB_FX = re.compile(r"\b(?:dead|limp|heavy|weak\w*|buckl\w+|gave way|won'?t (?:take|bear)|can'?t (?:lift|grip|hold|feel)|wouldn'?t grip|dropped|numb\w*)\b", re.I)
+_SK_LIMB_FX = re.compile(r"\b(?:dead|limp|heavy|weak\w*|buckl\w+|gave way|won'?t (?:take|bear)|can'?t (?:lift|grip|hold|feel)|couldn'?t (?:lift|grip|hold|feel|move)|floppy|wouldn'?t grip|dropped|numb\w*)\b", re.I)
 _SK_SIDE = re.compile(r"\b(?:one side|left|right|half|down (?:one|the) side|whole side)\b", re.I)
-_SK_ONSET = re.compile(r"\b(?:sudden\w*|just now|came on|began|minutes? (?:ago|back)|a few minutes|twenty minutes|an hour (?:ago|back)|woke (?:up )?(?:with|and)|mid[- ]sentence|out of nowhere|all of a sudden|was fine)\b", re.I)
+_SK_ONSET = re.compile(r"\b(?:sudden\w*|just now|came on|began|minutes? (?:ago|back)|a few minutes|twenty minutes|(?:five|ten|fifteen|thirty|\d+) minutes|an hour (?:ago|back)|woke (?:up )?(?:with|and)|mid[- ]sentence|out of nowhere|all of a sudden|was fine)\b", re.I)
 _SK_BENIGN = re.compile(r"\b(?:months?|always|every (?:morning|day|week|night|month)|usual|braces|long shift|shift|crossed|crossing|sat on|sitting on|pins and needles|fine now|back to normal|sleeping on|lying on|normal again|last week|yesterday|months? ago|years? ago|dentist|dental|filling|injection|anaesthe\w+|wearing off|slept on|pins and needles|gym|workout|marathon|run|sore muscles|photo|angle)\b", re.I)
 _SK_NEG = re.compile(r"\b(?:no|not|without|nor|never)\s+(?:\w+\s+){0,2}(?:numb\w*|weak\w*|sensation|feeling|droop\w*|slurr\w*)", re.I)
+# B11 (AI Brain run31, nhs.uk/conditions/stroke/symptoms reviewed 12 Sep 2024): loss of sight in 1 or both eyes is a sign on its
+# own (999 even if it has stopped); blurred vision in both eyes and dizzy / falling over count only beside another sign.
+_SK_EYE = re.compile(r"\b(?:lost|lose|losing|no) (?:the |all )?(?:sight|vision) (?:in|from|of) (?:my |his |her |their |one |both )?(?:right |left )?eyes?\b|\b(?:curtain|shadow|blackness) (?:came |coming |went )?(?:down )?(?:over|across) (?:my |his |her |one )?(?:right |left )?eye|\bwent blind in (?:one|my|his|her) (?:right |left )?eye", re.I)
+_SK_BLUR2 = re.compile(r"\b(?:blurr\w*|blurry)\b[^.!?]{0,20}\bboth eyes\b", re.I)
+_SK_FALL = re.compile(r"\bdizz\w+|\bfell over\b|\bfalling over\b|\blost my balance\b", re.I)
 _SK_SAG = re.compile(r"\b(?:sag\w*|droop\w*|lopsided)\b", re.I)
 
 
@@ -1583,6 +1588,10 @@ def _stroke_lay(t: str) -> bool:
     if _SK_SPEECH.search(t) and _SK_SPEECH_FX.search(t):
         n += 1
     if _SK_LIMB.search(t) and _SK_LIMB_FX.search(t):
+        n += 1
+    if _SK_EYE.search(t):
+        n += 2
+    if n and (_SK_BLUR2.search(t) or _SK_FALL.search(t)):
         n += 1
     if n == 0 or (_SK_BENIGN.search(t) and n < 2):
         return False
