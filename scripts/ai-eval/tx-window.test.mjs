@@ -39,3 +39,14 @@ test('a window with fewer than 7 written days is not compared (empty is not "no 
   const all = [...days('2026-06-01', 42, 8), ...days('2026-07-13', 3, 2)];
   assert.equal(beforeSinceOf(all, '2026-07-13', '2026-08-30', '2026-08-30'), null);
 });
+
+test('a stopped treatment: the since window ends at the stop date', () => {
+  const all = days('2026-06-01', 120, 8);
+  const b = beforeSinceOf(all, '2026-07-13', '2026-08-01', '2026-10-30');
+  assert.equal(b.len, 20);
+  assert.equal(b.before, 20);
+});
+
+test('a treatment started before her first entry: no comparison', () => {
+  assert.equal(beforeSinceOf(days('2026-08-01', 60, 8), '2026-07-01', '2026-10-01', '2026-10-01'), null);
+});
