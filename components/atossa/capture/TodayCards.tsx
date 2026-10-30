@@ -259,12 +259,12 @@ export function HeroNumberCard() {
       big = String(count);
       line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
       const tail = total > 0 ? 'Open your summary' : 'Add a note and it appears in your summary';
-      sub = who ? `${who} · ${tail}` : tail;
+      sub = who ? `${who}\n${tail}` : tail;
     } else {
       big = String(count);
       line = inWeeks ? 'weeks until your appointment' : days === 1 ? 'day until your appointment' : 'days until your appointment';
       const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
-      sub = who ? `${who} · ${notes}` : notes;
+      sub = who ? `${who}\n${notes}` : notes;
     }
     target = '/(tabs)/doctor';
   } else if (total === 0) {
