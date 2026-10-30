@@ -44,8 +44,9 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
             const w = worstOf(b.strength ?? '');
             const u = usual(b.strength ?? '');
             return (
-              <View key={b.label} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.sm }}>
-                <View style={{ flex: 1, minWidth: 0 }}>
+              <View key={b.label} style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: space.sm }}>
+                {/* Basis 130: on very narrow screens the Worst column wraps under the name instead of squeezing it mid-word. */}
+                <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, minWidth: 0 }}>
                   <Txt variant="body">{b.label}</Txt>
                   <Txt variant="secondary">{`${b.days} of ${plural(b.total, 'day')}${u ? ` · ${u}` : ''}`}</Txt>
                 </View>
