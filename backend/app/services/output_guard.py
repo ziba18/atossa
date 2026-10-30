@@ -1527,7 +1527,7 @@ _PF_NEG = re.compile(r"hot water bottle|\b(?:no|without|not|zero) (?:\w+ ){0,1}(
 # run31: resolved the same day (saved v33 coil line) -> quiet
 _PF_FINE = re.compile(r"\b(?:fine|ok|okay|better|normal|good) now|otherwise (?:fine|ok|okay|well)|back to normal|all settled|gone by (?:the )?(?:evening|morning|night|bedtime|lunch\w*|tea\w*)", re.I)
 _PF_STRICT = re.compile(r"pelvic|womb|ovar\w*|period pain", re.I)
-_PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sore throat|tonsil\w*|sinus\w*|toothache|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
+_PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sore throat|runny nose|blocked nose|stuffy nose|sniffl\w+|tonsil\w*|sinus\w*|toothache|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
 
 
 def _pelvic_fever(t: str) -> bool:
