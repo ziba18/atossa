@@ -1620,9 +1620,9 @@ def _stroke_lay(t: str) -> bool:
 # S-401 (Safety run 47, nhs.uk/conditions/back-pain 999/A&E list, reviewed 5 Mar 2026): back pain with numbness in the saddle area,
 # or with lost bladder / bowel control. Standalone; fires only when the engine found nothing.
 _CE_BACK = re.compile(r"\b(?:back|spine|sciatica|spasm)\b", re.I)
-_CE_ZONE = re.compile(r"\b(?:bum|bottom|buttocks?|inner thighs?|saddle|private area|between (?:my )?legs|genital\w*|groin|anus|backside)\b", re.I)
+_CE_ZONE = re.compile(r"\b(?:bum|bottom|buttocks?|inner thighs?|saddle|private area|between (?:my )?legs|genital\w*|groin|anus|backside|(?<!no numbness )(?<!no tingling )(?<!not numb )down below)\b", re.I)
 _CE_DEF = re.compile(r"\b(?:numb\w*|can'?t feel|cannot feel|couldn'?t feel|no feeling|tingl\w+|pins and needles|cushion)\b", re.I)
-_CE_CTRL = re.compile(r"\b(?:loss of control|lost control|can'?t control|couldn'?t control|wet myself|soiled myself|incontinen\w+|leak\w* (?:wee|urine|poo|stool)|can'?t (?:pee|wee)|cannot (?:pee|wee)|can'?t tell when|couldn'?t feel (?:myself )?pass\w+|can'?t feel the toilet paper|bladder not working)\b", re.I)
+_CE_CTRL = re.compile(r"\b(?:loss of control|lost control|can'?t control|couldn'?t control|wet myself|soiled myself|incontinen\w+|leak\w* (?:wee|urine|poo|stool)|can'?t (?:pee|wee)|cannot (?:pee|wee)|can'?t tell when|couldn'?t feel (?:myself )?pass\w+|can'?t feel the toilet paper|bladder not working|can'?t feel (?:when )?(?:i'?m |i am )?(?:passing|going)|wetting the (?:bed|sheets)|accident in my sleep|dribbl\w+|can'?t (?:fully )?empty my bladder|no idea when i need|wet (?:herself|himself|themselves)|soiled (?:herself|himself|themselves))\b", re.I)
 _CE_VETO = re.compile(r"\b(?:usual|same as|cross-?legged|after (?:a )?(?:long )?run|physio|sat on|chair|can still feel|feel everything|feel normal\w*|fine after|fine now|goes? away|went away|all better|better now|for years|been the same|only the|oh wait|last week|flight|cycling|yoga|jeans|\bshy\b|air ?con\w*)\b", re.I)
 _CE_WIPE = re.compile(r"\b(?:wip(?:e|ing)|toilet paper)\b", re.I)
 _CE_VETO_CTRL = re.compile(r"\b(?:since the baby|when I sneez\w*|laugh\w*|period|pregnan\w+|postnatal|after (?:the |my )?birth)\b", re.I)
@@ -1631,7 +1631,7 @@ _CE_NEWSIGN = re.compile(r"(?<!fine )(?<!better )(?<!well )\bnow\b|\bnew\b|\bsud
 
 
 # nhs.uk back-pain / sciatica A&E list: leg weakness with lost bladder or bowel control needs no back word to be urgent.
-_CE_LEGWEAK = re.compile(r"\b(?:(?:my |both )?legs?|feet|foot)\b[^.!?]{0,30}\b(?:weak\w*|gave way|giving way|numb\w*|heavy|dead|won'?t work)\b|\b(?:weak\w*|numb\w*) (?:in |down )?(?:both |my )?(?:legs?|feet)\b|\b(?:can'?t|cannot|couldn'?t) feel (?:my |both |either )?(?:legs?|feet)\b", re.I)
+_CE_LEGWEAK = re.compile(r"\b(?:(?:my |both )?legs?|feet|foot)\b[^.!?]{0,30}\b(?:weak\w*|gave way|giving way|numb\w*|heavy|dead|won'?t work|jelly|tingl\w+)\b|\bpins and needles in (?:both |my )?(?:legs?|feet)\b|\b(?:weak\w*|numb\w*) (?:in |down )?(?:both |my )?(?:legs?|feet)\b|\b(?:can'?t|cannot|couldn'?t) feel (?:my |both |either )?(?:legs?|feet)\b", re.I)
 _CE_UNAWARE = re.compile(r"\b(?:without (?:knowing|realising|realizing|noticing|feeling)|didn'?t (?:know|realise|realize|notice|feel)|not knowing)\b", re.I)
 
 
@@ -1643,6 +1643,8 @@ def _cauda_lay(t: str) -> bool:
     if _CE_ZONE.search(t) and _CE_DEF.search(t) and _CE_WIPE.search(t):
         return True
     if _CE_LEGWEAK.search(t) and _CE_CTRL.search(t) and (new or not _CE_VETO_CTRL.search(t)) and (_CE_UNAWARE.search(t) or not _CE_VETO_CTRL.search(t)):
+        return True
+    if _CE_ZONE.search(t) and _CE_DEF.search(t) and _CE_CTRL.search(t) and (new or not _CE_VETO_CTRL.search(t)):
         return True
     return bool(_CE_BACK.search(t)
                 and ((_CE_ZONE.search(t) and _CE_DEF.search(t)) or (_CE_CTRL.search(t) and (new or not _CE_VETO_CTRL.search(t)))))
