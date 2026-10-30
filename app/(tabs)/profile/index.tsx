@@ -64,6 +64,7 @@ export default function ProfileScreen() {
   const signOut = useAuthStore((s) => s.signOut);
   const deleteAccount = useAuthStore((s) => s.deleteAccount);
   const records = useRecordsStore((s) => s.records);
+  const unsent = records.symptom.filter((r) => r.pending).length;
   const clearSampleData = useRecordsStore((s) => s.clearSampleData);
   const restoreSampleData = useRecordsStore((s) => s.restoreSampleData);
 
@@ -322,7 +323,9 @@ export default function ProfileScreen() {
       {confirmingSignOut ? (
         <ConfirmCard
           title="Sign out of Atossa?"
-          message="Your information stays saved. You can sign in again any time."
+          message={unsent > 0
+            ? `${unsent} ${unsent === 1 ? 'note has' : 'notes have'} not been sent yet. If you sign out now, ${unsent === 1 ? 'it is' : 'they are'} deleted from this phone. Wait until you have a connection to keep ${unsent === 1 ? 'it' : 'them'}.`
+            : 'Your information stays saved. You can sign in again any time.'}
           style={{ marginTop: space.xl }}
           onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
           actions={[
