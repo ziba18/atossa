@@ -14,3 +14,12 @@ def test_everyday_medicine_and_head_talk_is_quiet():
     for t in ["I keep my tablets locked away from the kids", "banged my head on the shelf, a bit sore",
               "I swallowed a tablet with water"]:
         assert not is_emergency(t), t
+
+
+def test_belly_pain_fever_no_wee_and_explosive_headache():
+    for t in ["Tummy pain keeps getting worse, I'm feverish and my skin has gone pale",
+              "my toddler has been sick all day, no wet nappy since morning and is floppy",
+              "sudden explosive headache, full pain in seconds"]:
+        assert is_emergency(t), t
+    for t in ["tummy pain after lunch, no fever", "explosive laughter gave me a headache at the cinema"]:
+        assert not is_emergency(t), t
