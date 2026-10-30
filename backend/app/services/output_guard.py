@@ -1732,7 +1732,7 @@ _PL_STATE = re.compile(
 _PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
 _PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
 _PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
-_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|was indigestion|in hospital|on the ward|recovered|doing well)\b", re.I)
+_PL_QUIET = re.compile(r"\b(?:through (?:my|his|her|their|the) (?:nose|mouth)|(?:holding|hold|held) (?:my|his|her|their) breath|dream\w*|nightmare\w*|yoga|pilates|in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|was indigestion|in hospital|on the ward|recovered|doing well)\b", re.I)
 
 
 def _plain999(t: str) -> bool:

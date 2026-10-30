@@ -1,0 +1,17 @@
+{
+ "note": "Safety run49 S-422 everyday uses of stopped breathing / unconscious; urgent counterparts keep firing. Own lines.",
+ "emergency": [
+  "my husband has stopped breathing",
+  "she went unconscious a minute ago",
+  "he has stopped breathing and is going blue",
+  "my gran went unconscious and we can't wake her"
+ ],
+ "harmless": [
+  "I stopped breathing through my nose, blocked",
+  "holding my breath for the yoga class, not breathing for ten seconds",
+  "my daughter stopped breathing through her mouth after the dentist, blocked nose"
+ ],
+ "known_false_fire": [
+  "went unconscious in a dream, weird dream"
+ ]
+}
