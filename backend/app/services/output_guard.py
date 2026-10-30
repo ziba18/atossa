@@ -1689,11 +1689,15 @@ _PL_STATE = re.compile(
     r"|(?:isn'?t|is not|not|won'?t|wo?n'?t|can'?t) (?:answering|responding|answer|respond) (?:me|us)\b"
     r"|(?:floppy|drowsy|banged (?:his|her|their|my) head|hit (?:his|her|their|my) head|head injury)\b[^.!?;]{0,50}\b(?:can'?t|cannot|won'?t|wo?n'?t) (?:stay awake|keep (?:his|her|their) eyes open)"
     r"|clutching (?:his|her|their) chest\b(?! (?:laugh\w*|in (?:mock|fake)))"
-    r"|can'?t catch (?:his|her|their) breath\b(?! (?:after|from|when|laugh\w*)))", re.I)
+    r"|can'?t catch (?:his|her|their) breath\b(?! (?:after|from|when|laugh\w*))"
+    # B43 (run37): carer wordings (nhs.uk when-to-call-999, read 30 Oct 2026: a child's ribs or tummy sucking in as they
+    # breathe = severe difficulty breathing; someone who has fallen or collapsed and is not moving = not responding)
+    r"|sucking in (?:under |between |around )?(?:his |her |their |the )?(?:ribs|tummy|stomach|chest)|(?:ribs|tummy|stomach|chest) (?:is |are |keeps? |keep )?(?:sucking|being sucked|pulling|caving) in"
+    r"|(?:fell|fallen|collapsed|keeled over|on the floor|at the bottom of the stairs)\b[^.!?;]{0,50}\b(?:not|isn'?t|is not|won'?t|wo?n'?t|hasn'?t|stopped) (?:moving|moved)\b)", re.I)
 _PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
 _PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
 _PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
-_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|was indigestion|in hospital|on the ward|recovered|doing well|phone|laptop|computer|tablet|ipad|app|screen|website|wifi|router|printer|engine|server)\b", re.I)
+_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|(?:health visitor|midwife|gp|doctor|nurse) (?:said|says|checked)|said (?:it'?s|it is|that'?s) normal|was indigestion|in hospital|on the ward|recovered|doing well|phone|laptop|computer|tablet|ipad|app|screen|website|wifi|router|printer|engine|server)\b", re.I)
 
 
 def _plain999(t: str) -> bool:
