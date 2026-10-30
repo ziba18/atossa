@@ -1598,12 +1598,15 @@ _CE_DEF = re.compile(r"\b(?:numb\w*|can'?t feel|cannot feel|couldn'?t feel|no fe
 _CE_CTRL = re.compile(r"\b(?:loss of control|lost control|can'?t control|couldn'?t control|wet myself|soiled myself|incontinen\w+|leak\w* (?:wee|urine|poo|stool)|can'?t (?:pee|wee)|cannot (?:pee|wee)|can'?t tell when|couldn'?t feel (?:myself )?pass\w+|can'?t feel the toilet paper|bladder not working)\b", re.I)
 _CE_VETO = re.compile(r"\b(?:usual|same as|cross-?legged|after (?:a )?(?:long )?run|physio|sat on|chair|can still feel|feel everything|feel normal\w*|fine after|fine now|goes? away|went away|all better|better now|for years|been the same|only the|oh wait|last week|flight|cycling|yoga|jeans|\bshy\b|air ?con\w*)\b", re.I)
 _CE_VETO_CTRL = re.compile(r"\b(?:since the baby|when I sneez\w*|laugh\w*|period|pregnan\w+|postnatal|after (?:the |my )?birth)\b", re.I)
+# A veto word is ignored when the note says the sign is new or getting worse ("but now", "won't go", "getting worse", "started").
+_CE_NEWSIGN = re.compile(r"(?<!fine )(?<!better )(?<!well )\bnow\b|\bnew\b|\bsuddenly\b|getting worse|worse and worse|won'?t go|not going away|\bstarted\b|\bbegan\b|since (?:this morning|last night|yesterday)", re.I)
 
 
 def _cauda_lay(t: str) -> bool:
     t = t.replace("\u2019", "'")
-    return bool(not _CE_VETO.search(t) and _CE_BACK.search(t)
-                and ((_CE_ZONE.search(t) and _CE_DEF.search(t)) or (_CE_CTRL.search(t) and not _CE_VETO_CTRL.search(t))))
+    new = bool(_CE_NEWSIGN.search(t))
+    return bool((new or not _CE_VETO.search(t)) and _CE_BACK.search(t)
+                and ((_CE_ZONE.search(t) and _CE_DEF.search(t)) or (_CE_CTRL.search(t) and (new or not _CE_VETO_CTRL.search(t)))))
 
 
 # S-398 (Safety run 47, nhs.uk/conditions/sepsis adult symptoms: high temperature with uncontrollable shivering). Standalone; fires only when nothing else did.
@@ -1611,10 +1614,12 @@ _RG_FEV = re.compile(r"\b(?:fever|high temperature|temperature of (?:3[89]|4\d)|
 _RG_UNC = re.compile(r"\b(?:can'?t|cannot|won'?t|couldn'?t) (?:stop|control) (?:the |my )?(?:shak\w+|shiver\w*)|\buncontrollabl\w+ (?:shak\w+|shiver\w*)|\b(?:shak\w+|shiver\w*) (?:uncontrollabl\w+|and can'?t stop|won'?t stop)", re.I)
 _RG_VETO = re.compile(r"\b(?:no|without|not|never)\s+(?:\w+\s+){0,2}(?:fever|shak\w+|shiver\w*)|\b(?:flu|cold|covid|usual|normal for me|anxiety|panic)\b|\bcoffee|\bcaffeine|fine now|gone|all better|better now|air ?con\w*|oh wait", re.I)
 
+_RG_NOFEV = re.compile(r"\b(?:no|without|not|never|don'?t have|haven'?t got|hasn'?t)\s+(?:\w+\s+){0,2}(?:fever|temperature|shak\w+|shiver\w*)", re.I)
+
 
 def _rigors(t: str) -> bool:
     t = t.replace("\u2019", "'")
-    return bool(_RG_FEV.search(t) and _RG_UNC.search(t) and not _RG_VETO.search(t))
+    return bool(_RG_FEV.search(t) and _RG_UNC.search(t) and ((_CE_NEWSIGN.search(t) and not _RG_NOFEV.search(t)) or not _RG_VETO.search(t)))
 
 
 def emergency_kind(user_text: str):
