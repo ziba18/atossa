@@ -1590,6 +1590,40 @@ def _stroke_lay(t: str) -> bool:
     return n >= 2 or bool(_SK_ONSET.search(t)) or (face and bool(_SK_SIDE.search(t)))
 
 
+# B16 (AI Brain run32): stroke as a slot matcher, body part x deficit in one sentence, either order, any tense or person
+# (nhs.uk/conditions/stroke/symptoms, reviewed 12 Sep 2024, read 30 Oct 2026). One FAST/side/eye pair fires on its own;
+# dizziness / spinning / confusion / falling only count beside another sign. Safety C13 time window: an episode 2-14 days
+# old ("three days ago", "last week", "on Monday") is not the 999 block, so this rule and _stroke_lay stay quiet for it.
+_SL_PART = r"(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|arms?|hands?|fingers?|legs?|grip|(?:left|right|one|whole|that|other) side|half (?:of )?(?:my|his|her|their|the) (?:body|face))"
+_SL_DEF = r"(?:numb\w*|weak\w*|dead(?! tired)|heavy|floppy|flops?|flopp\w+|limp|useless|droop\w*|sag\w*|hang\w*|lopsided|crooked|lower on (?:one|that|the|his|her|my) side|(?:looks?|is|was) lower|drained|clumsy|dragg\w*|gave way|like lead|not mine|(?:won'?t|wouldn'?t|can'?t|couldn'?t|cannot|doesn'?t|didn'?t|did not|would not|will not|could not) (?:move|lift|stay up|hold|grip|feel|do what|work|go up|raise|smile)|only (?:goes|went|lifts?|moves?) (?:up )?on one side)"
+_SL_FACEPART = r"(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|half (?:of )?(?:my|his|her|their|the) face)"
+_SL_FACE = re.compile(r"\b" + _SL_FACEPART + r"\b[^.!?;]{0,40}?\b" + _SL_DEF + r"|\b" + _SL_DEF + r"\b[^.!?;]{0,25}?\b" + _SL_FACEPART + r"\b", re.I)
+_SL_SIDEW = re.compile(r"\b(?:left|right|one side|one arm|one leg|one hand|half|whole side|that side|the other)\b", re.I)
+_SL_MOTOR = re.compile(r"\b" + _SL_PART + r"\b[^.!?;]{0,40}?\b" + _SL_DEF + r"|\b" + _SL_DEF + r"\b[^.!?;]{0,25}?\b" + _SL_PART + r"\b", re.I)
+_SL_EYE = re.compile(r"\b(?:eyes?|sight|vision)\b[^.!?;]{0,30}?\b(?:went|gone|go|going|turned) (?:black|dark|blind|grey|gray)|\b(?:black|dark|blind|grey)\b[^.!?;]{0,20}\b(?:in|over|across) (?:my |his |her |their |one )?(?:right |left )?eye|\b(?:lost|lose|losing) (?:the |all |my |his |her )?(?:sight|vision)\b[^.!?;]{0,20}?\beyes?\b|\b(?:couldn'?t|can'?t|could not|cannot) see (?:out of|with|from) (?:my |his |her |their |one )?(?:right |left )?eye|\bblind (?:being |was |got )?(?:pulled|came|coming) down|\bcurtain (?:came |coming |went |over)", re.I)
+_SL_SPEECH = re.compile(r"\b(?:speech|voice|words?|talk\w*|speak\w*|sentences?|tongue)\b[^.!?;]{0,40}?\b(?:slurr\w*|jumbl\w*|mixed up|muddl\w*|scrambl\w*|garbl\w*|gibberish|nonsense|no sense|mumbl\w*|thick|wrong (?:words?|ones|things)|like (?:he|she|I|they|you)(?:'?d|'?s|'?m| had| was| has| were)? (?:been )?(?:drinking|drunk))|\b(?:slurr\w*|gibberish|talk\w* nonsense|mumbling)\b|\b(?:wouldn'?t|won'?t|couldn'?t|can'?t|could not|cannot) (?:get (?:\w+ )?words out|find (?:the |my |his |her )?(?:right )?words|say what (?:I|he|she|they) mean\w*)|\b(?:words|they) (?:wouldn'?t|won'?t|didn'?t|did not) come\b|\blos\w+ (?:my|his|her|their|the) words\b", re.I)
+_SL_HEAD = re.compile(r"\b(?:worst|most severe|most painful) headache (?:of (?:my|his|her|their) li(?:fe|ves)|ever|I'?ve ever had)|\bsudden(?:ly)? (?:severe|terrible|blinding|awful|agonising|excruciating) headache", re.I)
+_SL_OTHER = re.compile(r"\b(?:dizz\w*|spinning|fell over|falling (?:over|to one side)|lean\w* (?:over )?(?:to|towards) (?:one side|the left|the right|the side)|keeps? (?:leaning|falling)|confused|muddled|vomit\w*|being sick)\b", re.I)
+_SL_ONSET = re.compile(r"\b(?:sudden\w*|out of (?:nowhere|the blue)|all of a sudden|just now|came on|minutes? ago|this morning|last night|woke (?:up )?with)\b", re.I)
+_SL_BENIGN = re.compile(r"\b(?:dentist|dental|injection|anaesthe\w*|wearing off|wear off|slept on|sleeping on|fell asleep on|lying on|sat on|pins and needles|always|usual\w*|years? ago|months? ago|bell'?s palsy|gym|leg day|workout|carrying|shopping|sprain\w*|physio\w*|vaccin\w*|jab|cramp|had (?:a few|some|too many) (?:drinks|pints)|after (?:a few |some )?drinks|nervous|anxious|exhausted|crying|migraine|aura|neurologist|screens?|contacts|stood up too fast|period|cold|typ\w+|crossed|cross-legged|sitting|tired|run|on my feet|moving house|shaking it|game|last (?:year|month)|imagination|joking|lol|haha|stress\w*|for (?:months|years|weeks)|every (?:morning|day|night)|GP knows)\b", re.I)
+_SL_OLD = re.compile(r"\b(?:(?:\d+|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|a few|few|couple of|a couple of) days? (?:ago|back|before)|last week|(?:a|one|two) weeks? ago|a week ago|on (?:mon|tues|wednes|thurs|fri|satur|sun)day|the other day|at the weekend|last weekend)\b", re.I)
+
+
+def _stroke_old(t: str) -> bool:
+    return bool(_SL_OLD.search(t.replace("’", "'")))
+
+
+def _stroke_slot(t: str) -> bool:
+    t = _SK_NEG.sub(" ", t.replace("’", "'"))
+    rest = sum(bool(r.search(t)) for r in (_SL_EYE, _SL_SPEECH, _SL_HEAD))
+    other = len({m.group(0).lower()[:4] for m in _SL_OTHER.finditer(t)})
+    motor = bool(_SL_FACE.search(t) or (_SL_MOTOR.search(t) and (_SL_SIDEW.search(t) or _SL_ONSET.search(t) or rest or other)))
+    core = rest + motor
+    if _SL_OLD.search(t) or (_SL_BENIGN.search(t) and core + min(other, 1) < 2):
+        return False
+    return core >= 1 or (other >= 2 and bool(_SL_ONSET.search(t)))
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     kind = _emergency_kind(user_text)
@@ -1604,7 +1638,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (_stroke_lay(user_text) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text)):
         return "medical"
     return kind
 
