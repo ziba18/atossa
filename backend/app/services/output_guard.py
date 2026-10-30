@@ -539,7 +539,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:double|extra|too much)\b.{0,25}\b(?:pills|tablets|dose|medication)\b.{0,60}\b(?:drowsy|very sleepy|strange|can'?t stay awake)\b|"
                     r"\bdiabet\w+\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\b(?:shaking|blurr\w+|confused|sweating)\b|\b(?:shaking|blurr\w+|confused|sweating)\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\bdiabet\w+|"
                     r"\b(?:sudden|terrible|severe)\b.{0,25}\bback\b.{0,40}\bsweat\w*|"
-                    r"\bstiff neck\b.{0,80}\b(?:light hurts|hurts my eyes|rash|high temperature|fever)|\b(?:high temperature|fever)\b.{0,60}\bstiff neck\b|"
+                    r"\bstiff neck\b.{0,80}\b(?:light hurts|hurts my eyes|rash|(?<!no )(?<!without )(?<!without a )(?<!not )(?<!not a )(?<!no sign of )high temperature|(?<!no )(?<!without )(?<!without a )(?<!not )(?<!not a )(?<!no sign of )fever)|\b(?:high temperature|fever)\b.{0,60}\bstiff neck\b|"
                     r"\b(?:tight|pain|pressure|band|crush\w*|squeez\w+)\b.{0,25}\bchest\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left )?(?:jaw|arm)\b|"
                     r"\b(?:stabbing|agony|agonising|screaming)\b.{0,60}\b(?:curled up|on the floor|can'?t move)\b|"
                     r"\b(?:curled up|on the floor|can'?t move)\b.{0,60}\b(?:stabbing|agony|agonising)\b|"
@@ -604,7 +604,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:lips|face|tongue|throat)\b.{0,15}\bswell\w*|\bswelling (?:up )?(?:of )?(?:my )?(?:lips|face|tongue)\b|"
                     r"\b(?:can'?t|cannot|unable to) (?:pee|wee|pass (?:any )?urine)\b(?: at all| for (?:hours|\d+ hours)| all day)|"
                     r"^(?=.*\b(?:tampons?|menstrual cups?)\b)(?=.*\b(?:left in|forgot|forgotten|stuck)\b)(?=.*\b(?:rash|sunburn|fever|high temperature|unwell|dreadful|burning up)\b)|"
-                    r"^(?=.*\b(?:laparoscop\w*|operation|surgery|wound)\b)(?=.*(?<!no )(?<!without )(?<!not )(?<!no sign of )\b(?:fever|high temperature|leaking|pus|oozing)\b)(?=.*\b(?:worse|unwell|vomit\w*|swollen)\b)|"
+                    r"^(?=.*\b(?:laparoscop\w*|operation|surgery|wound)\b)(?=.*(?<!no )(?<!without )(?<!without a )(?<!not )(?<!not a )(?<!no sign of )\b(?:fever|high temperature|leaking|pus|oozing)\b)(?=.*\b(?:worse|unwell|vomit\w*|swollen)\b)|"
                     r"\b(?:vomit\w*|being sick|throwing up)\b.{0,15}\b(?:non[- ]?stop|constantly|all night)\b.{0,60}\b(?:swollen|bloated|tender|hard)\b|"
                     r"^(?=.*\b(?:period (?:is |was )?(?:\w+ ){0,3}late|late period|missed (?:a |my )?period|overdue)\b)(?=.*\b(?:one[- ]sided|one side|sharp|stabbing)\b)(?=.*\b(?:dizz\w*|faint\w*))|"
                     # sharp / severe pain together with dizzy or light-headed, and not managing without help (NHS 999 signs); any clause

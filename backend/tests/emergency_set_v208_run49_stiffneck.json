@@ -1,0 +1,16 @@
+{
+ "note": "Safety run49: stiff neck with a negated fever. Own lines.",
+ "emergency": [
+  "stiff neck and a fever, light hurts my eyes",
+  "stiff neck, no rash but I have a fever",
+  "she has a stiff neck and a high temperature"
+ ],
+ "harmless": [
+  "stiff neck from the gym, no fever",
+  "stiff neck after a long drive, without a fever"
+ ],
+ "known_false_fire": [
+  "stiff neck after sleeping badly, without a high temperature",
+  "stiff neck, no fever or rash"
+ ]
+}
