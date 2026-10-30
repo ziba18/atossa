@@ -208,6 +208,9 @@ function flowShock(t: string): boolean {
 // S-381 + A91 (backend _preg_shoulder): pregnant + bleeding + shoulder pain, or pain that stops daily tasks.
 const MS_NEGB = new RegExp(P.MSNEGB_SRC, 'gi'), MS_PREG = mk(P.MSPREG_SRC), MS_BLEED = mk(P.MSBLEED_SRC), MS_SHOULDER = mk(P.MSSHOULDER_SRC), MS_FUNC = mk(P.MSFUNC_SRC), MS_NOT = mk(P.MSNOT_SRC);
 const pregShoulder = (t: string) => MS_PREG.test(t) && MS_BLEED.test(t.replace(MS_NEGB, ' ')) && (MS_SHOULDER.test(t) || MS_FUNC.test(t)) && !MS_NOT.test(t);
+const CE_BACK = mk(P.CEBACK_SRC), CE_ZONE = mk(P.CEZONE_SRC), CE_DEF = mk(P.CEDEF_SRC), CE_CTRL = mk(P.CECTRL_SRC), CE_VETO = mk(P.CEVETO_SRC);
+// S-401 (backend _cauda_lay): back pain with saddle-area numbness or lost bladder / bowel control.
+const caudaLay = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return !CE_VETO.test(t) && CE_BACK.test(t) && ((CE_ZONE.test(t) && CE_DEF.test(t)) || CE_CTRL.test(t)); };
 function strokeLay(t0: string): boolean {
   const t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   let n = 0;
@@ -229,7 +232,7 @@ export function urgentSignpost(text: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (strokeLay(text) || pelvicFever(text) || flowShock(text) || pregShoulder(text))) line = URGENT_SIGNPOST;
+  if (line === null && (strokeLay(text) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || caudaLay(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
