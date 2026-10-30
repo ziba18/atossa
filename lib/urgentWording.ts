@@ -139,6 +139,22 @@ function shAct(text: string): boolean {
   return false;
 }
 
+// B55 (run39, backend _cauda): saddle numbness, both legs new/worse, bladder or bowel accident not felt; any subject.
+const CAUDA = new RegExp(P.CAUDA_SRC, 'gi'), CAUDAQ = new RegExp(P.CAUDAQ_SRC, 'i'), CAUDANEW = new RegExp(P.CAUDANEW_SRC, 'i');
+function cauda(text: string): boolean {
+  const t = text.slice(0, 20000);
+  for (const m of t.matchAll(CAUDA)) {
+    const from = t.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
+    const end = t.slice(m.index! + m[0].length).search(/[.;!?\n]/);
+    const sentence = t.slice(from, end < 0 ? undefined : m.index! + m[0].length + end);
+    if (NEG.test(t.slice(Math.max(0, m.index! - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(sentence) || CAUDAQ.test(sentence)) continue;
+    const g = m[0].toLowerCase();
+    if ((g.includes('both') || g.includes('sex')) && !CAUDANEW.test(sentence)) continue;
+    return true;
+  }
+  return false;
+}
+
 const THIRD = new RegExp(P.THIRD_SRC, 'is');
 const LEADIN = new RegExp(P.LEADIN_SRC, 'gi');
 const THIRDC = new RegExp(P.THIRDC_SRC, 'i');
@@ -300,6 +316,7 @@ function signpostOnce(text: string): string | null {
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
   if (procFever(t.slice(0, 20000)) || otherHistRescue(t)) return URGENT_SIGNPOST;
+  if (cauda(t)) return URGENT_SIGNPOST; // B55 (run39)
   if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
   // S-364 / S-365 (backend _emergency_kind): after a loss or birth heavy bleeding with a shock sign or large clots; five shock / ectopic / confusion shapes
   if (S364CTX.test(t) && S364HEAVY.test(t) && !S364QUIET.test(t)) return URGENT_SIGNPOST;

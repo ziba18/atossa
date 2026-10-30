@@ -1813,6 +1813,8 @@ def _emergency_kind(user_text: str):
     # present fever signs past. The past check looks at the fever clause only.
     if _proc_fever_hit(user_text) or _other_hist_rescue(user_text):
         return "medical"
+    if _cauda(user_text):
+        return "medical"  # B55 (run39): cauda signs in lay words, any subject
     if (_THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) or _THIRD_CHILD.search(user_text[:_WHOLE_SCAN_CAP])) and not _is_past(user_text):
         return "medical"
     if _S364_CTX.search(user_text) and _S364_HEAVY.search(user_text) and not _S364_QUIET.search(user_text):
@@ -1964,5 +1966,38 @@ def _sh_act(text: str) -> bool:
         sentence = text[start:(m.end() + ends[0] if ends else len(text))]
         if _NEG.search(_NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1]) or _is_past(sentence) or _SH_ACT_QUIET.search(sentence):
             continue
+        return True
+    return False
+
+
+# B55 (run39, PM cauda classes; nhs.uk sciatica 999 box, read 2026-10-30): numbness around the bottom / genitals (saddle) in
+# lay words, sciatica or weakness in BOTH legs that is new or getting worse, a bladder or bowel accident not felt, sex sensation
+# lost with a back word. Sentence-level, any subject (carer reports too); sitting / exercise / period / long-standing stay quiet.
+_CAUDA = re.compile(
+    r"\b(?:(?:bum|bottom|backside|buttocks?|anus|between (?:my|her|his|their) legs|down there|genitals?|vagina|vulva|inner thighs?|saddle area|toilet seat)\b[^.!?;\n]{0,40}\b(?:numb\w*|no feeling|(?:can'?t|cannot|couldn'?t) feel|lost (?:the |all )?feeling)"
+    r"|(?:numb\w*|no feeling|(?:can'?t|cannot|couldn'?t) feel(?: anything)?)\b[^.!?;\n]{0,30}\b(?:bum|bottom|backside|buttocks?|between (?:my|her|his|their) legs|down there|genitals?|toilet seat|when (?:i|she|he) wipes?|wiping)"
+    r"|(?:both (?:my |her |his |their )?legs|down both legs|sciatica on both sides)\b[^.!?;\n]{0,40}\b(?:weak\w*|numb\w*|giving way|gave way|shooting|sciatica|pain)"
+    r"|(?:weak\w*|numb\w*|shooting|sciatica|pain)\b[^.!?;\n]{0,40}\b(?:both (?:my |her |his |their )?legs|down both legs|sciatica on both sides)\b"
+    r"|(?:wet (?:myself|herself|himself)|(?:wee'?d|peed|pooed|soiled) (?:myself|herself|himself)|(?:an )?accident with (?:my|her|his) (?:bowels?|bladder))\b[^.!?;\n]{0,40}\b(?:(?:didn'?t|did not|without|not) (?:even )?(?:feel|felt|notic\w*|realis\w*|realiz\w*|know)\w*)"
+    r"|(?:(?:can'?t|cannot) feel (?:anything )?|numb\w* )(?:during|when (?:we |i )?(?:have|having)) sex)\b", re.I)
+_CAUDA_QUIET = re.compile(
+    r"\b(?:sitting (?:on (?:the |a )?(?:hard|chairs?|floor|bike|toilet for)|cross|for (?:ages|hours|long|too long))|from sitting|sitting on (?:the |a )?\w+ for|hard chairs?|cross-?legged|cycling|bike|spin class|fine when|goes away when|after sitting|"
+    r"ache\w*|tired|after (?:the |my |a )?(?:run|10k|5k|gym|squats|workout|walk|hike|class|match)|squats|period|day \d|cramps?|restless|sneez\w*|cough\w*|laugh\w*|since having the baby|"
+    r"for (?:years|months|ages)|always|like always|as usual|physio|stretches|anaesthetic|epidural|dentist)\b", re.I)
+_CAUDA_NEW = re.compile(r"\b(?:now|getting|worse|since|today|this morning|tonight|new|suddenly|weaker|spreading|back|backs|spine)\b", re.I)
+
+
+def _cauda(text: str) -> bool:
+    text = text[:_WHOLE_SCAN_CAP]
+    for m in _CAUDA.finditer(text):
+        starts = [i for i, c in enumerate(text[: m.start()]) if c in ".;!?\n"]
+        start = starts[-1] + 1 if starts else 0
+        ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
+        sentence = text[start:(m.end() + ends[0] if ends else len(text))]
+        if _NEG.search(_NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1]) or _is_past(sentence) or _CAUDA_QUIET.search(sentence):
+            continue
+        g = m.group(0).lower()
+        if ("both" in g or "sex" in g) and not _CAUDA_NEW.search(sentence):
+            continue  # both legs / sex sensation count only when new or with a back word
         return True
     return False
