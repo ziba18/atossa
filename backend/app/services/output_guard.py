@@ -1509,6 +1509,8 @@ _SK_NEG = re.compile(r"\b(?:no|not|without|nor|never)\s+(?:\w+\s+){0,2}(?:numb\w
 # B11 (AI Brain run31, nhs.uk/conditions/stroke/symptoms reviewed 12 Sep 2024): loss of sight in 1 or both eyes is a sign on its
 # own (999 even if it has stopped); blurred vision in both eyes and dizzy / falling over count only beside another sign.
 _SK_EYE = re.compile(r"\b(?:lost|lose|losing|no) (?:the |all )?(?:sight|vision) (?:in|from|of) (?:my |his |her |their |one |both )?(?:right |left )?eyes?\b|\b(?:curtain|shadow|blackness) (?:came |coming |went )?(?:down )?(?:over|across) (?:my |his |her |one )?(?:right |left )?eye|\bwent blind in (?:one|my|his|her) (?:right |left )?eye", re.I)
+# Safety C13 (nhs.uk stroke + TIA pages): sight loss that is days old, or said to be usual, is not the 999 sign on its own.
+_SK_DAYS_AGO = re.compile(r"\b(?:two|three|four|five|six|seven|eight|nine|ten|\d+) days? (?:ago|back)\b|\ba (?:few|couple of) days (?:ago|back)\b|\bevery time\b", re.I)
 _SK_BLUR2 = re.compile(r"\b(?:blurr\w*|blurry)\b[^.!?]{0,20}\bboth eyes\b", re.I)
 _SK_FALL = re.compile(r"\bdizz\w+|\bfell over\b|\bfalling over\b|\blost my balance\b", re.I)
 _SK_SAG = re.compile(r"\b(?:sag\w*|droop\w*|lopsided)\b", re.I)
@@ -1589,7 +1591,7 @@ def _stroke_lay(t: str) -> bool:
         n += 1
     if _SK_LIMB.search(t) and _SK_LIMB_FX.search(t):
         n += 1
-    if _SK_EYE.search(t):
+    if _SK_EYE.search(t) and not _SK_BENIGN.search(t) and not _SK_DAYS_AGO.search(t):
         n += 2
     if n and (_SK_BLUR2.search(t) or _SK_FALL.search(t)):
         n += 1

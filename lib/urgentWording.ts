@@ -208,7 +208,7 @@ function flowShock(t: string): boolean {
 // S-381 + A91 (backend _preg_shoulder): pregnant + bleeding + shoulder pain, or pain that stops daily tasks.
 const MS_NEGB = new RegExp(P.MSNEGB_SRC, 'gi'), MS_PREG = mk(P.MSPREG_SRC), MS_BLEED = mk(P.MSBLEED_SRC), MS_SHOULDER = mk(P.MSSHOULDER_SRC), MS_FUNC = mk(P.MSFUNC_SRC), MS_NOT = mk(P.MSNOT_SRC);
 const pregShoulder = (t: string) => MS_PREG.test(t) && MS_BLEED.test(t.replace(MS_NEGB, ' ')) && (MS_SHOULDER.test(t) || MS_FUNC.test(t)) && !MS_NOT.test(t);
-const SK_EYE = mk(P.SKEYE_SRC), SK_BLUR2 = mk(P.SKBLUR2_SRC), SK_FALL = mk(P.SKFALL_SRC);
+const SK_EYE = mk(P.SKEYE_SRC), SK_BLUR2 = mk(P.SKBLUR2_SRC), SK_FALL = mk(P.SKFALL_SRC), SK_DAYS_AGO = mk(P.SKDAYSAGO_SRC);
 function strokeLay(t0: string): boolean {
   const t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   let n = 0;
@@ -216,7 +216,7 @@ function strokeLay(t0: string): boolean {
   if (SK_SAG.test(t) && SK_FACE.test(t) && !SK_BENIGN.test(t)) n += 2;
   if (SK_SPEECH.test(t) && SK_SPEECH_FX.test(t)) n += 1;
   if (SK_LIMB.test(t) && SK_LIMB_FX.test(t)) n += 1;
-  if (SK_EYE.test(t)) n += 2;
+  if (SK_EYE.test(t) && !SK_BENIGN.test(t) && !SK_DAYS_AGO.test(t)) n += 2;
   if (n && (SK_BLUR2.test(t) || SK_FALL.test(t))) n += 1;
   if (n === 0 || (SK_BENIGN.test(t) && n < 2)) return false;
   const face = SK_FACE.test(t) && SK_FACE_FX.test(t);
