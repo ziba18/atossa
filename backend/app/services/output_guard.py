@@ -278,7 +278,7 @@ _BODY = [
     r"going to (?:pass out|collapse|faint)", r"fell over", r"everything (?:went|goes|turned) (?:black|dark|grey|gray|white)", r"woke (?:up )?on the floor",
     r"gushing", r"in agony", r"(?:so|too) much blood|blood (?:is )?(?:running|pouring|dripping) down", r"(?:chest|heart).{0,35}(?:squeezed|crushed|gripped|vice)|squeez\w+ (?:my )?chest",
     r"(?:swallowed|downed|took) (?:a whole|an entire|all (?:of )?the|a packet|a box|loads of).{0,30}(?:tablets|pills|packet|paracetamol|medication)", r"can'?t (?:straighten|stand|walk|move)",
-    r"can'?t get enough air|wheez\w+.{0,30}(?:panic|air|breath)", r"off the scale|pain.{0,30}(?:ten|10) out of (?:ten|10)", r"lost (?:so |a lot of |too )?much blood|lost a lot of blood", r"can'?t get my breath|gasping|heart is (?:pounding|racing).{0,40}breath",
+    r"can'?t get enough air|wheez\w+.{0,30}(?:panic|air|breath)", r"off the scale|pain.{0,30}(?:ten|10) out of (?:ten|10)", r"lost (?:so |a lot of |too )?much blood|lost a lot of blood", r"can'?t get my breath|gasping(?! (?:with|from|in) (?:laugh\w*|giggl\w*|delight|surprise|excitement))|heart is (?:pounding|racing).{0,40}breath",
     r"agoni[sz]ing|doubled over", r"soaked .{0,15}(?:pads?|tampons?).{0,25}(?:half an hour|an hour|\d+ minutes)",
     r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", 
     # run18 (own S-301 set, first contact 6/8 missed): taking far more than the dose, nhs.uk/medicines/paracetamol-for-adults (reviewed 24 Mar 2026: NHS 111 if more than the packet says; 999 if told A&E)
@@ -914,7 +914,7 @@ _P_QUIET = (r"(?![\s\S]*\b(?:last (?:month|period|time|year|week)|nothing new|as
 _P_SIGN = (r"(?:\bblack(?:ed)? out\b|\bkeel(?:ed)? over\b|\bcame (?:round|to)\b|\bgone for a (?:few )?(?:seconds|second|minute)|"
            r"\broom (?:is |keeps |kept |was )?spinning\b|\bsit on the floor before i (?:hit|fell)|"
            r"\b(?:tip|top|point|end|edge) of (?:my |the )?(?:\w+ )?shoulder|\bshoulder (?:tip|point)\b|"
-           r"\bcan'?t (?:get|catch) (?:a full |my )?breath|\bcan'?t fill my lungs\b|\bgasping\b|\bbreath(?:ing)? (?:\w+ ){0,2}(?:fast and shallow|catches)|\bevery breath catches\b|"
+           r"\bcan'?t (?:get|catch) (?:a full |my )?breath|\bcan'?t fill my lungs\b|\bgasping\b(?! (?:with|from|in) (?:laugh\w*|giggl\w*|delight|surprise|excitement))|\bbreath(?:ing)? (?:\w+ ){0,2}(?:fast and shallow|catches)|\bevery breath catches\b|"
            r"\bpuffing\b[^.!?]{0,40}\b(?:lying|sitting|sofa|bed)\b|"
            r"\bpad every (?:\d{1,2}|ten|fifteen|twenty|thirty) min|\bclots? (?:the size of|as big as) (?:a |an )?(?:plum|golf ?ball|lemon|orange|fist|egg)|"
            r"\b(?:flooded|soaked|bled) (?:through )?(?:a |my |the )?(?:\w+ )?(?:pad|towel|jeans|sheets?)\b[^.!?]{0,40}\b(?:in (?:half an hour|\d+ min\w*|an hour|minutes)|sitting on it)|"
@@ -1658,6 +1658,18 @@ _RG_VETO = re.compile(r"\b(?:no|without|not|never)\s+(?:\w+\s+){0,2}(?:fever|sha
 _RG_NOFEV = re.compile(r"\b(?:no|without|not|never|don'?t have|haven'?t got|hasn'?t)\s+(?:\w+\s+){0,2}(?:fever|temperature|shak\w+|shiver\w*)", re.I)
 
 
+# S-436 (Safety run 51, nhs.uk/conditions/sepsis adult signs: not passing urine for a day, with confusion / shaking / fever / swelling). Standalone.
+_NW_NONE = re.compile(r"\b(?:haven'?t|hasn'?t|not|no|can'?t|cannot|couldn'?t) (?:had |passed |been able to |able to |managed to )?(?:a |any )?(?:wee|pee|urine)\b", re.I)
+_NW_LONG = re.compile(r"\b(?:all day|(?:1[2-9]|2\d) hours|a whole day|24 hours|since (?:yesterday|last night|the morning before)|since yesterday morning|all night and)\b", re.I)
+_NW_SIGN = re.compile(r"\b(?:confus\w+|drows\w+|shak\w+|fever\w*|temperature|burning up|clammy|breathless|swollen|sore|awful|faint\w*|dizz\w+|vomit\w+|freezing)\b", re.I)
+_NW_VETO = re.compile(r"\b(?:meeting|flight|long drive|on the plane|fasting|wasn'?t thirsty|slept|asleep)\b", re.I)
+
+
+def _no_wee(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_NW_NONE.search(t) and _NW_LONG.search(t) and _NW_SIGN.search(t) and not _NW_VETO.search(t))
+
+
 def _rigors(t: str) -> bool:
     t = t.replace("\u2019", "'")
     return bool(_RG_FEV.search(t) and _RG_UNC.search(t) and ((_CE_NEWSIGN.search(t) and not _RG_NOFEV.search(t)) or not _RG_VETO.search(t)))
@@ -1777,7 +1789,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _cauda_lay(user_text) or _rigors(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _cauda_lay(user_text) or _no_wee(user_text) or _rigors(user_text)):
         return "medical"
     return kind
 
