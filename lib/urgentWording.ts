@@ -236,7 +236,8 @@ function strokeSlot(t0: string): boolean {
   const other = new Set(Array.from(t.matchAll(SL_OTHER), (m) => m[0].toLowerCase().slice(0, 4))).size;
   const motor = SL_FACE.test(t) || (SL_MOTOR.test(t) && (SL_SIDEW.test(t) || SL_ONSET.test(t) || rest > 0 || other > 0));
   const core = rest + (motor ? 1 : 0);
-  if (SL_OLD.test(t) || (SL_BENIGN.test(t) && core + Math.min(other, 1) < 2)) return false;
+  const faceSide = SL_FACE.test(t) && SL_SIDEW.test(t);
+  if (SL_OLD.test(t) || (SL_BENIGN.test(t) && !faceSide && core + Math.min(other, 1) < 2)) return false;
   return core >= 1 || (other >= 2 && SL_ONSET.test(t));
 }
 
