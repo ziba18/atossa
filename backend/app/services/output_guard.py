@@ -1679,7 +1679,13 @@ _PL_STATE = re.compile(
     r"|choking\b(?! (?:up|back|on (?:my|his|her|their|the) words|laugh\w*))"
     r"|(?:is|was|went|gone|found (?:him|her|them|my \w+)|knocked|lying|still|'s) unconscious|unresponsive|(?:isn'?t|not) responding\b(?! to)|wo?n'?t wake(?: up)?|can'?t wake (?:him|her|them)(?: up)?"
     r"|(?:fit|seizure|fitting|convuls\w+)\b[^.!?;]{0,30}\b(?:won'?t stop|wo?n'?t stop|hasn'?t stopped|not stopp\w+|still going|(?:over |more than |for )?(?:5|five|6|six|7|seven|8|eight|9|nine|10|ten|fifteen|15) (?:minutes|mins))"
-    r"|been (?:fitting|seizing|convulsing) for)", re.I)
+    r"|been (?:fitting|seizing|convulsing) for"
+    # B34 (run35): carer wordings for the same 999 states (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious / not
+    # responding, cannot stay awake, chest pain, severe difficulty breathing)
+    r"|(?:isn'?t|is not|not|won'?t|wo?n'?t|can'?t) (?:answering|responding|answer|respond) (?:me|us)\b"
+    r"|(?:floppy|drowsy|banged (?:his|her|their|my) head|hit (?:his|her|their|my) head|head injury)\b[^.!?;]{0,50}\b(?:can'?t|cannot|won'?t|wo?n'?t) (?:stay awake|keep (?:his|her|their) eyes open)"
+    r"|clutching (?:his|her|their) chest\b(?! (?:laugh\w*|in (?:mock|fake)))"
+    r"|can'?t catch (?:his|her|their) breath\b(?! (?:after|from|when|laugh\w*)))", re.I)
 _PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
 _PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
 _PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
