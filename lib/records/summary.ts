@@ -583,7 +583,7 @@ export function summaryToText(doc: DoctorDoc): string {
 const WINDOW_MAX = 42;
 const WINDOW_MIN = 14;
 const HIGH_PAIN = 7;
-const WRITTEN_MIN = 7;
+const WRITTEN_MIN = 14; // same bar as the G prototype ("Not enough days logged yet to compare")
 
 /** Equal windows either side of `started`: up to 42 whole days, never reaching before her first entry or past
  *  the stop date / today. Under 14 days either side there is nothing fair to compare, so no numbers. */
