@@ -203,6 +203,8 @@ export interface FreqBar {
   worst: number | null;
   /** The dated days behind `days` (each a day with at least one of these notes), so a count can open exactly them. */
   dates?: string[];
+  /** Date key (YYYY-MM-DD) of the day in `worstDate`, so the Worst line can open that day. */
+  worstKey?: string;
 }
 
 export interface HeatDay {
@@ -392,6 +394,17 @@ function spread(values: number[]): string {
 }
 
 /** The note that carries the group's highest rating: its first area and date. Most recent when tied. */
+function worstKeyOf(notes: SymptomData[]): string {
+  let best: SymptomData | null = null;
+  let hi = -1;
+  for (const s of notes) {
+    const w = worstOf(s);
+    if (w == null) continue;
+    if (w > hi || (w === hi && best && s.date > best.date)) { hi = w; best = s; }
+  }
+  return best ? best.date : '';
+}
+
 function worstDateOf(notes: SymptomData[]): string {
   let best: SymptomData | null = null;
   let hi = -1;
@@ -749,7 +762,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const noteDays = daysWith(windowNotes, stripFrom, to);
     const bars: FreqBar[] = [];
     if (noteDays) {
-      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes), worstOn: worstWhen(windowNotes), worstDate: worstDateOf(windowNotes), dates: datesOf(windowNotes) });
+      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes), worstOn: worstWhen(windowNotes), worstDate: worstDateOf(windowNotes), worstKey: worstKeyOf(windowNotes), dates: datesOf(windowNotes) });
       zoneDays(windowNotes)
         .slice(0, MAX_ZONE_ROWS)
         .map(({ label, days: n }) => {

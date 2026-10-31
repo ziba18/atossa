@@ -67,7 +67,14 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
             ) : null}
           </View>
         ) : null}
-        {all?.worstOn ? <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`}</Txt> : null}
+        {all?.worstOn ? (
+          all.worstKey ? (
+            <Pressable onPress={() => { useTimelineSession.getState().setOpenDay(all.worstKey!); router.push('/(tabs)/timeline' as any); }} accessibilityRole="button" accessibilityHint="Opens that day in the Timeline" style={{ marginTop: space.sm, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`Worst: ${all.worstOn}`}</Txt>
+              <Icon name="chevron-right" size={20} color={colors.ink3} />
+            </Pressable>
+          ) : <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`}</Txt>
+        ) : null}
         <View style={{ gap: space.sm, marginTop: space.md, paddingTop: space.md, borderTopWidth: 1, borderTopColor: colors.hairline }}>
           {areas.slice(0, 3).map((b) => {
             const w = worstOf(b.strength ?? '');
