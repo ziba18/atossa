@@ -26,7 +26,7 @@ test('confirmed phrase is her words, per group, and prints verbatim', () => {
     { from: '2026-06-25', to: '2026-09-24', today: '2026-09-24' },
   );
   const text = summaryToText(doc);
-  assert.match(text, /First noticed: “since I was 15” \(her words\)/);
+  assert.match(text, /First noticed: “since I was 15” \(patient’s words\)/);
   assert.doesNotMatch(text, new RegExp(ONSET_TYPE.replace(/[()]/g, '\\$&')), 'the onset record is never a history row');
 });
 
