@@ -1245,6 +1245,10 @@ function headBlock(doc: DoctorDoc): string {
 /** Header line and footer with the one printed range (screen and PDF agree). */
 export function printedMeta(doc: DoctorDoc): string {
   const rest = doc.meta.split(' · ').slice(1);
+  // First-week rule 4: under 7 written days the header says how many days were written, not the length of the window ('3 days written so far', not '4 days').
+  const f = doc.sections.find((x) => x.id === 'frequency');
+  const v = thinView(f && f.id === 'frequency' ? f.bars[0]?.days ?? 0 : 0, []);
+  if (v.thin && v.line) return [printedRange(doc).replace(/ · \d+ days?$/, ''), v.line, ...rest].join(' · ');
   return [printedRange(doc), ...rest].join(' · ');
 }
 export function printedFooter(doc: DoctorDoc): string {
