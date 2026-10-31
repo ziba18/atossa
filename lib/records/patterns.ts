@@ -35,6 +35,8 @@ export interface PatternsModel {
   /** Days whose highest number given was 7 or more (out of 10). */
   strongDays: number;
   bleedingDays: number;
+  /** The dated days behind `bleedingDays` (spotting-only days excluded, as in the count). */
+  bleedingDates: string[];
   spottingDays: number;
   /** What it got in the way of. */
   impacts: CountItem[];
@@ -90,9 +92,9 @@ export const bleedingText = (m: PatternsModel) =>
   `Bleeding logged on ${plural(m.bleedingDays, 'day')}` + (m.spottingDays ? `; spotting on ${plural(m.spottingDays, 'day')}` : '') + '.';
 
 /** Days with bleeding / spotting-only logged in the range (spotting on a bleeding day counts once, as bleeding). */
-function bleedingCounts(input: SummaryInput, from: string, to: string): { bleedingDays: number; spottingDays: number } {
+function bleedingCounts(input: SummaryInput, from: string, to: string): { bleedingDays: number; bleedingDates: string[]; spottingDays: number } {
   const mine = input.periodDays.map((r) => r.data).filter((d) => d.date >= from && d.date <= to);
   const bleed = new Set(mine.filter((d) => bleedingStatus(d) !== 'spotting').map((d) => d.date));
   const spot = new Set(mine.filter((d) => bleedingStatus(d) === 'spotting' && !bleed.has(d.date)).map((d) => d.date));
-  return { bleedingDays: bleed.size, spottingDays: spot.size };
+  return { bleedingDays: bleed.size, bleedingDates: [...bleed].sort(), spottingDays: spot.size };
 }

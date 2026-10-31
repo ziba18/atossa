@@ -111,7 +111,7 @@ export default function TimelineScreen() {
       ) : failed ? null : mode === 'list' ? (
         <ListView feed={feed} dayFilter={dayFilter} clearDayFilter={() => setDayFilter(null)} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
       ) : mode === 'patterns' ? (
-        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenDays={(label, dates) => setDayFilter({ label, dates })} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
+        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenDays={(label, dates, kind) => setDayFilter({ label, dates, kind })} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}
@@ -146,7 +146,7 @@ export default function TimelineScreen() {
 function ListView({
   feed, dayFilter, clearDayFilter, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef,
 }: {
-  dayFilter: { label: string; dates: string[] } | null;
+  dayFilter: { label: string; dates: string[]; kind?: 'symptom' | 'bleeding' } | null;
   clearDayFilter: () => void;
   focusWeek: { from: string; to: string } | null;
   onFocused: () => void;
@@ -163,7 +163,7 @@ function ListView({
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
     [feed],
   );
-  const groups = useMemo(() => groupFeed(mergeBleedingRuns(dayFilter ? feed.filter((i) => i.kind === 'symptom' && dayFilter.dates.includes(i.date)) : filterFeed(feed, filter))), [feed, filter, dayFilter]);
+  const groups = useMemo(() => groupFeed(mergeBleedingRuns(dayFilter ? feed.filter((i) => i.kind === (dayFilter.kind ?? 'symptom') && dayFilter.dates.includes(i.date)) : filterFeed(feed, filter))), [feed, filter, dayFilter]);
   // Patterns week bar -> scroll to that week's group (y = this view's offset + the group's offset).
   const rootY = useRef(0);
   const groupY = useRef<Record<string, number>>({});

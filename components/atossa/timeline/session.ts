@@ -10,7 +10,7 @@ export const TIMELINE_FILTERS: TimelineFilter[] = ['All', 'Symptoms', 'Bleeding'
 export const AREA_FILTERS: TimelineFilter[] = ['Bowel or bladder', 'Tiredness'];
 
 /** A count from For my doctor opened as a list: exactly these dated days, named by the row's own label. */
-export interface DayFilter { label: string; dates: string[] }
+export interface DayFilter { label: string; dates: string[]; /** Which entries on those days: notes (default) or bleeding days. */ kind?: 'symptom' | 'bleeding' }
 
 interface TimelineSession {
   dayFilter: DayFilter | null;
