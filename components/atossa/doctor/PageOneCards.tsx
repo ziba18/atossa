@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { useTimelineSession } from '../timeline/session';
 import { colors, fonts, space } from '../../../constants/atossaUI';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
+import { formatDay } from '../../../lib/records/format';
 import { thinView } from '../../../lib/records/thinCounts';
 import { Card, Txt } from '../kit';
 import { Icon } from '../../ui/Icon';
@@ -58,6 +59,10 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>{thin.thin && thin.line ? thin.line : freq.windowLabel}</Txt>
+        {/* 'Since when': the day of her first note in this window, from the same dates the count uses (not the window start). */}
+        {!thin.thin && !tight && all?.dates?.length ? (
+          <Txt variant="secondary" style={{ marginTop: space.xxs }}>{`First note ${formatDay([...all.dates].sort()[0]).replace(/ /g, '\u00a0')}`}</Txt>
+        ) : null}
         {all ? (
           <View style={{ flexDirection: 'row', flexWrap: pair ? 'nowrap' : 'wrap', columnGap: pair ? space.md : space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-start' }}>
             <Pressable onPress={() => openDays('Days with a note', all.dates)} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={[{ maxWidth: '100%', minHeight: 44 }, pair ? { flex: 3, minWidth: 0 } : null]} accessibilityLabel={thin.thin ? `${all.days} with a note, ${thin.line}` : undefined}>
