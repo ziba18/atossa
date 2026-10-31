@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { AccessibilityInfo, Animated, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, Animated, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { create } from 'zustand';
 import { colors, fonts, heights, layout, motion, radii, shadows, space } from '../../../constants/atossaUI';
@@ -37,6 +37,7 @@ export function dismissToast(): void {
 export function ToastHost() {
   const { message, seq } = useToastStore();
   const insets = useSafeAreaInsets();
+  const winH = useWindowDimensions().height; // 568 pt phones: the toast sits under the header so it never covers the count card above the tab bar
   const opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export function ToastHost() {
     <View style={[StyleSheet.absoluteFill, styles.layer]}>
       {/* Full-width row that centres the toast under the content column on wide windows / iPad
           (review 3, #3: absolute left/right ignored alignSelf and pinned it to the far left). */}
-      <View style={[styles.row, { bottom: insets.bottom + heights.tabBar + space.sm }]}>
+      <View style={[styles.row, winH < 640 ? { top: insets.top + 44 } : { bottom: insets.bottom + heights.tabBar + space.sm }]}>
         <Animated.View
           style={[styles.toast, { opacity }]}
           accessibilityLiveRegion="polite"
