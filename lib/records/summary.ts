@@ -1252,8 +1252,7 @@ export function summaryToHtml(doc: DoctorDoc): string {
       ? `<section><h2>${esc(doc.agendaBlock.title)}</h2>${doc.agendaBlock.priority && !mainPriorityOf(doc.agendaBlock) ? `<p class="serif lead">“${esc(curly(doc.agendaBlock.priority))}”</p>` : ''}${
         doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`
       : '',
-    ...doc.sections.map(sectionHtml),
-    otherAreasHtml(doc),
+    ...doc.sections.flatMap((sec) => (sec.id === 'frequency' ? [sectionHtml(sec), otherAreasHtml(doc)] : [sectionHtml(sec)])),
   ].join('');
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(doc.title)}</title>

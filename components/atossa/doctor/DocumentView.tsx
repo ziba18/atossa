@@ -391,8 +391,11 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
       <Txt style={[st.meta, { marginTop: st.s.gap, paddingBottom: st.s.gap * 4, borderBottomWidth: st.s.rule, borderBottomColor: C.ink }]}>
         {keepYear(printedMeta(doc), st)}
       </Txt>
-      {blocks.map((b, i) => block(b.key, b.title, b.body, i === 0))}
-      {areas.length ? block('areas', 'Other areas', (
+      {/* Print order (PM-A216 AC3): Other areas follow 'How often and how strong', so they are on page 1. */}
+      {blocks.map((b, i) => (
+        <React.Fragment key={b.key}>
+          {block(b.key, b.title, b.body, i === 0)}
+          {areas.length && b.key === 'frequency' ? block('areas', 'Other areas', (
         <View style={{ gap: isPage ? 0 : st.s.gap }}>
           {areas.map((r) => (
             <View key={r.label} style={isPage ? { flexDirection: 'row', gap: 8 } : undefined}>
@@ -402,6 +405,9 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
           ))}
         </View>
       ), false) : null}
+        </React.Fragment>
+      ))}
+
       <View style={{ flexGrow: 1 }} />
       <View style={{ marginTop: st.s.section, paddingTop: st.s.gap * 2, borderTopWidth: 0.5, borderTopColor: C.borderStrong }}>
         <Txt style={isPage ? { ...st.meta, fontSize: PAGE_TYPE.footer[0], lineHeight: PAGE_TYPE.footer[1] } : st.meta}>{printedFooter(doc)}</Txt>
