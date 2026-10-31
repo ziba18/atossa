@@ -144,3 +144,15 @@ def test_infant_sleepy_and_not_feeding_is_urgent_everyday_toddler_lines_quiet():
                  "my baby is sleepy and feeding well",
                  "my baby is sleepy after her feed"]:
         assert g.emergency_kind(line) is None, line
+
+
+def test_relayed_infant_lines_urgent_laughing_quiet():
+    from app.services import output_guard as g
+    for line in ["my sister's baby is sleepy and refusing the bottle",
+                 "my sisters baby is limp and not waking",
+                 "my niece is very sleepy and wont feed, she is 2 weeks old"]:
+        assert g.emergency_kind(line) is not None, line
+    for line in ["my niece is limp with laughter at the party",
+                 "my sister's baby is due next week and i am excited",
+                 "my friend's baby is a bit sleepy but feeding fine"]:
+        assert g.emergency_kind(line) is None, line
