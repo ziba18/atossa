@@ -139,6 +139,14 @@ function shAct(text: string): boolean {
   return false;
 }
 
+// B61 (run41, backend _sh_class): PM self-harm classes, whole note, any subject; quiet words veto.
+const ADHERENCE = new RegExp(P.ADHERENCE_SRC, 'i'), ADHPHRASE = new RegExp(P.ADHPHRASE_SRC, 'gi');
+const SHCLASS = new RegExp(P.SHCLASS_SRC, 'i'), SHCLASSQ = new RegExp(P.SHCLASSQ_SRC, 'i');
+function shClass(text: string): boolean {
+  const t = text.slice(0, 20000);
+  return SHCLASS.test(t) && !SHCLASSQ.test(t);
+}
+
 // B55 (run39, backend _cauda): saddle numbness, both legs new/worse, bladder or bowel accident not felt; any subject.
 const CAUDA = new RegExp(P.CAUDA_SRC, 'gi'), CAUDAQ = new RegExp(P.CAUDAQ_SRC, 'i'), CAUDANEW = new RegExp(P.CAUDANEW_SRC, 'i');
 function cauda(text: string): boolean {
@@ -308,10 +316,12 @@ export function urgentSignpost(text: string): string | null {
 
 function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
-  const t = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
+  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
+  const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
   if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
   if (shAct(t)) return SELF_HARM_SIGNPOST; // B52 (run39)
+  if (shClass(t)) return SELF_HARM_SIGNPOST; // B61 (run41)
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;

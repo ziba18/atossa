@@ -1799,10 +1799,14 @@ def _emergency_kind(user_text: str):
         user_text = _IDIOM.sub(" ", user_text)
     # a lead-in at the very start leaves ". " there; strip it so a whole-note rule anchored at ^ still sees her first sentence
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
+    if _ADHERENCE.search(user_text):
+        user_text = _ADH_PHRASE.sub(" ", user_text)  # B62 (run41)
     if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
         return "self_harm"
     if _sh_act(user_text):
         return "self_harm"  # B52 (run39): an overdose taken, self-injury bleeding, a plan for tonight, a relayed threat; any subject
+    if _sh_class(user_text):
+        return "self_harm"  # B61 (run41): PM 23:5x self-harm classes (cut + bleeding, overdose + sick, saved-up tablets + tonight, goodbye, ...)
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
     # ("i tried to kill myself last year and i want to do it again") is the highest-risk case, not history.
     if (_SELF_RX.search(user_text) or _SELF_HARM_RX.search(user_text)) and _AGAIN.search(user_text):
@@ -1958,6 +1962,12 @@ _SH_ACT_QUIET = re.compile(
     r"essay|homework|laundry|washing|ironing|revision|project|marathon|run\b|workout|jigsaw|exam|homework|presentation)\b", re.I)
 
 
+# B62 (run41, PM): adherence said with 'all' / 'every' ('took all my tablets today', 'took every tablet on time', 'with breakfast')
+# is not an act: the phrase is blanked before the lists run, only when no risk word and no amount word is in the note.
+_ADHERENCE = re.compile(r"^(?![\s\S]*\b(?:sick|vomit\w*|throwing up|drowsy|sorry|note|goodbye|tonight|die|end it|kill|on purpose|deliberately|overdose|hospital|a&e|999|wake|scared|want(?:ed)? to|at once|in one go)\b)(?![\s\S]*\b(?:\d+|box|packet|bottle|strip|load|loads|lots|handful)\b)[\s\S]*\b(?:today|on time|supposed to|as normal|as usual|with (?:my )?(?:breakfast|lunch|dinner|tea|food|meal|water)|remembered|before (?:work|bed|school))\b", re.I)
+_ADH_PHRASE = re.compile(r"\b(?:took|taken|take|taking)\s+(?:all|every)\s+(?:(?:of\s+)?(?:my|the|her|his|their)\s+)?(?:\w+\s+)?(?:pills?|tablets?|meds|medication|medicines?)\b(?:\s+on time)?", re.I)
+
+
 def _sh_act(text: str) -> bool:
     text = text[:_WHOLE_SCAN_CAP]
     for m in _SH_ACT.finditer(text):
@@ -1970,6 +1980,32 @@ def _sh_act(text: str) -> bool:
         return True
     return False
 
+
+
+# B61 (run41, PM 23:5x class names for the self-harm misses; own lines in hq sets/b61-selfharm-classes-run41.json, written
+# before this code). nhs.uk 'Help for suicidal thoughts' (reviewed 26 Apr 2024, read 2026-10-30): 999 / A&E if someone has
+# seriously harmed themselves or may act now. Whole-note co-occurrence, any subject (writer or relayed); each branch needs an
+# act or a place/plan word AND a now/intent word. Adherence, safe disposal, accidental double dose, cooking cuts, a pool edge stay quiet.
+_SH_PILLS = r"(?:pills?|tablets?|meds|medication|medicines?|painkillers?|paracetamol|ibuprofen|tramadol|codeine|co-?codamol|oxycodone|morphine|antidepressants?|sertraline|citalopram|insulin)"
+_SH_CLASS = re.compile(
+    r"^(?=[\s\S]*\b(?:cut|cuts|slashed|sliced|slit|stabbed)\b)(?=[\s\S]*\b(?:on purpose|deliberately|myself|himself|herself|themselves)\b)(?=[\s\S]*\b(?:still bleeding|keeps? (?:on )?(?:bleeding|coming)|won'?t stop|can'?t (?:make it |get it to )?stop|bleeding through|soak\w* through|blood everywhere|pouring)\b)"
+    r"|^(?=[\s\S]*\b(?:took|taken|swallowed|downed|necked)\b[^.!?\n]{0,25}\b(?:a lot|loads|lots|a pile|piles|a heap|heaps|a stack|a bunch|a fistful|a handful|handfuls|too many|all|a load|every|whole|box|packet|bottle|strip)\b[^.!?\n]{0,25}\b" + _SH_PILLS + r")(?=[\s\S]*\b(?:being sick|throwing up|vomit\w*|puking|sick everywhere|can'?t stay awake|passing out)\b)"
+    r"|^(?=[\s\S]*\b(?:saving|saved|stockpil\w*|hoard\w*|stash\w*|been keeping|collecting)\b[^.!?\n]{0,30}\b" + _SH_PILLS + r"|[\s\S]*\b" + _SH_PILLS + r"\b[^.!?\n]{0,20}\b(?:saved|stockpiled|hoarded|stashed)\b)(?=[\s\S]*\b(?:tonight|this evening|later|the night|when (?:everyone|everybody|they)(?:'s| is| are|'re) asleep|take them all|doing it|do it)\b)"
+    r"|^(?=[\s\S]*\b(?:won'?t|will not|not going to) be (?:around|here)\b)(?=[\s\S]*\b(?:thank\w*[^.!?\n]{0,20}for everything|goodbye|said bye|saying bye|bye to everyone|look after (?:the|my|mum|dad|everyone|yourself|the kids|the dog|the cat)|love you all|sorry for everything|tell \w+ (?:i|that i) love)\b)"
+    r"|^(?=[\s\S]*\b(?:drowsy|barely awake|half asleep|won'?t wake|can'?t wake|not waking|out of it|unresponsive|slumped|unconscious|not responding|hard to wake)\b)(?=[\s\S]*\b(?:empty (?:\w+ ){0,2}(?:packs?|packets?|boxes|bottles?|strips?|blisters?|tubs?)|(?:pills|tablets) (?:everywhere|all over|scattered))\b)"
+    r"|^(?=[\s\S]*\b(?:locked|shut|barricaded)\s+(?:(?:him|her|them|my)sel(?:f|ves)\s+)?in\b[^.!?\n]{0,40}\bwith\b[^.!?\n]{0,25}\b(?:" + _SH_PILLS[3:-1] + r"|knife|knives|blade|razor|rope)\b)"
+    r"|^(?=[\s\S]*\b(?:took|taken|swallowed|has had|stole|nicked)\b[^.!?\n]{0,30}\b(?:strong painkillers|tramadol|oxycodone|morphine|codeine|co-?codamol|fentanyl|dihydrocodeine|oramorph|methadone|(?:\w+'s|someone else'?s) (?:pills|tablets|meds|painkillers))\b)(?=[\s\S]*\b(?:sorry|note|apolog\w*|goodbye|forgive)\b)"
+    r"|^(?=[\s\S]*(?:\b(?:edge|ledge|railings?|wrong side|parapet)\b[^.!?\n]{0,40}\b(?:bridge|roof\w*|cliff|car park|multi-?storey|building|balcony|tracks|platform|tower)\b|\b(?:bridge|roof\w*|cliff|car park|multi-?storey|building|balcony|tracks|platform|tower)\b[^.!?\n]{0,40}\b(?:edge|ledge|railings?|wrong side|parapet)\b))(?=[\s\S]*\b(?:right now|want to jump|wants to jump|going to jump|gonna jump|about to jump|won'?t come (?:down|back|away)|refus\w* to come|thinking (?:of|about) jumping|end it|can'?t (?:do this|go on)|saying goodbye|kill)\b)"
+    r"|^(?=[\s\S]*(?:\b(?:lined up|laid out|laid|lay|counted|set out|ready)\b[^.!?\n]{0,25}\b" + _SH_PILLS + r"|\b" + _SH_PILLS + r"\b[^.!?\n]{0,25}\b(?:lined up|laid out|counted out|set out|out ready|ready)\b|\blaid (?:\w+ ){0,3}out\b))(?=[\s\S]*\b(?:after tonight|tonight|it'?s (?:all )?over|none of (?:this|it) (?:will )?matter|won'?t be a (?:problem|burden)|when (?:everyone|everybody|they)(?:'s| is| are|'re) asleep|goodbye|take them all|going to take them)\b)"
+    r"|^(?=[\s\S]*\bafter tonight\b(?!'s)[^.!?\n]{0,40}\b(?:none of (?:this|it) (?:will )?matter|it'?s (?:all )?over|(?:i|he|she|they) won'?t be (?:here|around|a problem|a burden)|it ends|done with (?:life|everything|it all))\b)", re.I)
+_SH_CLASS_QUIET = re.compile(
+    r"\b(?:by (?:mistake|accident)|accidental\w*|double dose|(?:111|pharmacist|chemist|gp|doctor) said|safe disposal|get rid of them|dosette|pill organi[sz]er|for the week|"
+    r"chopping|cooking|shaving|vitamins|swim\w*|photo|view|wedding|holiday|visiting|shift|this weekend|exams?|revis\w*|hay fever|antihistamine|would never|i'?d never|not going to (?:take|do|jump))\b", re.I)
+
+
+def _sh_class(text: str) -> bool:
+    text = text[:_WHOLE_SCAN_CAP]
+    return bool(_SH_CLASS.search(text)) and not _SH_CLASS_QUIET.search(text)
 
 # B55 (run39, PM cauda classes; nhs.uk sciatica 999 box, read 2026-10-30): numbness around the bottom / genitals (saddle) in
 # lay words, sciatica or weakness in BOTH legs that is new or getting worse, a bladder or bowel accident not felt, sex sensation
