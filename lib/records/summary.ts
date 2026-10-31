@@ -209,6 +209,8 @@ export interface HeatDay {
   bleeding: boolean;
   /** Spotting logged — drawn and counted separately from bleeding. */
   spotting: boolean;
+  /** Before her first entry: a layout cell only, drawn grey and never counted (first-week rule 2). */
+  beforeStart?: boolean;
 }
 
 export interface HeatStripModel {
@@ -539,13 +541,21 @@ export function onsetText(o: Onset | undefined): string {
   return `First noticed: around ${when} (as reported)`;
 }
 
-/** First day the record covers: the first entry (note or bleeding day) when it is later than `from`, and at least 14
- *  days before `to`. Days before it were never recorded, so neither How often nor the area lines count them; one
- *  function so the "of N days" agrees on both pages (PM 15:52: 91 vs 92 days on the same PDF). */
+/** First day the record covers: the first entry (note or bleeding day) when it is later than `from`. Days before it
+ *  were never recorded, so neither How often nor the area lines count them (first-week rule 2: a day-1 user reads
+ *  '1 of 1 day', not '1 of 14 days'); one function so the "of N days" agrees on both pages (PM 15:52: 91 vs 92 days
+ *  on the same PDF). The strip may still draw 14 cells for layout: see `stripCellsFrom`. */
 export function recordedFrom(notes: SymptomData[], bleedDays: PeriodDayData[], from: string, to: string): string {
   const firstEntry = [...notes.map((s) => s.date), ...bleedDays.map((d) => d.date)].sort()[0];
-  const startAt = firstEntry && firstEntry < addDays(to, -13) ? firstEntry : addDays(to, -13);
-  return firstEntry && startAt > from ? startAt : from;
+  return firstEntry && firstEntry > from ? firstEntry : from;
+}
+
+/** First strip cell: at least 14 cells wide so a new user's strip is not one cell, never before `from`. Cells before
+ *  `recordedFrom` are marked `beforeStart` (drawn grey, never counted). */
+export function stripCellsFrom(recorded: string, from: string, to: string): string {
+  const wide = addDays(to, -13);
+  const start = recorded < wide ? recorded : wide;
+  return start > from ? start : from;
 }
 
 /** The 13 PRODUCT §4 areas, one line each, in DOMAINS order. Counts and her own choices only. */
@@ -709,10 +719,11 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   let bleedWindowLine = '';
   if (notes.length) {
     const cappedFrom = inclusiveDays(from, to) > STRIP_MAX_DAYS ? addDays(to, -(STRIP_MAX_DAYS - 1)) : from;
-    // Days before the first entry were never recorded, so they are not shown as days with no note: the
-    // window starts at the first entry (at least 14 days wide, so a new user's strip is not one cell).
+    // Days before the first entry were never recorded, so they are not counted as days with no note: the
+    // count starts at the first entry; the strip keeps at least 14 cells, the early ones marked beforeStart.
     const recorded = recordedFrom(notes, bleedDays, from, to);
     const stripFrom = recorded > cappedFrom ? recorded : cappedFrom;
+    const cellsFrom = stripCellsFrom(stripFrom, cappedFrom, to);
     const windowNotes = notes.filter((s) => s.date >= stripFrom);
     const total = inclusiveDays(stripFrom, to);
     const bleedSet = new Set(bleedDays.filter((d) => bleedingStatus(d) !== 'spotting').map((d) => d.date));
@@ -721,6 +732,9 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     for (const s of windowNotes) byDay.set(s.date, [...(byDay.get(s.date) ?? []), s]);
 
     const days: HeatDay[] = [];
+    for (let k = cellsFrom; k < stripFrom; k = addDays(k, 1)) {
+      days.push({ date: k, logged: false, value: null, bleeding: false, spotting: false, beforeStart: true });
+    }
     for (let k = stripFrom; k <= to; k = addDays(k, 1)) {
       const list = byDay.get(k) ?? [];
       const peaks = list.map(peakOf).filter((n): n is number => n != null);
@@ -758,13 +772,13 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         windowLabel: `${windowLabel} · ${plural(total, 'day')}`,
         bars,
         strip: {
-          from: stripFrom, to, label: windowLabel, days,
+          from: cellsFrom, to, label: windowLabel, days,
           windowNote: stripFrom === from ? ''
             : stripFrom > cappedFrom ? `Covers ${windowLabel}.`
             : `Shows the last ${total} days of the range.`,
         },
         caption:
-          `Notes were logged on ${noteDays} of ${total} days.` +
+          `Notes were logged on ${noteDays} of ${plural(total, 'day')}.` +
           (spotDays ? ` Spotting logged on ${plural(spotDays, 'day')}.` : '') +
           (moreZones ? ` ${moreZones} more ${moreZones === 1 ? 'area was' : 'areas were'} marked on fewer days.` : ''),
       });

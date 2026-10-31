@@ -5,6 +5,7 @@ import React from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { colors, fonts, space } from '../../../constants/atossaUI';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
+import { thinView } from '../../../lib/records/thinCounts';
 import { Card, Txt } from '../kit';
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
@@ -33,7 +34,10 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
   if (freq && freq.id === 'frequency') {
     // The first bar is "Days with a note": it becomes the card subtitle; the rest are area rows with
     // the count on the left and one right-aligned "Worst" column (no "worst 9/10" repeated in text).
-    const [all, ...areas] = freq.bars;
+    const [all, ...allAreas] = freq.bars;
+    // Under 7 written days: 'N days written so far' and no zero rows (first-week rules 7-8).
+    const thin = thinView(all?.days ?? 0, allAreas.map((b) => ({ label: b.label, days: b.days })));
+    const areas = thin.thin ? allAreas.filter((b) => thin.rows.some((r) => r.label === b.label)) : allAreas;
     const worstOf = (t: string) => /worst (\d+)\/10/.exec(t)?.[1];
     const usual = (t: string) => t.replace(/,?\s*worst \d+\/10/, '').replace(/^,\s*/, '');
     const worstAll = areas.reduce((m, b) => Math.max(m, Number(worstOf(b.strength ?? '') ?? 0)), 0);
@@ -42,12 +46,12 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
     cards.push(
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xxs }}>{freq.windowLabel}</Txt>
+        <Txt variant="secondary" style={{ marginTop: space.xxs }}>{thin.thin && thin.line ? thin.line : freq.windowLabel}</Txt>
         {all ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-end' }}>
-            <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={`${all.days} of ${plural(all.total, 'day')} with a note`}>
+            <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={thin.thin ? `${all.days} with a note, ${thin.line}` : `${all.days} of ${plural(all.total, 'day')} with a note`}>
               <Txt variant="numeral" style={big}>{all.days}</Txt>
-              <Txt variant="secondary">{`of ${plural(all.total, 'day')} with a note`}</Txt>
+              <Txt variant="secondary">{thin.thin ? 'with a note' : `of ${plural(all.total, 'day')} with a note`}</Txt>
             </View>
             {worstAll ? (
               <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={`Worst rating ${worstAll} out of 10`}>
@@ -66,7 +70,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
               <View key={b.label} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.sm }}>
                 <View style={{ flex: 1, minWidth: 0 }}>
                   <Txt variant="body">{b.label}</Txt>
-                  <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{`${b.days} of ${plural(b.total, 'day')}`}{u ? <Txt variant="secondary">{` · ${u}`}</Txt> : null}</Txt>
+                  <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{thin.thin ? plural(b.days, 'day') : `${b.days} of ${plural(b.total, 'day')}`}{u ? <Txt variant="secondary">{` · ${u}`}</Txt> : null}</Txt>
                 </View>
                 {w ? (
                   <View style={{ alignItems: 'flex-end' }} accessible accessibilityLabel={`Worst ${w} out of 10`}>
