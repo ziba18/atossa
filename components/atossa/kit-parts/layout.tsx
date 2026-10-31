@@ -82,7 +82,7 @@ export function ScreenLarge({
           {children}
         </View>
       )}
-      {footer ? <View style={[styles.column, wide && { maxWidth: 1040 }, styles.footer]}>{footer}</View> : null}
+      {footer ? <View style={[styles.column, wide && { maxWidth: 1040 }, styles.footer, !wash && { backgroundColor: colors.surface }]}>{footer}</View> : null}
     </SafeAreaView>
   );
 }
