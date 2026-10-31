@@ -28,3 +28,20 @@ def test_quiet(note):
 @pytest.mark.parametrize("note", LIVE)
 def test_live(note):
     assert is_emergency(note)
+
+
+@pytest.mark.parametrize("note", [
+    "my daughter swallowed some of my tablets",
+    "my toddler drank some bleach from under the sink",
+    "my son chewed some painkillers",
+])
+def test_child_swallowed_live(note):
+    assert is_emergency(note)
+
+
+@pytest.mark.parametrize("note", [
+    "my daughter swallowed a tablet with her breakfast as the nurse said",
+    "the pharmacist said my baby can have it, she drank the medicine",
+])
+def test_child_medicine_as_advised_quiet(note):
+    assert not is_emergency(note)
