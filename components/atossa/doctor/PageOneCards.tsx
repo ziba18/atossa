@@ -106,10 +106,10 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
                 {/* Basis 130: on very narrow screens the Worst column wraps under the name instead of squeezing it mid-word. */}
                 <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, minWidth: 0 }}>
                   <Txt variant="body">{b.label}</Txt>
-                  <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{thin.thin ? plural(b.days, 'day') : `${b.days} of ${plural(b.total, 'day')}`}{u ? <Txt variant="secondary">{` · ${u}`}</Txt> : null}</Txt>
+                  <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{thin.thin ? plural(b.days, 'day') : `${b.days} of ${plural(b.total, 'day')}`}{u ? <Txt variant="secondary">{` · ${u}`}</Txt> : null}{narrow && w ? <Txt variant="secondary">{` · worst ${w}/10`}</Txt> : null}</Txt>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
-                  {w ? (
+                  {w && !narrow ? (
                     <View style={{ alignItems: 'flex-end' }} accessible accessibilityLabel={`Worst ${w} out of 10`}>
                       <Txt variant="secondary">Worst</Txt>
                       <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{`${w}/10`}</Txt>
