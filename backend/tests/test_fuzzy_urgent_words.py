@@ -279,3 +279,10 @@ def test_tight_throat_puffy_face_and_sleeping_pills_with_drink_s520():
     assert g.emergency_kind("my throat is tight from nerves before the presentation") is None
     assert g.emergency_kind("i took one sleeping pill with a cup of tea and slept great") is None
     assert g.emergency_kind("had some tablets for my headache and a beer, so sleepy but fine") is None
+
+
+def test_hot_swollen_joint_with_fever_s521():
+    from app.services import output_guard as g
+    assert g.emergency_kind("hot swollen painful joint and a fever of 38.9 after my injection") == "medical"
+    assert g.emergency_kind("my knee is a bit swollen after football, no fever") is None
+    assert g.emergency_kind("my ankle is red and painful after a sprain") is None
