@@ -337,8 +337,8 @@ function MonthView({
   );
 
   return (
-    <View style={{ marginTop: space.lg, gap: shortKey ? space.md : space.lg }}>
-      <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: -space.sm }} />
+    <View style={{ marginTop: shortKey ? space.xs : space.lg, gap: shortKey ? space.sm : space.lg }}>
+      <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: shortKey ? -space.md : -space.sm }} />
       {shortKey ? <View accessible accessibilityLabel="Key. A circled day has a note; the number under it is the strongest rating that day, out of 10.">{noteKeyRow}</View> : null}
       <MonthCalendar
         year={month.y}
