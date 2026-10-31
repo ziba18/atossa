@@ -286,3 +286,9 @@ def test_hot_swollen_joint_with_fever_s521():
     assert g.emergency_kind("hot swollen painful joint and a fever of 38.9 after my injection") == "medical"
     assert g.emergency_kind("my knee is a bit swollen after football, no fever") is None
     assert g.emergency_kind("my ankle is red and painful after a sprain") is None
+
+
+def test_stabbing_myself_s523():
+    from app.services import output_guard as g
+    assert g.emergency_kind("im having thoughts of stabbing myself") == "self_harm"
+    assert g.emergency_kind("i have thoughts of stabbing the cake with a candle for the party") is None

@@ -1480,6 +1480,9 @@ _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
                          + r"|^(?=[\s\S]*\b(?:pills|tablets|painkillers|meds|medication|wine|vodka|alcohol|bottle)\b)(?=[\s\S]*\b(?:sleep forever|never wake up|not wake up|don'?t want to wake up|go to sleep and not)\b)"
                          + r"|^(?![\s\S]*\b(?:party|dinner|trip|wedding|holiday|meeting|lease|landlord|traffic|exam|deadline)\b)(?=[\s\S]*\b(?:(?:feel|feeling|think|believe) (?:like |that )?(?:there'?s|there is) no way (?:out|forward)|can'?t see a way out|cannot see a way out)\b)(?=[\s\S]*\b(?:everything|it all|all of it) (?:is |'s )?(?:ready|sorted|in place|prepared)\b|[\s\S]*\bhave everything (?:i need|ready)\b)", _SELF_WHOLE.flags)
+# S-523 (run 63, p92): thoughts of stabbing, cutting, hanging, shooting or drowning myself
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
+                         + r"|\b(?:thoughts?|thinking|urges?|keep thinking) (?:of|about|to) (?:stabbing|cutting|hanging|shooting|drowning|suffocating|burning|poisoning) (?:myself|me)\b", _SELF_WHOLE.flags)
 
 # run16 (Safety S-269, p157 5/10 missed): blood in vomit said with everyday words, and black poo that is sticky/tar-like or
 # comes with weakness or dizziness. nhs.uk/conditions/stomach-ulcer (reviewed 12 Aug 2025, via Safety 29 Oct 2026): 999 or A&E
