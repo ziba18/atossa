@@ -95,7 +95,7 @@ export default function TimelineScreen() {
   // A failed first load must not fall through to the empty states ("Add a note"): the record may be fine.
   const failed = !!loadError && !loadedFor && !waiting;
   const emptyList = (mode === 'list' || mode === 'patterns') && feed.length === 0 && !waiting && !failed;
-  const shortFilter = win0.height < 640 && win0.width >= 240 && mode === 'list' && !emptyList && !waiting && !failed && feed.length > 0 && filter === 'All' && !dayFilter;
+  const shortFilter = win0.height < 640 && win0.width >= 240 && !emptyList && !waiting && !failed && feed.length > 0;
   const header = (
     <>
       {emptyList ? null : <AddButton label="Add a note" onPress={() => openCapture()} />}
@@ -111,7 +111,9 @@ export default function TimelineScreen() {
       {shortFilter ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
           <View style={{ flex: 1, minWidth: 0 }}><SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} /></View>
-          <IconButton icon="sliders" label="Show: everything. Opens the filter" color={colors.plum} onPress={() => setFilterOpen(true)} />
+          {mode === 'list' ? (
+            <IconButton icon="sliders" label={filter === 'All' && !dayFilter ? 'Show: everything. Opens the filter' : 'Change what is shown'} color={colors.plum} onPress={() => setFilterOpen(true)} />
+          ) : <View style={{ width: 44 }} />}
         </View>
       ) : (
         <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
