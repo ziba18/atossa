@@ -317,7 +317,7 @@ function MonthView({
   };
 
   // On a short phone (height under 600) the note key sits above the calendar, so the numbers under the days are explained before the fold.
-  const shortKey = useWindowDimensions().height < 600 && noteDays > 0;
+  const shortKey = useWindowDimensions().height < 600 && useWindowDimensions().width >= 240 && noteDays > 0;
   const noteKeyRow = (
     <MonthKeyRow glyph={<View style={{ alignItems: 'center' }}><View style={keyStyles.disc}><Txt style={keyStyles.discNum}>7</Txt></View><Txt style={keyStyles.under}>8</Txt></View>}>
       {shortKey ? 'Circle: a note. Number: strongest rating, out of 10.' : 'A day with a note; the number under it is the strongest rating, out of 10.'}
