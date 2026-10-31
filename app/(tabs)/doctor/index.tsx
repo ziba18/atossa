@@ -245,7 +245,7 @@ export default function DoctorScreen() {
             )}
             <Txt variant="headline">{upcoming.data.who.trim() || formatDay(upcoming.data.date)}</Txt>
           </View>
-          {thumbUp ? <SummaryThumb doc={doc} width={Math.round(winWidth * 0.42)} /> : null}
+          {thumbUp ? <SummaryThumb doc={doc} width={Math.round(winWidth * 0.38)} /> : null}
         </Card>
       ) : null}
 
