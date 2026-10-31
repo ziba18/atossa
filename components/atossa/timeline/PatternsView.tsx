@@ -296,7 +296,7 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
         <FadeIn index={2}>
           <PressableCard onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
             <Txt variant="groupLabel">Bleeding</Txt>
-            <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m)}</Txt>
+            <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m).replace(/(\d+) (days?)/g, '$1\u00a0$2')}</Txt>
             {m.bleedingDays || m.spottingDays ? (
               <View style={styles.bleedChart} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
                 {m.weeks.map((w) => {
