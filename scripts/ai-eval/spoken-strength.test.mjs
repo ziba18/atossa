@@ -12,3 +12,8 @@ for (const t of [
   'at its worst I couldn\'t stand', 'a seven hour shift and my back aches', 'Pain was like an 8 or 9 last night.',
 ]) assert.equal(w(t), null, t);
 console.log('spoken-strength ok');
+// B96: a higher score tied to another time in the same note is the worst.
+assert.equal(w("it's a four now but was a seven earlier"), 7);
+assert.equal(w('a five now, an eight last night'), 8);
+assert.equal(w('a six now, eight days since my period'), 6);
+console.log('earlier-peak ok');

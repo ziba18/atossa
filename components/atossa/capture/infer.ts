@@ -119,6 +119,9 @@ function scoreFrom(lower: string): number | undefined {
   for (const m of lower.matchAll(new RegExp(`\\b(?:probably|prob|i'd say|i would say|put it at|call it|honestly|roughly|i reckon|somewhere (?:about|around)|at (?:its|the) worst(?: point)?|worst (?:was|is)|pain's|was|is)\\s+(?:about\\s+|around\\s+|like\\s+)?an?\\s+(?:solid\\s+|good\\s+|strong\\s+|proper\\s+)?(${NUM})(?:ish)?\\b(?!\\s+(?:of|sided|thing|more|time|other|off|day|way|side|that|who|which|to(?!\\s+be\\b)|too|for)\\b)(?!\\s*(?:or|-|–|to)\\s*${NUM}\\b)(?!\\s+on a good\\b)(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "an eight at its worst", "a nine at the peak": the score comes first.
   for (const m of lower.matchAll(new RegExp(`\\ban?\\s+(?:solid\\s+)?(${NUM})\\s+(?:at (?:its|the) (?:worst|peak)|when it peaked)\\b`, 'g'))) found.push(toNum(m[1]));
+  // B96: "a four now but a seven earlier", "a five now, an eight last night", "earlier an eight": a score tied to a time word.
+  for (const m of lower.matchAll(new RegExp(`\\ban?\\s+(${NUM})(?:ish)?\\s+(?:now|right now|at the moment|this (?:morning|afternoon|evening)|last night|earlier|before \\w+|at \\d{1,2}\\s?(?:am|pm)|today|tonight|yesterday)\\b`, 'g'))) found.push(toNum(m[1]));
+  for (const m of lower.matchAll(new RegExp(`\\b(?:earlier|this morning|last night|sitting at)\\s+an?\\s+(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "about a 4 most days, 7 on Tuesday": a score tied to a day is a score too (the highest wins below).
   for (const m of lower.matchAll(new RegExp(`(?:^|[,;]\\s*|\\band\\s+)(${NUM})\\s+on\\s+(?:mon|tues|wednes|thurs|fri|satur|sun)day\\b`, 'g'))) found.push(toNum(m[1]));
   // "5 or 6", "9 maybe 10" standing alone as the score (end of clause): the higher one is the worst. Not "2 or 3 days".
