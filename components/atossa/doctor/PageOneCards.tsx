@@ -19,6 +19,8 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
   const narrow = winW < 360;
   // 300-360 pt: the count and the worst rating sit side by side (two numbers above the fold, not one under the other).
   const pair = narrow && winW >= 300;
+  // 568 pt phones: slightly tighter card so the first area row reaches above the tab bar.
+  const tight = useWindowDimensions().height < 600;
   const router = useRouter();
   // Every count opens the dated days behind it: Timeline list, exactly those days.
   const openDays = (label: string, dates?: string[], kind?: 'symptom' | 'bleeding') => { if (!dates?.length) return; useTimelineSession.getState().setDayFilter({ label, dates, kind }); router.push('/(tabs)/timeline' as any); };
@@ -51,7 +53,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
     const usual = (t: string) => t.replace(/,?\s*worst \d+\/10/, '').replace(/^,\s*/, '');
     const worstAll = areas.reduce((m, b) => Math.max(m, Number(worstOf(b.strength ?? '') ?? 0)), 0);
     const num = { fontVariant: ['tabular-nums', 'lining-nums'] as ('tabular-nums' | 'lining-nums')[] };
-    const big = narrow ? { ...num, fontSize: 34, lineHeight: 38 } : num;
+    const big = narrow ? { ...num, fontSize: tight ? 30 : 34, lineHeight: tight ? 34 : 38 } : num;
     cards.push(
       <Card key="freq">
         <Txt variant="groupLabel">{freq.title}</Txt>
@@ -72,13 +74,13 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         ) : null}
         {all?.worstOn ? (
           all.worstKey ? (
-            <Pressable onPress={() => { useTimelineSession.getState().setOpenDay(all.worstKey!); router.push('/(tabs)/timeline' as any); }} accessibilityRole="button" accessibilityHint="Opens that day in the Timeline" style={{ marginTop: space.sm, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+            <Pressable onPress={() => { useTimelineSession.getState().setOpenDay(all.worstKey!); router.push('/(tabs)/timeline' as any); }} accessibilityRole="button" accessibilityHint="Opens that day in the Timeline" style={{ marginTop: tight ? space.xs : space.sm, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
               <Txt variant="secondary" style={{ flexShrink: 1 }}>{`Worst: ${all.worstOn}`.replace(/(\d{1,2}) ([A-Z][a-z]{2})/g, '$1\u00a0$2').replace(/\b([A-Z][a-z]{2}) (\d{1,2}\u00a0)/g, '$1\u00a0$2').replace(/ \+ (\d+) more (days?)/, ' +\u00a0$1\u00a0more\u00a0$2')}</Txt>
               <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
             </Pressable>
           ) : <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`.replace(/(\d{1,2}) ([A-Z][a-z]{2})/g, '$1\u00a0$2').replace(/\b([A-Z][a-z]{2}) (\d{1,2}\u00a0)/g, '$1\u00a0$2').replace(/ \+ (\d+) more (days?)/, ' +\u00a0$1\u00a0more\u00a0$2')}</Txt>
         ) : null}
-        <View style={{ gap: space.sm, marginTop: space.md, paddingTop: space.md, borderTopWidth: 1, borderTopColor: colors.hairline }}>
+        <View style={{ gap: space.sm, marginTop: tight ? space.xs : space.md, paddingTop: tight ? space.xs : space.md, borderTopWidth: 1, borderTopColor: colors.hairline }}>
           {areas.slice(0, 3).map((b) => {
             const w = worstOf(b.strength ?? '');
             const u = usual(b.strength ?? '');
