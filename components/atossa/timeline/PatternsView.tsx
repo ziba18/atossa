@@ -178,10 +178,21 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <View style={{ marginTop: space.lg }}>
         <EmptyState
           icon="calendar-days"
-          message={`Patterns appear after a week of notes. ${recent === 0 ? (m.notes === 0 ? 'Your first note starts them.' : 'No notes in this time range.') : `So far: notes on ${plural(recent, 'day')}.`}`}
+          message={`Patterns appear after a week of notes. ${recent === 0 ? (m.notes === 0 ? 'Your first note starts them.' : 'No notes in this time range.') : ''}`.trim()}
           action={{ label: 'Add a note', onPress: () => openCapture() }}
           style={{ marginTop: space.xxl }}
         />
+        {recent > 0 ? (
+          // Seven squares, one per day of notes needed: a count of days written, never a score.
+          <View accessible accessibilityLabel={`${recent} of ${MIN_NOTE_DAYS} days with a note so far`} style={{ marginTop: space.lg, alignItems: 'center', gap: space.xs }}>
+            <View style={{ flexDirection: 'row', gap: space.xs }}>
+              {Array.from({ length: MIN_NOTE_DAYS }, (_, i) => (
+                <View key={i} style={{ width: 28, height: 28, borderRadius: 8, borderWidth: 1.5, borderColor: colors.ink, backgroundColor: i < recent ? colors.ink : 'transparent', opacity: i < recent ? 1 : 0.35 }} />
+              ))}
+            </View>
+            <Txt variant="caption">{`${recent} of ${MIN_NOTE_DAYS} days`}</Txt>
+          </View>
+        ) : null}
       </View>
     );
   }
