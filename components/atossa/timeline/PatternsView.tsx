@@ -3,7 +3,7 @@
 // Each chart has a text equivalent that a screen reader reads first, and each card opens the
 // Timeline list filtered to what it counts.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, PixelRatio, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
@@ -132,11 +132,11 @@ function CountUp({ value }: { value: number }) {
 }
 
 /** One number with a label under it; the row of three sits above the charts. */
-function StatTile({ value, label, onPress, hint, wide, zeroLabel, hero }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean; zeroLabel?: string; hero?: boolean }) {
+function StatTile({ value, label, onPress, hint, wide, zeroLabel, hero, full }: { value: number; label: string; onPress: () => void; hint: string; wide?: boolean; zeroLabel?: string; hero?: boolean; full?: boolean }) {
   // A zero that means "nothing logged" reads as a sentence, not a big 0.
   const none = value === 0 && !!zeroLabel;
   return (
-    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={[wide ? styles.tileWide : styles.tile, hero && !none ? { backgroundColor: severityRamp[4], borderColor: severityRamp[4] } : null]}>
+    <PressableCard onPress={onPress} chevron={false} accessibilityLabel={none ? `${zeroLabel}. ${hint}` : `${value} ${label}. ${hint}`} style={[wide ? styles.tileWide : styles.tile, full ? { width: '100%' } : null, hero && !none ? { backgroundColor: severityRamp[4], borderColor: severityRamp[4] } : null]}>
       <View style={wide ? styles.tileRow : undefined}>
         {none ? <Txt variant={wide ? 'body' : 'caption'} style={{ fontWeight: '600', color: colors.ink }}>{zeroLabel}</Txt> : <Txt variant="numeral" style={[hero ? styles.tileNumHero : styles.tileNum, hero ? { color: colors.white } : null]}><CountUp value={value} /></Txt>}
         {none ? null : <Txt variant="caption" style={[wide ? { flexShrink: 1 } : { marginTop: 2 }, hero ? { color: severityRamp[0] } : null]}>{label}</Txt>}
@@ -160,6 +160,8 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
   const [stack, setStack] = useState(false);
+  // On a narrow phone at normal text size the two small tiles share one row under the hero; at large text they stack.
+  const pairTiles = stack && PixelRatio.getFontScale() < 1.3;
   const symptom = useRecordsStore((s) => s.records.symptom);
   const periodDay = useRecordsStore((s) => s.records.period_day);
   const medicine = useRecordsStore((s) => s.records.medicine);
@@ -214,10 +216,10 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
-        <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
-          <StatTile hero wide={stack} value={m.noteDays} label={`of ${m.totalDays} days with a note`} onPress={() => (onOpenDays ? onOpenDays('Days with a note', m.days.filter((d) => d.logged).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
-          <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days at ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
-          <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => (onOpenDays ? onOpenDays('Days of bleeding', m.bleedingDates, 'bleeding') : onOpen('Bleeding'))} hint="Opens your bleeding days." />
+        <View style={[styles.tiles, stack && (pairTiles ? { flexWrap: 'wrap' } : { flexDirection: 'column' })]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
+          <StatTile hero wide={stack} full={pairTiles} value={m.noteDays} label={`of ${m.totalDays} days with a note`} onPress={() => (onOpenDays ? onOpenDays('Days with a note', m.days.filter((d) => d.logged).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
+          <StatTile wide={stack && !pairTiles} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days at ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
+          <StatTile wide={stack && !pairTiles} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => (onOpenDays ? onOpenDays('Days of bleeding', m.bleedingDates, 'bleeding') : onOpen('Bleeding'))} hint="Opens your bleeding days." />
         </View>
       </FadeIn>
 
