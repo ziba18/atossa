@@ -25,9 +25,9 @@ export default function WelcomeScreen() {
   const router = useRouter();
   // Short phones (iPhone SE class): keep the buttons on the first screen, drop the step strip.
   const win = useWindowDimensions();
-  const short = win.height < 740;
+  const short = win.height < 800; // was 740: the pre-login Help now block needs the room on 740-800 pt phones
   // Mini-size phones (about 780 pt): keep the example, drop the three steps so the buttons stay on the first screen.
-  const noSteps = win.height < 820;
+  const noSteps = win.height < 900; // was 820; the pre-login Help now block (A214) takes ~70 pt, so 844 pt phones drop the strip to keep both buttons on the first screen
   const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
   const voice = isVoiceCaptureSupported();
   useEffect(() => track('Welcome Viewed'), []);
