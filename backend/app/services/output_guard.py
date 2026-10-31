@@ -1369,6 +1369,14 @@ _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_N_QUIET})(?={_A}\b{_N_HEAD})(
 # one more NHS heart-attack sign anywhere in the note (sweating, clammy, grey, jaw, arm, neck, back, lightheaded, dizzy, breathless,
 # sick). nhs.uk/conditions/heart-attack/symptoms: pressure, heaviness, tightness or squeezing across the chest, pain spreading to the
 # arms, jaw, neck, back or tummy, sweating, breathlessness, lightheaded, call 999. After exercise, a cold/cough or breasts stay quiet.
+# S-522 (run 64): pins and needles / tingling / numbness in the face with an arm or hand heavy or weak AND her speech odd.
+# "pins and needles" alone is a benign veto in the face-arm-speech rule; the three together are the NHS stroke signs (FAST).
+_S522 = (r"\b(?:pins and needles|tingl\w*|numb\w*|funny feeling)\b[^.!?;]{0,25}\b(?:face|cheek|lip|mouth)\b|\b(?:face|cheek|lip|mouth)\b[^.!?;]{0,25}\b(?:pins and needles|tingl\w*|numb\w*)\b")
+_S522_ARM = r"\b(?:arm|hand|leg)\b[^.!?;]{0,25}\b(?:heavy|weak|useless|limp|dead|won'?t (?:lift|move))\b|\b(?:heavy|weak|limp)\b[^.!?;]{0,12}\b(?:arm|hand)\b"
+_S522_SPEECH = r"\b(?:speech|voice|talking|words?)\b[^.!?;]{0,25}\b(?:odd|strange|weird|funny|different|slow|off|wrong|not right)\b"
+_S522_QUIET = r"\b(?:dentist|dental|injection|anaesthe\w*|always|usual\w*|years? ago|months? ago|last (?:week|year)|yesterday|was |used to|my (?:mum|dad|sister|brother|friend|nan)'?s?\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_S522_QUIET})(?={_A}{_S522})(?={_A}{_S522_ARM})(?={_A}{_S522_SPEECH})", _WHOLE.flags)
+
 _CHEST_P = r"\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*|band|weight|elephant)\b[^.!?;]{0,40}\b(?:chest)\b|\bchest\b[^.!?;]{0,25}\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*)\b"
 _CHEST_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|(?:left |right )?arm|neck|back|light ?headed|dizzy|short of breath|breathless|(?:feel\w* |being )sick)\b"
 _CHEST_QUIET = r"\b(?:after (?:the|a|my) (?:run|gym|workout|swim)|exercis\w*|from (?:my|a|the) (?:cold|cough)|coughing|boobs?|breasts?|period|bra|fine after|vaccine|indigestion after)\b"
@@ -2039,7 +2047,9 @@ _S492_NO = re.compile(r"\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?", r
 def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
     # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
-    if not _LEG_BREATH.search(user_text):
+    # S-522 (run 64): the idiom list removes "pins and needles"; face + arm + speech together keep it (NHS stroke signs)
+    _s522 = all(re.search(x, user_text, re.I) for x in (_S522, _S522_ARM, _S522_SPEECH)) and not re.search(_S522_QUIET, user_text, re.I)
+    if not _LEG_BREATH.search(user_text) and not _s522:
         user_text = _IDIOM.sub(" ", user_text)
     # a lead-in at the very start leaves ". " there; strip it so a whole-note rule anchored at ^ still sees her first sentence
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")

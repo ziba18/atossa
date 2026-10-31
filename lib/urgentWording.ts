@@ -122,6 +122,9 @@ function fuzz(m: string): string {
   return m;
 }
 const S492_NO = /\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?/gi;
+// S-522: face sensation + arm heavy/weak + speech odd keeps "pins and needles" (the idiom list would remove it); same test as output_guard.py
+const S522_RX = [P.S522_SRC, P.S522ARM_SRC, P.S522SPEECH_SRC].map((x) => new RegExp(x, 'i')), S522_QUIET = new RegExp(P.S522QUIET_SRC, 'i');
+const S522_TRIO = (t: string) => S522_RX.every((r) => r.test(t)) && !S522_QUIET.test(t);
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi'), LEGBREATH = new RegExp(P.LEGBREATH_SRC, 'i');
 
 /** Mirrors backend `_is_past`: "last week" with a present-tense word in the clause is not past tense. */
@@ -377,7 +380,7 @@ function relaySwap(text: string): string {
 
 function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
-  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(FUZZ_RX, fuzz).replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
+  const t0 = (LEGBREATH.test(n0) || S522_TRIO(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(FUZZ_RX, fuzz).replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
   const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
   if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SHCTXW) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;

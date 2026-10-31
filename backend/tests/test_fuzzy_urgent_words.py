@@ -309,3 +309,13 @@ def test_relative_took_many_tablets_cannot_wake_and_young_baby_word_ages():
                  "my baby is eleven weeks old and the health visitor took her temperature, normal",
                  "my niece is two weeks away from her due date"]:
         assert not g.is_emergency(line), line
+
+
+def test_pins_and_needles_face_arm_speech_together_urgent_s522():
+    from app.services import output_guard as g
+    for line in ["pins and needles in my face, arm heavy, speech is odd",
+                 "pins and needles in my face and my arm feels heavy and my speech is odd"]:
+        assert g.is_emergency(line), line
+    for line in ["pins and needles in my arm, speech is normal",
+                 "my mum says pins and needles in her face and her arm is heavy and her speech is odd"]:
+        assert not g.is_emergency(line), line
