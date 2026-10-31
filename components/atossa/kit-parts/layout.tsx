@@ -249,7 +249,7 @@ export function HeroNumber({
   );
   const heroStyle = filled ? { backgroundColor: severityRamp[4], borderColor: severityRamp[4] } : undefined;
   if (!onPress) return <Card style={heroStyle}>{body}</Card>;
-  return <PressableCard style={heroStyle} chevronColor={filled ? colors.white : undefined} pressedColor={filled ? '#331C94' : undefined} onPress={onPress} chevron={!narrow} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
+  return <PressableCard style={heroStyle} chevronColor={filled ? colors.white : undefined} pressedColor={filled ? '#331C94' : undefined} onPress={onPress} chevron={!narrow && !compact} accessibilityHint={accessibilityHint} accessibilityLabel={short && !keepSub ? `${big ?? ''} ${line}. ${sub}` : undefined}>{body}</PressableCard>;
 }
 
 /** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
