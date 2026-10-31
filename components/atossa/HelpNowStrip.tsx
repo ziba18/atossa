@@ -12,7 +12,7 @@ const TAB_TITLES: Record<string, string> = { today: 'Today', timeline: 'Timeline
  * A slim 'Help now' link above every screen of a tab. Static, same for everyone, offline: it only
  * routes to the Help now screen (phone numbers). It never reads a note. Hidden on that screen itself.
  */
-export function HelpNowStrip({ children }: { children: React.ReactNode }) {
+export function HelpNowStrip({ children, background = colors.canvas }: { children: React.ReactNode; background?: string }) {
   const router = useRouter();
   const segments = useSegments() as string[];
   const insets = useSafeAreaInsets();
@@ -21,7 +21,7 @@ export function HelpNowStrip({ children }: { children: React.ReactNode }) {
   return (
     <View style={{ flex: 1 }}>
       {onHelp ? null : (
-        <View style={[styles.strip, { paddingTop: insets.top }]}>
+        <View style={[styles.strip, { paddingTop: insets.top, backgroundColor: background }]}>
           <Pressable
             onPress={() => router.push({ pathname: '/(tabs)/profile/help-now', params: { from } } as any)}
             accessibilityRole="link"
@@ -41,7 +41,7 @@ export function HelpNowStrip({ children }: { children: React.ReactNode }) {
 }
 
 const styles = StyleSheet.create({
-  strip: { backgroundColor: colors.canvas, alignItems: 'flex-end', paddingHorizontal: space.lg },
+  strip: { alignItems: 'flex-end', paddingHorizontal: space.lg },
   link: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingHorizontal: space.xs },
   text: { fontWeight: '600', fontSize: 15 },
 });

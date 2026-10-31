@@ -110,7 +110,7 @@ export default function DoctorScreen() {
 
   if (loadedFor === null && (loading || loadError)) {
     return (
-      <ScreenLarge title="For my doctor" right={<HeaderAvatar />}>
+      <ScreenLarge wash={false} title="For my doctor" right={<HeaderAvatar />}>
         {loadError ? (
           <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} />
         ) : (
