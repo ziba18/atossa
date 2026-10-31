@@ -113,10 +113,11 @@ export function EntryCard({
   /** Inside the DaySheet the sheet title already names the day — don't repeat it on every card. */
   hideDate?: boolean;
 }) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   switch (item.kind) {
     case 'symptom': {
       const s = item.rec.data;
+      const lowH = height < 600; // 568 pt: her words stay at 2 lines so the next card's top shows above the tab bar
       const narrow = width < 340; // 320 pt phones: her words get a third line, the 999 line a tighter indent (same words)
       const words = firstLine(s);
       const { tag, tagWord, facts } = symptomCardFacts(s);
@@ -132,10 +133,10 @@ export function EntryCard({
           accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will save to your account when you are back online' : '', words, strengthA11y, facts, urgent ?? ''].filter(Boolean).join('. ')}
           accessibilityHint="Opens the note"
         >
-          <View style={styles.stack}>
+          <View style={[styles.stack, lowH ? { gap: space.xxs } : null]}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
             {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will save to your account when you’re back online" /> : null}
-            {words ? <Quote numberOfLines={narrow ? 3 : 2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
+            {words ? <Quote numberOfLines={narrow && !lowH ? 3 : 2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {/* Under her words (PM-A201, same card, same wording and colour), full text, shown by the wording trigger only (Safety run38 ruling 3). */}
             {urgent ? (
               <View style={[styles.urgent, narrow ? { paddingLeft: space.xs } : null]}>
