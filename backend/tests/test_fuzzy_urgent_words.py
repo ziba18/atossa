@@ -292,3 +292,20 @@ def test_stabbing_myself_s523():
     from app.services import output_guard as g
     assert g.emergency_kind("im having thoughts of stabbing myself") == "self_harm"
     assert g.emergency_kind("i have thoughts of stabbing the cake with a candle for the party") is None
+
+
+def test_relative_took_many_tablets_cannot_wake_and_young_baby_word_ages():
+    from app.services import output_guard as g
+    for line in ["my mother is not able to wake up, she took many tablets",
+                 "my husband took lots of pills and will not wake",
+                 "my dad took too many tablets and is unresponsive",
+                 "my baby is two weeks old and has a fever",
+                 "my baby is two weeks old and has a temperature and will not feed",
+                 "my newborn is five days old and has a high temperature"]:
+        assert g.emergency_kind(line) is not None or g.is_emergency(line), line
+    for line in ["my mother took her tablets as normal and is not able to wake up before 8 so I let her sleep",
+                 "my dad took many tablets over the years, now fine",
+                 "my baby is two weeks old and feeding well, no fever",
+                 "my baby is eleven weeks old and the health visitor took her temperature, normal",
+                 "my niece is two weeks away from her due date"]:
+        assert not g.is_emergency(line), line
