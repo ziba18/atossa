@@ -89,7 +89,11 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         ) : null}
         {!thin.thin && !tight && freq.strip ? (
           <View onLayout={(e) => setGridW(Math.floor(e.nativeEvent.layout.width))} style={{ marginTop: space.xs, alignItems: 'flex-start' }}>
-            {gridW > 0 ? <WeekGrid strip={freq.strip} width={gridW} /> : null}
+            {gridW > 0 ? (
+              <Pressable onPress={() => openDays('Days with a note', all?.dates)} disabled={!all?.dates?.length} accessibilityRole="button" accessibilityLabel={`Day by day, ${all?.days ?? 0} days with a note${freq.strip.days.some((d) => d.bleeding) ? ", bleeding days marked" : ""}`} accessibilityHint="Shows these days in the Timeline">
+                <WeekGrid strip={freq.strip} width={gridW} />
+              </Pressable>
+            ) : null}
             <Txt variant="caption" color={colors.ink2} style={{ marginTop: space.xs }}>Each square is a day, oldest at the left. Darker = a stronger rating. Red line = bleeding logged.</Txt>
           </View>
         ) : null}
