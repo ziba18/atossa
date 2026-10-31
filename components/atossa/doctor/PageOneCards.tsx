@@ -18,7 +18,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
   const narrow = useWindowDimensions().width < 360;
   const router = useRouter();
   // Every count opens the dated days behind it: Timeline list, exactly those days.
-  const openDays = (label: string, dates?: string[]) => { if (!dates?.length) return; useTimelineSession.getState().setDayFilter({ label, dates }); router.push('/(tabs)/timeline' as any); };
+  const openDays = (label: string, dates?: string[], kind?: 'symptom' | 'bleeding') => { if (!dates?.length) return; useTimelineSession.getState().setDayFilter({ label, dates, kind }); router.push('/(tabs)/timeline' as any); };
   const freq = doc.sections.find((s) => s.id === 'frequency');
   const periods = doc.sections.find((s) => s.id === 'periods');
   const impacts = doc.sections.find((s) => s.id === 'impacts');
@@ -110,10 +110,13 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         {periods.windowCount ? <Txt variant="secondary" style={{ marginTop: space.xs }}>{periods.windowCount}</Txt> : null}
         <View style={{ gap: space.sm, marginTop: space.sm }}>
           {periods.runs.slice(0, 3).map((r) => (
-            <View key={r.range}>
-              <Txt variant="body">{r.range} · {plural(r.days, 'day')}</Txt>
-              {r.flows ? <Txt variant="secondary">{r.flows.replace("Flow (chosen by the patient)", "Flow")}</Txt> : null}
-            </View>
+            <Pressable key={r.range} onPress={() => openDays(r.range, r.dates, 'bleeding')} disabled={!r.dates?.length} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+              <View style={{ flex: 1, flexShrink: 1 }}>
+                <Txt variant="body">{r.range} · {plural(r.days, 'day')}</Txt>
+                {r.flows ? <Txt variant="secondary">{r.flows.replace("Flow (chosen by the patient)", "Flow")}</Txt> : null}
+              </View>
+              {r.dates?.length ? <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View> : null}
+            </Pressable>
           ))}
         </View>
       </Card>,

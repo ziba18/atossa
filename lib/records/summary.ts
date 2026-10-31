@@ -229,7 +229,7 @@ export interface HeatStripModel {
   windowNote: string;
 }
 
-export interface PeriodRun { range: string; days: number; flows: string; notes: DocQuote[] }
+export interface PeriodRun { range: string; days: number; flows: string; notes: DocQuote[]; /** The logged bleeding days in this run, so the row can open them. */ dates?: string[] }
 export interface CountItem { label: string; days: number; /** The dated days behind `days`, so the row can open them. */ dates?: string[] }
 export interface TriedItem {
   title: string; dates: string; noticed: string;
@@ -811,6 +811,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     return {
       range: formatRange(start, end, 'always'),
       days: inclusiveDays(start, end),
+      dates: [...new Set(run.map((d) => d.date))].sort(),
       // Safety flow-wording-rule.md: the word is hers (picked from the Flow list), never our label.
       flows: flows.length ? `Flow (chosen by the patient): ${flows.join(', ')}` : '',
       notes: run.filter((d) => clean(d.note)).map((d) => ({ date: d.date, dateLabel: formatDay(d.date), text: clean(d.note), facts: '' })),

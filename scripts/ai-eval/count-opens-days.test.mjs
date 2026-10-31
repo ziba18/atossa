@@ -22,6 +22,8 @@ for (const from of ['2026-06-25', '2026-07-01', '2026-08-15']) {
       assert.equal(new Set(bar.dates).size, bar.days, `${bar.label}: ${bar.days} days vs ${bar.dates.length} dates`);
       assert.ok(bar.dates.every((d) => d >= from && d <= TODAY), `${bar.label}: dates inside the range`);
     }
+    const periods = doc.sections.find((s) => s.id === 'periods');
+    for (const r of periods?.runs ?? []) assert.equal(r.dates?.length, r.days, `run ${r.range}: ${r.days} days vs ${r.dates?.length} dates`);
     const impacts = doc.sections.find((s) => s.id === 'impacts');
     for (const i of impacts?.items ?? []) assert.equal(new Set(i.dates ?? []).size, i.days, `${i.label}`);
   });
