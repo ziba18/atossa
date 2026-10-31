@@ -10,7 +10,6 @@ import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
 import { GhostEntry } from '../../../components/atossa/timeline/GhostEntry';
 import { PatternsView } from '../../../components/atossa/timeline/PatternsView';
-import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
 import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
 import {
@@ -110,7 +109,7 @@ export default function TimelineScreen() {
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : failed ? null : mode === 'list' ? (
-        <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} onDayPress={setDay} />
+        <ListView feed={feed} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
       ) : mode === 'patterns' ? (
         <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
       ) : (
@@ -145,22 +144,17 @@ export default function TimelineScreen() {
 // ---- List -----------------------------------------------------------------------------------
 
 function ListView({
-  feed, symptoms, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef, onDayPress,
+  feed, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef,
 }: {
-  onDayPress: (key: string) => void;
   focusWeek: { from: string; to: string } | null;
   onFocused: () => void;
   scrollRef: React.RefObject<ScrollViewInstance | null>;
   feed: FeedItem[];
-  symptoms: ReturnType<typeof useRecordsStore.getState>['records']['symptom'];
   filter: (typeof TIMELINE_FILTERS)[number];
   setFilter: (f: (typeof TIMELINE_FILTERS)[number]) => void;
   onOpen: (item: ListItem) => void;
 }) {
-  // Short phones (320x568): Today already shows the strip; here the first note card must be on screen.
-  const win = useWindowDimensions();
-  const short = win.height < 640;
-  const tiny = win.width < 280; // 200% text on a small phone: the week summary drops under the label
+  const tiny = useWindowDimensions().width < 280; // 200% text on a small phone: the week summary drops under the label
   const [filterOpen, setFilterOpen] = useState(false);
   const { setMode } = useTimelineSession();
   const options = useMemo(
@@ -221,10 +215,7 @@ function ListView({
           onChange={(v) => { if (v) { setFilter(v as TimelineFilter); setFilterOpen(false); } }}
         />
       </Sheet>
-      {/* The strip counts symptom notes, so it only shows where those are on the list. */}
-      {(filter === 'All' || filter === 'Symptoms') && !short ? (
-        <RecentStrip band symptoms={symptoms} onDayPress={onDayPress} />
-      ) : null}
+      {/* One window per section: the list groups by calendar week (Today and Month show the days). */}
       {groups.length === 0 && filter !== 'All' ? (
         <Txt variant="secondary" style={{ marginTop: space.xxxl }}>
           {EMPTY_FILTER_TEXT[filter]}
