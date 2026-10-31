@@ -24,6 +24,7 @@ import { IS_PREVIEW } from '../../../lib/preview/flag';
 import { cancelAllScheduledNotifications } from '../../../lib/notifications';
 import { downloadAllNotes, classifyExportError, EXPORT_ERRORS } from '../../../lib/exportNotes';
 import { openLegal } from '../../../components/auth/LegalLinks';
+import { IS_PILOT } from '../../../lib/pilot';
 
 /** Visible tab title (the `from` param HeaderAvatar passes) → tab route name. */
 const TAB_ROUTES: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
@@ -229,12 +230,14 @@ export default function ProfileScreen() {
           detail={Platform.OS === 'web' ? 'Reminders come with the iPhone app' : 'Your daily reminder and its time'}
           onPress={() => router.push('/(tabs)/profile/settings' as any)}
         />
-        <GroupRow
-          icon="users"
-          label="Friends"
-          detail="Share only your cycle phase with people you invite"
-          onPress={() => router.push('/(tabs)/profile/friends' as any)}
-        />
+        {IS_PILOT ? null : (
+          <GroupRow
+            icon="users"
+            label="Friends"
+            detail="Invite someone you trust to see your recent period dates"
+            onPress={() => router.push('/(tabs)/profile/friends' as any)}
+          />
+        )}
       </Group>
 
       <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
