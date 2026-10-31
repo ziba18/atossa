@@ -1,7 +1,7 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, type ScrollViewInstance } from 'react-native';
+import { View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
@@ -185,13 +185,16 @@ function ListView({
     );
   }
 
+  // Under ~260 pt (about 200% text on a small phone) a sideways row hides most filters, so they wrap.
+  const veryNarrow = useWindowDimensions().width < 280;
+
   return (
     <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
       <View style={{ marginTop: space.lg }}>
         <ChipGroup
-          scroll
-          bleed
+          scroll={!veryNarrow}
+          bleed={!veryNarrow}
           accessibilityLabel="Show"
           options={options}
           value={filter}
