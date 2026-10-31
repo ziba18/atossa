@@ -232,17 +232,17 @@ export function HeroNumber({
   const compact = winW < 360 && winW >= 240;
   // SE-class heights: one row (small numeral + the line), no sub-line, so the capture prompt stays on the first screen.
   const short = useWindowDimensions().height < 640 && !narrow;
-  const tile = short ? 48 : compact ? 60 : 76;
+  const tile = short ? 48 : compact ? 52 : 76;
   const body = (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: compact ? space.xs : space.md, rowGap: space.xxs }}>
       {big ? (
-        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, borderWidth: 1.5, borderColor: filled ? colors.white : colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
-          <Txt variant="numeral" style={short ? { fontSize: 28, lineHeight: 32 } : compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
+        <View style={{ minWidth: tile, height: tile, paddingHorizontal: compact ? space.xs : space.sm, borderRadius: 20, borderWidth: 1.5, borderColor: filled ? colors.white : colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
+          <Txt variant="numeral" style={short ? { fontSize: 28, lineHeight: 32 } : compact ? { fontSize: 32, lineHeight: 36 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
         </View>
       ) : null}
       {/* flexBasis lets the text drop under the numeral on very narrow screens instead of being squeezed to one letter wide. */}
       <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: short ? 90 : 130, gap: space.xxs }}>
-        <Txt variant="headline" style={[narrow ? { fontSize: 15, lineHeight: 20 } : null, filled ? { color: colors.white } : null]}>{line}</Txt>
+        <Txt variant="headline" style={[narrow ? { fontSize: 15, lineHeight: 20 } : compact ? { fontSize: 16, lineHeight: 22 } : null, filled ? { color: colors.white } : null]}>{line}</Txt>
         {short && !keepSub ? null : <Txt variant="secondary" style={filled ? { color: severityRamp[0] } : undefined}>{sub}</Txt>}
       </View>
     </View>
