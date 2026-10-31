@@ -45,7 +45,9 @@ export function MonthCalendar({
 }) {
   const today = todayKey();
   // Narrow phones (320): "September 2026" at title size wraps to two lines between the arrows.
-  const narrow = useWindowDimensions().width < 360;
+  const winW = useWindowDimensions().width;
+  const narrow = winW < 360;
+  const tight = winW < 280; // 200% text: the full month name no longer fits between the arrows
   const offset = firstWeekdayOffset(year, month0);
   const days = daysInMonth(year, month0);
   const cells: (number | null)[] = [...Array(offset).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
@@ -56,7 +58,7 @@ export function MonthCalendar({
       <View style={styles.head}>
         <IconButton icon="chevron-left" color={colors.plum} label="Previous month" onPress={onPrev} />
         <Txt variant="title" accessibilityRole="header" accessibilityLabel={`${MONTH_NAMES[month0]} ${year}`} style={[{ textAlign: 'center', flex: 1, minWidth: 0 }, narrow && { fontSize: 20, lineHeight: 26 }]}>
-          {`${narrow ? MONTH_NAMES[month0].slice(0, 3) : MONTH_NAMES[month0]} ${year}`}
+          {`${tight ? MONTH_NAMES[month0].slice(0, 3) : MONTH_NAMES[month0]} ${year}`}
         </Txt>
         <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
       </View>
