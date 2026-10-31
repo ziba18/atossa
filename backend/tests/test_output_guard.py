@@ -165,3 +165,23 @@ def test_tampon_with_fever_or_rash_and_pain_with_vomiting_and_burning_hot_are_ur
               "tampons are leaking more now, period pain is a six",
               "side pain and nausea but no fever, took ibuprofen"]:
         assert not k(q), q
+
+
+def test_run59_everyday_wordings_urgent_and_their_quiet_twins():
+    from app.services.output_guard import is_emergency as k
+    for u in ["i gave my toddler a whole packet of calpol by mistake",
+              "i have a lump near my ribs and the pain is spreading to my shoulder and im sweating a lot",
+              "my eyes went yellow and my wee is dark brown and i itch all over",
+              "my ankle is huge and hot and i just coughed up pink froth",
+              "i fell down the stairs and now my belly is really hard and im 34 weeks",
+              "i feel confused and cant remember where i am, had a knock on the head yesterday",
+              "my chest is burning and my jaw aches and im cold and clammy",
+              "burns when i wee and my back hurts and i have shaking chills"]:
+        assert k(u), u
+    for q in ["gave my toddler calpol as the pharmacist said, she's fine",
+              "pain spreading to my shoulder when I lift the shopping",
+              "stings when I wee, drinking lots of water, no back pain",
+              "my eyes look yellow in this light, probably tired",
+              "hit my head on a cupboard, a bit sore but fine",
+              "confused by the forms at the clinic", "coughed up phlegm, a cold"]:
+        assert not k(q), q

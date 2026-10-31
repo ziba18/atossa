@@ -2153,3 +2153,16 @@ def _cauda(text: str) -> bool:
             continue  # both legs / sex sensation count only when new or with a back word
         return True
     return False
+
+
+# run 59 (p66, first contact): urgent wordings told in everyday words that no earlier rule held. Each needs both halves.
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|\b(?:toddler|baby|child|kid|son|daughter|little one)\b.{0,60}\b(?:whole|entire|full|packet|bottle|box)\b.{0,30}\b(?:calpol|paracetamol|ibuprofen|medicine|tablets|pills|nurofen)\b(?![^.!?]{0,40}\b(?:as (?:advised|directed|the (?:doctor|pharmacist|nurse) said)|correct dose)\b)"
+                    + r"|\b(?:pain|ache|tightness|burning)\b.{0,50}\b(?:spreading|spreads|radiat\w+|going) (?:to|into|down) (?:my )?(?:left |right )?(?:shoulder|jaw|arm)\b.{0,60}\b(?:sweat\w*|clammy|cold and clammy)\b"
+                    + r"|\bchest\b.{0,25}\b(?:burning|tight|heavy)\b.{0,40}\bjaw\b.{0,40}\b(?:clammy|sweat\w*|cold and sweaty)\b"
+                    + r"|\b(?:burns|stings|burning) (?:when|as) (?:i|you) (?:wee|pee|urinate)\b.{0,80}\b(?:back|side|loin)\b.{0,60}\b(?:shaking chills|chills|rigors|shivering|fever\w*)\b"
+                    + r"|\b(?:eyes|skin)\b.{0,15}\b(?:went|turned|are|look\w*|gone) yellow\b.{0,80}\b(?:dark (?:brown )?(?:wee|urine|pee)|itch\w*|pale (?:poo|stools?))\b"
+                    + r"|\b(?:cough\w*|coughed) up\b.{0,20}\b(?:pink|frothy|foamy)\b"
+                    + r"|^(?=[\s\S]*\b(?:pregnan\w+|\d+ weeks)\b)[\s\S]*\b(?:fell|fall|knock\w*|hit)\b[\s\S]{0,60}\b(?:belly|bump|stomach)\b.{0,30}\b(?:hard|rock|tight|painful|bleed\w*)\b"
+                    + r"|\b(?:knock|bang|bump|blow|hit)\w*\b.{0,30}\bhead\b.{0,80}\b(?:confus\w+|can'?t remember|cant remember|don'?t know where|keep vomiting|repeatedly sick)\b|\b(?:confus\w+|can'?t remember where|cant remember where)\b.{0,60}\b(?:knock|bang|blow|hit)\w*\b.{0,15}\bhead\b",
+                    _WHOLE.flags)
