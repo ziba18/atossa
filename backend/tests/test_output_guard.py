@@ -141,3 +141,16 @@ def test_feeling_words_in_acknowledgements_pass_but_carry_no_claims():
                 "That sounds stressful, and stress often makes cramps worse.",
                 "That sounds scary, especially as fainting can come from low iron."]:
         assert not check(bad, "I felt sick").ok, bad
+
+
+def test_chest_tightness_with_an_odd_arm_is_urgent_and_the_arm_alone_is_not():
+    from app.services.output_guard import is_emergency as k
+    for u in ["okay so my chest is really tight and my left arm feels weird and i feel sick",
+              "my chest feels heavy and my arm is numb",
+              "left arm feels strange and heavy and my chest is tight",
+              "chest pressure and my right arm is tingling"]:
+        assert k(u), u
+    for q in ["my arm feels weird after the gym and my chest is fine",
+              "chest was tight last year when I had a cold, arm is fine now",
+              "my arm felt heavy after carrying shopping, period pain is a five"]:
+        assert not k(q), q

@@ -597,7 +597,9 @@ _IDIOM = re.compile(
 
 
 # Two parts of one message split by a comma ("stabbing pain, curled up on the floor") need one look at the whole text.
-_WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left |right )?(?:jaw|arm)\b|"
+_WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|heavy|pressure)\b.{0,60}\b(?:left |right )?arm\b.{0,25}\b(?:weird|strange|funny|heavy|numb|tingl\w+|pins and needles)\b|"
+                    r"\b(?:left |right )?arm\b.{0,25}\b(?:weird|strange|funny|heavy|numb|tingl\w+)\b.{0,60}\bchest\b.{0,40}\b(?:tight|heavy|pressure)\b|"
+                    r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left |right )?(?:jaw|arm)\b|"
                     # blind set v11 (2026-10-27): NHS 111/999 wording for DVT/PE, meningitis, stroke, cauda equina, acute abdomen
                     r"\b(?:stomach|belly|tummy|abdomen)\b.{0,15}\brock[- ]hard\b|"
                     r"\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b.{0,80}\b(?:breathless|short of breath|can'?t breathe)|"
