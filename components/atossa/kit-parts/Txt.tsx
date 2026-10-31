@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, type TextProps, type TextStyle } from 'react-native';
+import { Text, useWindowDimensions, type TextProps, type TextStyle } from 'react-native';
 import { colors, fonts, type as typeScale, type TypeVariant } from '../../../constants/atossaUI';
 
 /** Old variant names still used by auth / onboarding / profile sub-screens. Don't use in new code. */
@@ -40,8 +40,10 @@ export function curly(text: string): string {
 
 /** Sam's words in the serif, wrapped in curly quotes (apostrophes curled for display). */
 export function Quote({ children, numberOfLines, style }: { children: string; numberOfLines?: number; style?: TextStyle }) {
+  // Under 280 pt wide (200% text) the serif is so wide that ordinary words ("lightheaded") split mid-word.
+  const tight = useWindowDimensions().width < 280;
   return (
-    <Txt variant="quote" numberOfLines={numberOfLines} style={style}>
+    <Txt variant="quote" numberOfLines={numberOfLines} style={tight ? ([{ fontSize: 17, lineHeight: 24 }, style] as any) : style}>
       {`“${curly(children)}”`}
     </Txt>
   );
