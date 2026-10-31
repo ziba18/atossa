@@ -385,10 +385,10 @@ const styles = StyleSheet.create({
 
   addHit: { minHeight: heights.minHit, justifyContent: 'center', alignSelf: 'flex-start' },
   addChip: {
-    height: heights.addChip, borderRadius: radii.pill, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.borderStrong,
+    minHeight: heights.addChip, paddingVertical: 4, borderRadius: radii.pill, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.borderStrong,
     paddingHorizontal: space.sm, flexDirection: 'row', alignItems: 'center', gap: space.xxs,
   },
-  addText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.plum },
+  addText: { flexShrink: 1, fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.plum },
 
   // Pill like every other control (V9); the white thumb gets a hairline + the one micro-shadow.
   segTrack: { flexDirection: 'row', height: heights.segmented, borderRadius: radii.pill, backgroundColor: colors.sunken, padding: 3 },

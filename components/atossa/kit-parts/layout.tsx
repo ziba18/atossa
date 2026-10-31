@@ -266,6 +266,10 @@ export function NotedRow({
   first?: boolean;
 }) {
   const empty = !quote?.trim() && !value?.trim();
+  // Non-breaking spaces keep "9/10 at worst" together, but under 280 pt wide the unit is wider than the line and the
+  // browser splits it mid-word ("at w / orst"); let it wrap at its spaces there.
+  const narrow = useWindowDimensions().width < 280;
+  const shownValue = narrow ? value?.replace(/\u00A0/g, ' ') : value;
   const inner = (
     <>
       <View style={{ flex: 1, minWidth: 0, gap: space.xxs }}>
@@ -273,7 +277,7 @@ export function NotedRow({
         {empty && addLabel ? null : (
           <>
             {quote?.trim() ? <Quote>{quote.trim()}</Quote> : null}
-            {value?.trim() ? <Txt variant="body">{value.trim()}</Txt> : null}
+            {shownValue?.trim() ? <Txt variant="body">{shownValue.trim()}</Txt> : null}
           </>
         )}
       </View>
