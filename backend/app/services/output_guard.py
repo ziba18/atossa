@@ -1916,6 +1916,11 @@ def _relay_swap(text: str) -> str:
     return _IDIOM.sub(" ", ". ".join(out))  # 'she'd kill herself laughing' -> the first-person idiom, blanked as for her own words
 
 
+# run 59 (p71): common misspellings are corrected before the lists run (dictated and thumb-typed notes). Mirror: lib/urgentWording.ts TYPOS.
+_TYPOS = {"bleding": "bleeding", "bleedin": "bleeding", "blleeding": "bleeding", "blooding": "bleeding", "breif": "brief", "brething": "breathing", "colapse": "collapse", "colapsed": "collapsed", "dizy": "dizzy", "dizzey": "dizzy", "dizzi": "dizzy", "evrything": "everything", "evrywhere": "everywhere", "gunna": "gonna", "miscariage": "miscarriage", "miscarrage": "miscarriage", "miscarrige": "miscarriage", "overdoes": "overdose", "pian": "pain", "pregant": "pregnant", "pregnent": "pregnant", "prenant": "pregnant", "seizeure": "seizure", "seziure": "seizure", "siezure": "seizure", "sucide": "suicide", "suicid": "suicide", "suiside": "suicide", "unconcious": "unconscious", "unconsious": "unconscious", "vomitting": "vomiting", "vommiting": "vomiting"}
+_TYPO_RX = re.compile(r"\b(?:" + "|".join(sorted(_TYPOS, key=len, reverse=True)) + r")\b", re.I)
+
+
 _S492_NO = re.compile(r"\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?", re.I)
 
 
@@ -1926,6 +1931,7 @@ def _emergency_kind(user_text: str):
         user_text = _IDIOM.sub(" ", user_text)
     # a lead-in at the very start leaves ". " there; strip it so a whole-note rule anchored at ^ still sees her first sentence
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
+    user_text = _TYPO_RX.sub(lambda m: _TYPOS[m.group(0).lower()], user_text)
     user_text = _S492_NO.sub(" ", user_text)  # run 59: a question the writer answers herself ("Chest pain? No, it's heartburn")
     if _ADHERENCE.search(user_text):
         user_text = _ADH_PHRASE.sub(" ", user_text)  # B62 (run41)

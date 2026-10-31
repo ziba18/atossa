@@ -235,3 +235,11 @@ def test_chest_pain_question_the_writer_answers_with_no_is_quiet_but_other_signs
     assert not k("Chest pain? No, it's heartburn after the curry, Gaviscon helped.")
     assert k("Chest pain? Yes, crushing, into my arm")
     assert k("chest pain? no. but now I can't breathe")
+
+
+def test_common_misspellings_are_read_as_the_word_meant():
+    from app.services.output_guard import is_emergency as k
+    for u in ["blleeding wont stop and im dizy", "chest pian and sweaty", "pregnent and bleeding with bad cramping",
+              "i feel like im gunna pass out ther is blood evrywhere"]:
+        assert k(u), u
+    assert not k("hed ache n tired")

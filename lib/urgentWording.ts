@@ -95,6 +95,9 @@ function hardToWake342(t: string): boolean {
   return !MORN342.test(t) && !/refresh/i.test(t);
 }
 // run 59 (backend _S492_NO): a question the writer answers herself ("Chest pain? No, it's heartburn")
+// run 59 (backend _TYPOS): common misspellings corrected before the lists run
+const TYPOS: Record<string, string> = {"bleding": "bleeding", "bleedin": "bleeding", "blleeding": "bleeding", "blooding": "bleeding", "breif": "brief", "brething": "breathing", "colapse": "collapse", "colapsed": "collapsed", "dizy": "dizzy", "dizzey": "dizzy", "dizzi": "dizzy", "evrything": "everything", "evrywhere": "everywhere", "gunna": "gonna", "miscariage": "miscarriage", "miscarrage": "miscarriage", "miscarrige": "miscarriage", "overdoes": "overdose", "pian": "pain", "pregant": "pregnant", "pregnent": "pregnant", "prenant": "pregnant", "seizeure": "seizure", "seziure": "seizure", "siezure": "seizure", "sucide": "suicide", "suicid": "suicide", "suiside": "suicide", "unconcious": "unconscious", "unconsious": "unconscious", "vomitting": "vomiting", "vommiting": "vomiting"};
+const TYPO_RX = new RegExp('\\b(?:' + Object.keys(TYPOS).sort((a, b) => b.length - a.length).join('|') + ')\\b', 'gi');
 const S492_NO = /\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?/gi;
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi'), LEGBREATH = new RegExp(P.LEGBREATH_SRC, 'i');
 
@@ -349,7 +352,7 @@ function relaySwap(text: string): string {
 
 function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
-  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
+  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
   const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
   if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SHCTXW) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
