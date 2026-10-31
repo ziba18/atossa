@@ -194,3 +194,9 @@ def test_fainting_at_needles_as_always_is_quiet_but_other_signs_beside_it_still_
               "I felt faint with heavy bleeding, soaking a pad every half hour, always do with needles though",
               "I passed out and hit my head, I always faint at the sight of blood but now I can't remember"]:
         assert k(u), u
+
+
+def test_stabbing_stomach_pain_with_high_temperature_and_shivering_is_urgent():
+    from app.services.output_guard import is_emergency as k
+    assert k("it feels like someone is stabbing me in the stomach and i have a high temp and am shivering")
+    assert not k("stabbing pain behind my eye for a few seconds, my usual")
