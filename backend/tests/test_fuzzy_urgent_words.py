@@ -270,3 +270,12 @@ def test_not_exist_in_a_meeting_is_quiet_s518():
     from app.services import output_guard as g
     assert g.emergency_kind("ngl i just wanna not exist in this meeting its so boring") is None
     assert g.emergency_kind("ngl i just wanna not exist anymore") == "self_harm"
+
+
+def test_tight_throat_puffy_face_and_sleeping_pills_with_drink_s520():
+    from app.services import output_guard as g
+    assert g.emergency_kind("i ate a prawn and now my throat is tight and my face is puffy") == "medical"
+    assert g.emergency_kind("i cant keep my eyes open and took a few of my sleeping pills with whisky") == "medical"
+    assert g.emergency_kind("my throat is tight from nerves before the presentation") is None
+    assert g.emergency_kind("i took one sleeping pill with a cup of tea and slept great") is None
+    assert g.emergency_kind("had some tablets for my headache and a beer, so sleepy but fine") is None
