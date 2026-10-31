@@ -111,7 +111,7 @@ export default function TimelineScreen() {
       ) : failed ? null : mode === 'list' ? (
         <ListView feed={feed} dayFilter={dayFilter} clearDayFilter={() => setDayFilter(null)} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
       ) : mode === 'patterns' ? (
-        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
+        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenDays={(label, dates) => setDayFilter({ label, dates })} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}

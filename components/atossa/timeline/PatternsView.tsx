@@ -152,7 +152,7 @@ function EmptyLine({ title, line }: { title: string; line: string }) {
   );
 }
 
-export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: TimelineFilter) => void; onOpenWeek: (w: { from: string; to: string }) => void }) {
+export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filter: TimelineFilter) => void; /** A count that opens exactly its dated days (Timeline list, those days only). */ onOpenDays?: (label: string, dates: string[]) => void; onOpenWeek: (w: { from: string; to: string }) => void }) {
   const router = useRouter();
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
@@ -211,8 +211,8 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
         <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
-          <StatTile hero wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
-          <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
+          <StatTile hero wide={stack} value={m.noteDays} label="days with a note" onPress={() => (onOpenDays ? onOpenDays('Days with a note', m.days.filter((d) => d.logged).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
+          <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days at ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
           <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
         </View>
       </FadeIn>
