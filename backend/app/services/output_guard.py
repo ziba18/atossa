@@ -847,6 +847,8 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     r"\b(?:baby|toddler|child|son|daughter|newborn)(?:'s|s'| has| have)?\b.{0,25}\b(?:lips|face|skin)\b.{0,20}\b(?:gone |turned |going |look\w* |are |is )?(?:a bit |slightly |very )?(?:blue|grey|gray)\b|"
                     # S-497 (run 60, p75): "my baby is blue around the lips" - colour named before the lips
                     r"\b(?:baby|toddler|child|son|daughter|newborn)(?! blue)(?:'s|s'| has| have| is| looks?| looking)?\b.{0,25}\b(?:blue|bluish|grey|gray) (?:around |near |at |on |in )?(?:the |his |her |their )?(?:lips|mouth)\b|"
+                    # S-498 (run 60, p75): bleeding that keeps getting heavier together with dizziness or fainting; "my period"/"usual" notes stay quiet
+                    r"^(?![\s\S]*\b(?:my period|period pain|usual|normal for me|no dizz\w+|not dizz\w+|stopped|settled|eased)\b)(?=[\s\S]{0,160}\bbleed\w*\b[^.!?;]{0,60}\b(?:getting|got|gets|becoming|become|becomes) (?:much |a lot |far )?(?:heavier|worse|more))(?=[\s\S]{0,160}\b(?:dizz\w+|faint\w*|light ?headed|woozy)\b)|"
                     # arm numbness with jaw pain and sweating, split across clauses ("... and i'm sweating" starts a new clause; found by the apostrophe variant test)
                     r"^(?=.*\barm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b)(?=.*\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*|tight|clench\w*)\b)(?=.*\b(?:sweat\w*|clammy|breathless|feel sick|nausea\w*)\b)|"
                     # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
