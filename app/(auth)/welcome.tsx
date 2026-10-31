@@ -80,7 +80,7 @@ export default function WelcomeScreen() {
           Free, with nothing to buy.
         </Txt>
         <Txt variant="caption" color={colors.ink2} style={{ marginBottom: space.sm }}>
-          Atossa doesn't diagnose or give medical advice.
+          Atossa doesn’t diagnose or give medical advice.
         </Txt>
 
         <View style={styles.actions}>
