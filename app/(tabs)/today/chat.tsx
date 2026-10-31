@@ -3,7 +3,7 @@
 // "+" (photo / file / log), dictation and send. Replies come from Sage (POST /chat), which never
 // diagnoses. Any chat can become a structured note for the GP through the capture sheet.
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, useRouter } from 'expo-router';
 import { CHAT_ENABLED } from '../../../lib/features';
@@ -57,6 +57,7 @@ function ChatScreen() {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [placeholder, setPlaceholder] = useState(DEFAULT_PLACEHOLDER);
+  const winW = useWindowDimensions().width;
   const [drawer, setDrawer] = useState(false);
   const [attach, setAttach] = useState(false);
   const [bleeding, setBleeding] = useState(false);
@@ -110,7 +111,7 @@ function ChatScreen() {
           <ScrollView contentContainerStyle={[styles.column, styles.emptyBody]} keyboardShouldPersistTaps="handled">
             <Txt variant="body" color={colors.ink2} style={styles.center}>{greeting(name)}</Txt>
             <Txt variant="hero" style={[styles.center, { marginTop: space.sm }]} accessibilityLabel={PROMPT}>
-              {PROMPT_LINES}
+              {winW < 360 ? PROMPT : PROMPT_LINES}
             </Txt>
             <View style={styles.starters} accessibilityLabel="Ways to start">
               {STARTER_CHIPS.map((label) => (
