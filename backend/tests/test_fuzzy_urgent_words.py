@@ -125,3 +125,10 @@ def test_immune_medicine_fever_and_double_dose_s509():
     for t in ["on methotrexate, no fever, joints stiff today, cramps 3", "took my meds twice a day as prescribed, tired, cramps 2",
               "taken my meds late twice this week, felt sleepy, pain 3"]:
         assert not g.is_emergency(t), t
+
+
+def test_more_one_word_slips_s510():
+    for t in ["ive soked 6 pads since breakfst", "my mum sudenly cant speek properly", "i cant stop vomiting and have a stif neck and fevr", "blod in my wee and a high temprature"]:
+        assert g.is_emergency(t), t
+    for t in ["ive soked my pillow with sweat, hot flush, cramps 2", "my mum suddenly decided to visit, lovely, tired, cramps 3"]:
+        assert not g.is_emergency(t), t
