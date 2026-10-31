@@ -132,14 +132,14 @@ export function EntryCard({
         >
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
-            {/* Under the card header, full text, shown by the wording trigger only (Safety run38 ruling 3). */}
+            {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will save to your account when you’re back online" /> : null}
+            {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
+            {/* Under her words (PM-A201, same card, same wording and colour), full text, shown by the wording trigger only (Safety run38 ruling 3). */}
             {urgent ? (
               <View style={styles.urgent}>
                 <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent}</Txt>
               </View>
             ) : null}
-            {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will save to your account when you’re back online" /> : null}
-            {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {tag != null || facts ? (
               // The severity words sit INSIDE the pill ("9/10 at worst", N7); long facts wrap below it
               <View style={styles.facts}>
