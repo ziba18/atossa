@@ -190,3 +190,11 @@ def test_indirect_self_harm_methods_urgent_everyday_quiet():
                  "im going to take all my boxes to the house tomorrow",
                  "tonight is the night, we finally have our dinner party, cant wait"]:
         assert g.emergency_kind(line) is None, line
+
+
+def test_no_point_in_tomorrow_self_harm_everyday_quiet():
+    from app.services import output_guard as g
+    assert g.emergency_kind("i dont see the point in tomorrow") == "self_harm"
+    assert g.emergency_kind("can't see the point of carrying on") == "self_harm"
+    assert g.emergency_kind("i don't see the point in going to the shops") is None
+    assert g.emergency_kind("i dont see the point in the new diet app") is None

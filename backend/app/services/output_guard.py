@@ -473,6 +473,7 @@ _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
     + r"|\bgiv(?:e|ing) up on (?:everything|life|living)\b", re.I)
 # S-515 (run 62, p85 indirect self-harm, 7/12 missed): searching for ways to end it, taking everything in the cabinet, tonight is the night, thinking about jumping
 _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\b(?:don'?t|do not|can'?t|cannot|dont) (?:really |even )?see (?:the|any) point (?:in|of) (?:tomorrow(?![’'ʼ]s)|the future|going on|carrying on|living|being alive|waking up)\b"
     + r"|\b(?:looking|searching|googl\w+|reading) (?:up )?(?:for )?(?:ways|how) to (?:end it|die|kill myself|end my life)\b"
     + r"|\b(?:i'?m|im|i am|i will|i'?ll) (?:going to|gonna) take (?:everything|all of (?:it|them)|all (?:the |my )?(?:tablets|pills|meds|medication))\b (?:that'?s )?(?:in|from) (?:the |my )?(?:cabinet|cupboard|drawer|bathroom)\b(?! (?:and|to) (?:clean|sort|tidy|throw|bin))"
     + r"|\btonight is the night\b(?=[^.!?]{0,60}\b(?:enough|end|hurting|done|can'?t)\b)"
