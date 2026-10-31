@@ -77,10 +77,10 @@ export default function WelcomeScreen() {
         </View>}
 
         <Txt variant="caption" color={colors.ink2} style={{ marginBottom: short ? space.sm : space.xxs }}>
-          Free to use. Nothing to buy inside the app. You need an account.
+          Free, with nothing to buy.
         </Txt>
         <Txt variant="caption" color={colors.ink2} style={{ marginBottom: space.sm }}>
-          Atossa doesn’t diagnose or give medical advice.
+          Atossa doesn't diagnose or give medical advice.
         </Txt>
 
         <View style={styles.actions}>
