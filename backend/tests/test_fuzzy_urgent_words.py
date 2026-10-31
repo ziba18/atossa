@@ -91,3 +91,13 @@ def test_racing_heart_with_about_to_pass_out_s503():
     for t in ["my heart was racing on the treadmill earlier, cramps 2, tired", "my heart was racing before the exam yesterday, cramps 3",
               "cramps 4, tired, heart racing a bit after coffee, settled"]:
         assert not g.is_emergency(t), t
+
+
+def test_hedged_first_contact_gaps_s505():
+    for t in ["idk if this is normal but ive soaked 6 pads since breakfast", "not sure if i should worry, my mum cant speak properly all of a sudden",
+              "kinda scared, theres blood coming out when i pee and i have a high fever", "sudden terrible pain in my calf and its swollen, im on the pill"]:
+        assert g.is_emergency(t), t
+    for t in ["soaked 3 pads over the whole period, usually lighter, tired", "my mum cant talk properly on the phone, bad signal, cramps 3",
+              "blood on the tissue when i wiped, no fever, small, cramps 2", "calf cramp in the night, gone after stretching, swollen ankle from the flight",
+              "soaked a pad on day 2 as usual, cramps 4"]:
+        assert not g.is_emergency(t), t
