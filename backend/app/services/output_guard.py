@@ -690,6 +690,11 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,15}\bpain\b.{0,80}\b(?:(?:very )?high temperature|fever)\b.{0,60}\b(?:chills|shivering|shivery)\b|"
                     # heart attack told in plain words, and the heavy-chest descriptions NHS lists (any clause)
                     r"\b(?:having|think i'?m having|might be having|feels? like i'?m having) (?:a )?heart attack\b|"
+                    # S-512 (run 62, p83 hedged forms): "think I might be having a stroke", relayed mouth drop, double insulin, painful red eye with halos
+                    r"\b(?:think i(?:'?m| am| might be| may be)|i (?:might|may|could) be|think (?:she|he)(?:'?s| is)|might be|may be) having (?:a )?(?:stroke|heart attack)\b(?! (?:assessment|scan|test|clinic|appointment|risk|of))|"
+                    r"\b(?:mouth|side of (?:her|his|their|my) (?:mouth|face)) (?:has |is |'s |have )?(?:dropped|drooping|drooped|sagging)\b(?! open)|"
+                    r"\b(?:took|taken|injected|had|gave myself) (?:double|twice|too much|an extra|two lots of)\b[^.!?;]{0,25}\binsulin\b|"
+                    r"^(?=.*\beyes?\b[^.!?;]{0,40}\b(?:very |really |so |suddenly )?(?:painful|aching)\b)(?=.*\bred\b)(?=.*\b(?:halos?|rainbow\w*)\b)|"
                     r"\bheavy (?:feeling|weight|pressure)\b.{0,20}\b(?:across|in|on) (?:my )?chest\b|\bchest\b.{0,40}\bsitting on (?:it|me)\b|"
                     # NHS sepsis wording: high temperature with confusion/drowsiness and shaking or no urine (any order)
                     r"^(?=.*\b(?:fever|high temperature)\b)(?=.*\b(?:confus\w*|drowsy)\b)(?=.*\b(?:shak\w+|shiver\w*|(?:haven'?t|not) (?:passed|had) (?:any )?(?:urine|a wee|wee)))|"
@@ -1348,7 +1353,7 @@ _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CHEST_BURN_QUIET})(?!{_A}{_CH
 # 12 Sep 2024, fetched 29 Oct 2026): 999 if "you've had signs of a stroke within the last 24 hours even if they've now stopped".
 _FAST_SIGN = (r"\b(?:(?:arm|hand|leg)\b[^.!?;]{0,15}\b(?:went|was|felt|go|gone) (?:weak|heavy|floppy|dead)|(?:couldn'?t|could not|can'?t) (?:lift|raise|grip)\b|"
               r"(?:couldn'?t|could not) (?:get (?:my |the )?words out|speak|talk)|words? (?:came|coming) out (?:wrong|jumbled)|speech (?:went |was )?slurr\w*|slurr\w* (?:my )?(?:speech|words)|"
-              r"face\b[^.!?;]{0,20}\b(?:droop\w*|dropp\w*|went numb|fell)|mouth (?:droop\w*|dropped))")
+              r"face\b[^.!?;]{0,20}\b(?:droop\w*|dropp\w*|went numb|fell)|mouth (?:droop\w*|dropped(?! open)))")
 _FAST_RECENT = r"\b(?:earlier|this (?:morning|afternoon|evening)|tonight|today|last night|an? (?:hour|few hours) ago|\d{1,2} hours? ago|minutes? ago)\b"
 _FAST_QUIET = r"\b(?:dentist|numbing|anaesthetic|slept on|sleeping on|lying on|pins and needles|nerves|presentation|drunk|wine|years? ago|months? ago|weeks? ago|typing|gym|weights)\b"
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_FAST_QUIET})(?={_A}{_FAST_SIGN})(?={_A}{_FAST_RECENT})", _WHOLE.flags)
@@ -1827,7 +1832,7 @@ _PL_STATE = re.compile(
     # B43 (run37): carer wordings (nhs.uk when-to-call-999, read 30 Oct 2026: a child's ribs or tummy sucking in as they
     # breathe = severe difficulty breathing; someone who has fallen or collapsed and is not moving = not responding)
     r"|sucking in (?:under |between |around )?(?:his |her |their |the )?(?:ribs|tummy|stomach|chest)|(?:ribs|tummy|stomach|chest) (?:is |are |keeps? |keep )?(?:sucking|being sucked|pulling|caving) in"
-    r"|(?:fell|fallen|collapsed|keeled over|on the floor|at the bottom of the stairs)\b[^.!?;]{0,50}\b(?:not|isn'?t|is not|won'?t|wo?n'?t|hasn'?t|stopped) (?:moving|moved)\b)", re.I)
+    r"|(?:side of (?:her|his|their) (?:mouth|face)|(?:her|his|their) (?:mouth|face)) (?:has |is |'s )?(?:dropped|drooping|drooped|sagging)\b(?! open)|(?:fell|fallen|collapsed|keeled over|on the floor|at the bottom of the stairs)\b[^.!?;]{0,50}\b(?:not|isn'?t|is not|won'?t|wo?n'?t|hasn'?t|stopped) (?:moving|moved)\b)", re.I)
 _PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
 _PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
 _PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
@@ -1948,7 +1953,7 @@ def _relay_swap(text: str) -> str:
 
 
 # run 59 (p71): common misspellings are corrected before the lists run (dictated and thumb-typed notes). Mirror: lib/urgentWording.ts TYPOS.
-_TYPOS = {"soked": "soaked", "sudenly": "suddenly", "speek": "speak", "stif": "stiff", "fevr": "fever", "temprature": "temperature", "breathin": "breathing", "sweatin": "sweating", "purpl": "purple", "breakfst": "breakfast", "bleding": "bleeding", "blleeding": "bleeding", "blod": "blood", "blooding": "bleeding", "bloood": "blood", "brathe": "breathe", "breif": "brief", "brethe": "breathe", "brething": "breathing", "colapse": "collapse", "colapsed": "collapsed", "dizy": "dizzy", "dizzey": "dizzy", "dizzi": "dizzy", "evrything": "everything", "evrywhere": "everywhere", "gunna": "gonna", "lfe": "life", "miscariage": "miscarriage", "miscarrage": "miscarriage", "miscarrige": "miscarriage", "myelf": "myself", "mysefl": "myself", "myslf": "myself", "pian": "pain", "pregant": "pregnant", "pregnat": "pregnant", "pregnent": "pregnant", "pregnet": "pregnant", "prenant": "pregnant", "seizer": "seizure", "seizeure": "seizure", "seziure": "seizure", "sezure": "seizure", "shortnes": "shortness", "shortnss": "shortness", "shotness": "shortness", "siezure": "seizure", "sucide": "suicide", "suicid": "suicide", "suiside": "suicide", "swalllowed": "swallowed", "swalowed": "swallowed", "swollowed": "swallowed", "unconcious": "unconscious", "unconsious": "unconscious", "vomitting": "vomiting", "vommiting": "vomiting"}
+_TYPOS = {"swallowd": "swallowed", "swalowd": "swallowed", "soked": "soaked", "sudenly": "suddenly", "speek": "speak", "stif": "stiff", "fevr": "fever", "temprature": "temperature", "breathin": "breathing", "sweatin": "sweating", "purpl": "purple", "breakfst": "breakfast", "bleding": "bleeding", "blleeding": "bleeding", "blod": "blood", "blooding": "bleeding", "bloood": "blood", "brathe": "breathe", "breif": "brief", "brethe": "breathe", "brething": "breathing", "colapse": "collapse", "colapsed": "collapsed", "dizy": "dizzy", "dizzey": "dizzy", "dizzi": "dizzy", "evrything": "everything", "evrywhere": "everywhere", "gunna": "gonna", "lfe": "life", "miscariage": "miscarriage", "miscarrage": "miscarriage", "miscarrige": "miscarriage", "myelf": "myself", "mysefl": "myself", "myslf": "myself", "pian": "pain", "pregant": "pregnant", "pregnat": "pregnant", "pregnent": "pregnant", "pregnet": "pregnant", "prenant": "pregnant", "seizer": "seizure", "seizeure": "seizure", "seziure": "seizure", "sezure": "seizure", "shortnes": "shortness", "shortnss": "shortness", "shotness": "shortness", "siezure": "seizure", "sucide": "suicide", "suicid": "suicide", "suiside": "suicide", "swalllowed": "swallowed", "swalowed": "swallowed", "swollowed": "swallowed", "unconcious": "unconscious", "unconsious": "unconscious", "vomitting": "vomiting", "vommiting": "vomiting"}
 # "seizer of the keys" is the noun, not a misspelling of seizure
 _TYPO_RX = re.compile(r"\b(?:" + "|".join(sorted((k + r"(?! of\b)" if k == "seizer" else k for k in _TYPOS), key=len, reverse=True)) + r")\b", re.I)
 

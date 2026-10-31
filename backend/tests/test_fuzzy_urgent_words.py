@@ -156,3 +156,17 @@ def test_relayed_infant_lines_urgent_laughing_quiet():
                  "my sister's baby is due next week and i am excited",
                  "my friend's baby is a bit sleepy but feeding fine"]:
         assert g.emergency_kind(line) is None, line
+
+
+def test_hedged_stroke_relayed_mouth_drop_insulin_eye_halos_urgent_idioms_quiet():
+    from app.services import output_guard as g
+    for line in ["not sure if its anything but i think i might be having a stroke, my arm wont lift",
+                 "my mum cant speak properly and one side of her mouth has dropped",
+                 "ive taken twice my usual insulin by mistake and im shaky and sweaty",
+                 "my eye is suddenly very painful and red and the lights have halos",
+                 "prob should say, i swallowd loads of paracetamol earlier"]:
+        assert g.emergency_kind(line) is not None, line
+    for line in ["i could be having a stroke of luck",
+                 "my eyes are sore from screens and i saw halos around the moon",
+                 "i took double my usual vitamin"]:
+        assert g.emergency_kind(line) is None, line
