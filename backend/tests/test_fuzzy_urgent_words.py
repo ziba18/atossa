@@ -319,3 +319,13 @@ def test_pins_and_needles_face_arm_speech_together_urgent_s522():
     for line in ["pins and needles in my arm, speech is normal",
                  "my mum says pins and needles in her face and her arm is heavy and her speech is odd"]:
         assert not g.is_emergency(line), line
+
+
+def test_egg_collection_massively_bloated_with_breathing_or_wee_s528():
+    from app.services import output_guard as g
+    for line in ["after my egg collection I am bloated massively and can barely breathe and have hardly peed",
+                 "egg collection two days ago, I am so bloated and have barely any wee"]:
+        assert g.is_emergency(line), line
+    for line in ["after my egg collection I am a bit bloated but eating and peeing fine",
+                 "ivf injections made me bloated, I peed normally and breathing is fine"]:
+        assert not g.is_emergency(line), line
