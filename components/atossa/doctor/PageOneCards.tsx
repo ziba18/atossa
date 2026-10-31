@@ -15,7 +15,10 @@ const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
 /** `showAgenda` is false when the editable agenda field already sits above the cards. */
 export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showAgenda?: boolean }) {
-  const narrow = useWindowDimensions().width < 360;
+  const winW = useWindowDimensions().width;
+  const narrow = winW < 360;
+  // 300-360 pt: the count and the worst rating sit side by side (two numbers above the fold, not one under the other).
+  const pair = narrow && winW >= 300;
   const router = useRouter();
   // Every count opens the dated days behind it: Timeline list, exactly those days.
   const openDays = (label: string, dates?: string[], kind?: 'symptom' | 'bleeding') => { if (!dates?.length) return; useTimelineSession.getState().setDayFilter({ label, dates, kind }); router.push('/(tabs)/timeline' as any); };
@@ -54,13 +57,13 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         <Txt variant="groupLabel">{freq.title}</Txt>
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>{thin.thin && thin.line ? thin.line : freq.windowLabel}</Txt>
         {all ? (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-end' }}>
-            <Pressable onPress={() => openDays('Days with a note', all.dates)} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={{ maxWidth: '100%', minHeight: 44 }} accessibilityLabel={thin.thin ? `${all.days} with a note, ${thin.line}` : undefined}>
+          <View style={{ flexDirection: 'row', flexWrap: pair ? 'nowrap' : 'wrap', columnGap: pair ? space.md : space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-start' }}>
+            <Pressable onPress={() => openDays('Days with a note', all.dates)} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={[{ maxWidth: '100%', minHeight: 44 }, pair ? { flex: 3, minWidth: 0 } : null]} accessibilityLabel={thin.thin ? `${all.days} with a note, ${thin.line}` : undefined}>
               <Txt variant="numeral" style={big}>{all.days}</Txt>
               <Txt variant="secondary">{thin.thin ? 'with a note' : `of ${plural(all.total, 'day')} with a note`}</Txt>
             </Pressable>
             {worstAll ? (
-              <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={`Worst rating ${worstAll} out of 10`}>
+              <View style={[{ maxWidth: '100%' }, pair ? { flex: 2, minWidth: 0 } : null]} accessible accessibilityLabel={`Worst rating ${worstAll} out of 10`}>
                 <Txt variant="numeral" style={big}>{`${worstAll}/10`}</Txt>
                 <Txt variant="secondary">worst rating</Txt>
               </View>
