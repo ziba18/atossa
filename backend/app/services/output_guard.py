@@ -1916,6 +1916,9 @@ def _relay_swap(text: str) -> str:
     return _IDIOM.sub(" ", ". ".join(out))  # 'she'd kill herself laughing' -> the first-person idiom, blanked as for her own words
 
 
+_S492_NO = re.compile(r"\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?", re.I)
+
+
 def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
     # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
@@ -1923,6 +1926,7 @@ def _emergency_kind(user_text: str):
         user_text = _IDIOM.sub(" ", user_text)
     # a lead-in at the very start leaves ". " there; strip it so a whole-note rule anchored at ^ still sees her first sentence
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
+    user_text = _S492_NO.sub(" ", user_text)  # run 59: a question the writer answers herself ("Chest pain? No, it's heartburn")
     if _ADHERENCE.search(user_text):
         user_text = _ADH_PHRASE.sub(" ", user_text)  # B62 (run41)
     if _hits(_SELF_RX, user_text, True) or _hits(_SELF_HARM_RX, user_text, True) or _hits_whole(_SH_CTX_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):

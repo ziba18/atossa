@@ -228,3 +228,10 @@ def test_skin_peeling_after_new_tablets_and_nonstop_vomiting_with_fast_breathing
               "my skin is peeling on my hands from washing, using cream",
               "been sick all day with a bug, breathing normal"]:
         assert not k(q), q
+
+
+def test_chest_pain_question_the_writer_answers_with_no_is_quiet_but_other_signs_still_fire():
+    from app.services.output_guard import is_emergency as k
+    assert not k("Chest pain? No, it's heartburn after the curry, Gaviscon helped.")
+    assert k("Chest pain? Yes, crushing, into my arm")
+    assert k("chest pain? no. but now I can't breathe")

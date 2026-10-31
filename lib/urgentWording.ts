@@ -94,6 +94,8 @@ function hardToWake342(t: string): boolean {
   if (SIGN342.test(t.replace(NEG342, ''))) return true;
   return !MORN342.test(t) && !/refresh/i.test(t);
 }
+// run 59 (backend _S492_NO): a question the writer answers herself ("Chest pain? No, it's heartburn")
+const S492_NO = /\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?/gi;
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi'), LEGBREATH = new RegExp(P.LEGBREATH_SRC, 'i');
 
 /** Mirrors backend `_is_past`: "last week" with a present-tense word in the clause is not past tense. */
@@ -347,7 +349,7 @@ function relaySwap(text: string): string {
 
 function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
-  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
+  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
   const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
   if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SHCTXW) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
