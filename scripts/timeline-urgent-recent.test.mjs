@@ -9,3 +9,10 @@ assert.match(src, /const urgent = isRecentDay\(s\.date\) \? urgentSignpost\(text
 assert.match(src, /function isRecentDay\(date: string\): boolean \{\s*const today = todayKey\(\);\s*return date === today \|\| date === addDays\(today, -1\);/, 'today or yesterday by todayKey/addDays');
 assert.match(src, /import \{[^}]*\baddDays\b[^}]*\} from '\.\.\/\.\.\/\.\.\/lib\/records\/dates'/);
 console.log('ok: timeline urgent recent-only');
+
+// PM-A201: the urgent line sits under her words in the same card, never above them.
+const quoteAt = src.indexOf('<Quote numberOfLines={2}>{words}</Quote>');
+const urgentAt = src.indexOf('<View style={styles.urgent}>');
+assert.ok(quoteAt > 0 && urgentAt > quoteAt, 'urgent line is rendered after the quote');
+assert.equal((src.match(/styles\.urgent\}/g) || []).length, 1, 'one urgent block per symptom card');
+console.log('ok: urgent line below the quote');
