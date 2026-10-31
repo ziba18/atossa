@@ -238,6 +238,9 @@ export default function DoctorScreen() {
         </Card>
       ) : null}
 
+      {/* Short phones (568 pt): the Save bar sits right under the appointment card, inside the first screen (PRD doctor-v2 26 AC1), not at the end of a long page. */}
+      {inlineBar && !nothingYet && winHeight >= 400 ? <View style={{ marginTop: space.md }}>{footer}</View> : null}
+
       {desk && !nothingYet ? (
         <View style={{ flexDirection: 'row', gap: space.xxl, alignItems: 'flex-start' }}>
           <View style={{ width: 340 }}>
@@ -439,7 +442,7 @@ export default function DoctorScreen() {
       )}
 
       <SafetyLine style={{ marginTop: space.xxl }} />
-      {inlineBar ? <View style={{ marginTop: space.xl }}>{footer}</View> : null}
+      {inlineBar && (nothingYet || winHeight < 400) ? <View style={{ marginTop: space.xl }}>{footer}</View> : null}
     </ScreenLarge>
   );
 }
