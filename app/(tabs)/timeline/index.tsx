@@ -327,16 +327,6 @@ function MonthView({
         onNext={() => shift(1)}
         onDayPress={onDayPress}
       />
-      {summaryRows.length ? (
-        <View style={{ gap: space.xxs }}>
-          {summaryRows.map((r) => r.onPress ? (
-            <Pressable key={r.key} onPress={r.onPress} accessibilityRole="button" accessibilityHint="Shows these days in the list" style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
-              <Txt variant="secondary" color={colors.ink2} style={{ flex: 1, flexShrink: 1 }}>{r.text}</Txt>
-              <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
-            </Pressable>
-          ) : <Txt key={r.key} variant="secondary" color={colors.ink2}>{r.text}</Txt>)}
-        </View>
-      ) : null}
       {noteDays || bleedingDays || spottingDays ? (
         <View accessible accessibilityLabel={monthKeyLabel(noteDays > 0, bleedingDays > 0, spottingDays > 0)} style={{ gap: space.sm }}>
           {noteDays ? (
@@ -346,6 +336,16 @@ function MonthView({
           ) : null}
           {bleedingDays ? <MonthKeyRow glyph={<View style={keyStyles.solid} />}>Bleeding logged</MonthKeyRow> : null}
           {spottingDays ? <MonthKeyRow glyph={<View style={keyStyles.dashed} />}>Spotting logged</MonthKeyRow> : null}
+        </View>
+      ) : null}
+      {summaryRows.length ? (
+        <View style={{ gap: space.xxs }}>
+          {summaryRows.map((r) => r.onPress ? (
+            <Pressable key={r.key} onPress={r.onPress} accessibilityRole="button" accessibilityHint="Shows these days in the list" style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+              <Txt variant="secondary" color={colors.ink2} style={{ flex: 1, flexShrink: 1 }}>{r.text}</Txt>
+              <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
+            </Pressable>
+          ) : <Txt key={r.key} variant="secondary" color={colors.ink2}>{r.text}</Txt>)}
         </View>
       ) : null}
     </View>
