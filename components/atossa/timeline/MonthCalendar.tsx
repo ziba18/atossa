@@ -57,6 +57,11 @@ export function MonthCalendar({
 
   // Under 200 pt the grid reaches 8 pt into the page gutter so each day button stays 24 px wide (WCAG 2.2 target size).
   const bleed = winW < 200 ? { marginHorizontal: -8 } : null;
+  // Under 240 pt wide (200% text on a small phone) seven columns are ~24 pt: too small to press. The same month as a list of its logged days, 44 pt rows.
+  const asList = winW < 240;
+  const logged = asList
+    ? Array.from({ length: days }, (_, i) => toKey(year, month0, i + 1)).filter((k) => marks[k]?.hasEntries || marks[k]?.bleeding)
+    : [];
   return (
     <View>
       <View style={styles.head}>
@@ -66,12 +71,39 @@ export function MonthCalendar({
         </Txt>
         <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
       </View>
-      <View style={[styles.row, bleed]} aria-hidden>
+      {asList ? (
+        logged.length === 0 ? <Txt variant="secondary" style={{ marginTop: space.md }}>Nothing is saved this month.</Txt> : (
+          <View>
+            {logged.map((k) => {
+              const m = marks[k];
+              const bits = [
+                k === today ? 'Today' : '',
+                m?.bleeding === 'bleeding' ? 'Bleeding' : m?.bleeding === 'spotting' ? 'Spotting' : m?.bleeding === 'none-flow' ? 'Period, no flow' : '',
+                m?.notes ? notesLabel(m.notes) : '',
+                m?.worst != null ? `At worst ${m.worst}/10` : '',
+              ].filter(Boolean);
+              return (
+                <Pressable
+                  key={k}
+                  onPress={() => onDayPress(k)}
+                  accessibilityRole="button"
+                  accessibilityHint="Shows this day"
+                  style={{ minHeight: 44, paddingVertical: space.xs, borderBottomWidth: 1, borderBottomColor: colors.hairline, justifyContent: 'center' }}
+                >
+                  <Txt variant="body" style={{ fontFamily: fonts.semibold }}>{formatDay(k)}</Txt>
+                  {bits.length ? <Txt variant="secondary">{bits.join(' · ')}</Txt> : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        )
+      ) : null}
+      {asList ? null : <View style={[styles.row, bleed]} aria-hidden>
         {WEEKDAY_LETTERS.map((w, i) => (
           <View key={i} style={styles.weekday}><Txt variant="caption">{w}</Txt></View>
         ))}
-      </View>
-      {Array.from({ length: cells.length / 7 }, (_, r) => (
+      </View>}
+      {asList ? null : Array.from({ length: cells.length / 7 }, (_, r) => (
         <View key={r} style={[styles.row, bleed]}>
           {cells.slice(r * 7, r * 7 + 7).map((d, c, row) => {
             if (d == null) return <View key={c} style={styles.cell} />;
