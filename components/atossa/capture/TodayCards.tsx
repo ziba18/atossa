@@ -29,9 +29,11 @@ import { MONTH_NAMES, addDays, diffDays, parseKey } from '../../../lib/records/d
 const PROMPT = 'What’s been going on with your body?';
 
 export function HeroCard() {
+  // Under 280 pt wide (200% text) the 30 pt serif prompt wraps to five lines and pushes the actions off the screen.
+  const narrow = useWindowDimensions().width < 280;
   return (
     <Card tone="hero" style={[styles.hero, { backgroundColor: severityRamp[4], borderColor: severityRamp[4] }]}>
-      <Txt variant="hero" color={colors.white} style={styles.center} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
+      <Txt variant="hero" color={colors.white} style={[styles.center, narrow && { fontSize: 22, lineHeight: 28 }]} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT}
       </Txt>
       {Platform.OS === 'web' ? (
