@@ -114,6 +114,11 @@ function scoreFrom(lower: string): number | undefined {
   for (const m of lower.matchAll(new RegExp(`\\b(?:(?:spikes?|goes up|goes|rises?|peaks?|climbs?|gets?|up)\\s+to|(?:peaked|topped out)\\s+(?:at|to))\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "it hit a nine for twenty minutes": reaching a score is a peak too.
   for (const m of lower.matchAll(new RegExp(`\\b(?:hit|hits|reached|reaches|touched)\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
+  // Spoken notes (A75): "probably a seven", "I'd put it at a five", "call it a four", "it was a solid eight", "at its worst a seven".
+  // The article is required, so "probably two days" / "probably at eight" / "one of the worst days" stay empty.
+  for (const m of lower.matchAll(new RegExp(`\\b(?:probably|prob|i'd say|i would say|put it at|call it|honestly|roughly|i reckon|somewhere (?:about|around)|at (?:its|the) worst(?: point)?|worst (?:was|is)|pain's|was|is)\\s+(?:about\\s+|around\\s+|like\\s+)?an?\\s+(?:solid\\s+|good\\s+|strong\\s+|proper\\s+)?(${NUM})(?:ish)?\\b(?!\\s+(?:of|sided|thing|more|time|other|off|day|way|side|that|who|which|to(?!\\s+be\\b)|too|for)\\b)(?!\\s*(?:or|-|–|to)\\s*${NUM}\\b)(?!\\s+on a good\\b)(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
+  // "an eight at its worst", "a nine at the peak": the score comes first.
+  for (const m of lower.matchAll(new RegExp(`\\ban?\\s+(?:solid\\s+)?(${NUM})\\s+(?:at (?:its|the) (?:worst|peak)|when it peaked)\\b`, 'g'))) found.push(toNum(m[1]));
   // "about a 4 most days, 7 on Tuesday": a score tied to a day is a score too (the highest wins below).
   for (const m of lower.matchAll(new RegExp(`(?:^|[,;]\\s*|\\band\\s+)(${NUM})\\s+on\\s+(?:mon|tues|wednes|thurs|fri|satur|sun)day\\b`, 'g'))) found.push(toNum(m[1]));
   // "5 or 6", "9 maybe 10" standing alone as the score (end of clause): the higher one is the worst. Not "2 or 3 days".
@@ -123,7 +128,7 @@ function scoreFrom(lower: string): number | undefined {
   if (!found.length || /\b(?:about|around|maybe|like)\s+(?:a\s+)?\d/.test(lower)) {
     for (const m of lower.matchAll(new RegExp(`\\b(?:it['’]?s|its|about|around|maybe|like)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) {
       // "keep waking me up around 4": a clock time after waking/bed, not a score.
-      if (/\b(?:up|woke|wake|waking|awake|bed|asleep|till|until|since)(?:\s+at)?\s+$/.test(lower.slice(0, m.index))) continue;
+      if (/\b(?:up|woke|wake|waking|awake|bed|asleep|till|until|since|started|starts|start)(?:\s+at)?\s+$/.test(lower.slice(0, m.index))) continue;
       if (/^\s*(?:in the (?:morning|evening|afternoon)|at night|o['’]?clock)\b/.test(lower.slice(m.index + m[0].length))) continue;
       found.push(toNum(m[1]));
     }
