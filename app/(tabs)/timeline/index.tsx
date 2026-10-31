@@ -203,7 +203,7 @@ function ListView({
       <View style={{ marginTop: space.sm, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
         <Chip
           style={{ flexShrink: 1, maxWidth: '100%' }}
-          label={dayFilter ? `Showing: ${dayFilter.label} · ${dayFilter.dates.length === 1 ? '1 day' : `${dayFilter.dates.length} days`}` : filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
+          label={dayFilter ? `${dayFilter.label} · ${dayFilter.dates.length === 1 ? '1 day' : `${dayFilter.dates.length} days`}` : filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
           selected={filter !== 'All' || !!dayFilter}
           onPress={() => setFilterOpen(true)}
         />
