@@ -432,6 +432,12 @@ _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
     + r"|\bcan'?t see (?:a|any) (?:reason|point) (?:to |in )(?:go(?:ing)? on|keep(?:ing)? going|carry(?:ing)? on|living|being here)\b(?! (?:the|to|with|at|in|this|that|a|for)\b)"
     + r"|\bno reason for me to (?:live|go on|keep going|be here)\b(?! (?:in|at|near|with|there|before|until|by|after|on|for|during|when)\b)"
     + r"|\bgiving away (?:all )?(?:of )?my (?:things|stuff|belongings|possessions)\b(?=[^.!?]{0,60}\b(?:goodbye|bye|letters?|note)\b)", re.I)
+# S-475 (Safety run 57): perceived burdensomeness ('everyone would be happier if I was gone') and 'had enough' + a plan or
+# method word, plain first person. A work, weather, queue, gym or holiday word later in the same sentence keeps it quiet.
+_S475_Q = r"(?![^.!?;\n]{0,80}\b(?:rain|weather|work|job|queue|traffic|exam|homework|essay|school|diet|gym|meeting|cooking|laundry|holiday|haha|lol|office|booked|joking|plan (?:for|to) (?:the )?(?:weekend|holiday|party|trip|dinner|wedding))\b)"
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\b(?:everyone|everybody|they|my (?:family|friends|kids|children|partner|mum|dad)|people)\b" + _S475_Q + r"[^.!?;\n]{0,25}\b(?:would be|'d be|be|were|are) (?:so much )?(?:happier|better off|better|relieved)\b[^.!?;\n]{0,15}\b(?:if i (?:was|were) (?:gone|dead|not (?:here|around)|never (?:born|here))|if i (?:wasn'?t|weren'?t) (?:here|around|alive|born)(?! (?:on|at|in|for|today|tomorrow)\b)|if i (?:died|disappeared|wasn'?t alive)|without me(?! (?:on|at|in|for)\b)|when i'?m gone|if i'?m gone)", re.I)
+
 # PM-B74 (run43): two sign classes from samaritans.org/difficultconversations (quoted by PM, read 31 Oct 2026): "feeling
 # hopeless, helpless or worthless" and "feeling trapped by life circumstances they can't see a way out of, or feeling unable
 # to escape their thoughts". First person present only ('felt a bit hopeless' stays quiet); 'hopeless at/about/with',
@@ -1361,6 +1367,11 @@ _SH_PREP = (r"\b(?:(?:wrote|written|writing|left) (?:\w+ ){0,2}(?:letters?|notes
             r"(?:sorted|made|wrote|done|written|updated) (?:out )?my will|cancel\w* everything)\b")
 _SH_FINAL = (r"\b(?:(?:after|when|once) i'?m (?:gone|dead|not here)|for after i|(?:the|my) last time|no point after (?:this|tonight|today|tomorrow)\b|(?:won'?t|will not) be (?:here|around)|"
              r"enough to end|made my mind up|(?:not|n'?t) (?:be )?(?:here|around) (?:much longer|for long|after))")
+# S-475 (run 57): 'had enough' / 'can't do this any more' with a plan or method word in the same note, first person; a whole-note
+# work, weather, queue, gym or holiday word keeps it quiet ('I have had enough of the rain and a plan for the weekend').
+_S475_ENOUGH = (r"\b(?:i(?:'ve| have)? had enough|i can'?t do (?:this|it) any ?more|i'm done with (?:everything|life))\b[^.!?;\n]{0,40}\b(?:plan|method|tablets|pills|tonight|ready|sorted|note)\b")
+_S475_QUIET = r"(?![\s\S]*(?:\b(?:rain|weather|work|job|queue|traffic|exam|homework|essay|school|diet|gym|meeting|cooking|laundry|holiday|haha|lol|office|booked|joking)\b|\bcover is\b|\bplan (?:for|to) (?:the )?(?:weekend|holiday|party|trip|dinner|wedding)\b))"
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_S475_QUIET}(?={_A}{_S475_ENOUGH})", _SELF_WHOLE.flags)
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^(?={_A}{_SH_PREP})(?={_A}{_SH_FINAL})"
                          + r"|\b(?:won'?t|will not|wouldn'?t) be (?:a burden|a problem|in (?:anyone'?s|your|the) way) (?:to|for|on) (?:anyone|anybody|everyone|you all|any of you) (?:for )?(?:much|very|any) longer\b", _SELF_WHOLE.flags)
 
