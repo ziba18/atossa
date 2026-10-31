@@ -1,7 +1,8 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, useWindowDimensions, type ScrollViewInstance } from 'react-native';
+import { Pressable, View, StyleSheet, useWindowDimensions, type ScrollViewInstance } from 'react-native';
+import { Icon } from '../../../components/ui/Icon';
 import { useRouter } from 'expo-router';
 import {
   AddButton, Button, Chip, ChipGroup, Sheet, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
@@ -288,19 +289,25 @@ function MonthView({
 
   const prefix = `${month.y}-${String(month.m0 + 1).padStart(2, '0')}-`;
   let bleedingDays = 0;
+  const noteKeys: string[] = [];
+  const bleedKeys: string[] = [];
   let spottingDays = 0;
   let noteDays = 0;
   for (const [k, m] of Object.entries(marks)) {
     if (!k.startsWith(prefix)) continue;
-    if (m.notes > 0) noteDays++;
-    if (m.bleeding === 'bleeding') bleedingDays++;
+    if (m.notes > 0) { noteDays++; noteKeys.push(k); }
+    if (m.bleeding === 'bleeding') { bleedingDays++; bleedKeys.push(k); }
     else if (m.bleeding === 'spotting') spottingDays++;
   }
-  const summary = [
-    noteDays ? `Notes on ${dayWord(noteDays)} this month.` : '',
-    bleedingDays ? `Bleeding logged on ${dayWord(bleedingDays)}.` : '',
-    spottingDays ? `Spotting logged on ${dayWord(spottingDays)}.` : '',
-  ].filter(Boolean).join(' ');
+  const monthName = new Date(Date.UTC(month.y, month.m0, 1)).toLocaleString('en-GB', { month: 'long', timeZone: 'UTC' });
+  // Each count opens exactly its days on the list (chip names the month).
+  const openMonth = (label: string, dates: string[], kind: 'symptom' | 'bleeding') => { useTimelineSession.getState().setDayFilter({ label, dates: dates.sort(), kind }); };
+  const summaryRows: { key: string; text: string; onPress?: () => void }[] = [
+    noteDays ? { key: 'n', text: `Notes on ${dayWord(noteDays)} this month.`, onPress: () => openMonth(`Notes in ${monthName}`, noteKeys, 'symptom') } : null,
+    bleedingDays ? { key: 'b', text: `Bleeding logged on ${dayWord(bleedingDays)}.`, onPress: () => openMonth(`Bleeding in ${monthName}`, bleedKeys, 'bleeding') } : null,
+    spottingDays ? { key: 's', text: `Spotting logged on ${dayWord(spottingDays)}.` } : null,
+  ].filter((x): x is { key: string; text: string; onPress?: () => void } => x !== null);
+  const summary = summaryRows.map((r) => r.text).join(' ');
 
   const shift = (n: number) => {
     const t = month.m0 + n;
@@ -318,7 +325,16 @@ function MonthView({
         onNext={() => shift(1)}
         onDayPress={onDayPress}
       />
-      {summary ? <Txt variant="secondary" color={colors.ink2}>{summary}</Txt> : null}
+      {summaryRows.length ? (
+        <View style={{ gap: space.xxs }}>
+          {summaryRows.map((r) => r.onPress ? (
+            <Pressable key={r.key} onPress={r.onPress} accessibilityRole="button" accessibilityHint="Shows these days in the list" style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+              <Txt variant="secondary" color={colors.ink2} style={{ flex: 1, flexShrink: 1 }}>{r.text}</Txt>
+              <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
+            </Pressable>
+          ) : <Txt key={r.key} variant="secondary" color={colors.ink2}>{r.text}</Txt>)}
+        </View>
+      ) : null}
       {noteDays || bleedingDays || spottingDays ? (
         <View accessible accessibilityLabel={monthKeyLabel(noteDays > 0, bleedingDays > 0, spottingDays > 0)} style={{ gap: space.sm }}>
           {noteDays ? (
