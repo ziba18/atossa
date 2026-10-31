@@ -251,3 +251,22 @@ def test_sleep_forever_with_pills_and_no_way_out_s517():
     assert g.emergency_kind("i feel like theres no way out and i have everything ready") == "self_harm"
     assert g.emergency_kind("i want to sleep forever after this exam week, so tired") is None
     assert g.emergency_kind("there is no way out of this traffic, everything is ready for the party") is None
+
+
+def test_high_temp_newborn_hot_overdose_early_waters_s518():
+    from app.services import output_guard as g
+    assert g.emergency_kind("the pain in my side is unreal and i have been sick and have a temp of 40") == "medical"
+    assert g.emergency_kind("my baby is 3 weeks old and feels hot and wont feed") == "medical"
+    assert g.emergency_kind("i was told not to take ibuprofen and i took 12 by accident") == "medical"
+    assert g.emergency_kind("there was a gush of fluid and im only 28 weeks") == "medical"
+    assert g.emergency_kind("had a temp of 39 last year with the flu, all fine, my knee has some pain") is None
+    assert g.emergency_kind("my baby is 3 months old and feels warm after a bath, no fever") is None
+    assert g.emergency_kind("my son is 6 weeks old and was hot yesterday but now fine") is None
+    assert g.emergency_kind("i took 12 steps by accident into the pool") is None
+    assert g.emergency_kind("my waters leaked a tiny bit at 39 weeks and midwife said fine") is None
+
+
+def test_not_exist_in_a_meeting_is_quiet_s518():
+    from app.services import output_guard as g
+    assert g.emergency_kind("ngl i just wanna not exist in this meeting its so boring") is None
+    assert g.emergency_kind("ngl i just wanna not exist anymore") == "self_harm"
