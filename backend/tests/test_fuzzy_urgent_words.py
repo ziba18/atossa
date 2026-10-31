@@ -234,3 +234,20 @@ def test_hard_bump_with_bleeding_late_pregnancy_s516():
     from app.services import output_guard as g
     assert g.emergency_kind("my bump is rock hard and i have bad pain and bleeding, 30 weeks") == "medical"
     assert g.emergency_kind("my bump is hard when the baby kicks, 30 weeks, no pain no bleeding") is None
+
+
+def test_stiff_neck_rash_vision_loss_s517():
+    from app.services import output_guard as g
+    assert g.emergency_kind("my daughter is 6 and her neck is stiff and she hates the light and has a rash") == "medical"
+    assert g.emergency_kind("i saw a flash of light and now half my vision is gone") == "medical"
+    assert g.emergency_kind("i slept funny and my neck is stiff, no rash") is None
+    assert g.emergency_kind("my vision went blurry for a second when i stood up, back to normal") is None
+    assert g.emergency_kind("half my vision is gone on this tiny phone screen because of the crack") is None
+
+
+def test_sleep_forever_with_pills_and_no_way_out_s517():
+    from app.services import output_guard as g
+    assert g.emergency_kind("i took my pills and a bottle of wine because i want to sleep forever") == "self_harm"
+    assert g.emergency_kind("i feel like theres no way out and i have everything ready") == "self_harm"
+    assert g.emergency_kind("i want to sleep forever after this exam week, so tired") is None
+    assert g.emergency_kind("there is no way out of this traffic, everything is ready for the party") is None
