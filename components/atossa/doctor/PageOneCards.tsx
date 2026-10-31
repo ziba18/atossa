@@ -71,7 +71,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
           all.worstKey ? (
             <Pressable onPress={() => { useTimelineSession.getState().setOpenDay(all.worstKey!); router.push('/(tabs)/timeline' as any); }} accessibilityRole="button" accessibilityHint="Opens that day in the Timeline" style={{ marginTop: space.sm, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
               <Txt variant="secondary" style={{ flexShrink: 1 }}>{`Worst: ${all.worstOn}`}</Txt>
-              <Icon name="chevron-right" size={20} color={colors.ink3} />
+              <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
             </Pressable>
           ) : <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`}</Txt>
         ) : null}

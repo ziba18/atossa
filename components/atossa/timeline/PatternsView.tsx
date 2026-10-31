@@ -35,8 +35,10 @@ function Bars({ rows, total, onRow }: { rows: { label: string; days: number; dat
         <Pressable key={r.label} disabled={!onRow} onPress={() => onRow?.(r.label, r.dates)} accessibilityRole={onRow ? 'button' : undefined} accessibilityHint={onRow ? 'Shows these days in the Timeline' : undefined} style={{ gap: 4, minHeight: onRow ? 44 : undefined, justifyContent: 'center' }}>
           <View style={[styles.barHead, !roomy && { flexWrap: 'wrap' }]}>
             <Txt variant="body" style={roomy ? { flexShrink: 1, flex: 1 } : { flexShrink: 1 }}>{r.label}</Txt>
-            <Txt variant="body" style={{ flexShrink: roomy ? 0 : 1, marginLeft: 'auto', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
-            {onRow && r.dates?.length ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto', flexShrink: roomy ? 0 : 1 }}>
+              <Txt variant="body" style={{ flexShrink: 1, fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
+              {onRow && r.dates?.length ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+            </View>
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
