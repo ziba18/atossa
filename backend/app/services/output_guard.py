@@ -351,7 +351,7 @@ _SELF = [
     r"end(?:ing)? my (?:own )?life", r"(?:don'?t|do not) want to be (?:alive|here)(?: anymore| any more)?", r"hurt(?:ing)? myself",
     r"cutting myself|(?:been|keep|kept|started) cutting\b|cutting again", r"(?:want|wanna) to (?:just )?disappear(?: forever)?", r"better off (?:dead|without me)", r"(?:take|taking|took|takes) my (?:own )?life",
     r"(?:took|taken|swallowed) all (?:of )?(?:my|the) (?:paracetamol|tablets|pills|painkillers|medication)(?![^.!?;]{0,40}\b(?:for the (?:week|month|day|course)|(?:new|repeat|next) prescription|as (?:prescribed|directed)|the (?:gp|doctor|pharmacist|nurse) (?:said|told|gave|prescribed))\b)", r"(?:sleep|asleep|bed).{0,25}(?:never|not) (?:wake|waking) up", r"(?:no|any) reason to (?:keep )?(?:living|live|go on)(?! (?:in|at|with|near)\b)|don'?t see any (?:reason|point) (?:to|in) (?:keep )?(?:living|live|go on|going on|carry on|carrying on)",
-    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b(?! with (?:this|that|our|work|uni|him|her|them)\b| with (?:the|my) (?:project|job|course|relationship|boyfriend|girlfriend|partner|husband|wife|band|business|degree)\b)", r"no point (?:in )?(?:going on|living|being here)",
+    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)(?! of (?:the|a|this|that) (?:car ?park|building|maze|station|room|queue|traffic|meeting|shop|hospital|estate|town)\b)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b(?! with (?:this|that|our|work|uni|him|her|them)\b| with (?:the|my) (?:project|job|course|relationship|boyfriend|girlfriend|partner|husband|wife|band|business|degree)\b)", r"no point (?:in )?(?:going on|living|being here)",
 ]
 # run07 set v75 (first contact 20/20 missed): a plan said without die/kill/suicide. Coverage map = the three C-SSRS
 # screener classes (wish to be dead, method, preparation; cssrs.columbia.edu); Atossa never screens or asks these.
@@ -444,6 +444,27 @@ _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
     + r"|" + _SH_FEEL + r"trapped\b(?! wind)(?=[^.!?]{0,60}\b(?:way out|my (?:own )?life|this life|escape|no exit|never (?:end|get out))\b)"
     + r"|" + _SH_FEEL + r"(?:a burden|useless|a failure) and (?:so |completely |totally |utterly )?worthless\b"
     + r"|\b(?:can'?t|cannot) escape (?:from )?(?:my (?:own )?)?(?:thoughts|head|mind)\b", re.I)
+# B79 (run43 PROTOTYPE): the same hopeless/trapped context branches read per sentence, so a comma between the feeling and its
+# context ('I feel so trapped, there's no way out') no longer cuts the lookahead (_CLAUSE splits on ', ').
+_SH_CTX_WHOLE = re.compile(_SH_FEEL + r"(?:hopeless\b(?! (?:at|about|with|when it comes|for (?:the|this|today|tonight))\b)(?=[^.!?]{0,60}\b(?:nothing|never|no (?:hope|point|future|way)|anymore|any more|for me|life|everything|get better)\b)"
+    + r"|trapped\b(?! wind)(?=[^.!?]{0,60}\b(?:way out|my (?:own )?life|this life|escape|no exit|never (?:end|get out))\b))", re.I)
+
+# PM-B82 (run44): first-person indirect ideation families written from own set sets/pmb82-indirect-run44.json (before code)
+# and Safety C93 (option A: same SELF_HARM message, conditional 999 line). Bare 'hopeless' at a clause end, 'a burden to everyone',
+# 'don't really want to be here', 'wish I could disappear', 'what's the point anymore', 'had enough of life', 'no future for me',
+# 'nothing left for me', 'don't want to carry on', 'giving up on everything'. Quiet look-alikes ('hopeless at maths', 'disappear
+# into bed', 'had enough of the bloating', 'giving up on dairy', 'a burden on my partner on bad days') stay quiet.
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|" + _SH_FEEL + r"hopeless\b(?=\s*(?:[.!?,;]|$)| (?:about (?:everything|life|my life|the future|it all)|and (?:helpless|worthless|trapped|alone)|all the time|every day|tonight)\b)"
+    + r"|\b(?:i'?m|im|i am|i feel like|i feel) (?:such )?a burden (?:to|on) (?:everyone|everybody|all of them|the world)\b"
+    + r"|\b(?:don'?t|do not) (?:really|even|honestly) want to be (?:here|alive)\b(?! (?:at|in|for|with|on|today|tomorrow|tonight)\b)"
+    + r"|\bwish i could (?:just )?disappear\b(?! (?:into|under|in|for|to|from|off|until|till)\b)"
+    + r"|\bwhat'?s (?:even )?the point (?:any ?more|of (?:anything|it all|me))\b"
+    + r"|\b(?:had|have had|i'?ve had) enough of (?:life|living|being alive|everything(?=\s*(?:[.!?,;]|$| (?:and|now|any ?more)\b)))\b(?! (?:hurting|being|going|today)\b)"
+    + r"|\bcan'?t see (?:a|any) future (?:for (?:myself|me)|any ?more)\b"
+    + r"|\bnothing left for me\b(?! (?:to (?:do|try|eat|take|read)|at|in)\b)"
+    + r"|\b(?:don'?t|do not) want to (?:carry on|go on|keep going)\b(?! (?:with|at|taking|working|the|this|that|my|to)\b)"
+    + r"|\bgiv(?:e|ing) up on (?:everything|life|living)\b", re.I)
 
 _EMERGENCY = re.compile(
     r"\b(?:bleed\w* (?:so|too|this) much|(?:blood|bleed\w*)[^.;!?]{0,40}running down (?:my )?legs|(?:mottled|ashen) skin|"
@@ -1864,7 +1885,7 @@ def _emergency_kind(user_text: str):
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
     if _ADHERENCE.search(user_text):
         user_text = _ADH_PHRASE.sub(" ", user_text)  # B62 (run41)
-    if _hits(_SELF_RX, user_text, True) or _hits(_SELF_HARM_RX, user_text, True) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
+    if _hits(_SELF_RX, user_text, True) or _hits(_SELF_HARM_RX, user_text, True) or _hits_whole(_SH_CTX_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
         return "self_harm"
     if (_relayed := _relay_swap(user_text)) and (_hits(_SELF_RX, _relayed) or _hits(_SELF_HARM_RX, _relayed)):
         return "self_harm"  # PM-B66 (run42)

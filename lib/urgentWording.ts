@@ -112,6 +112,7 @@ function isPast(clause: string): boolean {
 const WHOLE = new RegExp(P.WHOLE_SRC, 'is');
 // run08 v80: wish to be dead + worked out how, one sentence (same past/negation checks as WHOLE).
 const SELFW = new RegExp(P.SELFW_SRC, 'i');
+const SHCTXW = new RegExp(P.SHCTXW_SRC, 'i'); // B79 (run43 prototype)
 // B52 (run39, backend _sh_act): an act said by anyone (overdose taken, self-injury bleeding, plan for tonight, relayed threat).
 const SHACT = new RegExp(P.SHACT_SRC, 'gi'), SHACTQ = new RegExp(P.SHACTQ_SRC, 'i');
 // run13 (A54, backend _BIRTH_TIME): the birth and its time phrase are context, not the symptom's time.
@@ -342,7 +343,7 @@ function signpostOnce(text: string): string | null {
   const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
   const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
-  if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
+  if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SHCTXW) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
   const relayed = relaySwap(t);
   if (relayed && (hit(SELF, relayed) || hit(SELF2, relayed))) return SELF_HARM_SIGNPOST; // PM-B66 (run42)
   if (shAct(t)) return SELF_HARM_SIGNPOST; // B52 (run39)
