@@ -11,7 +11,7 @@ const QUOTES: Record<string, string> = { '\u2018': "'", '\u2019': "'", '\u02bc':
 export const URGENT_SIGNPOST =
   'If you have severe sudden pain, very heavy bleeding or feel faint, call 999 or go to A&E, or call NHS 111.';
 export const SELF_HARM_SIGNPOST =
-  `If you might act on these thoughts, call 999 now. You can also call Samaritans free, any time, on ${SAMARITANS_NUMBER}, or call NHS 111.`;
+  `If you might act on these thoughts, call 999 now. You can also call Samaritans free, any time, on ${SAMARITANS_NUMBER}, or call NHS 111. You could also tell someone you trust.`;
 
 
 const HOMOGLYPHS: Record<string, string> = {

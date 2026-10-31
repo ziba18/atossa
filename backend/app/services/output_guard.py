@@ -397,7 +397,8 @@ _CLAUSE = re.compile(r"[.;!?\n]+|,\s*|\bbut\b|\band\b(?=\s+(?:i|it|the|my|now|ju
 
 SELF_HARM = (
     "I'm really sorry you're feeling this way, and I'm glad you said so. If you might act on these "
-    "thoughts, call 999 now. You can also call Samaritans free, any time, on 116 123, or call NHS 111."
+    "thoughts, call 999 now. You can also call Samaritans free, any time, on 116 123, or call NHS 111. "
+    "You could also tell someone you trust."
 )
 
 # Safety's phrase lists (claude/safety-everything), kept alongside the lists below; both go
