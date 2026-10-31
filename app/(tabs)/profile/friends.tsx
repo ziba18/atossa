@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { Redirect, useFocusEffect } from 'expo-router';
+import { IS_PILOT } from '../../../lib/pilot';
 import { colors, space } from '../../../constants/atossaUI';
 import {
   Button, Card, ConfirmCard, InlineError, ScreenLarge, SectionTitle, TextField, Txt,
@@ -29,7 +30,12 @@ interface FriendSummary {
   cycle_logs: CyclePhaseLog[];
 }
 
+// Pilot builds hide Friends (S-073): the route sends the person back to Profile.
 export default function FriendsScreen() {
+  return IS_PILOT ? <Redirect href="/(tabs)/profile" /> : <FriendsContent />;
+}
+
+function FriendsContent() {
   usePageTitle('Friends');
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
@@ -110,7 +116,7 @@ export default function FriendsScreen() {
     <ScreenLarge
       title="Friends"
       back={{ label: 'Profile' }}
-      subtitle="Invite people you know. They only see your cycle phase — never your symptoms, notes or other records."
+      subtitle="People you invite can see your recent period start dates and cycle lengths. They cannot see your symptoms, notes or other records."
     >
       <Card style={{ gap: space.sm }}>
         <TextField
