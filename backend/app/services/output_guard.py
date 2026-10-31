@@ -533,6 +533,11 @@ _FAINT_WORD = re.compile(r"faint(?:ed|ing)?", re.I)
 _FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b|\b(?:always|usually|every time|as usual)\b.{0,20}\b(?:needles?|blood tests?|injections?|jabs?|the sight of blood)\b|\b(?:needles?|blood tests?|injections?|jabs?|the sight of blood)\b.{0,25}\b(?:always|usually|every time|as usual)\b", re.I)
 
 
+_S488_PAST = re.compile(r"\b(?:yesterday|last (?:night|week))\b", re.I)
+_S488_GONE = re.compile(r"\b(?:gone|better|eased|settled)\b", re.I)
+_S488_STILL = re.compile(r"\b(?:still|again|now|worse|getting)\b", re.I)
+
+
 def _hits(rx, text: str, sh: bool = False) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
@@ -549,6 +554,10 @@ def _hits(rx, text: str, sh: bool = False) -> bool:
             if _OTHER.search(before) and ((not relayed_sh and (not _OTHER_NOW.search(clause) or (_REPORTED.search(before) and not _LIVE_REPORT.search(clause)))) or _IN_CARE.search(text)):
                 continue
             if _AGE_PAST.search(clause):
+                continue
+            # run 59 (S-488): "pain so bad yesterday, 9, but gone this morning": the past word and the resolved word sit in different clauses
+            if m.group(0).lower() == "pain so bad" and _S488_PAST.search(clause) and _S488_GONE.search(text[text.find(clause) + len(clause):]) \
+                    and not _S488_STILL.search(text):
                 continue
             if _FAINT_WORD.fullmatch(m.group(0)) and _FAINT_RECOVERY.search(text):
                 continue

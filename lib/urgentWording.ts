@@ -226,7 +226,9 @@ function hit(pattern: RegExp, text: string, sh = false): boolean {
       if (!(NEG.test(before.slice(-40).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(clause) || RES.test(after)
         // PM-B66 (run42, backend _hits): for self-harm words a reporting verb keeps the match live (the report is the urgent fact)
         || (OTHER.test(before) && ((!(sh && REPORTED.test(before)) && (!OTHER_NOW.test(clause) || (REPORTED.test(before) && !LIVE_REPORT.test(clause)))) || IN_CARE.test(text))) || AGE_PAST.test(clause)
-        || (FAINT_WORD.test(m[0]) && FAINT_REC.test(text)))) return true;
+        || (FAINT_WORD.test(m[0]) && FAINT_REC.test(text))
+        // S-488 (backend _hits): "pain so bad yesterday, 9, but gone this morning": past word and resolved word in different clauses
+        || (m[0].toLowerCase() === 'pain so bad' && /\b(?:yesterday|last (?:night|week))\b/i.test(clause) && /\b(?:gone|better|eased|settled)\b/i.test(text.slice(text.indexOf(clause) + clause.length)) && !/\b(?:still|again|now|worse|getting)\b/i.test(text)))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }
   }

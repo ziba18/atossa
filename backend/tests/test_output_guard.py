@@ -200,3 +200,11 @@ def test_stabbing_stomach_pain_with_high_temperature_and_shivering_is_urgent():
     from app.services.output_guard import is_emergency as k
     assert k("it feels like someone is stabbing me in the stomach and i have a high temp and am shivering")
     assert not k("stabbing pain behind my eye for a few seconds, my usual")
+
+
+def test_bare_pain_so_bad_yesterday_then_gone_is_quiet_but_still_there_is_urgent():
+    from app.services.output_guard import is_emergency as k
+    assert not k("pain so bad yesterday, 9, but gone this morning")
+    assert not k("pain so bad last night, 9, but better this morning")
+    assert k("pain so bad yesterday and it is still there")
+    assert k("pain so bad, I'm being sick and can't stand")
