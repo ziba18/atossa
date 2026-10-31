@@ -100,6 +100,14 @@ export function sampleBuckets(): Buckets {
     return { symptom: [], period_day: [], appointment: [], medicine: [], history: [], doctor_note: [] };
   }
   const copy = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
+  // Design preview only: ?seed=new1 / ?seed=new3 = a brand-new account: only the newest 1 or 3 notes (3 = three distinct days), nothing else.
+  const newN = typeof window !== 'undefined' ? /[?&]seed=new([13])\b/.exec(window.location?.search ?? '') : null;
+  if (newN) {
+    const newest = [...SYMPTOMS].sort((a, b) => b.date.localeCompare(a.date));
+    const pick: typeof SYMPTOMS = [];
+    for (const x of newest) { if (!pick.some((y) => y.date === x.date)) pick.push(x); if (pick.length === Number(newN[1])) break; }
+    return { symptom: recs('symptom', copy(pick), (d) => d.date), period_day: [], appointment: [], medicine: [], history: [], doctor_note: [] };
+  }
   // Design preview only: ?seed=few keeps the six oldest notes (below the 7 that unlock "See your patterns").
   const few = typeof window !== 'undefined' && /[?&]seed=few\b/.test(window.location?.search ?? '');
   // Design preview only: ?seed=one keeps only the newest note, no period days and no appointments (first-day screens).
