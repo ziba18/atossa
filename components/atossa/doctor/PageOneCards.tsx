@@ -9,6 +9,7 @@ import { colors, fonts, space } from '../../../constants/atossaUI';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
 import { thinView } from '../../../lib/records/thinCounts';
 import { Card, Txt } from '../kit';
+import { Icon } from '../../ui/Icon';
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
@@ -78,16 +79,20 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
                   <Txt variant="body">{b.label}</Txt>
                   <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{thin.thin ? plural(b.days, 'day') : `${b.days} of ${plural(b.total, 'day')}`}{u ? <Txt variant="secondary">{` · ${u}`}</Txt> : null}</Txt>
                 </View>
-                {w ? (
-                  <View style={{ alignItems: 'flex-end' }} accessible accessibilityLabel={`Worst ${w} out of 10`}>
-                    <Txt variant="secondary">Worst</Txt>
-                    <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{`${w}/10`}</Txt>
-                  </View>
-                ) : null}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+                  {w ? (
+                    <View style={{ alignItems: 'flex-end' }} accessible accessibilityLabel={`Worst ${w} out of 10`}>
+                      <Txt variant="secondary">Worst</Txt>
+                      <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{`${w}/10`}</Txt>
+                    </View>
+                  ) : null}
+                  <Icon name="chevron-right" size={20} color={colors.ink3} />
+                </View>
               </Pressable>
             );
           })}
         </View>
+        <Txt variant="caption" color={colors.ink2} style={{ marginTop: space.sm }}>Tap a count to see the days behind it.</Txt>
       </Card>,
     );
   }
