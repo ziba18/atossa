@@ -430,7 +430,7 @@ _SELF_HARM_RX = re.compile(
 # 'keep going to that class', 'giving away my old clothes' stay quiet.
 _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
     + r"|\bcan'?t see (?:a|any) (?:reason|point) (?:to |in )(?:go(?:ing)? on|keep(?:ing)? going|carry(?:ing)? on|living|being here)\b(?! (?:the|to|with|at|in|this|that|a|for)\b)"
-    + r"|\bno reason for me to (?:live|go on|keep going|be here)\b(?! (?:in|at|near|with|there)\b)"
+    + r"|\bno reason for me to (?:live|go on|keep going|be here)\b(?! (?:in|at|near|with|there|before|until|by|after|on|for|during|when)\b)"
     + r"|\bgiving away (?:all )?(?:of )?my (?:things|stuff|belongings|possessions)\b(?=[^.!?]{0,60}\b(?:goodbye|bye|letters?|note)\b)", re.I)
 # PM-B74 (run43): two sign classes from samaritans.org/difficultconversations (quoted by PM, read 31 Oct 2026): "feeling
 # hopeless, helpless or worthless" and "feeling trapped by life circumstances they can't see a way out of, or feeling unable
