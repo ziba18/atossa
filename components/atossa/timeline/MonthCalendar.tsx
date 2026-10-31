@@ -31,6 +31,8 @@ export interface DayMark {
 // Seven columns must stay clear of each other: at the 200% browser zoom widths (under ~280 px) the discs shrink.
 const DISC = Dimensions.get('window').width < 240 ? 24 : Dimensions.get('window').width < 280 ? 28 : 36;
 // 200% text: cells are ~22 pt wide, so a 15 pt numeral runs into its neighbours (11|12, 14|15|16).
+// Tall, wide phones: the rating under a day reads at 15 pt (it was 13, the smallest text on the screen); 568 pt phones keep 13 so the month stays above the fold.
+const RATING_BIG = Dimensions.get('window').width >= 360 && Dimensions.get('window').height >= 700 ? { fontSize: 15, lineHeight: 18 } : null;
 const NUM_TIGHT = Dimensions.get('window').width < 280 ? { fontSize: 13, lineHeight: 18 } : null;
 const RING = 1.5;
 // Short phones (320x568): rows 8 pt tighter so more of the month shows above the tab bar.
@@ -195,7 +197,7 @@ function DayCell({
             </View>
           ) : null}
           {mark?.worst != null
-            ? <Txt maxFontSizeMultiplier={1.2} style={styles.rating}>{mark.worst}</Txt>
+            ? <Txt maxFontSizeMultiplier={1.2} style={[styles.rating, RATING_BIG]}>{mark.worst}</Txt>
             : <View style={[styles.dot, !mark?.notes && { opacity: 0 }]} />}
         </>
       ); })()}
