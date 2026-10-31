@@ -125,7 +125,10 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         <Txt variant="groupLabel">{impacts.title}</Txt>
         <View style={{ gap: space.xxs, marginTop: space.sm }}>
           {impacts.items.slice(0, 4).map((i) => (
-            <Txt key={i.label} variant="body">{i.label} · {plural(i.days, 'day')}</Txt>
+            <Pressable key={i.label} onPress={() => openDays(i.label, i.dates)} disabled={!i.dates?.length} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+              <Txt variant="body" style={{ flexShrink: 1, flexGrow: 1 }}>{i.label} · {plural(i.days, 'day')}</Txt>
+              {i.dates?.length ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+            </Pressable>
           ))}
         </View>
       </Card>,

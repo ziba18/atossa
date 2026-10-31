@@ -230,7 +230,7 @@ export interface HeatStripModel {
 }
 
 export interface PeriodRun { range: string; days: number; flows: string; notes: DocQuote[] }
-export interface CountItem { label: string; days: number }
+export interface CountItem { label: string; days: number; /** The dated days behind `days`, so the row can open them. */ dates?: string[] }
 export interface TriedItem {
   title: string; dates: string; noticed: string;
   /** "Did it help? A little" — her answer; '' when not answered. */
@@ -833,7 +833,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   const impactItems = impactDays(notes, (i) => i !== 'Sex');
   const legacyStopped = notes.filter((s) => !s.impacts && s.stopped === true);
   if (legacyStopped.length) {
-    impactItems.push({ label: 'Stopped me doing things', days: new Set(legacyStopped.map((s) => s.date)).size });
+    { const set = new Set(legacyStopped.map((s) => s.date)); impactItems.push({ label: 'Stopped me doing things', days: set.size, dates: [...set].sort() }); }
   }
   const stoppedQuotes = notes.filter((s) => clean(s.stoppedWords)).slice(0, 3).map((s) => quoteOf(s, clean(s.stoppedWords), false));
   if (impactItems.length || stoppedQuotes.length) {

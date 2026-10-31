@@ -10,7 +10,7 @@ import { peakOf, realImpacts } from './format';
 /** Never counted as an impact: a "no impact" answer, not something it got in the way of. */
 export const NOT_IMPACTS = new Set(['Nothing today']);
 
-export interface DayCount { label: string; days: number }
+export interface DayCount { label: string; days: number; dates?: string[] }
 export interface WeekCount { week: string; days: number }
 
 export const inRange = (date: string, from: string, to: string) => date >= from && date <= to;
@@ -52,7 +52,7 @@ export function impactDays(notes: SymptomData[], keep: (item: string) => boolean
       days.get(item)!.add(s.date);
     }
   }
-  return [...days.entries()].map(([label, set]) => ({ label, days: set.size })).sort((a, b) => b.days - a.days);
+  return [...days.entries()].map(([label, set]) => ({ label, days: set.size, dates: [...set].sort() })).sort((a, b) => b.days - a.days);
 }
 
 /** Body-zone rows shown in the summary and in Patterns (same cap in both, so the numbers match). */
