@@ -2,7 +2,7 @@
 // border-strong outline (radius 14), like the other text fields, with an optional mic.
 // The mic only shows where on-device dictation works (not in Expo Go or on web).
 import React, { useRef, useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View, useWindowDimensions } from 'react-native';
 import { colors, heights, radii, space, type as typeScale } from '../../../constants/atossaUI';
 import { useDictation } from '../../../hooks/useDictation';
 import { haptics } from '../../../lib/haptics';
@@ -17,6 +17,7 @@ const prioritySentence = (p: string) => `${PRIORITY_PREFIX}${p.toLowerCase()}.`;
 export function AgendaField({
   value, onChange, onBlur, title, compact,
 }: { value: string; onChange: (t: string) => void; onBlur: () => void; /** agendaTitleFor(appointmentToday) */ title: string; /** short phones: no hint line */ compact?: boolean }) {
+  const { width: winWidth } = useWindowDimensions();
   const base = useRef('');
   const [focused, setFocused] = useState(false);
   const [opened, setOpened] = useState(false);
@@ -69,8 +70,8 @@ export function AgendaField({
           options={[...PRIORITIES]}
           value={PRIORITIES.find((p) => value.startsWith(prioritySentence(p))) ?? null}
           allowDeselect
-          scroll
-          bleed
+          scroll={winWidth >= 280}
+          bleed={winWidth >= 280}
           accessibilityLabel="Main priority"
           onChange={(v) => {
             const rest = PRIORITIES.reduce((t, p) => (t.startsWith(prioritySentence(p)) ? t.slice(prioritySentence(p).length).trim() : t), value);
