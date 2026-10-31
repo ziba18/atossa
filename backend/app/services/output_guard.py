@@ -1922,6 +1922,39 @@ _TYPOS = {"bleding": "bleeding", "blleeding": "bleeding", "blooding": "bleeding"
 _TYPO_RX = re.compile(r"\b(?:" + "|".join(sorted((k + r"(?! of\b)" if k == "seizer" else k for k in _TYPOS), key=len, reverse=True)) + r")\b", re.I)
 
 
+# S-495 (run 60): one-letter slips of a few urgent words that the fixed map above does not list.
+# Only tokens that are not real words (stoplist computed offline from word frequencies) are corrected.
+_FUZZ_TARGETS = ("bleeding", "breathe", "breathing", "pregnant", "collapsed", "seizure", "vomiting", "unconscious", "miscarriage", "suicide")
+_FUZZ_REAL = frozenset("bleedings bleeping blending breaching breath breathed breather breathes breathings breaths breathy breeding collapse collapses miscarriages pregnane regnant seizures suicida suicided suicides wreathe wreathing".split())
+_FUZZ_RX = re.compile(r"\b[a-z]{6,12}\b", re.I)
+
+
+def _d1(a: str, b: str) -> bool:
+    """True when a and b differ by exactly one insertion, deletion, substitution or adjacent swap."""
+    la, lb = len(a), len(b)
+    if abs(la - lb) > 1 or a == b:
+        return False
+    if la == lb:
+        diff = [i for i in range(la) if a[i] != b[i]]
+        return len(diff) == 1 or (len(diff) == 2 and diff[1] == diff[0] + 1 and a[diff[0]] == b[diff[1]] and a[diff[1]] == b[diff[0]])
+    if la > lb:
+        a, b = b, a
+    i = 0
+    while i < len(a) and a[i] == b[i]:
+        i += 1
+    return a[i:] == b[i + 1:]
+
+
+def _fuzz(m):
+    w = m.group(0).lower()
+    if w in _FUZZ_REAL or w in _TYPOS or w in _FUZZ_TARGETS:
+        return m.group(0)
+    for t in _FUZZ_TARGETS:
+        if _d1(w, t):
+            return t
+    return m.group(0)
+
+
 _S492_NO = re.compile(r"\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?", re.I)
 
 
@@ -1933,6 +1966,7 @@ def _emergency_kind(user_text: str):
     # a lead-in at the very start leaves ". " there; strip it so a whole-note rule anchored at ^ still sees her first sentence
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
     user_text = _TYPO_RX.sub(lambda m: _TYPOS[m.group(0).lower()], user_text)
+    user_text = _FUZZ_RX.sub(_fuzz, user_text)
     user_text = _S492_NO.sub(" ", user_text)  # run 59: a question the writer answers herself ("Chest pain? No, it's heartburn")
     if _ADHERENCE.search(user_text):
         user_text = _ADH_PHRASE.sub(" ", user_text)  # B62 (run41)

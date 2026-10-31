@@ -98,6 +98,29 @@ function hardToWake342(t: string): boolean {
 // run 59 (backend _TYPOS): common misspellings corrected before the lists run
 const TYPOS: Record<string, string> = {"bleding": "bleeding", "blleeding": "bleeding", "blooding": "bleeding", "brathe": "breathe", "breif": "brief", "brethe": "breathe", "brething": "breathing", "colapse": "collapse", "colapsed": "collapsed", "dizy": "dizzy", "dizzey": "dizzy", "dizzi": "dizzy", "evrything": "everything", "evrywhere": "everywhere", "gunna": "gonna", "miscariage": "miscarriage", "miscarrage": "miscarriage", "miscarrige": "miscarriage", "pian": "pain", "pregant": "pregnant", "pregnat": "pregnant", "pregnent": "pregnant", "pregnet": "pregnant", "prenant": "pregnant", "seizer": "seizure", "seizeure": "seizure", "seziure": "seizure", "sezure": "seizure", "siezure": "seizure", "sucide": "suicide", "suicid": "suicide", "suiside": "suicide", "unconcious": "unconscious", "unconsious": "unconscious", "vomitting": "vomiting", "vommiting": "vomiting"};
 const TYPO_RX = new RegExp('\\b(?:' + Object.keys(TYPOS).map((k) => (k === 'seizer' ? 'seizer(?! of\\b)' : k)).sort((a, b) => b.length - a.length).join('|') + ')\\b', 'gi');
+// run 60 (backend _fuzz, S-495): one-letter slips of a few urgent words; real words are never touched
+const FUZZ_TARGETS = ['bleeding', 'breathe', 'breathing', 'pregnant', 'collapsed', 'seizure', 'vomiting', 'unconscious', 'miscarriage', 'suicide'];
+const FUZZ_REAL = new Set('bleedings bleeping blending breaching breath breathed breather breathes breathings breaths breathy breeding collapse collapses miscarriages pregnane regnant seizures suicida suicided suicides wreathe wreathing'.split(' '));
+const FUZZ_RX = /\b[a-z]{6,12}\b/gi;
+function d1(a: string, b: string): boolean {
+  const la = a.length, lb = b.length;
+  if (Math.abs(la - lb) > 1 || a === b) return false;
+  if (la === lb) {
+    const diff: number[] = [];
+    for (let i = 0; i < la; i++) if (a[i] !== b[i]) diff.push(i);
+    return diff.length === 1 || (diff.length === 2 && diff[1] === diff[0] + 1 && a[diff[0]] === b[diff[1]] && a[diff[1]] === b[diff[0]]);
+  }
+  if (la > lb) { const x = a; a = b; b = x; }
+  let i = 0;
+  while (i < a.length && a[i] === b[i]) i++;
+  return a.slice(i) === b.slice(i + 1);
+}
+function fuzz(m: string): string {
+  const w = m.toLowerCase();
+  if (FUZZ_REAL.has(w) || w in TYPOS || FUZZ_TARGETS.includes(w)) return m;
+  for (const t of FUZZ_TARGETS) if (d1(w, t)) return t;
+  return m;
+}
 const S492_NO = /\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?/gi;
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi'), LEGBREATH = new RegExp(P.LEGBREATH_SRC, 'i');
 
@@ -352,7 +375,7 @@ function relaySwap(text: string): string {
 
 function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
-  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
+  const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(FUZZ_RX, fuzz).replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
   const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
   if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SHCTXW) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
