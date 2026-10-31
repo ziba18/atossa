@@ -117,3 +117,11 @@ def test_cannot_keep_myself_safe_s508():
         assert g.is_emergency(t), t
     for t in ["i try to keep myself safe from the sun, factor 50, cramps 3", "i cant keep myself warm in this flat, cramps 4, tired"]:
         assert not g.is_emergency(t), t
+
+
+def test_immune_medicine_fever_and_double_dose_s509():
+    for t in ["im on methotrexate and have a sore mouth and fever and cough", "taken my meds twice by mistake, heart pounding and feel sick"]:
+        assert g.is_emergency(t), t
+    for t in ["on methotrexate, no fever, joints stiff today, cramps 3", "took my meds twice a day as prescribed, tired, cramps 2",
+              "taken my meds late twice this week, felt sleepy, pain 3"]:
+        assert not g.is_emergency(t), t
