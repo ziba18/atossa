@@ -9,6 +9,8 @@ URGENT = [
     "i keep vomitng and cant keep water down and have a fever", "i passed out unconcsious for a minute", "had a miscarrige and the bleeding wont stop",
     "thinking about suicde tonight", "i keep having thoughts of suicidee", "im breathng so fast and my chest hurts",
     "baby is not breathng",
+    "my daughter is vomiting blod and looks pale",
+    "i keep thinking of killing myslf tonight",
     "bleding heavily, soaked three pads", "cant breathw and chest crushing", "he is unconscius and wont wake up",
     "my mum is collapesd and not breathing", "thinking of suicid tonight and i have a plan",
 ]
