@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   cellOnTint: { backgroundColor: 'transparent', borderColor: colors.borderStrong },
   cellNoted: { borderColor: colors.ink2, backgroundColor: colors.surface },
-  digit: { fontWeight: '700', fontSize: 13, fontVariant: ['tabular-nums', 'lining-nums'] },
+  digit: { fontWeight: '700', fontSize: 17, lineHeight: 20, fontVariant: ['tabular-nums', 'lining-nums'] },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.ink2 },
   dash: { width: 8, height: 1.5, borderRadius: 1, backgroundColor: colors.ink3 },
   letter: { fontSize: 13 },
