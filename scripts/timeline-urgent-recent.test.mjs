@@ -11,7 +11,7 @@ assert.match(src, /import \{[^}]*\baddDays\b[^}]*\} from '\.\.\/\.\.\/\.\.\/lib\
 console.log('ok: timeline urgent recent-only');
 
 // PM-A201: the urgent line sits under her words in the same card, never above them.
-const quoteAt = src.indexOf('<Quote numberOfLines={2}>{words}</Quote>');
+const quoteAt = src.indexOf('<Quote numberOfLines={narrow ? 3 : 2}>{words}</Quote>');
 const urgentAt = src.indexOf('<View style={styles.urgent}>');
 assert.ok(quoteAt > 0 && urgentAt > quoteAt, 'urgent line is rendered after the quote');
 assert.equal((src.match(/styles\.urgent\}/g) || []).length, 1, 'one urgent block per symptom card');
