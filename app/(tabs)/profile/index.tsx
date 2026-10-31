@@ -238,11 +238,13 @@ export default function ProfileScreen() {
       </Group>
 
       <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
-      <Card>
-        <View style={{ gap: space.sm }}>
-          {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
-        </View>
-      </Card>
+      <Group>
+        {DATA_LINES.map((line) => (
+          <View key={line} style={{ paddingHorizontal: space.md, paddingVertical: space.sm }}>
+            <Txt variant="secondary">{line}</Txt>
+          </View>
+        ))}
+      </Group>
       <Group style={{ marginTop: space.md }}>
         <GroupRow
             icon="download"
