@@ -170,3 +170,10 @@ def test_hedged_stroke_relayed_mouth_drop_insulin_eye_halos_urgent_idioms_quiet(
                  "my eyes are sore from screens and i saw halos around the moon",
                  "i took double my usual vitamin"]:
         assert g.emergency_kind(line) is None, line
+
+
+def test_coil_with_fever_and_bad_smell_urgent_negated_quiet():
+    from app.services import output_guard as g
+    assert g.emergency_kind("Tonight I feel hot and shivery, 39.2 on the thermometer and a really bad smell down there since the coil check") is not None
+    assert g.emergency_kind("coil check today, no fever and no smell, just a bit of cramping") is None
+    assert g.emergency_kind("my coil was checked, i have a cold and a temperature, nothing else") is None
