@@ -541,10 +541,17 @@ _S488_STILL = re.compile(r"\b(?:still|again|now|worse|getting)\b", re.I)
 def _hits(rx, text: str, sh: bool = False) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
+        past = None  # S-507: _is_past depends on the clause only, so compute it once per clause, not once per match
+        seen = 0
         for m in rx.finditer(clause):
+            seen += 1
+            if seen > 25:  # S-507: a note repeating one phrase 25+ times with every earlier hit vetoed; stops quadratic work
+                break
             before = clause[: m.start()]
             after = clause[m.end():]
-            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or _is_past(clause) or _RESOLVED.search(after):
+            if past is None and not _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]):
+                past = _is_past(clause)
+            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or past or _RESOLVED.search(after):
                 continue
             # run19 (S-307, structure not phrases): another person as the subject stays quiet UNLESS the same clause says it
             # is happening now, so every existing urgent concept also fires for "my mum can't breathe" (NHS when-to-call-999)
