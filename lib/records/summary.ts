@@ -21,6 +21,7 @@ import {
 } from './format';
 import { BODY_ZONE_LABELS } from './fields';
 import { daysWith, impactDays, inRange as inRangeOf, MAX_ZONE_ROWS, nOfN, strengthRange, zoneDays } from './counts';
+import { thinView } from './thinCounts';
 
 // ---- cycles (kept for other callers) --------------------------------------------------------
 
@@ -1125,7 +1126,7 @@ function sectionInner(s: DocSection): string {
       const worstIn = (t: string) => /worst (\d+)\/10/.exec(t)?.[1];
       const rows = s.bars.map((b, i) => {
         const w = worstIn(b.strength ?? '');
-        return `<tr${i === 0 ? ' class="all"' : ''}><td class="area">${esc(i === 0 && b.label === 'Days with a note' ? 'Any area' : b.label)}</td><td class="num">${b.days} of ${b.total} days</td><td class="num">${w ? `${w}/10` : 'Not recorded'}</td><td>${esc(b.worstDate ?? '')}</td></tr>`;
+        return `<tr${i === 0 ? ' class="all"' : ''}><td class="area">${esc(i === 0 && b.label === 'Days with a note' ? 'Any area' : b.label)}</td><td class="num">${b.days} of ${plural(b.total, 'day')}</td><td class="num">${w ? `${w}/10` : 'Not recorded'}</td><td>${esc(b.worstDate ?? '')}</td></tr>`;
       }).join('');
       const bars = `<table class="figs"><thead><tr><th>Area</th><th class="num">Days with a note</th><th class="num">Highest rating</th><th>Date of highest</th></tr></thead><tbody>${rows}</tbody></table>`;
       const bleedKey =
@@ -1190,13 +1191,22 @@ export function printedRange(doc: DoctorDoc): string {
   return f && f.id === 'frequency' ? f.windowLabel : doc.rangeLabel;
 }
 
+/** First-week rule 4: under 7 written days the Period line says how many days it covers ('3 days written so far · 29-31 Oct 2026'). */
+function thinPeriodLine(doc: DoctorDoc): string {
+  const range = printedRange(doc);
+  const f = doc.sections.find((x) => x.id === 'frequency');
+  const all = f && f.id === 'frequency' ? f.bars[0] : undefined;
+  const v = thinView(all?.days ?? 0, []);
+  return v.thin && v.line ? `${v.line} · ${range.replace(/ · \d+ days?$/, '')}` : range;
+}
+
 /** Two-column key/value block under the title, ruled like a record header. */
 function headBlock(doc: DoctorDoc): string {
   const parts = doc.meta.split(' · ').slice(1);
   const made = parts.find((x) => x.startsWith('Made '))?.slice(5) ?? '';
   const visit = parts.find((x) => !x.startsWith('Made ')) ?? '';
   const rows: [string, string][] = [
-    ['Period', printedRange(doc)],
+    ['Period', thinPeriodLine(doc)],
     ...(visit ? [['Visit', visit] as [string, string]] : []),
     ['Main priority (chosen by the patient)', mainPriorityOf(doc.agendaBlock)],
     ['Generated', made],

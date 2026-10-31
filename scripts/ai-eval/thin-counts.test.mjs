@@ -79,3 +79,17 @@ test("3 days since first entry: 'N of 3 days'", () => {
   assert.ok(!/of 1[0-9] days/.test(t));
   assert.equal(d.sections.find((s) => s.id === 'frequency').bars[0].total, 3);
 });
+
+// PM-A203: the PDF/A4 header says how many days it covers when thin, and the table cell is singular for 1 day.
+test('thin A4 header line and singular cell', async () => {
+  const { sampleBuckets } = await import('../../lib/preview/seed.ts');
+  const b = sampleBuckets();
+  const key = (r) => String(r.data?.date ?? r.date);
+  const recs = [...b.symptom].sort((a, c) => key(a).localeCompare(key(c))).slice(-1);
+  const d = key(recs[0]);
+  const doc = buildDoctorSummary({ symptoms: recs, periodDays: [], medicines: [], history: [], appointments: [] }, { from: '2026-01-01', to: d, today: d });
+  const html = summaryToHtml(doc);
+  assert.match(html, /<th>Period<\/th><td>1 day written so far · /);
+  assert.ok(!/1 of 1 days/.test(html), 'singular');
+  assert.match(html, /1 of 1 day</);
+});
