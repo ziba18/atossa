@@ -517,7 +517,7 @@ _PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today|i'?ve got
 # A baby or young child described as limp/floppy/not waking/with a rash that stays under pressure, or not feeding with a fever (NHS 999 lists for children; p110, first contact 2/2 missed)
 _THIRD_CHILD = re.compile(
     r"(?:\b(?:my |our |the )?newborn|\bmy (?:baby|toddler|\d{1,2} (?:month|year)s? old|\d{1,2}[- ]?(?:month|year)[- ]old|little (?:girl|boy)|son|daughter|child))\b"
-    r"(?=[^.!?\n]{0,80}\b(?:limp|floppy|won'?t wake|can'?t wake|not waking|unresponsive|blue lips|purple rash|rash that (?:doesn'?t|won'?t) fade|not feeding|struggling to breathe)\b)"
+    r"(?=[^.!?\n]{0,80}\b(?:limp|floppy|won'?t wake|can'?t wake|not waking|unresponsive|blue lips|purple rash|rash that (?:doesn'?t|won'?t) fade|not feeding|struggling to breathe|(?:very |really |so |too )?(?:sleepy|drowsy|hard to wake)\b[^.!?\n]{0,40}\b(?:won'?t|wont|refus\w+|not) (?:\w+ )?(?:feed\w*|take\w* (?:a |the )?(?:bottle|milk|feeds?))|(?:won'?t|wont|refus\w+) (?:\w+ )?(?:feed\w*|take\w* (?:a |the )?(?:bottle|milk|feeds?))\b[^.!?\n]{0,40}\b(?:sleepy|drowsy|hard to wake)\b)\b)"
     r"(?![^.!?\n]{0,100}\b(?:fine now|ok now|okay now|was fine|recovered)\b)", re.I)
 
 

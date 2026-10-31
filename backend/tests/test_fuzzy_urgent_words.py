@@ -132,3 +132,15 @@ def test_more_one_word_slips_s510():
         assert g.is_emergency(t), t
     for t in ["ive soked my pillow with sweat, hot flush, cramps 2", "my mum suddenly decided to visit, lovely, tired, cramps 3"]:
         assert not g.is_emergency(t), t
+
+
+def test_infant_sleepy_and_not_feeding_is_urgent_everyday_toddler_lines_quiet():
+    from app.services import output_guard as g
+    for line in ["my baby is very sleepy and wont feed",
+                 "my newborn won't take the bottle and is hard to wake",
+                 "my 5 month old refusing feeds and drowsy"]:
+        assert g.emergency_kind(line) is not None, line
+    for line in ["my son won't eat veg and is sleepy after school",
+                 "my baby is sleepy and feeding well",
+                 "my baby is sleepy after her feed"]:
+        assert g.emergency_kind(line) is None, line
