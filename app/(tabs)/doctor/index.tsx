@@ -209,7 +209,13 @@ export default function DoctorScreen() {
         </Card>
       ) : null}
 
-      {upcoming ? (
+      {upcoming && short && winHeight < 600 && winWidth >= 300 ? (
+        // 568 pt phones: the appointment is two plain lines under the title (no card), so the counts come up the page.
+        <View style={{ marginTop: space.xs }}>
+          <Txt variant="caption">{joinFacts(upcoming.data.date === today ? 'Appointment today' : 'Next appointment', formatDay(upcoming.data.date))}</Txt>
+          <Txt variant="headline">{upcoming.data.who.trim() || formatDay(upcoming.data.date)}</Txt>
+        </View>
+      ) : upcoming ? (
         <Card style={{ marginTop: short || thumbUp ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
           {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
           {winWidth < 240 || short || thumbUp ? null : (
