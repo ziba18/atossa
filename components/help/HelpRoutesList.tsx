@@ -16,7 +16,7 @@ export function HelpRoutesList() {
           label={r.label}
           detail={r.detail}
           onPress={() => { Linking.openURL(r.href).catch(() => {}); }}
-          accessibilityLabel={`${r.a11y}. ${r.detail}`}
+          accessibilityLabel={`${r.label} ${r.detail}. ${r.a11y}`}
         />
       ))}
     </Group>
