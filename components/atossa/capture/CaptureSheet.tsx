@@ -25,6 +25,7 @@ import { Waveform } from './Waveform';
 // Broken evenly so "body?" never sits alone on line 2 (same as the Today hero).
 const PROMPT = 'What’s been going on\nwith your body?';
 const VOICE_UNAVAILABLE = 'Voice isn’t available here, so type instead. Your words are saved the same way.';
+const NOTE_MAX = 4000; // about 700 words; the server also caps one record at 20,000 characters
 
 type Mode = 'speak' | 'type';
 type Stage = 'capture' | 'questions' | 'review';
@@ -322,6 +323,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
                 onChangeText={(words) => patch({ words })}
                 editable={!recording}
                 multiline
+                maxLength={NOTE_MAX}
                 placeholder={recording ? 'Listening…' : undefined}
                 placeholderTextColor={colors.ink2}
                 accessibilityLabel="Your words"
@@ -348,6 +350,7 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
             onChangeText={(words) => patch({ words })}
             autoFocus
             multiline
+            maxLength={NOTE_MAX}
             placeholder="Type what’s been happening…"
             placeholderTextColor={colors.ink3}
             accessibilityLabel="Your words"
