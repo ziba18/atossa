@@ -65,3 +65,14 @@ def test_baby_went_blue_s500():
         assert g.is_emergency(x), x
     for x in ["baby blue paint turned grey on the wall, i felt tired"]:
         assert not g.is_emergency(x), x
+
+
+def test_purple_lips_struggling_and_pale_newborn_not_feeding_s501():
+    for t in ["her lips look purple and she is struggling", "my newborn looks pale and mottled and wont feed",
+              "my baby looks very pale and floppy and refusing to feed"]:
+        assert g.is_emergency(t), t
+    for t in ["her lips look purple from the berry smoothie, she is struggling with revision, tired, cramps 2",
+              "my sister is struggling at work, i felt flat and teary, headache 3",
+              "the baby looks pale in the photo, wont feed the ducks, my back ached, 3",
+              "newborn photos looked mottled and grey in the filter, i skipped lunch, cramps 2"]:
+        assert not g.is_emergency(t), t
