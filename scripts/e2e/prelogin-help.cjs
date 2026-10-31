@@ -16,7 +16,7 @@ const BASE = 'http://localhost:8081';
     for (const r of ['welcome', 'login', 'register']) {
       await p.goto(`${BASE}/${r}`, { waitUntil: 'networkidle' }); await p.waitForTimeout(1000);
       const t = await p.getByText('Need help now? In an emergency call 999. For urgent advice call 111.').first().boundingBox();
-      const l = await p.getByRole('button', { name: 'More help (Samaritans, Shout)' }).boundingBox();
+      const l = await p.getByRole('link', { name: 'More help (Samaritans, Shout)' }).boundingBox();
       check(t && l && l.y + l.height <= h && l.height >= 44, `${w} ${r}: line + link above the fold, link ${l && Math.round(l.height)} px tall`);
     }
     await p.close();
