@@ -70,10 +70,10 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         {all?.worstOn ? (
           all.worstKey ? (
             <Pressable onPress={() => { useTimelineSession.getState().setOpenDay(all.worstKey!); router.push('/(tabs)/timeline' as any); }} accessibilityRole="button" accessibilityHint="Opens that day in the Timeline" style={{ marginTop: space.sm, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
-              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`Worst: ${all.worstOn}`}</Txt>
+              <Txt variant="secondary" style={{ flexShrink: 1 }}>{`Worst: ${all.worstOn}`.replace(/(\d{1,2}) ([A-Z][a-z]{2})/g, '$1\u00a0$2')}</Txt>
               <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
             </Pressable>
-          ) : <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`}</Txt>
+          ) : <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`.replace(/(\d{1,2}) ([A-Z][a-z]{2})/g, '$1\u00a0$2')}</Txt>
         ) : null}
         <View style={{ gap: space.sm, marginTop: space.md, paddingTop: space.md, borderTopWidth: 1, borderTopColor: colors.hairline }}>
           {areas.slice(0, 3).map((b) => {
