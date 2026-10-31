@@ -204,18 +204,18 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
   const inRange = symptom.filter((r) => r.data.date >= m.from && r.data.date <= m.to).map((r) => r.data);
   const sleepLine = fatigueLine(inRange) || untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
   const maxWeek = Math.max(1, ...m.weeks.map((w) => w.noteDays));
-  const rangeText = `${formatShortDate(m.from, 'always')} – ${formatShortDate(m.to, 'always')}`;
+  const sameYear = m.from.slice(0, 4) === m.to.slice(0, 4);
+  const rangeText = sameYear ? `${formatShortDate(m.from, 'never')} – ${formatShortDate(m.to, 'always')}` : `${formatShortDate(m.from, 'always')} – ${formatShortDate(m.to, 'always')}`;
 
   return (
     <View style={{ gap: space.md, marginTop: space.lg }}>
       {toggle}
       <Txt variant="secondary" style={{ fontWeight: '600', color: colors.ink }}>Your notes, {rangeText}</Txt>
-      <Txt variant="caption" style={{ marginTop: -space.sm }}>{noteDaysText(m)}</Txt>
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
         <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
-          <StatTile hero wide={stack} value={m.noteDays} label="days with a note" onPress={() => (onOpenDays ? onOpenDays('Days with a note', m.days.filter((d) => d.logged).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
+          <StatTile hero wide={stack} value={m.noteDays} label={`of ${m.totalDays} days with a note`} onPress={() => (onOpenDays ? onOpenDays('Days with a note', m.days.filter((d) => d.logged).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
           <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days at ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
           <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => (onOpenDays ? onOpenDays('Days of bleeding', m.bleedingDates, 'bleeding') : onOpen('Bleeding'))} hint="Opens your bleeding days." />
         </View>
