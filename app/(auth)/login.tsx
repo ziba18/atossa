@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/atossaUI';
 import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
+import { PreLoginHelp } from '../../components/help/PreLoginHelp';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
@@ -44,6 +45,7 @@ export default function LoginScreen() {
 
   return (
     <ScreenLarge title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
+      <PreLoginHelp style={{ marginBottom: space.md }} />
       <View style={{ gap: space.xl }}>
         <TextField
           label="Email"
