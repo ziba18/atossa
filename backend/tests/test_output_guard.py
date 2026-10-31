@@ -216,3 +216,15 @@ def test_another_persons_grey_sweaty_crushing_chest_is_urgent_but_a_figure_of_sp
     assert k("my dad is pale and his chest feels squeezed")
     assert not k("my mum said her chest was crushing last year, she's fine now")
     assert not k("my friend says her chest is crushing under the weight of exams")
+
+
+def test_skin_peeling_after_new_tablets_and_nonstop_vomiting_with_fast_breathing_are_urgent():
+    from app.services.output_guard import is_emergency as k
+    for u in ["ive not stopped being sick since i started the new tablets and my skin is peeling off",
+              "on metformin and im vomiting nonstop with stomach pain and breathing fast",
+              "since the new tablets my skin is blistering and peeling and my mouth is sore"]:
+        assert k(u), u
+    for q in ["skin peeling after my holiday sunburn, tablets for hayfever",
+              "my skin is peeling on my hands from washing, using cream",
+              "been sick all day with a bug, breathing normal"]:
+        assert not k(q), q
