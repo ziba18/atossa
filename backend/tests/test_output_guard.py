@@ -243,3 +243,9 @@ def test_common_misspellings_are_read_as_the_word_meant():
               "i feel like im gunna pass out ther is blood evrywhere"]:
         assert k(u), u
     assert not k("hed ache n tired")
+
+
+def test_misspelling_map_leaves_real_words_alone():
+    from app.services.output_guard import is_emergency as k
+    assert not k("I always overdoes it at the gym and then ache")
+    assert not k("bleedin annoying cramps today")
