@@ -268,6 +268,8 @@ _OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:she|he|they)'(?:s|re)\b(?! 
 # PM-B66 (run42): a present 'has/have (got/just/suddenly)' is now too: "my dad has crushing chest pain going to his jaw", "her face
 # has dropped" (nhs.uk heart-attack + stroke pages, read 31 Oct 2026); "has had / been / always / never" stays history.
 _OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:has|have)(?: (?:got|just|suddenly))?\b(?! (?:had|been|always|never|ever|got (?:over|better)|recovered))", re.I)
+# B72 (run42): "his chest feels crushed", "their chest feels really heavy" = a present feeling of a named body part
+_OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:her|his|their) (?:chest|face|arm|leg|jaw|neck|lips?|speech) feels\b", re.I)
 _REPORTED = re.compile(r"\b(?:told|(?<!can't )(?<!cant )(?<!cannot )tells?|says?|said|reckons?|thinks?|thought)\b"   # B35: "can't tell me what year it is" is a sign, not hearsay
                        r""
                        # run20 (Safety p209 false on run19): "my partner is worried about his chest tightness" reports a worry, not an event now
@@ -429,7 +431,7 @@ _EMERGENCY = re.compile(
     r"something (?:has |just )?(?:burst|popped|ripped|torn|tore)|feels? like (?:something|it) (?:has )?(?:burst|popped|ripped|torn|tore)|"
     r"can'?t keep (?:any )?(?:water|fluids?|anything) down|(?:trouble|difficulty|problems?) (?:getting|catching) (?:my )?breath|(?:trouble|difficulty|problems?) breathing|lips? (?:look|looks|are|is|have gone) (?:blue|grey|gray)|"
     r"passing (?:fresh |bright red |lots of |loads of |a lot of )?blood\b(?! clots?)|blood in (?:my )?(?:vomit|poo|stool)|"
-    r"(?:my )?face (?:has |had |is |just )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
+    r"(?:my )?face (?:has |had |is |just )?(?:suddenly )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
     r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)(?! (?:about|over) (?!(?:the |a )?(?:last|past|weekend|night|morning|day|hour|few|\d+|ten|five|half)\b))(?! because (?:i|we|you)\b)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
     r"can'?t breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath(?![^.;!?]{0,30}\b(?:laugh\w*|giggl\w*|after (?:a |the |my |some )?(?:run|jog|gym|workout|exercise|sprint|stairs|walk|swim|dancing|dance)|running|jogging|climbing (?:the |a few |three |two )?(?:flights? of )?stairs|(?:up|down) the stairs|excitement|excited)\b)|struggling to breathe|chest pain|coughing up blood|"
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
