@@ -431,6 +431,18 @@ _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
     + r"|\bcan'?t see (?:a|any) (?:reason|point) (?:to |in )(?:go(?:ing)? on|keep(?:ing)? going|carry(?:ing)? on|living|being here)\b(?! (?:the|to|with|at|in|this|that|a|for)\b)"
     + r"|\bno reason for me to (?:live|go on|keep going|be here)\b(?! (?:in|at|near|with|there)\b)"
     + r"|\bgiving away (?:all )?(?:of )?my (?:things|stuff|belongings|possessions)\b(?=[^.!?]{0,60}\b(?:goodbye|bye|letters?|note)\b)", re.I)
+# PM-B74 (run43): two sign classes from samaritans.org/difficultconversations (quoted by PM, read 31 Oct 2026): "feeling
+# hopeless, helpless or worthless" and "feeling trapped by life circumstances they can't see a way out of, or feeling unable
+# to escape their thoughts". First person present only ('felt a bit hopeless' stays quiet); 'hopeless at/about/with',
+# 'trapped wind', 'a way out of the meeting' and 'a burden to my family when I'm in bed' stay quiet; 'helpless', 'tearful', 'tired', 'hard to cope' alone never fire.
+_SH_FEEL = r"\b(?:i'?m|im|i am|i feel|i just feel|i'?ve (?:been )?feel(?:ing)?|feeling)(?: like)? (?:so |completely |totally |utterly |really |just |very |such )*"
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|" + _SH_FEEL + r"(?:worthless|a waste of space)\b(?! (?:at|as a|when it comes)\b)"
+    + r"|" + _SH_FEEL + r"hopeless\b(?! (?:at|about|with|when it comes|for (?:the|this|today|tonight))\b)(?=[^.!?]{0,60}\b(?:nothing|never|no (?:hope|point|future|way)|anymore|any more|for me|life|everything|get better)\b)"
+    + r"|\b(?:there'?s|there is|i have|i'?ve got) no hope (?:left )?(?:for me|any ?more|at all)\b|\bnothing (?:is )?(?:ever )?going to get better for me\b"
+    + r"|" + _SH_FEEL + r"trapped\b(?! wind)(?=[^.!?]{0,60}\b(?:way out|my (?:own )?life|this life|escape|no exit|never (?:end|get out))\b)"
+    + r"|" + _SH_FEEL + r"(?:a burden|useless|a failure) and (?:so |completely |totally |utterly )?worthless\b"
+    + r"|\b(?:can'?t|cannot) escape (?:from )?(?:my (?:own )?)?(?:thoughts|head|mind)\b", re.I)
 
 _EMERGENCY = re.compile(
     r"\b(?:bleed\w* (?:so|too|this) much|(?:blood|bleed\w*)[^.;!?]{0,40}running down (?:my )?legs|(?:mottled|ashen) skin|"
