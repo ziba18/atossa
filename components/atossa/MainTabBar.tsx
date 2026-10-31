@@ -54,7 +54,7 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
 
   return (
     <View role="navigation" aria-label="Main">
-    <View style={[styles.bar, { paddingBottom: insets.bottom }]}>
+    <View style={[styles.bar, { paddingBottom: insets.bottom }, active?.name === 'doctor' && { backgroundColor: colors.surface }]}>
     <View style={styles.pillBar} accessibilityRole="tablist">
       {routes.map((route) => {
         const focused = activeName === route.name;
