@@ -82,7 +82,7 @@ export function RecentStrip({ symptoms, flush, twoRows, band, onDayPress, onPatt
           );
         })}
       </View>
-      <Txt variant="caption" color={band ? severityRamp[0] : colors.ink2}>{flush ? 'Number: strongest rating that day, out of 10. Dash: no note.' : 'Number: strongest rating that day, of 10. Dash: no note.'}</Txt>
+      <Txt variant="caption" color={band ? severityRamp[0] : colors.ink2}>{noteDays === 0 ? 'Dash: no note.' : flush ? 'Number: strongest rating that day, out of 10. Dash: no note.' : 'Number: strongest rating that day, of 10. Dash: no note.'}</Txt>
       {onPatterns || onMonth ? (
         <Pressable
           onPress={onPatterns ?? onMonth}
