@@ -219,9 +219,9 @@ function ListView({
         />
       </Sheet>
       {/* One window per section: the list groups by calendar week (Today and Month show the days). */}
-      {groups.length === 0 && filter !== 'All' ? (
+      {groups.length === 0 && (filter !== 'All' || dayFilter) ? (
         <Txt variant="secondary" style={{ marginTop: space.xxxl }}>
-          {EMPTY_FILTER_TEXT[filter]}
+          {dayFilter ? 'Nothing is saved on these days any more.' : EMPTY_FILTER_TEXT[filter as Exclude<TimelineFilter, 'All'>]}
         </Txt>
       ) : (
         groups.map((g, i) => (
