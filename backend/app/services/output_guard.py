@@ -424,6 +424,14 @@ _SELF_HARM_RX = re.compile(
     r"\b(?:looked up|googled|searched)\b.{0,25}\bhow many (?:pills|tablets|paracetamol|painkillers)\b(?= (?:it takes|to (?:overdose|die|kill)|would (?:kill|be fatal)|is (?:too many|fatal|a lethal)))",
     re.I,
 )
+# B73 (run42): indirect suicidal statements and goodbye acts in plain first-person words (nhs.uk help-for-suicidal-thoughts,
+# signs list: no point / no reason to go on, giving away belongings, saying goodbye; read 31 Oct 2026); 'go on the trip',
+# 'keep going to that class', 'giving away my old clothes' stay quiet.
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\bcan'?t see (?:a|any) (?:reason|point) (?:to |in )(?:go(?:ing)? on|keep(?:ing)? going|carry(?:ing)? on|living|being here)\b(?! (?:the|to|with|at|in|this|that|a|for)\b)"
+    + r"|\bno reason for me to (?:live|go on|keep going|be here)\b(?! (?:in|at|near|with|there)\b)"
+    + r"|\bgiving away (?:all )?(?:of )?my (?:things|stuff|belongings|possessions)\b(?=[^.!?]{0,60}\b(?:goodbye|bye|letters?|note)\b)", re.I)
+
 _EMERGENCY = re.compile(
     r"\b(?:bleed\w* (?:so|too|this) much|(?:blood|bleed\w*)[^.;!?]{0,40}running down (?:my )?legs|(?:mottled|ashen) skin|"
     r"(?:baby|babies)(?:'s)? (?:kicks?|movements?) (?:have |has )?(?:stopped|slowed|reduced)|(?:not|n'?t) (?:feeling|felt|feel) (?:the |my )?baby (?:move|moving|kick)\w*|"
