@@ -83,3 +83,11 @@ def test_blue_lips_with_a_stated_harmless_cause_stays_quiet_s502():
     assert not g.is_emergency("my lips are blue from the slush i drank, cramps 3, tired")
     for t in ["her lips are blue and she cant breathe properly", "my lips are blue", "his lips look grey and he is very drowsy"]:
         assert g.is_emergency(t), t
+
+
+def test_racing_heart_with_about_to_pass_out_s503():
+    for t in ["i cant stop shaking and my heart is going crazy fast and i feel like i will pass out", "my heart is pounding and i think i might black out"]:
+        assert g.is_emergency(t), t
+    for t in ["my heart was racing on the treadmill earlier, cramps 2, tired", "my heart was racing before the exam yesterday, cramps 3",
+              "cramps 4, tired, heart racing a bit after coffee, settled"]:
+        assert not g.is_emergency(t), t
