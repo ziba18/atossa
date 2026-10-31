@@ -101,3 +101,12 @@ def test_hedged_first_contact_gaps_s505():
               "blood on the tissue when i wiped, no fever, small, cramps 2", "calf cramp in the night, gone after stretching, swollen ankle from the flight",
               "soaked a pad on day 2 as usual, cramps 4"]:
         assert not g.is_emergency(t), t
+
+
+def test_relayed_and_visual_gaps_s506():
+    for t in ["my sister says she cant feel her legs and has lost control of her bladder", "my friend is bleeding heavy and has gone really pale and quiet",
+              "i keep seeing flashing lights then half my vision goes and my head is pounding", "cant stop vomiting for two days and havent weed since yesterday"]:
+        assert g.is_emergency(t), t
+    for t in ["my friend bled through her jeans once, i felt for her, my own cramps 3", "flashing lights from the phone screen made my head hurt, 3",
+              "my sister cant feel her legs in this cold, we laughed, my cramps 4", "vomited once yesterday and havent had a wee since lunch because i was at work, pain 4"]:
+        assert not g.is_emergency(t), t
