@@ -118,6 +118,10 @@ const SHACT = new RegExp(P.SHACT_SRC, 'gi'), SHACTQ = new RegExp(P.SHACTQ_SRC, '
 // run13 (A54, backend _BIRTH_TIME): the birth and its time phrase are context, not the symptom's time.
 const BIRTH_TIME = /\b(?:had (?:the|my) baby|gave birth|given birth|(?:the |my )?baby (?:was )?born)\b(?: (?:\w+ ){0,2}(?:ago|last (?:week|month)|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day))?/gi;
 
+// S-489 (backend _hits_whole): another person's present chest sign told in words ("my mum is grey and sweaty and her chest is crushing")
+const S489_BODY = /\bchest\b.{0,35}\b(?:crush\w*|squeez\w*|gripped|vice)\b/i, S489_SIGN = /\b(?:grey|gray|sweaty|clammy|pale|ashen|sweating)\b/i;
+const S489_NOT = /\b(?:was|were|last (?:year|month|week)|ago|fine|better|ok|okay|alright|exams?|work|stress\w*)\b/i;
+
 function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
   const m = rx.exec(text);
   if (!m) return false;
@@ -125,7 +129,7 @@ function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
   const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
   const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
   const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
-  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence.replace(BIRTH_TIME, ' ')) || OTHER.test(text.slice(0, m.index)));
+  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence.replace(BIRTH_TIME, ' ')) || (OTHER.test(text.slice(0, m.index)) && !(S489_BODY.test(m[0]) && S489_SIGN.test(sentence) && !S489_NOT.test(sentence))));
 }
 
 function shAct(text: string): boolean {

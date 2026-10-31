@@ -1480,6 +1480,14 @@ _HEDGE = re.compile(r"\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:a
 _BIRTH_TIME = re.compile(r"\b(?:had (?:the|my) baby|gave birth|given birth|(?:the |my )?baby (?:was )?born)\b(?: (?:\w+ ){0,2}(?:ago|last (?:week|month)|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day))?", re.I)
 
 
+# run 59 (S-489): another person's present chest sign told in words ("my mum is grey and sweaty and her chest is crushing")
+_S489_BODY = re.compile(r"\bchest\b.{0,35}\b(?:crush\w*|squeez\w*|gripped|vice)\b", re.I)
+
+
+_S489_SIGN = re.compile(r"\b(?:grey|gray|sweaty|clammy|pale|ashen|sweating)\b", re.I)
+_S489_NOT = re.compile(r"\b(?:was|were|last (?:year|month|week)|ago|fine|better|ok|okay|alright|exams?|work|stress\w*)\b", re.I)
+
+
 def _hits_whole(rx, text: str) -> bool:
     text = text[:_WHOLE_SCAN_CAP]
     m = rx.search(text)
@@ -1490,7 +1498,7 @@ def _hits_whole(rx, text: str) -> bool:
     start = starts[-1] + 1 if starts else 0
     ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
     end = m.end() + ends[0] if ends else len(text)
-    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(_BIRTH_TIME.sub(' ', text[start:end])) or _OTHER.search(text[:m.start()]))
+    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(_BIRTH_TIME.sub(' ', text[start:end])) or (_OTHER.search(text[:m.start()]) and not (_S489_BODY.search(m.group(0)) and _S489_SIGN.search(text[start:end]) and not _S489_NOT.search(text[start:end]))))
 
 
 _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:tonight|today|now)|urge is back|urges? (?:are|is) back|(?:cut|cutting|hurt|hurting) myself again|thinking about (?:doing )?it again|want to do it again)\b", re.I)

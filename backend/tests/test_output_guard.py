@@ -208,3 +208,11 @@ def test_bare_pain_so_bad_yesterday_then_gone_is_quiet_but_still_there_is_urgent
     assert not k("pain so bad last night, 9, but better this morning")
     assert k("pain so bad yesterday and it is still there")
     assert k("pain so bad, I'm being sick and can't stand")
+
+
+def test_another_persons_grey_sweaty_crushing_chest_is_urgent_but_a_figure_of_speech_or_past_is_not():
+    from app.services.output_guard import is_emergency as k
+    assert k("my mum has gone grey and sweaty and says her chest is crushing")
+    assert k("my dad is pale and his chest feels squeezed")
+    assert not k("my mum said her chest was crushing last year, she's fine now")
+    assert not k("my friend says her chest is crushing under the weight of exams")
