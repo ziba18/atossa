@@ -211,3 +211,26 @@ def test_relative_swallowed_pills_and_sleepy_urgent_normal_dose_quiet():
     assert g.emergency_kind("my little brother swallowed my pills and is sleepy") is not None
     assert g.emergency_kind("my mum took her pills as normal and is a bit sleepy after lunch is fine") is None
     assert g.emergency_kind("my friend took her tablets and was drowsy so we napped, ok now") is None
+
+
+def test_weeks_of_bleeding_with_dizziness_s516():
+    from app.services import output_guard as g
+    assert g.emergency_kind("omg my period wont stop its been 2 weeks and im so dizzy") == "medical"
+    assert g.emergency_kind("been bleeding for weeks and feel faint") == "medical"
+    assert g.emergency_kind("my period lasts about a week and i feel a bit dizzy when i stand, its usual") is None
+    assert g.emergency_kind("my period wont stop its been 2 weeks") is None
+    assert g.emergency_kind("im dizzy and had a period last month for 3 weeks") is None
+
+
+def test_blade_to_hand_with_no_point_s516():
+    from app.services import output_guard as g
+    assert g.emergency_kind("everything is pointless and i have a blade in my hand") == "self_harm"
+    assert g.emergency_kind("i have a razor in my hand and everything feels hopeless") == "self_harm"
+    assert g.emergency_kind("i have a razor in my hand and im shaving my legs, such a pointless chore") is None
+    assert g.emergency_kind("blade in my hand while cooking, the recipe is hopeless") is None
+
+
+def test_hard_bump_with_bleeding_late_pregnancy_s516():
+    from app.services import output_guard as g
+    assert g.emergency_kind("my bump is rock hard and i have bad pain and bleeding, 30 weeks") == "medical"
+    assert g.emergency_kind("my bump is hard when the baby kicks, 30 weeks, no pain no bleeding") is None

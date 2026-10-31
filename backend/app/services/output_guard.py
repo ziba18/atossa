@@ -890,6 +890,10 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     r"\b(?:newborn|baby|infant)\b[^.!?;]{0,25}\b(?:look\w*|is|seems?) (?:very |really |so )?(?:pale|mottled|grey|gray)\b[^.!?;]{0,25}\b(?:and )?(?:mottled|floppy|pale|limp)\b[^.!?;]{0,30}\b(?:won'?t|wont|not|isn'?t|refus\w+) (?:\w+ )?(?:feed\w*|eat\w*|take\w* (?:a |the )?(?:bottle|milk))\b|"
                     # S-498 (run 60, p75): bleeding that keeps getting heavier together with dizziness or fainting; "my period"/"usual" notes stay quiet
                     r"^(?![\s\S]*\b(?:my period|period pain|usual|normal for me|no dizz\w+|not dizz\w+|stopped|settled|eased|gums?|nose ?bleeds?)\b)(?=[\s\S]{0,160}\bbleed\w*\b[^.!?;]{0,60}\b(?:getting|got|gets|becoming|become|becomes) (?:much |a lot |far )?(?:heavier|worse|more))(?=[\s\S]{0,160}\b(?:dizz\w+|faint\w*|light ?headed|woozy)\b)|"
+                    # S-516 (run 63, p87): bleeding or a period that has gone on for weeks (or will not stop) with dizziness or fainting; "usual", "settled", "no dizzy" stay quiet
+                    r"^(?![\s\S]*\b(?:usual|normal for me|no dizz\w+|not dizz\w+|stopped|settled|eased|last (?:year|month))\b)(?=[\s\S]{0,160}\b(?:period|bleed\w*)\b[^.!?;]{0,40}\b(?:won'?t stop|will not stop|not stopped|hasn'?t stopped|(?:for|been|lasted|lasting) (?:over |about |nearly |more than )?(?:[2-9]|two|three|four|several|a few) weeks?|(?:for|been) (?:weeks|ages)))(?=[\s\S]{0,200}\b(?:dizz\w+|faint\w*|light ?headed|woozy)\b)|"
+                    # S-516: late pregnancy (weeks given) with a hard or rock-hard bump and pain or bleeding
+                    r"^(?=[\s\S]*\b(?:2[0-9]|3[0-9]|4[0-2]) ?weeks?\b|[\s\S]*\b(?:pregnan\w+|third trimester|due in)\b)(?=[\s\S]*\b(?:bump|belly|tummy|stomach|womb|uterus)\b[^.!?;]{0,25}\b(?:rock ?hard|hard as|very hard|so hard|rigid)\b|[\s\S]*\b(?:rock ?hard|very hard|so hard)\b[^.!?;]{0,25}\b(?:bump|belly|tummy|stomach)\b)(?=[\s\S]*\b(?:bleed\w*|blood|spotting)\b|[\s\S]*\b(?:bad|severe|sharp|constant|strong) pain\b)(?![\s\S]*\b(?:braxton|practice contraction\w*|tightening only|no (?:pain|bleeding))\b)|"
                     # arm numbness with jaw pain and sweating, split across clauses ("... and i'm sweating" starts a new clause; found by the apostrophe variant test)
                     r"^(?=.*\barm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b)(?=.*\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*|tight|clench\w*)\b)(?=.*\b(?:sweat\w*|clammy|breathless|feel sick|nausea\w*)\b)|"
                     # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
@@ -1455,6 +1459,9 @@ _S475_QUIET = r"(?![\s\S]*(?:\b(?:rain|weather|work|job|queue|traffic|exam|homew
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_S475_QUIET}(?={_A}{_S475_ENOUGH})", _SELF_WHOLE.flags)
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^(?={_A}{_SH_PREP})(?={_A}{_SH_FINAL})"
                          + r"|\b(?:won'?t|will not|wouldn'?t) be (?:a burden|a problem|in (?:anyone'?s|your|the) way) (?:to|for|on) (?:anyone|anybody|everyone|you all|any of you) (?:for )?(?:much|very|any) longer\b", _SELF_WHOLE.flags)
+# S-516 (run 63, p87): a blade, razor or rope to hand together with feeling there is no point, whole note
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
+                         + r"|^(?=[\s\S]*\b(?:blade|razor|knife|scissors|pills|tablets|rope)\b[^.!?;]{0,25}\b(?:in|holding|holds|held) (?:my |both )?(?:hand|hands)\b|[\s\S]*\b(?:holding|hold|holds|got|have|has) (?:a |my |the )?(?:blade|razor|knife|scissors|rope)\b)(?=[\s\S]*\b(?:pointless|hopeless|worthless|no point|can'?t go on|cannot go on|done with (?:everything|it all|life)|want it (?:all )?to stop)\b)(?![\s\S]*\b(?:shav\w*|crafts?|cooking|recipe|kitchen|haircut|open(?:ing)? a (?:box|parcel))\b)", _SELF_WHOLE.flags)
 
 # run16 (Safety S-269, p157 5/10 missed): blood in vomit said with everyday words, and black poo that is sticky/tar-like or
 # comes with weakness or dizziness. nhs.uk/conditions/stomach-ulcer (reviewed 12 Aug 2025, via Safety 29 Oct 2026): 999 or A&E
