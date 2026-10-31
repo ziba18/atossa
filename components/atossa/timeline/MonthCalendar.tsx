@@ -55,8 +55,8 @@ export function MonthCalendar({
     <View>
       <View style={styles.head}>
         <IconButton icon="chevron-left" color={colors.plum} label="Previous month" onPress={onPrev} />
-        <Txt variant="title" accessibilityRole="header" style={[{ textAlign: 'center', flex: 1 }, narrow && { fontSize: 20, lineHeight: 26 }]}>
-          {`${MONTH_NAMES[month0]} ${year}`}
+        <Txt variant="title" accessibilityRole="header" accessibilityLabel={`${MONTH_NAMES[month0]} ${year}`} style={[{ textAlign: 'center', flex: 1, minWidth: 0 }, narrow && { fontSize: 20, lineHeight: 26 }]}>
+          {`${narrow ? MONTH_NAMES[month0].slice(0, 3) : MONTH_NAMES[month0]} ${year}`}
         </Txt>
         <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
       </View>
