@@ -5,6 +5,7 @@
 //              on a phone without zooming.
 //   'large'  — Show on screen: body 20/28, quotes 26/34, for handing the phone across the desk.
 // Only Sam's own words use the serif. Plum appears only in the heat-strip ramp, clay only for bleeding.
+import { thinView } from '../../../lib/records/thinCounts';
 import React from 'react';
 import { View, useWindowDimensions, type TextStyle } from 'react-native';
 import Svg, { Line } from 'react-native-svg';
@@ -120,6 +121,8 @@ function WordsTable({ quotes, st }: { quotes: DocQuote[]; st: St }) {
 function Bars({ bars, st }: { bars: FreqBar[]; st: St }) {
   // Under ~260 pt there is no room beside the name: 'worst x/10' drops to its own line instead of squeezing it.
   const narrow = useWindowDimensions().width < 260;
+  // First-week rule 8: under 7 written days a bar that is full (1 of 1) invents a pattern, so no bars until 7 days.
+  const thin = thinView(bars[0]?.days ?? 0, []).thin;
   return (
     <View style={{ gap: st.s.gap * 3, marginTop: st.s.gap * 2 }}>
       {bars.map((b) => (
@@ -127,15 +130,17 @@ function Bars({ bars, st }: { bars: FreqBar[]; st: St }) {
           {/* Name + days on the left, 'worst x/10' in its own right-aligned column so every row lines up and no middot dangles. */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', columnGap: st.s.gap * 3, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
             {/* The label and the count wrap as whole blocks (no '·' that could end a line); the count never splits. */}
-            <View style={{ flexShrink: 1, flexDirection: 'row', flexWrap: 'wrap', columnGap: st.s.gap * 3 }}>
+            <View style={{ flexShrink: 1 }}>
               <Txt style={[st.body, st.strong]}>{b.label}</Txt>
               <Txt style={[st.body, st.strong]}>{`${b.days}\u00a0of\u00a0${b.total}\u00a0${b.total === 1 ? 'day' : 'days'}`}</Txt>
             </View>
             {b.strength ? <Txt style={[st.body, st.muted, { flexShrink: 0 }]}>{b.strength}</Txt> : null}
           </View>
+          {thin ? null : (
           <View style={{ height: st.s.track, backgroundColor: C.track, borderWidth: 0.5, borderColor: C.borderStrong, marginTop: st.s.gap }}>
             <View style={{ height: '100%', width: `${Math.max(1.5, (b.days / Math.max(1, b.total)) * 100)}%`, backgroundColor: C.ink }} />
           </View>
+          )}
         </View>
       ))}
     </View>
@@ -225,7 +230,10 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
     case 'frequency':
       return (
         <>
-          <Txt style={st.meta}>{section.windowLabel}</Txt>
+          <Txt style={st.meta}>{(() => {
+            const v = thinView(section.bars[0]?.days ?? 0, []);
+            return v.thin && v.line ? `${v.line} · ${section.windowLabel.replace(/ · \d+ days?$/, '')}` : section.windowLabel;
+          })()}</Txt>
           <Bars bars={section.bars} st={st} />
           {(() => {
             // On the phone reader the key sits ABOVE the squares, so what they mean is read before the tall strip.
