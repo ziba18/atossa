@@ -98,7 +98,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
                       <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{`${w}/10`}</Txt>
                     </View>
                   ) : null}
-                  {narrow ? null : <Icon name="chevron-right" size={20} color={colors.ink3} />}
+                  <Icon name="chevron-right" size={20} color={colors.ink3} />
                 </View>
               </Pressable>
             );

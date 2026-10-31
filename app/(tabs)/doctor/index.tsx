@@ -148,7 +148,7 @@ export default function DoctorScreen() {
   // On a normal phone all three sit on one row (Save PDF takes the spare width), about 50 pt less bar over the summary.
   const oneRow = !desk && !short && winWidth >= 390;
   // 568 pt phones: Save PDF, a Print icon and 'On screen' share one row, so the first counts come up the page.
-  const tightRow = !desk && short && winHeight < 600 && winWidth >= 300;
+  const tightRow = !desk && short && winHeight < 600 && winWidth >= 320; // below 320 the row is too tight for "Save PDF" on one line
   const saveButton = (
     <Button
       label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
