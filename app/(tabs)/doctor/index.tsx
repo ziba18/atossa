@@ -185,7 +185,7 @@ export default function DoctorScreen() {
       ) : (
         <>
           {saveButton}
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: desk ? 'flex-start' : 'center', gap: space.md }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: desk ? 'flex-start' : 'center', flexWrap: 'wrap', columnGap: space.md, rowGap: 0 }}>
             {otherButtons}
           </View>
         </>
