@@ -148,7 +148,7 @@ export function EntryCard({
               <View style={styles.facts}>
                 {tag != null ? <SeverityTag value={tag} suffix={keep(`/10${tagWord ? ` ${tagWord}` : ''}`)} /> : null}
                 {facts ? (
-                  <Txt variant="secondary" numberOfLines={3} style={styles.factText}>{facts}</Txt>
+                  <Txt variant="secondary" numberOfLines={3} style={[styles.factText, !lowH ? { minWidth: 168 } : null]}>{facts}</Txt>
                 ) : null}
               </View>
             ) : null}
