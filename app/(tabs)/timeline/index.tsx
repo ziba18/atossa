@@ -5,7 +5,7 @@ import { Pressable, View, StyleSheet, useWindowDimensions, type ScrollViewInstan
 import { Icon } from '../../../components/ui/Icon';
 import { useRouter } from 'expo-router';
 import {
-  AddButton, Button, Chip, ChipGroup, Sheet, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
+  AddButton, IconButton, Button, Chip, ChipGroup, Sheet, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
 } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
@@ -45,7 +45,8 @@ const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 export default function TimelineScreen() {
   const router = useRouter();
   usePageTitle('Timeline');
-  const { mode, setMode, filter, setFilter, dayFilter, setDayFilter, focusWeek, setFocusWeek, openDay, setOpenDay } = useTimelineSession();
+  const { setFilterOpen, mode, setMode, filter, setFilter, dayFilter, setDayFilter, focusWeek, setFocusWeek, openDay, setOpenDay } = useTimelineSession();
+  const win0 = useWindowDimensions();
   const scrollRef = useRef<ScrollViewInstance | null>(null);
   const symptom = useRecordsStore((s) => s.records.symptom);
   const loadError = useRecordsStore((s) => s.error);
@@ -94,6 +95,7 @@ export default function TimelineScreen() {
   // A failed first load must not fall through to the empty states ("Add a note"): the record may be fine.
   const failed = !!loadError && !loadedFor && !waiting;
   const emptyList = (mode === 'list' || mode === 'patterns') && feed.length === 0 && !waiting && !failed;
+  const shortFilter = win0.height < 640 && win0.width >= 240 && mode === 'list' && !emptyList && !waiting && !failed && feed.length > 0 && filter === 'All' && !dayFilter;
   const header = (
     <>
       {emptyList ? null : <AddButton label="Add a note" onPress={() => openCapture()} />}
@@ -106,7 +108,14 @@ export default function TimelineScreen() {
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
+      {shortFilter ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+          <View style={{ flex: 1, minWidth: 0 }}><SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} /></View>
+          <IconButton icon="sliders" label="Show: everything. Opens the filter" color={colors.plum} onPress={() => setFilterOpen(true)} />
+        </View>
+      ) : (
+        <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
+      )}
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : failed ? null : mode === 'list' ? (
@@ -159,9 +168,9 @@ function ListView({
 }) {
   const win = useWindowDimensions();
   const short = win.height < 640; // 320x568: the controls and the week heading sit closer so the first card starts higher
+  const compactFilterOn = filter !== 'All' || !!dayFilter;
   const tiny = win.width < 280; // 200% text on a small phone: the week summary drops under the label
-  const [filterOpen, setFilterOpen] = useState(false);
-  const { setMode } = useTimelineSession();
+  const { setMode, filterOpen, setFilterOpen } = useTimelineSession();
   const options = useMemo(
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
     [feed],
@@ -203,7 +212,8 @@ function ListView({
   return (
     <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
-      <View style={{ marginTop: short ? space.xxs : space.sm, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
+      {/* 568 pt phones: with no filter on, the chip becomes a 44 pt button beside the view switch (TimelineScreen), so the first card starts one chip row higher. */}
+      {short && win.width >= 240 && !compactFilterOn ? null : <View style={{ marginTop: short ? space.xxs : space.sm, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
         <Chip
           style={{ flexShrink: 1, maxWidth: '100%' }}
           label={dayFilter ? `${dayFilter.label} · ${dayFilter.dates.length === 1 ? '1 day' : `${dayFilter.dates.length} days`}` : filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
@@ -211,7 +221,7 @@ function ListView({
           onPress={() => setFilterOpen(true)}
         />
         {filter !== 'All' || dayFilter ? <Chip ghost label="Clear" onPress={() => (dayFilter ? clearDayFilter() : setFilter('All'))} /> : null}
-      </View>
+      </View>}
       <Sheet visible={filterOpen} onClose={() => setFilterOpen(false)} title="Show">
         <ChipGroup
           accessibilityLabel="Show"

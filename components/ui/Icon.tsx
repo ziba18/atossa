@@ -86,6 +86,7 @@ export type IconName =
   | 'trash-2'
   | 'sun'
   | 'list'
+  | 'sliders'
   | 'menu'
   | 'image'
   | 'paperclip'
@@ -751,6 +752,21 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = IC
             <Path {...shared} d="M20 12h2" />
             <Path {...shared} d="m6.34 17.66-1.41 1.41" />
             <Path {...shared} d="m19.07 4.93-1.41 1.41" />
+          </>
+        );
+
+      case 'sliders':
+        return (
+          <>
+            <Path {...shared} d="M21 4h-7" />
+            <Path {...shared} d="M10 4H3" />
+            <Path {...shared} d="M21 12h-9" />
+            <Path {...shared} d="M8 12H3" />
+            <Path {...shared} d="M21 20h-5" />
+            <Path {...shared} d="M12 20H3" />
+            <Path {...shared} d="M14 2v4" />
+            <Path {...shared} d="M8 10v4" />
+            <Path {...shared} d="M16 18v4" />
           </>
         );
 

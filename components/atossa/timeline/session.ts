@@ -28,6 +28,9 @@ interface TimelineSession {
   setOpenDay: (d: string | null) => void;
   setMode: (mode: TimelineMode) => void;
   setFilter: (filter: TimelineFilter) => void;
+  /** The 'Show' sheet; open state lives here so a compact button beside the view switch (short phones) can open it. */
+  filterOpen: boolean;
+  setFilterOpen: (open: boolean) => void;
 }
 
 export const useTimelineSession = create<TimelineSession>((set) => ({
@@ -41,4 +44,6 @@ export const useTimelineSession = create<TimelineSession>((set) => ({
   setOpenDay: (openDay) => set({ openDay }),
   setMode: (mode) => set({ mode }),
   setFilter: (filter) => set({ filter, dayFilter: null }),
+  filterOpen: false,
+  setFilterOpen: (filterOpen) => set({ filterOpen }),
 }));
