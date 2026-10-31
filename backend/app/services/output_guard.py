@@ -578,6 +578,8 @@ _IDIOM = re.compile(
     # wanting a baby is not being pregnant (NHS pelvic pain page: 111 if "pregnant or may be pregnant"); run 01 ruling
     r"|\b(?:get|getting|become|becoming) pregnan\w*|\btrying (?:for|to have) a (?:baby|child)\b|\btrying to conceive\b"
     r"|\bcollaps\w+ (?:on|onto|into) (?:the |my )?(?:sofa|couch|bed|settee|chair)\b"
+    # S-482: a pet collapsing or fitting is a vet matter, not a note about the writer (the writer's own signs stay in the note)
+    r"|\b(?:my|our|the) (?:dog|cat|puppy|kitten|pet|rabbit|hamster|horse|bird)\b[^.!?;,]{0,30}\b(?:collaps\w+|faint\w*|passed out|seiz\w+|had a fit|fitting)\b"
     r"|\bfell over (?:at|in|during|while) (?:the )?(?:gym|running|jogging|skating|netball|football|dance|class)\b"
     r"|\b(?:short(?:ness)? of breath|can'?t (?:get|catch) my breath|out of breath)\b[^.;!?]{0,30}\b(?:after|when|while|during)\b[^.;!?]{0,25}\b(?:run\w*|climb\w*|stairs|exercis\w*|walk\w*|gym|workout|jog\w*|sprint\w*)\b"
     r"|\bagony (?:waiting|of waiting)\b"
