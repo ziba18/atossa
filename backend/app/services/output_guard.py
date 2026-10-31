@@ -597,7 +597,9 @@ _IDIOM = re.compile(
 
 
 # Two parts of one message split by a comma ("stabbing pain, curled up on the floor") need one look at the whole text.
-_WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|heavy|pressure)\b.{0,60}\b(?:left |right )?arm\b.{0,25}\b(?:weird|strange|funny|heavy|numb|tingl\w+|pins and needles)\b|"
+_WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )(?<!nor )(?:fever\w*|high temperature|burning hot|shivering|sunburn\w*|rash)\b|\b(?<!no )(?<!any )(?<!without )(?:fever\w*|high temperature|burning hot)\b.{0,60}\btampon\b|"
+                    r"\b(?:pain|ache)\b.{0,25}\b(?:side|tummy|belly|stomach|pelvi\w+)\b.{0,60}\b(?:want to throw up|throwing up|vomit\w*|being sick)\b.{0,60}\b(?:burning hot|fever\w*|high temperature|shivering)\b|"
+                    r"\bchest\b.{0,40}\b(?:tight|heavy|pressure)\b.{0,60}\b(?:left |right )?arm\b.{0,25}\b(?:weird|strange|funny|heavy|numb|tingl\w+|pins and needles)\b|"
                     r"\b(?:left |right )?arm\b.{0,25}\b(?:weird|strange|funny|heavy|numb|tingl\w+)\b.{0,60}\bchest\b.{0,40}\b(?:tight|heavy|pressure)\b|"
                     r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left |right )?(?:jaw|arm)\b|"
                     # blind set v11 (2026-10-27): NHS 111/999 wording for DVT/PE, meningitis, stroke, cauda equina, acute abdomen

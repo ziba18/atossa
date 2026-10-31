@@ -154,3 +154,14 @@ def test_chest_tightness_with_an_odd_arm_is_urgent_and_the_arm_alone_is_not():
               "chest was tight last year when I had a cold, arm is fine now",
               "my arm felt heavy after carrying shopping, period pain is a five"]:
         assert not k(q), q
+
+
+def test_tampon_with_fever_or_rash_and_pain_with_vomiting_and_burning_hot_are_urgent():
+    from app.services.output_guard import is_emergency as k
+    for u in ["my tampon has been in for like 3 days and i feel feverish and have a rash",
+              "my periods have been awful and tonight I've got a pain in my side that makes me want to throw up and I'm burning hot"]:
+        assert k(u), u
+    for q in ["changed my tampon, no rash, feel fine", "tampon in overnight and I woke with cramps",
+              "tampons are leaking more now, period pain is a six",
+              "side pain and nausea but no fever, took ibuprofen"]:
+        assert not k(q), q
