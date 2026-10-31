@@ -342,3 +342,12 @@ def test_vehicle_wish_selfinjury_with_hatred_edge_of_platform_s530():
                  "I hate my body today, bloated, pain 5, wish a bus would come soon",
                  "my sister said she wishes a car would hit her ex, she was joking"]:
         assert not g.is_emergency(line), line
+
+
+def test_after_birth_seeing_things_or_baby_taken_s532():
+    from app.services import output_guard as g
+    assert g.is_emergency("since the birth I keep seeing things and I think someone wants to take my baby")
+    for line in ["since the birth I am tired and my baby is feeding well",
+                 "my sister heard voices after her baby years ago, now fine",
+                 "watching a programme where someone wants to take my baby name idea, funny"]:
+        assert not g.is_emergency(line), line

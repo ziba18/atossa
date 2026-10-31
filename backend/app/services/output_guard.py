@@ -1384,6 +1384,11 @@ _S522_SPEECH = r"\b(?:speech|voice|talking|words?)\b[^.!?;]{0,25}\b(?:odd|strang
 _S522_QUIET = r"\b(?:dentist|dental|injection|anaesthe\w*|always|usual\w*|years? ago|months? ago|last (?:week|year)|yesterday|was |used to|my (?:mum|dad|sister|brother|friend|nan)'?s?\b)"
 _WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_S522_QUIET})(?={_A}{_S522})(?={_A}{_S522_ARM})(?={_A}{_S522_SPEECH})", _WHOLE.flags)
 
+# S-532 (run 64, p93): after a birth, seeing or hearing things / a belief someone will take or harm the baby (NHS: postpartum psychosis, call 999 / 111).
+_S532 = (r"^(?!{A}\b(?:years? ago|last year|my (?:mum|sister|friend|wife|partner)'?s?\b|film|programme|book|podcast))(?={A}\b(?:since the birth|since (?:i|we) had (?:the|my|our) baby|after (?:the birth|having (?:the|my) baby)|postnatal|postpartum|(?:had|gave birth to) (?:my|a) baby (?:\w+ ){{0,3}}(?:ago|last week|recently)))"
+         r"(?={A}\b(?:(?:seeing|hearing) (?:things|voices|people)|voices (?:are )?telling|someone (?:wants|is trying|will try) to (?:take|hurt|harm) (?:my|the) baby|(?:they|people) (?:are )?(?:going to|want to|will) take my baby)\b)").format(A=_A)
+_WHOLE = re.compile(_WHOLE.pattern + "|" + _S532, _WHOLE.flags)
+
 _CHEST_P = r"\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*|band|weight|elephant)\b[^.!?;]{0,40}\b(?:chest)\b|\bchest\b[^.!?;]{0,25}\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*)\b"
 _CHEST_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|(?:left |right )?arm|neck|back|light ?headed|dizzy|short of breath|breathless|(?:feel\w* |being )sick)\b"
 _CHEST_QUIET = r"\b(?:after (?:the|a|my) (?:run|gym|workout|swim)|exercis\w*|from (?:my|a|the) (?:cold|cough)|coughing|boobs?|breasts?|period|bra|fine after|vaccine|indigestion after)\b"
