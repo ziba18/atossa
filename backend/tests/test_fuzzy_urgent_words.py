@@ -204,3 +204,10 @@ def test_mouth_dropped_open_in_surprise_is_quiet_one_sided_drop_urgent():
     from app.services import output_guard as g
     assert g.emergency_kind("my jaw dropped and mouth dropped open at the news") is None
     assert g.emergency_kind("my mouth has dropped on one side") is not None
+
+
+def test_relative_swallowed_pills_and_sleepy_urgent_normal_dose_quiet():
+    from app.services import output_guard as g
+    assert g.emergency_kind("my little brother swallowed my pills and is sleepy") is not None
+    assert g.emergency_kind("my mum took her pills as normal and is a bit sleepy after lunch is fine") is None
+    assert g.emergency_kind("my friend took her tablets and was drowsy so we napped, ok now") is None

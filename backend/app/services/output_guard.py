@@ -697,6 +697,8 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,15}\bpain\b.{0,80}\b(?:(?:very )?high temperature|fever)\b.{0,60}\b(?:chills|shivering|shivery)\b|"
                     # heart attack told in plain words, and the heavy-chest descriptions NHS lists (any clause)
                     r"\b(?:having|think i'?m having|might be having|feels? like i'?m having) (?:a )?heart attack\b|"
+                    # S-516 (run 62, p87): a relative or child swallowed her pills and is now sleepy / floppy / hard to wake
+                    r"\b(?:brother|sister|son|daughter|child|kid|toddler|baby|boyfriend|girlfriend|friend|mum|mom|dad|nan|gran\w*)\b[^.!?;]{0,25}\b(?:swallowed|ate|got into)\b[^.!?;]{0,30}\b(?:pills|tablets|medication|meds)\b(?![^.!?;]{0,40}\b(?:as normal|as usual|as prescribed|fine|ok|okay)\b)[^.!?;]{0,40}\b(?:sleepy|drowsy|floppy|unresponsive|hard to wake|won'?t wake|not waking)\b|"
                     # S-512 (run 62, p83 hedged forms): "think I might be having a stroke", relayed mouth drop, double insulin, painful red eye with halos
                     r"\b(?:think i(?:'?m| am| might be| may be)|i (?:might|may|could) be|think (?:she|he)(?:'?s| is)|might be|may be) having (?:a )?(?:stroke|heart attack)\b(?! (?:assessment|scan|test|clinic|appointment|risk|of))|"
                     r"\b(?:mouth|side of (?:her|his|their|my) (?:mouth|face)) (?:has |is |'s |have )?(?:dropped|drooping|drooped|sagging)\b(?! open)|"
