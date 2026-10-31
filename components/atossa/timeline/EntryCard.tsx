@@ -12,9 +12,10 @@ import { textOf } from '../UrgentNote';
 import { toKey, todayKey } from '../../../lib/records/dates';
 import {
   BLEEDING_STATUS_LABEL, bleedingFacts, bleedingStatus, firstLine, formatDay, formatRange, formatRecordDate,
-  formatRecordDateInline, formatWhere, labelEscape, typicalOf, worstOf,
+  formatRecordDateInline, formatWhere, labelEscape, typicalOf, worstOf, worstWrittenIn,
 } from '../../../lib/records/format';
 import type { PeriodDayData, Rec, SymptomData } from '../../../types/records';
+import { useRecordsStore } from '../../../stores/recordsStore';
 import type { ListItem } from './feed';
 
 /**
@@ -108,6 +109,7 @@ export function EntryCard({
   /** Inside the DaySheet the sheet title already names the day — don't repeat it on every card. */
   hideDate?: boolean;
 }) {
+  const symptoms = useRecordsStore((st) => st.records.symptom);
   switch (item.kind) {
     case 'symptom': {
       const s = item.rec.data;
@@ -165,18 +167,22 @@ export function EntryCard({
     case 'bleedingRun': {
       const { title, range, flows } = runSummary(item.days);
       const n = item.days.length;
+      const worst = worstWrittenIn(
+        symptoms.map((r) => r.data), item.days[0].data.date, item.days[n - 1].data.date,
+      );
+      const worstLine = worst == null ? '' : `Worst written on these days: ${worst}/10`;
       return (
         <PressableCard
           edge="clay"
           style={styles.clayInset}
           onPress={onPress}
-          accessibilityLabel={[`${title}, ${range}`, `${n} days logged`, flows].filter(Boolean).join('. ')}
+          accessibilityLabel={[`${title}, ${range}`, `${n} days logged`, flows, worstLine].filter(Boolean).join('. ')}
           accessibilityHint="Shows these days"
         >
           <View style={styles.stack}>
             <GlyphLine icon="droplet" clay text={`${range} · ${n} days`} />
             <Txt variant="headline">{title}</Txt>
-            <FactLine parts={[flows]} />
+            <FactLine parts={[flows, worstLine]} />
           </View>
         </PressableCard>
       );

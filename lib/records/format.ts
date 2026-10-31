@@ -120,6 +120,20 @@ export function worstOf(s: SymptomData): number | null {
   return null;
 }
 
+/**
+ * Highest "at worst" number written on a note dated within [from, to] (inclusive), or null when no
+ * note in those days carries a number. A count of what was written, not an average.
+ */
+export function worstWrittenIn(symptoms: SymptomData[], from: string, to: string): number | null {
+  let best: number | null = null;
+  for (const s of symptoms) {
+    if (s.date < from || s.date > to) continue;
+    const w = worstOf(s);
+    if (w != null && (best == null || w > best)) best = w;
+  }
+  return best;
+}
+
 export function typicalOf(s: SymptomData): number | null {
   return typeof s.typical === 'number' ? s.typical : null;
 }
