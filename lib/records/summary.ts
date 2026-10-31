@@ -405,6 +405,15 @@ function worstKeyOf(notes: SymptomData[]): string {
   return best ? best.date : '';
 }
 
+/** Other days that share the group's highest rating: "+ 1 more day". '' when the highest is on one day only (A231). */
+export function tiedMoreText(notes: SymptomData[]): string {
+  let hi = -1;
+  for (const s of notes) { const w = worstOf(s); if (w != null && w > hi) hi = w; }
+  if (hi < 0) return '';
+  const days = new Set(notes.filter((s) => worstOf(s) === hi).map((s) => s.date));
+  return days.size > 1 ? ` + ${days.size - 1} more day${days.size - 1 === 1 ? '' : 's'}` : '';
+}
+
 function worstDateOf(notes: SymptomData[]): string {
   let best: SymptomData | null = null;
   let hi = -1;
@@ -413,7 +422,7 @@ function worstDateOf(notes: SymptomData[]): string {
     if (w == null) continue;
     if (w > hi || (w === hi && best && s.date > best.date)) { hi = w; best = s; }
   }
-  return best ? formatDay(best.date) : '';
+  return best ? formatDay(best.date) + tiedMoreText(notes) : '';
 }
 
 function worstWhen(notes: SymptomData[]): string {
@@ -427,7 +436,7 @@ function worstWhen(notes: SymptomData[]): string {
   if (!best) return '';
   const zone = best.zones?.[0];
   const where = zone ? (BODY_ZONE_LABELS[zone as keyof typeof BODY_ZONE_LABELS] ?? zone) : '';
-  return joinFacts(where, formatDay(best.date));
+  return joinFacts(where, formatDay(best.date) + tiedMoreText(notes));
 }
 
 /** Raw strength values for a group of notes: "usually 6/10, worst 9/10". */
