@@ -9,7 +9,10 @@ export const TIMELINE_FILTERS: TimelineFilter[] = ['All', 'Symptoms', 'Bleeding'
 /** Area chips only appear once a note belongs to them (no dead chips); the rest are always there. */
 export const AREA_FILTERS: TimelineFilter[] = ['Bowel or bladder', 'Tiredness'];
 
-/** A count from For my doctor opened as a list: exactly these dated days, named by the row's own label. */
+/**
+ * Lifetime (D-s93-6): set by a tapped count; kept while the person opens entries and comes back (the chip says what is
+ * shown, Clear removes it); cleared by Clear, by picking any Show filter, or when the app restarts (session only).
+ * A count from For my doctor opened as a list: exactly these dated days, named by the row's own label. */
 export interface DayFilter { label: string; dates: string[]; /** Which entries on those days: notes (default) or bleeding days. */ kind?: 'symptom' | 'bleeding' }
 
 interface TimelineSession {
