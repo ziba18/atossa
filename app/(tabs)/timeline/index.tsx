@@ -44,7 +44,7 @@ const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 export default function TimelineScreen() {
   const router = useRouter();
   usePageTitle('Timeline');
-  const { mode, setMode, filter, setFilter, focusWeek, setFocusWeek, openDay, setOpenDay } = useTimelineSession();
+  const { mode, setMode, filter, setFilter, dayFilter, setDayFilter, focusWeek, setFocusWeek, openDay, setOpenDay } = useTimelineSession();
   const scrollRef = useRef<ScrollViewInstance | null>(null);
   const symptom = useRecordsStore((s) => s.records.symptom);
   const loadError = useRecordsStore((s) => s.error);
@@ -109,7 +109,7 @@ export default function TimelineScreen() {
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : failed ? null : mode === 'list' ? (
-        <ListView feed={feed} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
+        <ListView feed={feed} dayFilter={dayFilter} clearDayFilter={() => setDayFilter(null)} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
       ) : mode === 'patterns' ? (
         <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
       ) : (
@@ -144,8 +144,10 @@ export default function TimelineScreen() {
 // ---- List -----------------------------------------------------------------------------------
 
 function ListView({
-  feed, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef,
+  feed, dayFilter, clearDayFilter, filter, setFilter, onOpen, focusWeek, onFocused, scrollRef,
 }: {
+  dayFilter: { label: string; dates: string[] } | null;
+  clearDayFilter: () => void;
   focusWeek: { from: string; to: string } | null;
   onFocused: () => void;
   scrollRef: React.RefObject<ScrollViewInstance | null>;
@@ -161,7 +163,7 @@ function ListView({
     () => TIMELINE_FILTERS.filter((f) => !AREA_FILTERS.includes(f) || feed.some((i) => inArea(i, f as 'Tiredness'))),
     [feed],
   );
-  const groups = useMemo(() => groupFeed(mergeBleedingRuns(filterFeed(feed, filter))), [feed, filter]);
+  const groups = useMemo(() => groupFeed(mergeBleedingRuns(dayFilter ? feed.filter((i) => i.kind === 'symptom' && dayFilter.dates.includes(i.date)) : filterFeed(feed, filter))), [feed, filter, dayFilter]);
   // Patterns week bar -> scroll to that week's group (y = this view's offset + the group's offset).
   const rootY = useRef(0);
   const groupY = useRef<Record<string, number>>({});
@@ -201,11 +203,11 @@ function ListView({
       <View style={{ marginTop: space.sm, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
         <Chip
           style={{ flexShrink: 1, maxWidth: '100%' }}
-          label={filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
-          selected={filter !== 'All'}
+          label={dayFilter ? `Showing: ${dayFilter.label} · ${dayFilter.dates.length === 1 ? '1 day' : `${dayFilter.dates.length} days`}` : filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
+          selected={filter !== 'All' || !!dayFilter}
           onPress={() => setFilterOpen(true)}
         />
-        {filter !== 'All' ? <Chip ghost label="Clear" onPress={() => setFilter('All')} /> : null}
+        {filter !== 'All' || dayFilter ? <Chip ghost label="Clear" onPress={() => (dayFilter ? clearDayFilter() : setFilter('All'))} /> : null}
       </View>
       <Sheet visible={filterOpen} onClose={() => setFilterOpen(false)} title="Show">
         <ChipGroup

@@ -2,7 +2,9 @@
 // first sections are repeated here at body size. Same numbers as the document (read from the same
 // DoctorDoc); descriptive only. "See the full page" opens the reflowed document.
 import React from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { Pressable, View, useWindowDimensions } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useTimelineSession } from '../timeline/session';
 import { colors, fonts, space } from '../../../constants/atossaUI';
 import { curly, type DoctorDoc } from '../../../lib/records/summary';
 import { thinView } from '../../../lib/records/thinCounts';
@@ -13,6 +15,9 @@ const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 /** `showAgenda` is false when the editable agenda field already sits above the cards. */
 export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showAgenda?: boolean }) {
   const narrow = useWindowDimensions().width < 360;
+  const router = useRouter();
+  // Every count opens the dated days behind it: Timeline list, exactly those days.
+  const openDays = (label: string, dates?: string[]) => { if (!dates?.length) return; useTimelineSession.getState().setDayFilter({ label, dates }); router.push('/(tabs)/timeline' as any); };
   const freq = doc.sections.find((s) => s.id === 'frequency');
   const periods = doc.sections.find((s) => s.id === 'periods');
   const impacts = doc.sections.find((s) => s.id === 'impacts');
@@ -49,10 +54,10 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>{thin.thin && thin.line ? thin.line : freq.windowLabel}</Txt>
         {all ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.sm, marginTop: space.sm, alignItems: 'flex-end' }}>
-            <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={thin.thin ? `${all.days} with a note, ${thin.line}` : `${all.days} of ${plural(all.total, 'day')} with a note`}>
+            <Pressable onPress={() => openDays('Days with a note', all.dates)} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={{ maxWidth: '100%', minHeight: 44 }} accessibilityLabel={thin.thin ? `${all.days} with a note, ${thin.line}` : `${all.days} of ${plural(all.total, 'day')} with a note`}>
               <Txt variant="numeral" style={big}>{all.days}</Txt>
               <Txt variant="secondary">{thin.thin ? 'with a note' : `of ${plural(all.total, 'day')} with a note`}</Txt>
-            </View>
+            </Pressable>
             {worstAll ? (
               <View style={{ maxWidth: '100%' }} accessible accessibilityLabel={`Worst rating ${worstAll} out of 10`}>
                 <Txt variant="numeral" style={big}>{`${worstAll}/10`}</Txt>
@@ -67,7 +72,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
             const w = worstOf(b.strength ?? '');
             const u = usual(b.strength ?? '');
             return (
-              <View key={b.label} style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: space.sm }}>
+              <Pressable key={b.label} onPress={() => openDays(b.label, b.dates)} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: space.sm, minHeight: 44 }}>
                 {/* Basis 130: on very narrow screens the Worst column wraps under the name instead of squeezing it mid-word. */}
                 <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 130, minWidth: 0 }}>
                   <Txt variant="body">{b.label}</Txt>
@@ -79,7 +84,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
                     <Txt variant="body" style={[{ fontFamily: fonts.semibold }, num]}>{`${w}/10`}</Txt>
                   </View>
                 ) : null}
-              </View>
+              </Pressable>
             );
           })}
         </View>

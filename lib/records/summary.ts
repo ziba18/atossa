@@ -186,6 +186,8 @@ export interface DocQuote {
 /** One definition row on the page: "Why I went" | Sam's text. */
 export interface DocLine { label: string; text: string }
 
+const datesOf = (notes: { date: string }[]): string[] => [...new Set(notes.map((n) => n.date))].sort();
+
 export interface FreqBar {
   /** "Days with a note", or a body zone Sam picked ("Lower back"). */
   label: string;
@@ -199,6 +201,8 @@ export interface FreqBar {
   worstDate?: string;
   /** Highest number she gave on these notes (the "Worst" column); null when she gave none. Never averaged. */
   worst: number | null;
+  /** The dated days behind `days` (each a day with at least one of these notes), so a count can open exactly them. */
+  dates?: string[];
 }
 
 export interface HeatDay {
@@ -745,12 +749,12 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const noteDays = daysWith(windowNotes, stripFrom, to);
     const bars: FreqBar[] = [];
     if (noteDays) {
-      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes), worstOn: worstWhen(windowNotes), worstDate: worstDateOf(windowNotes) });
+      bars.push({ label: 'Days with a note', days: noteDays, total, strength: groupStrength(windowNotes), worst: groupWorst(windowNotes), worstOn: worstWhen(windowNotes), worstDate: worstDateOf(windowNotes), dates: datesOf(windowNotes) });
       zoneDays(windowNotes)
         .slice(0, MAX_ZONE_ROWS)
         .map(({ label, days: n }) => {
           const zn = windowNotes.filter((s) => (s.zones ?? []).includes(label));
-          return { label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(zn), worst: groupWorst(zn), worstDate: worstDateOf(zn) };
+          return { label: BODY_ZONE_LABELS[label as keyof typeof BODY_ZONE_LABELS] ?? label, days: n, total, strength: groupStrength(zn), worst: groupWorst(zn), worstDate: worstDateOf(zn), dates: datesOf(zn) };
         })
         .forEach((b) => bars.push(b));
     }
