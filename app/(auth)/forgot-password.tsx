@@ -2,6 +2,7 @@ import React from 'react';
 import { Linking, Platform } from 'react-native';
 import { space } from '../../constants/atossaUI';
 import { Button, Card, ScreenLarge, Txt } from '../../components/atossa/kit';
+import { PreLoginHelp } from '../../components/help/PreLoginHelp';
 import { usePageTitle } from '../../lib/usePageTitle';
 
 const SUPPORT_EMAIL = 'zamaniziba18@gmail.com';
@@ -16,6 +17,7 @@ export default function ForgotPasswordScreen() {
   usePageTitle('Forgot password');
   return (
     <ScreenLarge title="Forgot password?" back={{ label: 'Sign in' }}>
+      <PreLoginHelp style={{ marginBottom: space.md }} />
       <Card style={{ gap: space.sm }}>
         <Txt variant="body">
           {BODY}
