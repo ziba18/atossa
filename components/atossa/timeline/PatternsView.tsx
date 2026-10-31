@@ -48,7 +48,7 @@ function Bars({ rows, total, onRow }: { rows: { label: string; days: number; dat
 }
 
 /** The 28 days as one bar: days with bleeding logged, other days with a note, days with nothing logged. Counts add to the range. */
-function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter) => void }) {
+function SplitDays({ m, onOpen, onOpenDays }: { m: PatternsModel; onOpen: (f: TimelineFilter) => void; onOpenDays?: (label: string, dates: string[], kind?: 'symptom' | 'bleeding') => void }) {
   const withB = m.days.filter((d) => d.bleeding).length; // same count as the 'days of bleeding' tile
   const without = m.days.filter((d) => d.logged && !d.bleeding).length;
   const both = m.days.filter((d) => d.logged && d.bleeding).length; // bleeding days that also have a note
@@ -82,7 +82,7 @@ function SplitDays({ m, onOpen }: { m: PatternsModel; onOpen: (f: TimelineFilter
           );
           const rowStyle = { flexDirection: 'row' as const, alignItems: 'center' as const, gap: space.sm, minHeight: heights.minHit };
           return tappable ? (
-            <Pressable key={x.key} accessibilityRole="button" accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}. ${x.hint}`} onPress={() => onOpen(x.opens!)} style={({ pressed }) => [rowStyle, { opacity: pressed ? 0.7 : 1 }]}>{row}</Pressable>
+            <Pressable key={x.key} accessibilityRole="button" accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}. ${x.hint}`} onPress={() => (onOpenDays ? onOpenDays(x.label, m.days.filter((d) => (x.key === 'with' ? d.bleeding : d.logged && !d.bleeding)).map((d) => d.date), x.key === 'with' ? 'bleeding' : 'symptom') : onOpen(x.opens!))} style={({ pressed }) => [rowStyle, { opacity: pressed ? 0.7 : 1 }]}>{row}</Pressable>
           ) : (
             <View key={x.key} accessible accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}`} style={rowStyle}>{row}</View>
           );
@@ -221,7 +221,7 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
 
       {range === '4w' ? (
         <FadeIn index={1}>
-          <SplitDays m={m} onOpen={onOpen} />
+          <SplitDays m={m} onOpen={onOpen} onOpenDays={onOpenDays} />
         </FadeIn>
       ) : (
       <FadeIn index={1}>
