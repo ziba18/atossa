@@ -198,3 +198,9 @@ def test_no_point_in_tomorrow_self_harm_everyday_quiet():
     assert g.emergency_kind("can't see the point of carrying on") == "self_harm"
     assert g.emergency_kind("i don't see the point in going to the shops") is None
     assert g.emergency_kind("i dont see the point in the new diet app") is None
+
+
+def test_mouth_dropped_open_in_surprise_is_quiet_one_sided_drop_urgent():
+    from app.services import output_guard as g
+    assert g.emergency_kind("my jaw dropped and mouth dropped open at the news") is None
+    assert g.emergency_kind("my mouth has dropped on one side") is not None

@@ -835,7 +835,7 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     r"\b(?:pouring|gushing)\b.{0,15}\bblood\b|\bblood\b.{0,10}\b(?:pouring|gushing)\b|\bgush of blood\b|"
                     r"\bseeing stars\b|\blegs\b.{0,10}\b(?:going from under|giving (?:way|out)|gone from under)|"
                     r"\brigid as a board\b|\b(?:tummy|belly|stomach|abdomen) (?:is |went |feels? )(?:rigid|solid)\b(?! with (?:tension|stress|nerves|anxiety|worry))|"
-                    r"\b(?:mouth|face|eyelid)\b.{0,15}\b(?:droop\w*|dropped|falling)\b|\bcan'?t feel my (?:left|right) side\b|"
+                    r"\b(?:mouth|face|eyelid)\b.{0,15}\b(?:droop\w*|dropped(?! open)|falling)\b|\bcan'?t feel my (?:left|right) side\b|"
                     r"\b(?:lump|clot|tissue)\b.{0,15}\bcame out\b.{0,60}\b(?:freezing|clammy|faint|dizzy)\b|"
                     r"^(?=.*\b(?:after the op|post[- ]?op)\b)(?=.*\b(?:fever|high temperature)\b)(?=.*\b(?:swollen|smell\w*|pus|discharge))|"
                     r"\bchest\b.{0,15}\bsqueezing\b|\bsqueezing\b.{0,15}\bchest\b|"
