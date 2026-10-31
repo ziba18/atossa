@@ -6,7 +6,7 @@ import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/atossaUI';
 import {
-  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, SkeletonCards, Txt, showToast,
+  Button, Card, ChipGroup, EmptyState, HeaderAvatar, IconButton, InlineError, SafetyLine, ScreenLarge, SkeletonCards, Txt, showToast,
 } from '../../../components/atossa/kit';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
@@ -147,6 +147,8 @@ export default function DoctorScreen() {
   // Save PDF is the one primary; Print and On screen are text buttons on one line below it.
   // On a normal phone all three sit on one row (Save PDF takes the spare width), about 50 pt less bar over the summary.
   const oneRow = !desk && !short && winWidth >= 390;
+  // 568 pt phones: Save PDF, a Print icon and 'On screen' share one row, so the first counts come up the page.
+  const tightRow = !desk && short && winHeight < 600 && winWidth >= 300;
   const saveButton = (
     <Button
       label={winWidth < 280 ? 'Save' : Platform.OS === 'web' ? 'Save PDF' : 'Share PDF'}
@@ -155,7 +157,7 @@ export default function DoctorScreen() {
       onPress={share}
       loading={busy === 'share'}
       disabled={off}
-      style={oneRow
+      style={oneRow || tightRow
         ? { flex: 1, minWidth: 0 }
         : { alignSelf: desk ? 'flex-start' : 'stretch', minWidth: desk ? 320 : 0, ...(short ? { minHeight: heights.minHit } : null) }}
       accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
@@ -163,12 +165,16 @@ export default function DoctorScreen() {
   );
   const otherButtons = (
     <>
+      {tightRow ? (
+        <IconButton icon="printer" label="Print" color={colors.plum} onPress={() => { if (!off) print(); }} />
+      ) : (
+        <Button
+          label="Print" icon="printer" variant="text" small onPress={print} disabled={off} loading={busy === 'print'}
+          style={{ minWidth: 0 }} accessibilityHint="Sends the summary to a printer"
+        />
+      )}
       <Button
-        label="Print" icon="printer" variant="text" small onPress={print} disabled={off} loading={busy === 'print'}
-        style={{ minWidth: 0 }} accessibilityHint="Sends the summary to a printer"
-      />
-      <Button
-        label="On screen" icon="monitor" variant="text" small disabled={doc.empty}
+        label="On screen" icon={tightRow ? undefined : 'monitor'} variant="text" small disabled={doc.empty}
         onPress={() => router.push('/(tabs)/doctor/show' as any)} style={{ minWidth: 0 }}
         accessibilityLabel="Show on screen" accessibilityHint="Opens the summary full screen to read with your doctor"
       />
@@ -177,7 +183,7 @@ export default function DoctorScreen() {
   const footer = (
     <View style={{ gap: space.xs }}>
       <InlineError message={actionError} />
-      {oneRow ? (
+      {oneRow || tightRow ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
           {saveButton}
           {otherButtons}
