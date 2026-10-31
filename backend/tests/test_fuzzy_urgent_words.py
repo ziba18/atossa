@@ -351,3 +351,12 @@ def test_after_birth_seeing_things_or_baby_taken_s532():
                  "my sister heard voices after her baby years ago, now fine",
                  "watching a programme where someone wants to take my baby name idea, funny"]:
         assert not g.is_emergency(line), line
+
+
+def test_double_dose_with_heart_going_mad_and_shaking_s533():
+    from app.services import output_guard as g
+    for line in ["i got really hot and my heart is going mad and i cant stop shaking after taking double my meds",
+                 "took double my meds and my heart is hammering"]:
+        assert g.is_emergency(line), line
+    for line in ["my heart is going mad at this show, taking my meds as normal", "took my usual meds, a bit hot, heart rate normal"]:
+        assert not g.is_emergency(line), line

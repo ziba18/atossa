@@ -813,6 +813,8 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     # set p75 (medicine reactions and mixing; first contact 4/12 missed)
                     r"^(?=.*\brash\b.{0,30}\bspreading\b)(?=.*\b(?:lips?|tongue|face|eyelids?)\b.{0,20}\b(?:puffy|swollen|swelling)\b)|"
                     r"\b(?:took|taken|had) (?:double|twice|too many|an extra|two lots)\b.{0,50}\b(?:dose|tablets?|pills?|medication)\b.{0,60}\b(?:heart (?:is )?(?:pounding|racing)|shaking(?!\?)|drowsy|can'?t stay awake)\b|"
+                    r"\b(?:heart (?:is )?(?:going (?:mad|crazy|wild)|pounding|racing|hammering)|can'?t stop shaking)\b.{0,60}\b(?:taking|took|taken|had) (?:double|twice|too many|an extra)\b.{0,12}\b(?:meds|medication|tablets?|pills?|dose)\b|"
+                    r"\b(?:taking|took|taken|had) (?:double|twice|too many|an extra)\b.{0,12}\b(?:meds|medication|tablets?|pills?|dose)\b.{0,60}\b(?:heart (?:is )?(?:going (?:mad|crazy|wild)|hammering)|can'?t stop shaking)\b|"
                     r"\bwheez\w*\b.{0,30}\bitch\w*\b.{0,15}\ball over\b|\bitch\w*\b.{0,15}\ball over\b.{0,40}(?<!no )\bwheez\w*\b|"
                     r"\b(?:sleeping|tablets?|pills?|codeine|tramadol|diazepam)\b.{0,30}\b(?:with|and) (?:wine|alcohol|vodka|beer|a few drinks)\b.{0,70}\b(?:out of it|can'?t stay awake|very drowsy|slurr\w+|passing out)\b|"
                     # set p76 (after birth, section or miscarriage; first contact 3/12 missed)
