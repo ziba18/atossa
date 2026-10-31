@@ -177,3 +177,16 @@ def test_coil_with_fever_and_bad_smell_urgent_negated_quiet():
     assert g.emergency_kind("Tonight I feel hot and shivery, 39.2 on the thermometer and a really bad smell down there since the coil check") is not None
     assert g.emergency_kind("coil check today, no fever and no smell, just a bit of cramping") is None
     assert g.emergency_kind("my coil was checked, i have a cold and a temperature, nothing else") is None
+
+
+def test_indirect_self_harm_methods_urgent_everyday_quiet():
+    from app.services import output_guard as g
+    for line in ["i've been looking up ways to end it and picked a night",
+                 "cant do another day of this pain, im going to take everything in the cabinet",
+                 "the pain is so bad i keep thinking about jumping"]:
+        assert g.emergency_kind(line) == "self_harm", line
+    for line in ["i am going to take everything out of the cabinet and clean it",
+                 "i keep thinking about jumping into the sea for the swim challenge",
+                 "im going to take all my boxes to the house tomorrow",
+                 "tonight is the night, we finally have our dinner party, cant wait"]:
+        assert g.emergency_kind(line) is None, line

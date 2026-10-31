@@ -471,6 +471,12 @@ _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
     + r"|\bnothing left for me\b(?! (?:to (?:do|try|eat|take|read)|at|in)\b)"
     + r"|\b(?:don'?t|do not) want to (?:carry on|go on|keep going)\b(?! (?:with|at|taking|working|the|this|that|my|to)\b)"
     + r"|\bgiv(?:e|ing) up on (?:everything|life|living)\b", re.I)
+# S-515 (run 62, p85 indirect self-harm, 7/12 missed): searching for ways to end it, taking everything in the cabinet, tonight is the night, thinking about jumping
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\b(?:looking|searching|googl\w+|reading) (?:up )?(?:for )?(?:ways|how) to (?:end it|die|kill myself|end my life)\b"
+    + r"|\b(?:i'?m|im|i am|i will|i'?ll) (?:going to|gonna) take (?:everything|all of (?:it|them)|all (?:the |my )?(?:tablets|pills|meds|medication))\b (?:that'?s )?(?:in|from) (?:the |my )?(?:cabinet|cupboard|drawer|bathroom)\b(?! (?:and|to) (?:clean|sort|tidy|throw|bin))"
+    + r"|\btonight is the night\b(?=[^.!?]{0,60}\b(?:enough|end|hurting|done|can'?t)\b)"
+    + r"|\b(?:keep|keeps|been|am|i'?m) thinking about (?:jumping(?= *(?:[.!?,;]|$|off (?:a|the) (?:bridge|roof|balcony|building|cliff)|in front))|hanging myself|ending it)", re.I)
 
 _EMERGENCY = re.compile(
     r"\b(?:bleed\w* (?:so|too|this) much|(?:blood|bleed\w*)[^.;!?]{0,40}running down (?:my )?legs|(?:mottled|ashen) skin|"
