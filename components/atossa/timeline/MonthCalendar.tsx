@@ -33,6 +33,8 @@ const DISC = Dimensions.get('window').width < 240 ? 24 : Dimensions.get('window'
 // 200% text: cells are ~22 pt wide, so a 15 pt numeral runs into its neighbours (11|12, 14|15|16).
 const NUM_TIGHT = Dimensions.get('window').width < 280 ? { fontSize: 13, lineHeight: 18 } : null;
 const RING = 1.5;
+// Short phones (320x568): rows 8 pt tighter so more of the month shows above the tab bar.
+const CELL_H = Dimensions.get('window').height < 600 ? 56 : 64;
 
 export function MonthCalendar({
   year, month0, marks, onPrev, onNext, onDayPress,
@@ -216,7 +218,7 @@ const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', marginBottom: space.xs },
   row: { flexDirection: 'row' },
   weekday: { flex: 1, height: 28, alignItems: 'center', justifyContent: 'center' },
-  cell: { flex: 1, height: 64, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 4 },
+  cell: { flex: 1, height: CELL_H, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 4 },
   /** The bleeding marker under a day (same grammar as the PDF strip): solid clay bar = bleeding, dashed = spotting; runs join across days. */
   bleedRow: { position: 'absolute', left: 0, right: 0, top: DISC + 6, height: 4, flexDirection: 'row' },
   bleedSide: { flex: 1 },

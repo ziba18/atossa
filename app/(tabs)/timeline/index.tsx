@@ -316,9 +316,18 @@ function MonthView({
     setMonth({ y: month.y + Math.floor(t / 12), m0: ((t % 12) + 12) % 12 });
   };
 
+  // On a short phone (height under 600) the note key sits above the calendar, so the numbers under the days are explained before the fold.
+  const shortKey = useWindowDimensions().height < 600 && noteDays > 0;
+  const noteKeyRow = (
+    <MonthKeyRow glyph={<View style={{ alignItems: 'center' }}><View style={keyStyles.disc}><Txt style={keyStyles.discNum}>7</Txt></View><Txt style={keyStyles.under}>8</Txt></View>}>
+      {shortKey ? 'Circle: a note. Number: strongest rating, out of 10.' : 'A day with a note; the number under it is the strongest rating, out of 10.'}
+    </MonthKeyRow>
+  );
+
   return (
-    <View style={{ marginTop: space.lg, gap: space.lg }}>
+    <View style={{ marginTop: space.lg, gap: shortKey ? space.md : space.lg }}>
       <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: -space.sm }} />
+      {shortKey ? <View accessible accessibilityLabel="Key. A circled day has a note; the number under it is the strongest rating that day, out of 10.">{noteKeyRow}</View> : null}
       <MonthCalendar
         year={month.y}
         month0={month.m0}
@@ -327,13 +336,9 @@ function MonthView({
         onNext={() => shift(1)}
         onDayPress={onDayPress}
       />
-      {noteDays || bleedingDays || spottingDays ? (
-        <View accessible accessibilityLabel={monthKeyLabel(noteDays > 0, bleedingDays > 0, spottingDays > 0)} style={{ gap: space.sm }}>
-          {noteDays ? (
-            <MonthKeyRow glyph={<View style={{ alignItems: 'center' }}><View style={keyStyles.disc}><Txt style={keyStyles.discNum}>7</Txt></View><Txt style={keyStyles.under}>8</Txt></View>}>
-              A day with a note; the number under it is the strongest rating, out of 10.
-            </MonthKeyRow>
-          ) : null}
+      {(noteDays && !shortKey) || bleedingDays || spottingDays ? (
+        <View accessible accessibilityLabel={monthKeyLabel(noteDays > 0 && !shortKey, bleedingDays > 0, spottingDays > 0)} style={{ gap: space.sm }}>
+          {noteDays && !shortKey ? noteKeyRow : null}
           {bleedingDays ? <MonthKeyRow glyph={<View style={keyStyles.solid} />}>Bleeding logged</MonthKeyRow> : null}
           {spottingDays ? <MonthKeyRow glyph={<View style={keyStyles.dashed} />}>Spotting logged</MonthKeyRow> : null}
         </View>
