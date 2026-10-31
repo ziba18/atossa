@@ -185,7 +185,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         {recent > 0 ? (
           // Seven squares, one per day of notes needed: a count of days written, never a score.
           <View accessible accessibilityLabel={`${recent} of ${MIN_NOTE_DAYS} days with a note so far`} style={{ marginTop: space.lg, alignItems: 'center', gap: space.xs }}>
-            <View style={{ flexDirection: 'row', gap: space.xs }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space.xs }}>
               {Array.from({ length: MIN_NOTE_DAYS }, (_, i) => (
                 <View key={i} style={{ width: 28, height: 28, borderRadius: 8, borderWidth: 1.5, borderColor: colors.ink, backgroundColor: i < recent ? colors.ink : 'transparent', opacity: i < recent ? 1 : 0.35 }} />
               ))}
