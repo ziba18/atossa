@@ -31,6 +31,8 @@ export interface DayMark {
 
 // Seven columns must stay clear of each other: at the 200% browser zoom widths (under ~280 px) the discs shrink.
 const DISC = Dimensions.get('window').width < 280 ? 28 : 36;
+// 200% text: cells are ~22 pt wide, so a 15 pt numeral runs into its neighbours (11|12, 14|15|16).
+const NUM_TIGHT = Dimensions.get('window').width < 280 ? { fontSize: 13, lineHeight: 18 } : null;
 const RING = 1.5;
 
 export function MonthCalendar({
@@ -155,6 +157,7 @@ function DayCell({
                 maxFontSizeMultiplier={1.4}
                 style={[
                   styles.num,
+                  NUM_TIGHT,
                   future && !solid && !spotting && { color: colors.ink3 },
                   solid && styles.numOnClay,
                   tint && { color: tint.fg },
