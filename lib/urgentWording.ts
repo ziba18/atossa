@@ -343,7 +343,9 @@ function plain999(t0: string): boolean {
 }
 
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
-export function urgentSignpost(text: string): string | null {
+export function urgentSignpost(rawText: string): string | null {
+  // run 60 (backend emergency_kind): the later whole-note rules read this text too, so the same spelling corrections apply
+  const text = rawText.replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(FUZZ_RX, fuzz);
   let line = signpostOnce(text);
   // S-347 (backend emergency_kind): a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on the
   // heavy phrase alone; it is blanked and the note re-read. Any faint / pale / hourly-pad / worse-than-usual word keeps it.

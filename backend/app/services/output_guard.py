@@ -1829,6 +1829,8 @@ _WHOLE = re.compile(_WHOLE.pattern + "|" + r"^(?![\s\S]{0,160}?\b(?:stored|high 
 
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
+    # run 60: the later whole-note rules below read this text too, so the same spelling corrections apply to them
+    user_text = _FUZZ_RX.sub(_fuzz, _TYPO_RX.sub(lambda m: _TYPOS[m.group(0).lower()], user_text))
     kind = _emergency_kind(user_text)
     # S-347 proto: a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on those words alone;
     # the heavy phrase is blanked and the rest of the note is judged as before. Any faint / pale / hourly-pad / worse-than-usual word keeps it urgent.
