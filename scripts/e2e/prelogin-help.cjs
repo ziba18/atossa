@@ -11,6 +11,8 @@ const BASE = 'http://localhost:8081';
     await p.goto(`${BASE}/help-now`, { waitUntil: 'networkidle' }); await p.waitForTimeout(1200);
     check((await p.getByText('Samaritans').count()) >= 1 && (await p.getByText('NHS 111').count()) >= 1, `${w}: cold /help-now shows the routes`);
     check(api.length === 0, `${w}: /help-now made ${api.length} requests to other hosts`);
+    await p.getByRole('button', { name: /Back/ }).first().click(); await p.waitForTimeout(1200);
+    check(p.url().endsWith('/welcome'), `${w}: Back from a cold-opened /help-now lands on Welcome`);
     for (const r of ['welcome', 'login', 'register']) {
       await p.goto(`${BASE}/${r}`, { waitUntil: 'networkidle' }); await p.waitForTimeout(1000);
       const t = await p.getByText('Need help now? In an emergency call 999. For urgent advice call 111.').first().boundingBox();
