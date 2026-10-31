@@ -329,3 +329,16 @@ def test_egg_collection_massively_bloated_with_breathing_or_wee_s528():
     for line in ["after my egg collection I am a bit bloated but eating and peeing fine",
                  "ivf injections made me bloated, I peed normally and breathing is fine"]:
         assert not g.is_emergency(line), line
+
+
+def test_vehicle_wish_selfinjury_with_hatred_edge_of_platform_s530():
+    from app.services import output_guard as g
+    for line in ["I wish a car would hit me on the way home",
+                 "i hate my body so much i scratched my arms until they bled again today",
+                 "can't take the pain anymore, standing at the edge of the platform"]:
+        assert g.is_emergency(line), line
+    for line in ["waiting for the bus on the platform, cramps bad, pain 6",
+                 "scratched my arm on the rose bush until it bled, put a plaster on",
+                 "I hate my body today, bloated, pain 5, wish a bus would come soon",
+                 "my sister said she wishes a car would hit her ex, she was joking"]:
+        assert not g.is_emergency(line), line

@@ -545,6 +545,13 @@ _S488_GONE = re.compile(r"\b(?:gone|better|eased|settled)\b", re.I)
 _S488_STILL = re.compile(r"\b(?:still|again|now|worse|getting)\b", re.I)
 
 
+# S-530 (run 64, p92b): a wish to be hit by a vehicle; self-injury told with self-hatred; "can't take the pain" at the edge of a platform/bridge/roof.
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern + (
+    r"|\bwish (?:a|that a|the) (?:car|bus|train|lorry|truck|van)\b[^.!?;]{0,25}\b(?:would|could|might)\b[^.!?;]{0,10}\b(?:hit|run over|knock) me\b"
+    r"|\b(?:hate|hated) (?:my body|myself)\b[^.!?;]{0,60}\b(?:scratch\w*|cut|cutting|burn\w*)\b[^.!?;]{0,30}\b(?:bled|bleed\w*|blood)\b"
+), _SELF_HARM_RX.flags)
+
+
 def _hits(rx, text: str, sh: bool = False) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
@@ -1451,6 +1458,10 @@ _WHOLE = re.compile(_WHOLE.pattern
 # run30 (S-261): a burst/ruptured cyst with dizziness, faintness, sweating or sickness, whole note.
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*\bcyst\b[^.!?]{0,15}\b(?:burst|ruptur\w*|popped)\b)(?=[\s\S]*\b(?:dizzy|faint\w*|sweat\w*|clammy|being sick|vomit\w*)\b)", _WHOLE.flags)
 # run30 (S-258, S-260a): self-harm. "ending it" + can't cope/take the pain (not "ending it with <x>"), and "not be here" + tablets to hand.
+# S-530: see the S-530 note above _hits
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + (
+    r"|\b(?:can'?t|cannot) (?:take|cope with|bear) (?:the pain|it|this)(?: any ?more| any longer)?\b[^.!?\n]{0,40}\b(?:edge of|top of|standing on|stood on)\b[^.!?\n]{0,20}\b(?:platform|bridge|roof|cliff|balcony|building)\b"
+), _SELF_WHOLE.flags)
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
                          + r"|^(?=[\s\S]*\b(?:ending|end) it\b(?! with\b)(?! for\b))(?=[\s\S]*\b(?:can'?t (?:take|cope|do this|go on)|tired of (?:the )?(?:pain|everything|this))\b)"
                          + r"|^(?=[\s\S]*\b(?:want(?:ed)?|wanna|going) to (?:just )?(?:not be here|disappear)\b)(?=[\s\S]*\b(?:any ?more|tonight|at all|for good|forever)\b)(?=[\s\S]*\b(?:(?:load|pile|box|packet|bottle|strip) of (?:tablets|pills|painkillers|meds)|(?:tablets|pills|blade|rope)\b[^.!?]{0,20}\b(?:in front of me|next to me|beside me))\b)", _SELF_WHOLE.flags)
