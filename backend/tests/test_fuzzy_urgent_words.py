@@ -58,3 +58,10 @@ def test_bleeding_getting_heavier_with_dizziness_s498():
     for t in ["my period is getting heavier this month, feel dizzy when i stand sometimes", "bleeding gums getting worse when i brush, no dizziness", "bleeding gums are getting worse when i brush and i felt dizzy at work",
               "the bleeding settled and its not getting heavier, i felt a bit dizzy yesterday", "heavier cramps today, felt dizzy after the gym"]:
         assert not g.is_emergency(t), t
+
+
+def test_baby_went_blue_s500():
+    for x in ["my baby went blue", "the baby turned blue when feeding", "my toddler is purple around the lips"]:
+        assert g.is_emergency(x), x
+    for x in ["baby blue paint turned grey on the wall, i felt tired"]:
+        assert not g.is_emergency(x), x
