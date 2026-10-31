@@ -2004,8 +2004,14 @@ _SH_CLASS_QUIET = re.compile(
 
 
 def _sh_class(text: str) -> bool:
-    text = text[:_WHOLE_SCAN_CAP]
-    return bool(_SH_CLASS.search(text)) and not _SH_CLASS_QUIET.search(text)
+    # B67 (run41): judged on windows of up to 3 sentences, so a quiet word elsewhere in a long note does not mute an act
+    parts = re.split(r"[.;!?\n]", text[:_WHOLE_SCAN_CAP])
+    for size in (1, 2, 3):
+        for i in range(len(parts) - size + 1):
+            window = ". ".join(parts[i:i + size])
+            if _SH_CLASS.search(window) and not _SH_CLASS_QUIET.search(window):
+                return True
+    return False
 
 # B55 (run39, PM cauda classes; nhs.uk sciatica 999 box, read 2026-10-30): numbness around the bottom / genitals (saddle) in
 # lay words, sciatica or weakness in BOTH legs that is new or getting worse, a bladder or bowel accident not felt, sex sensation

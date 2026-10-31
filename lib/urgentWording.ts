@@ -139,12 +139,19 @@ function shAct(text: string): boolean {
   return false;
 }
 
-// B61 (run41, backend _sh_class): PM self-harm classes, whole note, any subject; quiet words veto.
+// B61 (run41, backend _sh_class): PM self-harm classes, any subject; quiet words veto within the same window.
 const ADHERENCE = new RegExp(P.ADHERENCE_SRC, 'i'), ADHPHRASE = new RegExp(P.ADHPHRASE_SRC, 'gi');
 const SHCLASS = new RegExp(P.SHCLASS_SRC, 'i'), SHCLASSQ = new RegExp(P.SHCLASSQ_SRC, 'i');
 function shClass(text: string): boolean {
-  const t = text.slice(0, 20000);
-  return SHCLASS.test(t) && !SHCLASSQ.test(t);
+  // B67 (run41): windows of up to 3 sentences, as the backend
+  const parts = text.slice(0, 20000).split(/[.;!?\n]/);
+  for (const size of [1, 2, 3]) {
+    for (let i = 0; i + size <= parts.length; i++) {
+      const w = parts.slice(i, i + size).join('. ');
+      if (SHCLASS.test(w) && !SHCLASSQ.test(w)) return true;
+    }
+  }
+  return false;
 }
 
 // B55 (run39, backend _cauda): saddle numbness, both legs new/worse, bladder or bowel accident not felt; any subject.
