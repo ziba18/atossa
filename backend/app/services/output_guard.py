@@ -1411,7 +1411,7 @@ _SH_PREP = (r"\b(?:(?:wrote|written|writing|left) (?:\w+ ){0,2}(?:letters?|notes
 _SH_FINAL = (r"\b(?:(?:after|when|once) i'?m (?:gone|dead|not here)|for after i|(?:the|my) last time|no point after (?:this|tonight|today|tomorrow)\b|(?:won'?t|will not) be (?:here|around)|"
              r"enough to end|made my mind up|(?:not|n'?t) (?:be )?(?:here|around) (?:much longer|for long|after))")
 # S-475 (run 57): 'had enough' / 'can't do this any more' with a plan or method word in the same note, first person; a whole-note
-# work, weather, queue, gym or holiday word keeps it quiet ('I have had enough of the rain and a plan for the weekend').
+# work, weather, queue, gym or holiday word keeps it quiet ('had enough of this weather, and the plan is a long walk').
 _S475_ENOUGH = (r"\b(?:i(?:'ve| have)? had enough|i can'?t do (?:this|it) any ?more|i'm done with (?:everything|life))\b[^.!?;\n]{0,40}\b(?:plan|method|tablets|pills|tonight|ready|sorted|note)\b")
 _S475_QUIET = r"(?![\s\S]*(?:\b(?:rain|weather|work|job|queue|traffic|exam|homework|essay|school|diet|gym|meeting|cooking|laundry|holiday|haha|lol|office|booked|joking)\b|\bcover is\b|\bplan (?:for|to) (?:the )?(?:weekend|holiday|party|trip|dinner|wedding)\b))"
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_S475_QUIET}(?={_A}{_S475_ENOUGH})", _SELF_WHOLE.flags)
