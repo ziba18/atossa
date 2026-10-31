@@ -131,7 +131,7 @@ function scoreFrom(lower: string): number | undefined {
   if (!found.length || /\b(?:about|around|maybe|like)\s+(?:a\s+)?\d/.test(lower)) {
     for (const m of lower.matchAll(new RegExp(`\\b(?:it['’]?s|its|about|around|maybe|like)\\s+(?:a\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) {
       // "keep waking me up around 4": a clock time after waking/bed, not a score.
-      if (/\b(?:up|woke|wake|waking|awake|bed|asleep|till|until|since|started|starts|start)(?:\s+at)?\s+$/.test(lower.slice(0, m.index))) continue;
+      if (/\b(?:up|woke|wake|waking|awake|bed|asleep|till|until|since|started|starts|start)(?:\s+at)?(?:\s+(?:probably|maybe|roughly|about|around))?\s+$/.test(lower.slice(0, m.index))) continue;
       if (/^\s*(?:in the (?:morning|evening|afternoon)|at night|o['’]?clock)\b/.test(lower.slice(m.index + m[0].length))) continue;
       found.push(toNum(m[1]));
     }

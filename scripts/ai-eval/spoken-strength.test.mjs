@@ -17,4 +17,7 @@ assert.equal(w("it's a four now but was a seven earlier"), 7);
 assert.equal(w('a five now, an eight last night'), 8);
 assert.equal(w('a six now, eight days since my period'), 6);
 assert.equal(w('id say a six maybe'), 6); // voice text: no apostrophe
+// B97: a clock time after wake/bed words, with a filler word between, is not a score.
+assert.equal(w('woke up probably around six'), null);
+assert.equal(w('was up until probably about two'), null);
 console.log('earlier-peak ok');
