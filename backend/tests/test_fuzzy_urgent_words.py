@@ -76,3 +76,10 @@ def test_purple_lips_struggling_and_pale_newborn_not_feeding_s501():
               "the baby looks pale in the photo, wont feed the ducks, my back ached, 3",
               "newborn photos looked mottled and grey in the filter, i skipped lunch, cramps 2"]:
         assert not g.is_emergency(t), t
+
+
+def test_blue_lips_with_a_stated_harmless_cause_stays_quiet_s502():
+    assert not g.is_emergency("my sister is struggling at work, her lips are blue from the cold sea, i felt flat, headache 3")
+    assert not g.is_emergency("my lips are blue from the slush i drank, cramps 3, tired")
+    for t in ["her lips are blue and she cant breathe properly", "my lips are blue", "his lips look grey and he is very drowsy"]:
+        assert g.is_emergency(t), t
