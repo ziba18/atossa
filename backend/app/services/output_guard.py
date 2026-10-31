@@ -265,6 +265,9 @@ _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|collea
 _OTHER_NOW = re.compile(r"\b(?:right now|now|just now|at the moment|currently|still|is|isn'?t|are|aren'?t|won'?t|can'?t|keeps?|has gone|have gone)\b", re.I)
 # B30 (run34): the carer register says "now" with a contraction: "she's coughing up blood", "they're struggling", "my mum's got ..."
 _OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:she|he|they)'(?:s|re)\b(?! (?:had|been fine|always|never|usually))|\b\w+'s (?:got|getting|having|\w+ing)\b", re.I)
+# PM-B66 (run42): a present 'has/have (got/just/suddenly)' is now too: "my dad has crushing chest pain going to his jaw", "her face
+# has dropped" (nhs.uk heart-attack + stroke pages, read 31 Oct 2026); "has had / been / always / never" stays history.
+_OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:has|have)(?: (?:got|just|suddenly))?\b(?! (?:had|been|always|never|ever|got (?:over|better)|recovered))", re.I)
 _REPORTED = re.compile(r"\b(?:told|(?<!can't )(?<!cant )(?<!cannot )tells?|says?|said|reckons?|thinks?|thought)\b"   # B35: "can't tell me what year it is" is a sign, not hearsay
                        r""
                        # run20 (Safety p209 false on run19): "my partner is worried about his chest tightness" reports a worry, not an event now
@@ -480,7 +483,7 @@ _FAINT_WORD = re.compile(r"faint(?:ed|ing)?", re.I)
 _FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b", re.I)
 
 
-def _hits(rx, text: str) -> bool:
+def _hits(rx, text: str, sh: bool = False) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
         for m in rx.finditer(clause):
@@ -490,7 +493,10 @@ def _hits(rx, text: str) -> bool:
                 continue
             # run19 (S-307, structure not phrases): another person as the subject stays quiet UNLESS the same clause says it
             # is happening now, so every existing urgent concept also fires for "my mum can't breathe" (NHS when-to-call-999)
-            if _OTHER.search(before) and (not _OTHER_NOW.search(clause) or (_REPORTED.search(before) and not _LIVE_REPORT.search(clause)) or _IN_CARE.search(text)):
+            # PM-B66 (run42): for self-harm words a report IS the urgent fact ("my son says everyone would be better off without him";
+            # nhs.uk help-for-suicidal-thoughts, 'Worried about someone else?', read 31 Oct 2026), so a reporting verb keeps it live.
+            relayed_sh = sh and _REPORTED.search(before)
+            if _OTHER.search(before) and ((not relayed_sh and (not _OTHER_NOW.search(clause) or (_REPORTED.search(before) and not _LIVE_REPORT.search(clause)))) or _IN_CARE.search(text)):
                 continue
             if _AGE_PAST.search(clause):
                 continue
@@ -1792,6 +1798,34 @@ _S365 = re.compile(
     r"|^(?=[\s\S]*\b(?:through (?:the |my )?(?:night )?pads?)\b)(?=[\s\S]*\b(?:jeans|trousers|clothes|skirt|sheets)\b)(?=[\s\S]*\b(?:can'?t stop|won'?t stop|an hour|hour)\b)", re.I)
 _S365_QUIET = re.compile(r"\b(?:negative|not pregnant|no fever|nothing sharp|not sharp|for years|sometimes|stiff|since (?:her|his) (?:stroke|operation)|last year)\b", re.I)
 
+# PM-B66 (run42): someone else's suicidal words in reported speech ("my son says everyone would be better off without him", "my
+# sister told me she doesn't want to be here anymore") are read back in the first person, so the self-harm lists see them;
+# past / 'used to' / years-ago reports stay quiet through _hits. nhs.uk help-for-suicidal-thoughts ('Worried about someone
+# else?'), read 31 Oct 2026. Mirror: lib/urgentWording.ts relaySwap (same list, same order).
+_RELAY_SH = re.compile(r"\b(?:says?|said|told me|tells me|is telling me|keeps saying|kept saying|texted me|messaged me|wrote)\b(?: that)?[ ,]+([^.!?\n]+)", re.I)
+_RELAY_SWAP = [
+    (r"\b(?:she|he|they)'s\b", "I'm"), (r"\b(?:she|he|they)'re\b", "I'm"), (r"\b(?:she|he|they) (?:is|are)\b", "I am"),
+    (r"\b(?:she|he|they) (?:has|have)\b", "I have"), (r"\b(?:she|he|they) (?:doesn'?t|don'?t|does not|do not)\b", "I don't"),
+    (r"\b(?:she|he|they) (?:wants|want)\b", "I want"), (r"\b(?:she|he|they) (?:was|were)\b", "I was"),
+    (r"\b(?:she|he|they) (?:feels|feel)\b", "I feel"), (r"\b(?:she|he|they) (?:thinks|think)\b", "I think"),
+    (r"\b(?:she|he|they)\b", "I"), (r"\b(?:herself|himself|themselves|themself)\b", "myself"), (r"\b(?:him|them)\b", "me"),
+    (r"\bher\b(?= *(?:[,;]|$|any ?more|now|tonight|today|and\b))", "me"), (r"\b(?:her|his|their)\b", "my")]
+_RELAY_SWAP = [(re.compile(a, re.I), b) for a, b in _RELAY_SWAP]
+_RELAY_JOKE = re.compile(r"\b(?:laugh\w*|joking|kidding|embarrass\w*|lol)\b", re.I)
+
+
+def _relay_swap(text: str) -> str:
+    out = []
+    for m in _RELAY_SH.finditer(text[:20000]):
+        c = m.group(1)
+        if _RELAY_JOKE.search(c):
+            continue  # a relayed joke ('she'd kill herself laughing') is not read back as her own words
+        for rx, rep in _RELAY_SWAP:
+            c = rx.sub(rep, c)
+        out.append(c)
+    return _IDIOM.sub(" ", ". ".join(out))  # 'she'd kill herself laughing' -> the first-person idiom, blanked as for her own words
+
+
 def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
     # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
@@ -1801,8 +1835,10 @@ def _emergency_kind(user_text: str):
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
     if _ADHERENCE.search(user_text):
         user_text = _ADH_PHRASE.sub(" ", user_text)  # B62 (run41)
-    if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
+    if _hits(_SELF_RX, user_text, True) or _hits(_SELF_HARM_RX, user_text, True) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
         return "self_harm"
+    if (_relayed := _relay_swap(user_text)) and (_hits(_SELF_RX, _relayed) or _hits(_SELF_HARM_RX, _relayed)):
+        return "self_harm"  # PM-B66 (run42)
     if _sh_act(user_text):
         return "self_harm"  # B52 (run39): an overdose taken, self-injury bleeding, a plan for tonight, a relayed threat; any subject
     if _sh_class(user_text):

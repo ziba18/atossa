@@ -213,7 +213,7 @@ function otherHistRescue(text: string): boolean {
 const PREG = /\bpregnan\w+\b/i;
 const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain|pain (?:is |was |about |around |like |of )*(?:an? )?(?:8|9|10|eight|nine|ten)\b(?! ?(?:days?|weeks?|hours?|mins?|minutes?|am|pm|o'?clock)))\b/i;
 
-function hit(pattern: RegExp, text: string): boolean {
+function hit(pattern: RegExp, text: string, sh = false): boolean {
   const re = new RegExp(pattern.source, 'gi');
   for (const clause of text.split(CLAUSE)) {
     if (!clause) continue;
@@ -223,7 +223,8 @@ function hit(pattern: RegExp, text: string): boolean {
       const before = clause.slice(0, m.index);
       const after = clause.slice(m.index + m[0].length);
       if (!(NEG.test(before.slice(-40).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(clause) || RES.test(after)
-        || (OTHER.test(before) && (!OTHER_NOW.test(clause) || (REPORTED.test(before) && !LIVE_REPORT.test(clause)) || IN_CARE.test(text))) || AGE_PAST.test(clause)
+        // PM-B66 (run42, backend _hits): for self-harm words a reporting verb keeps the match live (the report is the urgent fact)
+        || (OTHER.test(before) && ((!(sh && REPORTED.test(before)) && (!OTHER_NOW.test(clause) || (REPORTED.test(before) && !LIVE_REPORT.test(clause)))) || IN_CARE.test(text))) || AGE_PAST.test(clause)
         || (FAINT_WORD.test(m[0]) && FAINT_REC.test(text)))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }
@@ -321,12 +322,29 @@ export function urgentSignpost(text: string): string | null {
   return line;
 }
 
+// PM-B66 (run42, backend _relay_swap): someone else's suicidal words in reported speech are read back in the first person.
+const RELAY_SH = /\b(?:says?|said|told me|tells me|is telling me|keeps saying|kept saying|texted me|messaged me|wrote)\b(?: that)?[ ,]+([^.!?\n]+)/gi;
+const RELAY_SWAP: [RegExp, string][] = ([
+  [String.raw`\b(?:she|he|they)'s\b`, "I'm"], [String.raw`\b(?:she|he|they)'re\b`, "I'm"], [String.raw`\b(?:she|he|they) (?:is|are)\b`, 'I am'],
+  [String.raw`\b(?:she|he|they) (?:has|have)\b`, 'I have'], [String.raw`\b(?:she|he|they) (?:doesn'?t|don'?t|does not|do not)\b`, "I don't"],
+  [String.raw`\b(?:she|he|they) (?:wants|want)\b`, 'I want'], [String.raw`\b(?:she|he|they) (?:was|were)\b`, 'I was'],
+  [String.raw`\b(?:she|he|they) (?:feels|feel)\b`, 'I feel'], [String.raw`\b(?:she|he|they) (?:thinks|think)\b`, 'I think'],
+  [String.raw`\b(?:she|he|they)\b`, 'I'], [String.raw`\b(?:herself|himself|themselves|themself)\b`, 'myself'], [String.raw`\b(?:him|them)\b`, 'me'],
+  [String.raw`\bher\b(?= *(?:[,;]|$|any ?more|now|tonight|today|and\b))`, 'me'], [String.raw`\b(?:her|his|their)\b`, 'my'],
+] as [string, string][]).map(([a, b]) => [new RegExp(a, 'gi'), b] as [RegExp, string]);
+const RELAY_JOKE = /\b(?:laugh\w*|joking|kidding|embarrass\w*|lol)\b/i; // a relayed joke is not read back as her own words
+function relaySwap(text: string): string {
+  return Array.from(text.slice(0, 20000).matchAll(RELAY_SH), (m) => RELAY_JOKE.test(m[1]) ? '' : RELAY_SWAP.reduce((c, [rx, rep]) => c.replace(rx, rep), m[1])).filter((c) => c).join('. ').replace(IDIOM, ' '); // relayed idiom blanked as for her own words
+}
+
 function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
   const t0 = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
   const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
-  if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
+  if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
+  const relayed = relaySwap(t);
+  if (relayed && (hit(SELF, relayed) || hit(SELF2, relayed))) return SELF_HARM_SIGNPOST; // PM-B66 (run42)
   if (shAct(t)) return SELF_HARM_SIGNPOST; // B52 (run39)
   if (shClass(t)) return SELF_HARM_SIGNPOST; // B61 (run41)
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
