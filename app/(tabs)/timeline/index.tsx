@@ -203,7 +203,7 @@ function ListView({
   return (
     <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
-      <View style={{ marginTop: short ? space.xs : space.sm, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
+      <View style={{ marginTop: short ? space.xxs : space.sm, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}>
         <Chip
           style={{ flexShrink: 1, maxWidth: '100%' }}
           label={dayFilter ? `${dayFilter.label} · ${dayFilter.dates.length === 1 ? '1 day' : `${dayFilter.dates.length} days`}` : filter === 'All' ? 'Show: everything' : `Showing: ${filter}`}
@@ -229,8 +229,8 @@ function ListView({
         groups.map((g, i) => (
           // Week header: 15/600 ink2 (groupLabel) — quieter than the card titles it groups.
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
-          <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? (short ? space.xs : space.md) : space.xxl }}>
-            <View style={{ flexDirection: 'row', flexWrap: tiny ? 'wrap' : 'nowrap', alignItems: 'center', columnGap: space.sm, rowGap: 0, marginBottom: space.sm }}>
+          <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? (short ? 0 : space.md) : space.xxl }}>
+            <View style={{ flexDirection: 'row', flexWrap: tiny ? 'wrap' : 'nowrap', alignItems: 'center', columnGap: space.sm, rowGap: 0, marginBottom: short ? space.xs : space.sm }}>
               <Txt variant="groupLabel" accessibilityRole="header" aria-level={2} style={{ fontFamily: fonts.serif, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
               {tiny ? null : <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />}

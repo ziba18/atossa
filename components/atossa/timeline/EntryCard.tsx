@@ -3,7 +3,7 @@
 // (glyph + date), then the content (Sam's words in the serif, or a title), then facts led by the
 // worst score as a SeverityTag (ramp colour + digit, never colour alone).
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { FactLine, GlyphLine, PressableCard, Quote, SeverityTag, Txt } from '../kit';
 import type { IconName } from '../../ui/Icon';
 import { colors, radii, space } from '../../../constants/atossaUI';
@@ -113,9 +113,11 @@ export function EntryCard({
   /** Inside the DaySheet the sheet title already names the day — don't repeat it on every card. */
   hideDate?: boolean;
 }) {
+  const { width } = useWindowDimensions();
   switch (item.kind) {
     case 'symptom': {
       const s = item.rec.data;
+      const narrow = width < 340; // 320 pt phones: her words get a third line, the 999 line a tighter indent (same words)
       const words = firstLine(s);
       const { tag, tagWord, facts } = symptomCardFacts(s);
       // Only for notes from today or yesterday (Safety ruling): a 999 line on an older entry is noise.
@@ -133,10 +135,10 @@ export function EntryCard({
           <View style={styles.stack}>
             <GlyphLine icon={symptomGlyph(s)} text={top} />
             {item.rec.pending ? <GlyphLine icon="clock" text="Saved on this phone · will save to your account when you’re back online" /> : null}
-            {words ? <Quote numberOfLines={2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
+            {words ? <Quote numberOfLines={narrow ? 3 : 2}>{words}</Quote> : <Txt variant="headline">{wordlessTitle(s)}</Txt>}
             {/* Under her words (PM-A201, same card, same wording and colour), full text, shown by the wording trigger only (Safety run38 ruling 3). */}
             {urgent ? (
-              <View style={styles.urgent}>
+              <View style={[styles.urgent, narrow ? { paddingLeft: space.xs } : null]}>
                 <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent}</Txt>
               </View>
             ) : null}
