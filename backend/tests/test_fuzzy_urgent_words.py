@@ -110,3 +110,10 @@ def test_relayed_and_visual_gaps_s506():
     for t in ["my friend bled through her jeans once, i felt for her, my own cramps 3", "flashing lights from the phone screen made my head hurt, 3",
               "my sister cant feel her legs in this cold, we laughed, my cramps 4", "vomited once yesterday and havent had a wee since lunch because i was at work, pain 4"]:
         assert not g.is_emergency(t), t
+
+
+def test_cannot_keep_myself_safe_s508():
+    for t in ["i dont think i can keep myself safe tonight", "i cant keep myself safe", "i do not trust myself to keep myself safe tonight"]:
+        assert g.is_emergency(t), t
+    for t in ["i try to keep myself safe from the sun, factor 50, cramps 3", "i cant keep myself warm in this flat, cramps 4, tired"]:
+        assert not g.is_emergency(t), t

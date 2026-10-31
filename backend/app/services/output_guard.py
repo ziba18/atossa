@@ -404,7 +404,7 @@ SELF_HARM = (
 # Safety's phrase lists (claude/safety-everything), kept alongside the lists below; both go
 # through the same negation/past/third-person check in emergency_kind().
 _SELF_HARM_RX = re.compile(
-    r"\b(?:suicid\w+|kill(?:ing)? myself|end(?:ing)? my (?:own )?life|self[- ]harm\w*|want(?:ed)? to die|"
+    r"\b(?:suicid\w+|kill(?:ing)? myself|end(?:ing)? my (?:own )?life|self[- ]harm\w*|want(?:ed)? to die|(?:don'?t|do not|can'?t|cannot) (?:think i can |know if i can |trust myself to )?keep myself safe|"
     r"don'?t want to (?:be here|live|wake up)|end it all|hurt(?:ing)? myself|overdos\w+|"
     r"nothing (?:left )?to live for|no reason to (?:live|go on|be here)|(?:might|going to|gonna|want to|thinking (?:of|about)) (?:harm|hurt|injure) myself|"
     r"(?:gonna|going to|about to|will) (?:take|swallow|down) (?:all|every one of|the whole lot of) (?:these|my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
