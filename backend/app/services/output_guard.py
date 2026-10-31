@@ -1461,7 +1461,7 @@ _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^(?={_A}{_SH_PREP})(?={_A}{_S
                          + r"|\b(?:won'?t|will not|wouldn'?t) be (?:a burden|a problem|in (?:anyone'?s|your|the) way) (?:to|for|on) (?:anyone|anybody|everyone|you all|any of you) (?:for )?(?:much|very|any) longer\b", _SELF_WHOLE.flags)
 # S-516 (run 63, p87): a blade, razor or rope to hand together with feeling there is no point, whole note
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
-                         + r"|^(?=[\s\S]*\b(?:blade|razor|knife|scissors|pills|tablets|rope)\b[^.!?;]{0,25}\b(?:in|holding|holds|held) (?:my |both )?(?:hand|hands)\b|[\s\S]*\b(?:holding|hold|holds|got|have|has) (?:a |my |the )?(?:blade|razor|knife|scissors|rope)\b)(?=[\s\S]*\b(?:pointless|hopeless|worthless|no point|can'?t go on|cannot go on|done with (?:everything|it all|life)|want it (?:all )?to stop)\b)(?![\s\S]*\b(?:shav\w*|crafts?|cooking|recipe|kitchen|haircut|open(?:ing)? a (?:box|parcel))\b)", _SELF_WHOLE.flags)
+                         + r"|^(?=[\s\S]*\b(?:blade|razor|knife|scissors|pills|tablets)\b[^.!?;]{0,25}\b(?:in|holding|holds|held) (?:my |both )?(?:hand|hands)\b|[\s\S]*\b(?:holding|hold|holds|got|have|has) (?:a |my |the )?(?:blade|razor|knife|scissors)\b)(?=[\s\S]*\b(?:pointless|hopeless|worthless|no point|can'?t go on|cannot go on|done with (?:everything|it all|life)|want it (?:all )?to stop)\b)(?![\s\S]*\b(?:shav\w*|crafts?|cooking|recipe|kitchen|haircut|open(?:ing)? a (?:box|parcel))\b)", _SELF_WHOLE.flags)
 
 # run16 (Safety S-269, p157 5/10 missed): blood in vomit said with everyday words, and black poo that is sticky/tar-like or
 # comes with weakness or dizziness. nhs.uk/conditions/stomach-ulcer (reviewed 12 Aug 2025, via Safety 29 Oct 2026): 999 or A&E
