@@ -53,10 +53,10 @@ export default function WelcomeScreen() {
           {short && win.height < 600 ? null : (
           <Card style={short ? styles.exampleShort : styles.example}>
             {short ? null : <Txt variant="caption" color={colors.ink2}>What you say</Txt>}
-            {short ? null : <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>}
-            <Txt variant="caption" color={colors.ink2}>{short ? 'Your words become notes like these' : 'What your doctor sees'}</Txt>
+            {short && win.height < 700 ? null : <Quote>Sharp low belly pain since Tuesday, about a 7 at worst, missed work.</Quote>}
+            {short && win.height >= 700 ? null : <Txt variant="caption" color={colors.ink2}>{short ? 'Your words become notes like these' : 'What your doctor sees'}</Txt>}
             <View style={styles.tags}>
-              {['Lower belly', '7/10 at worst', 'Since Tuesday'].map((t) => (
+              {['Lower belly', '7/10 at worst', 'Since Tuesday'].slice(0, short && win.height >= 700 ? 2 : 3).map((t) => (
                 <View key={t} style={styles.tag}>
                   <Txt variant="caption" color={colors.plum} style={styles.tagText}>{t}</Txt>
                 </View>
