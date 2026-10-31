@@ -236,13 +236,14 @@ function hit(pattern: RegExp, text: string, sh = false): boolean {
 // S-372 (backend _pelvic_fever): pelvic / period pain with fever words, or with being sick / very unwell and no period word.
 const PF_PAIN = mk(P.PFPAIN_SRC), PF_FEVER = mk(P.PFFEVER_SRC), PF_SICK = mk(P.PFSICK_SRC), PF_PERIOD = mk(P.PFPERIOD_SRC), PF_NEG = new RegExp(P.PFNEG_SRC, 'gi');
 const PF_FINE = mk(P.PFFINE_SRC), PF_STRICT = mk(P.PFSTRICT_SRC), PF_GASTRO = mk(P.PFGASTRO_SRC);
+const PF_GONE = /\b(?:over now|gone now|(?:has |have |had )?(?:gone|passed|cleared|settled|broke|went down)(?: now| again)?\b|all over|back to normal)/i;
 function pelvicFever(t0: string): boolean {
   if (!PF_PAIN.test(t0)) return false;
   const t = t0.replace(/\u2019/g, "'").replace(PF_NEG, ' ');
   const strict = PF_STRICT.test(t);
   if (PF_FINE.test(t)) return false;
   if (PF_GASTRO.test(t) && !strict) return false;
-  if (PF_FEVER.test(t)) return true;
+  if (t.split(/[.!?;\n]+/).some((c) => PF_FEVER.test(c) && !isPast(c) && !(PF_GONE.test(c) && !/\b(?:back|again|returned|still)\b/i.test(c)))) return true;
   return PF_SICK.test(t) && strict && !PF_PERIOD.test(t);
 }
 // S-377 (backend _flow_shock): a heavy-flow phrase with a shock pair (cold + shaky, shaky + weak, cold + weak).

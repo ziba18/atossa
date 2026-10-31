@@ -346,7 +346,7 @@ _SELF = [
     # run 01 (S-142): self-injury without the word 'harm', and doubt about carrying on
     r"\bcut myself(?! (?:a|an|some|another|shaving|on|while|with|opening|chopping|cooking|slicing|badly on)\b)", r"(?:not sure|don'?t know|unsure) (?:if |whether )?i want to (?:carry on|keep going|go on|keep living|live)\b",
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
-    r"end(?:ing)? things", r"(?:took|taken|taking) (?:a load|lots|too many|an overdose)\b.{0,30}(?:tablets|pills|paracetamol)|overdos\w+",
+    r"end(?:ing)? things\b(?! (?:with|between) (?:my |his |her |their |our |the )?(?:boyfriend|girlfriend|partner|ex|husband|wife|fianc\w+|bf|gf|him|her|them)\b)", r"(?:took|taken|taking) (?:a load|lots|too many|an overdose)\b.{0,30}(?:tablets|pills|paracetamol)|overdos\w+",
     r"(?:tablets|pills).{0,30}don'?t care what happens", r"self[- ]harm\w*", r"(?:want|wanna|going) to die", r"\bwa+nn?a+ (?:to )?die\b", r"\bsuic?[ci]de\b|\bsucid\w*", r"\bkil (?:myself|me)\b", r"(?:got|have|took|taken) the (?:tablets|pills) out|(?:looking|staring) at (?:the|my) (?:tablets|pills)", r"(?:took|taken|swallowed) too many (?:pils|pilss|tabs|tablits)\b", r"end(?:ing)? it all",
     r"end(?:ing)? my (?:own )?life", r"(?:don'?t|do not) want to be (?:alive|here)(?: anymore| any more)?", r"hurt(?:ing)? myself",
     r"cutting myself|(?:been|keep|kept|started) cutting\b|cutting again", r"(?:want|wanna) to (?:just )?disappear(?: forever)?", r"better off (?:dead|without me)", r"(?:take|taking|took|takes) my (?:own )?life",
@@ -432,6 +432,12 @@ _SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
     + r"|\bcan'?t see (?:a|any) (?:reason|point) (?:to |in )(?:go(?:ing)? on|keep(?:ing)? going|carry(?:ing)? on|living|being here)\b(?! (?:the|to|with|at|in|this|that|a|for)\b)"
     + r"|\bno reason for me to (?:live|go on|keep going|be here)\b(?! (?:in|at|near|with|there|before|until|by|after|on|for|during|when)\b)"
     + r"|\bgiving away (?:all )?(?:of )?my (?:things|stuff|belongings|possessions)\b(?=[^.!?]{0,60}\b(?:goodbye|bye|letters?|note)\b)", re.I)
+# S-475 (Safety run 57): perceived burdensomeness ('everyone would be happier if I was gone') and 'had enough' + a plan or
+# method word, plain first person. A work, weather, queue, gym or holiday word later in the same sentence keeps it quiet.
+_S475_Q = r"(?![^.!?;\n]{0,80}\b(?:rain|weather|work|job|queue|traffic|exam|homework|essay|school|diet|gym|meeting|cooking|laundry|holiday|haha|lol|office|booked|joking|plan (?:for|to) (?:the )?(?:weekend|holiday|party|trip|dinner|wedding))\b)"
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\b(?:everyone|everybody|they|my (?:family|friends|kids|children|partner|mum|dad)|people)\b" + _S475_Q + r"[^.!?;\n]{0,25}\b(?:would be|'d be|be|were|are) (?:so much )?(?:happier|better off|better|relieved)\b[^.!?;\n]{0,15}\b(?:if i (?:was|were) (?:gone|dead|not (?:here|around)|never (?:born|here))|if i (?:wasn'?t|weren'?t) (?:here|around|alive|born)(?! (?:on|at|in|for|today|tomorrow)\b)|if i (?:died|disappeared|wasn'?t alive)|without me(?! (?:on|at|in|for)\b)|when i'?m gone|if i'?m gone)", re.I)
+
 # PM-B74 (run43): two sign classes from samaritans.org/difficultconversations (quoted by PM, read 31 Oct 2026): "feeling
 # hopeless, helpless or worthless" and "feeling trapped by life circumstances they can't see a way out of, or feeling unable
 # to escape their thoughts". First person present only ('felt a bit hopeless' stays quiet); 'hopeless at/about/with',
@@ -1369,7 +1375,7 @@ _SH_METHOD = (r"\b(?:driv\w* (?:off|into)|crash\w* (?:the|my) car|(?:jump\w*|thr
               r"(?:eaten|drunk) (?:or (?:eaten|drunk) )?anything|(?:razor )?blades?\b[^.!?]{0,30}\b(?:ready|out|next to me|in front of me))\b")
 _SH_INTENT = (r"\b(?:on purpose|so (?:it|that it|this) (?:all )?(?:ends|stops)|so i (?:don'?t|won'?t|never) wake|not (?:com\w*) back|(?:can'?t|cannot) swim back|"
               r"until i (?:die|can'?t)|want(?:ed)? to die|for good|can'?t (?:do this|go on|keep going|cope|take it)|i'?m done\b|(?:don'?t|do not) want to be here|"
-              r"end (?:it|things|my life)|better off without me|it all ends|want it (?:all )?to (?:stop|end)|can'?t keep doing this(?=\s*(?:[.,;!?]|$|any ?more)))")
+              r"end (?:it|things\b(?! (?:with|between) (?:my |his |her |their |our |the )?(?:boyfriend|girlfriend|partner|ex|husband|wife|fianc\w+|bf|gf|him|her|them)\b)|my life)|better off without me|it all ends|want it (?:all )?to (?:stop|end)|can'?t keep doing this(?=\s*(?:[.,;!?]|$|any ?more)))")
 _SH_QUIET = r"(?![\s\S]*\b(?:to see if|lose weight|diet\w*|fasting|for lent|ramadan|bloat\w*|done with (?:this|my|the) (?:job|work|course))\b)"
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_SH_QUIET}(?={_A}{_SH_METHOD})(?={_A}{_SH_INTENT})", _SELF_WHOLE.flags)
 
@@ -1382,6 +1388,11 @@ _SH_PREP = (r"\b(?:(?:wrote|written|writing|left) (?:\w+ ){0,2}(?:letters?|notes
             r"(?:sorted|made|wrote|done|written|updated) (?:out )?my will|cancel\w* everything)\b")
 _SH_FINAL = (r"\b(?:(?:after|when|once) i'?m (?:gone|dead|not here)|for after i|(?:the|my) last time|no point after (?:this|tonight|today|tomorrow)\b|(?:won'?t|will not) be (?:here|around)|"
              r"enough to end|made my mind up|(?:not|n'?t) (?:be )?(?:here|around) (?:much longer|for long|after))")
+# S-475 (run 57): 'had enough' / 'can't do this any more' with a plan or method word in the same note, first person; a whole-note
+# work, weather, queue, gym or holiday word keeps it quiet ('I have had enough of the rain and a plan for the weekend').
+_S475_ENOUGH = (r"\b(?:i(?:'ve| have)? had enough|i can'?t do (?:this|it) any ?more|i'm done with (?:everything|life))\b[^.!?;\n]{0,40}\b(?:plan|method|tablets|pills|tonight|ready|sorted|note)\b")
+_S475_QUIET = r"(?![\s\S]*(?:\b(?:rain|weather|work|job|queue|traffic|exam|homework|essay|school|diet|gym|meeting|cooking|laundry|holiday|haha|lol|office|booked|joking)\b|\bcover is\b|\bplan (?:for|to) (?:the )?(?:weekend|holiday|party|trip|dinner|wedding)\b))"
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_S475_QUIET}(?={_A}{_S475_ENOUGH})", _SELF_WHOLE.flags)
 _SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^(?={_A}{_SH_PREP})(?={_A}{_SH_FINAL})"
                          + r"|\b(?:won'?t|will not|wouldn'?t) be (?:a burden|a problem|in (?:anyone'?s|your|the) way) (?:to|for|on) (?:anyone|anybody|everyone|you all|any of you) (?:for )?(?:much|very|any) longer\b", _SELF_WHOLE.flags)
 
@@ -1600,6 +1611,9 @@ _PF_STRICT = re.compile(r"pelvic|pelvis|womb|ovar\w*|period pain", re.I)
 _PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
 
 
+_PF_GONE = re.compile(r"\b(?:over now|gone now|(?:has |have |had )?(?:gone|passed|cleared|settled|broke|went down)(?: now| again)?\b|all over|back to normal)", re.I)
+
+
 def _pelvic_fever(t: str) -> bool:
     if not _PF_PAIN.search(t):
         return False
@@ -1609,7 +1623,7 @@ def _pelvic_fever(t: str) -> bool:
         return False
     if _PF_GASTRO.search(t) and not strict:
         return False
-    if _PF_FEVER.search(t):
+    if any(_PF_FEVER.search(c) and not _is_past(c) and not (_PF_GONE.search(c) and not re.search(r"\b(?:back|again|returned|still)\b", c)) for c in re.split(r"[.!?;\n]+", t)):
         return True
     return bool(_PF_SICK.search(t) and strict and not _PF_PERIOD.search(t))
 
@@ -2036,7 +2050,7 @@ _SH_ACT = re.compile(
     r"|(?:has|have|'s|'ve|just|had|i)\s+overdosed\b|(?:took|taken|had) an overdose\b"
     r"|(?:took|taken|swallowed|downed)\s+every (?:single )?(?:pill|tablet|painkiller|sleeping (?:pill|tablet)|med|medicine)s?\b[^.!?\n]{0,10}?\b(?:(?:i|he|she|they) could find|in the (?:house|cupboard|bathroom|drawer|box|packet|cabinet)|(?:i|he|she|they) (?:had|'?d got)(?: left)?|left|there was)\b"  # B59
     r"|(?:cut|slashed|sliced|slit)\b[^.!?\n]{0,20}\b(?:arms?|wrists?|thighs?|legs?|deep|deeper|myself|himself|herself|themselves)\b[^.!?\n]{0,40}\b(?:(?:won'?t|will not|isn'?t|hasn'?t|has not|not|can'?t) (?:stop\w*)|blood everywhere|bleeding (?:heavily|badly|loads|a lot)|pouring)"
-    r"|(?:says?|said|told (?:me|us)|texted|messaged|keeps saying|threaten\w*)\b[^.!?\n]{0,30}\b(?:he|she|they)(?:'s|'re| is| are| was)? (?:going to|gonna|wants? to|will|'ll|is about to|about to|wants to) (?:kill (?:himself|herself|themselves)|end (?:it|his life|her life|their life|things)|take (?:his|her|their) (?:own )?life|hurt (?:himself|herself|themselves)|die\b(?! of| laughing| for)|jump\b(?! in| on| at| for))"
+    r"|(?:says?|said|told (?:me|us)|texted|messaged|keeps saying|threaten\w*)\b[^.!?\n]{0,30}\b(?:he|she|they)(?:'s|'re| is| are| was)? (?:going to|gonna|wants? to|will|'ll|is about to|about to|wants to) (?:kill (?:himself|herself|themselves)|end (?:it|his life|her life|their life|things\b(?! (?:with|between) (?:my |his |her |their |our |the )?(?:boyfriend|girlfriend|partner|ex|husband|wife|fianc\w+|bf|gf|him|her|them)\b))|take (?:his|her|their) (?:own )?life|hurt (?:himself|herself|themselves)|die\b(?! of| laughing| for)|jump\b(?! in| on| at| for))"
     r"|\b(?:he|she|they|my (?:\w+ ){0,2}(?:sister|brother|mum|mom|dad|son|daughter|friend|partner|boyfriend|girlfriend|husband|wife|flatmate))(?:'s|'re| is| are) (?:going to|gonna|about to|threatening to) (?:kill (?:himself|herself|themselves)|take (?:his|her|their) (?:own )?life|end (?:his|her|their) life)\b"
     r"|\b(?:he|she|they|my (?:\w+ ){0,2}(?:sister|brother|mum|mom|dad|son|daughter|friend|partner|boyfriend|girlfriend|husband|wife|flatmate))\b[^.!?\n]{0,15}\bwants? to die\b(?! of| laughing| for)(?=[^.!?\n]{0,40}\b(?:rope|tablets|pills|knife|blade|tonight|bridge|plan|note|goodbye)\b)"
     r"|\b(?:tonight|this evening)\b[^.!?\n]{0,20}\b(?:i'?m|i am|going to|gonna|i'?ll|i will)\s+(?:going to |gonna )?(?:do it|end it|go through with it)\b(?=[\s\S]{0,60}\b(?:made up my mind|decided|for good|no going back|goodbye|ready|nobody can stop|can'?t stop me)\b)"
