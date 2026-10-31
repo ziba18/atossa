@@ -392,7 +392,7 @@ function MonthKeyRow({ glyph, children }: { glyph: React.ReactNode; children: Re
 const keyStyles = StyleSheet.create({
   disc: { width: 28, height: 28, borderRadius: 14, borderWidth: 1.5, borderColor: colors.borderStrong, alignItems: 'center', justifyContent: 'center' },
   discNum: { fontSize: 13, fontWeight: '600' },
-  under: { fontSize: 11, fontWeight: '700', marginTop: 1 },
+  under: { fontSize: 13, fontWeight: '700', marginTop: 1 },
   solid: { width: 28, height: 4, backgroundColor: colors.clay },
   dashed: { width: 28, height: 0, borderTopWidth: 2, borderStyle: 'dashed', borderColor: colors.clay },
 });
