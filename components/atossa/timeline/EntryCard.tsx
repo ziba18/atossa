@@ -139,7 +139,7 @@ export function EntryCard({
             {/* Under her words (PM-A201, same card, same wording and colour), full text, shown by the wording trigger only (Safety run38 ruling 3). */}
             {urgent ? (
               <View style={[styles.urgent, narrow ? { paddingLeft: space.xs } : null]}>
-                <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent}</Txt>
+                <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent.replace('NHS 111', 'NHS\u00a0111')}</Txt>
               </View>
             ) : null}
             {tag != null || facts ? (
