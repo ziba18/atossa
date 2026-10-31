@@ -14,7 +14,7 @@ import { A4, DocumentView } from './DocumentView';
 
 // Printable height per A4 page: 842 pt minus the PDF's 40/34 pt margins and the repeated footer.
 const PRINT_PAGE_BODY = 842 - 40 - 34 - 28;
-const PRINT_VS_SCREEN = 0.82; // printed length / on-screen length, see `pages` below. Re-measured 28 Oct 2026 after every test or scan began to print (Sam seed: on-screen 1900 pt printed as 2 pages, page 2 full, so 1900 must read as 2, not 3; 0.835 gave 2.02).
+const PRINT_VS_SCREEN = 0.795; // printed length / on-screen length. Re-measured 31 Oct 2026 (PM-A216): Sam seed on-screen 1956 pt printed as 2 pages (pdftotext: page 2 body ends at 769 of 780 pt, so ~1.985 pages), so 1956 must read as 2, not 3; 0.82 gave 2.05. Guarded by scripts/e2e/doctor-label-matches-print.cjs.
 const PAGE_CHROME = A4.pad * 2 + 28; // the on-screen page's padding + its single footer
 const THUMB_MAX_H = 300; // phone: a peek at the page; the section cards below carry the readable content
 const FADE_H = 48;
