@@ -16,4 +16,5 @@ console.log('spoken-strength ok');
 assert.equal(w("it's a four now but was a seven earlier"), 7);
 assert.equal(w('a five now, an eight last night'), 8);
 assert.equal(w('a six now, eight days since my period'), 6);
+assert.equal(w('id say a six maybe'), 6); // voice text: no apostrophe
 console.log('earlier-peak ok');
