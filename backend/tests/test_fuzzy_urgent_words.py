@@ -39,3 +39,11 @@ def test_fuzz_time():
     t0 = time.time()
     g.is_emergency("bleedng " * 800)
     assert time.time() - t0 < 2.5
+
+
+def test_baby_blue_around_the_lips_s497():
+    for t in ["my baby is blue around the lips", "my daughter is blue around the lips and breathing fast", "my toddler looks grey around the mouth and is floppy"]:
+        assert g.is_emergency(t), t
+    for t in ["my daughter wore blue lipstick to the party, tired, cramps 3", "baby blue jumper by her face in the photo, i felt teary",
+              "my son is blue in the face from laughing, long day, headache 2", "the child next door has grey hair, my face felt hot, cramps 2"]:
+        assert not g.is_emergency(t), t

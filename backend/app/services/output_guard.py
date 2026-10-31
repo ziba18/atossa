@@ -845,6 +845,8 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     # set p119 (hedged wording; first contact 2/10 missed): blood from the ears after a fall or knock, blue lips on a baby or child
                     r"\bblood\b.{0,20}\b(?:coming |running |leaking |dripping )?(?:out of|from) (?:both |my )?(?:ears?|nose and ears?)\b.{0,40}\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b|\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b.{0,40}\bblood\b.{0,20}\b(?:out of|from) (?:both |my )?ears?\b|"
                     r"\b(?:baby|toddler|child|son|daughter|newborn)(?:'s|s'| has| have)?\b.{0,25}\b(?:lips|face|skin)\b.{0,20}\b(?:gone |turned |going |look\w* |are |is )?(?:a bit |slightly |very )?(?:blue|grey|gray)\b|"
+                    # S-497 (run 60, p75): "my baby is blue around the lips" - colour named before the lips
+                    r"\b(?:baby|toddler|child|son|daughter|newborn)(?! blue)(?:'s|s'| has| have| is| looks?| looking)?\b.{0,25}\b(?:blue|bluish|grey|gray) (?:around |near |at |on |in )?(?:the |his |her |their )?(?:lips|mouth)\b|"
                     # arm numbness with jaw pain and sweating, split across clauses ("... and i'm sweating" starts a new clause; found by the apostrophe variant test)
                     r"^(?=.*\barm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b)(?=.*\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*|tight|clench\w*)\b)(?=.*\b(?:sweat\w*|clammy|breathless|feel sick|nausea\w*)\b)|"
                     # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
