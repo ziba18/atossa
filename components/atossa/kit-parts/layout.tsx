@@ -302,7 +302,7 @@ export function NotedRow({
           </>
         )}
       </View>
-      {onPress && !(empty && addLabel) ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+      {onPress && !(empty && addLabel) && !narrow ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
     </>
   );
   const rowStyle = [styles.noted, !first && styles.notedDivider];
