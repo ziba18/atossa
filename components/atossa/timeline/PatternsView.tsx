@@ -26,21 +26,22 @@ const MIN_DIGIT_COL = 18;
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
 /** One horizontal bar per label: fill = days / total, count always written. */
-function Bars({ rows, total }: { rows: { label: string; days: number }[]; total: number }) {
+function Bars({ rows, total, onRow }: { rows: { label: string; days: number; dates?: string[] }[]; total: number; /** Each row opens exactly its dated days. */ onRow?: (label: string, dates?: string[]) => void }) {
   // Counts share one right column on phones; under 340 pt the label would wrap to three lines, so the count may drop below it instead.
   const roomy = useWindowDimensions().width >= 340;
   return (
     <View style={{ gap: space.sm }}>
       {rows.map((r) => (
-        <View key={r.label} style={{ gap: 4 }}>
+        <Pressable key={r.label} disabled={!onRow} onPress={() => onRow?.(r.label, r.dates)} accessibilityRole={onRow ? 'button' : undefined} accessibilityHint={onRow ? 'Shows these days in the Timeline' : undefined} style={{ gap: 4, minHeight: onRow ? 44 : undefined, justifyContent: 'center' }}>
           <View style={[styles.barHead, !roomy && { flexWrap: 'wrap' }]}>
             <Txt variant="body" style={roomy ? { flexShrink: 1, flex: 1 } : { flexShrink: 1 }}>{r.label}</Txt>
             <Txt variant="body" style={{ flexShrink: roomy ? 0 : 1, marginLeft: 'auto', fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{`${r.days} of ${plural(total, 'day')}`}</Txt>
+            {onRow && r.dates?.length ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
           </View>
           <View style={styles.track}>
             <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
           </View>
-        </View>
+        </Pressable>
       ))}
     </View>
   );
@@ -197,6 +198,7 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
     );
   }
 
+  const openRow = (label: string, dates?: string[]) => (onOpenDays && dates?.length ? onOpenDays(label, dates) : onOpen('Symptoms'));
   const inRange = symptom.filter((r) => r.data.date >= m.from && r.data.date <= m.to).map((r) => r.data);
   const sleepLine = fatigueLine(inRange) || untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
   const maxWeek = Math.max(1, ...m.weeks.map((w) => w.noteDays));
@@ -277,10 +279,10 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
 
       {m.zones.length ? (
         <FadeIn index={2}>
-          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${z.days} of ${plural(m.totalDays, 'day')}`).join('; ')}. Opens your notes.`}>
+          <Card>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>Where you felt it</Txt>
-            <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} />
-          </PressableCard>
+            <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} onRow={openRow} />
+          </Card>
         </FadeIn>
       ) : (
         <EmptyLine title="Where you felt it" line="No place named in these notes. Say where it hurts and it appears here." />
@@ -326,10 +328,10 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
 
       {m.impacts.length ? (
         <FadeIn index={3}>
-          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it got in the way of. ${m.impacts.map((i) => `${i.label}, ${i.days} of ${plural(m.totalDays, 'day')}`).join('; ')}. Opens your notes.`}>
+          <Card>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>What it got in the way of</Txt>
-            <Bars rows={m.impacts} total={m.totalDays} />
-          </PressableCard>
+            <Bars rows={m.impacts} total={m.totalDays} onRow={openRow} />
+          </Card>
         </FadeIn>
       ) : (
         <EmptyLine title="What it got in the way of" line="Nothing logged yet. Say what it stopped you doing and it appears here." />
