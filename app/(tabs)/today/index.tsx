@@ -73,7 +73,7 @@ export default function TodayScreen() {
   );
 
   return (
-    <ScreenLarge title="Today" subtitle={greeting(name)} right={<HeaderAvatar />}>
+    <ScreenLarge title={greeting(name)} right={<HeaderAvatar />}>
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
