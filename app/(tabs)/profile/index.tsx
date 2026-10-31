@@ -91,7 +91,7 @@ export default function ProfileScreen() {
   const span = noteDates.length
     ? noteDates[0] === noteDates[noteDates.length - 1]
       ? `On ${formatShortDate(noteDates[0])}`
-      : `${formatShortDate(noteDates[0])} to ${formatShortDate(noteDates[noteDates.length - 1])}`
+      : `First note ${formatShortDate(noteDates[0])} · latest ${formatShortDate(noteDates[noteDates.length - 1])}`
     : '';
   // "First noticed" per area, as she saved it (a year, "not sure", or her own words); never worked out from her notes.
   const onsets = onsetFromHistory(records.history);
