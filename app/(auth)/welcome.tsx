@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors, fonts, layout, space } from '../../constants/atossaUI';
 import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
+import { PreLoginHelp } from '../../components/help/PreLoginHelp';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
 import { usePageTitle } from '../../lib/usePageTitle';
@@ -37,6 +38,8 @@ export default function WelcomeScreen() {
         <View style={styles.band}>
           <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
         </View>
+
+        <PreLoginHelp />
 
         <View style={styles.hero}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>

@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/atossaUI';
 import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
+import { PreLoginHelp } from '../../components/help/PreLoginHelp';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
@@ -53,6 +54,7 @@ export default function RegisterScreen() {
 
   return (
     <ScreenLarge title="Create an account" subtitle="Your notes are stored under your account and only shared when you share them." back={{ label: 'Back' }}>
+      <PreLoginHelp style={{ marginBottom: space.md }} />
       <View style={{ gap: space.xl }}>
         <TextField label="Your name" value={name} onChangeText={(v) => { setName(v); clear('name'); }} autoCapitalize="words" autoComplete="name" textContentType="name" error={errors.name} />
         <TextField label="Email" value={email} onChangeText={(v) => { setEmail(v); clear('email'); }} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" placeholder="you@example.com" error={errors.email} />
