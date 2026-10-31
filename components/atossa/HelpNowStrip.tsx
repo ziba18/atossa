@@ -21,7 +21,7 @@ export function HelpNowStrip({ children, background = colors.canvas }: { childre
   return (
     <View style={{ flex: 1 }}>
       {onHelp ? null : (
-        <View style={[styles.strip, { paddingTop: insets.top, backgroundColor: background }]}>
+        <View role="navigation" aria-label="Urgent help" style={[styles.strip, { paddingTop: insets.top, backgroundColor: background }]}>
           <Pressable
             onPress={() => router.push({ pathname: '/(tabs)/profile/help-now', params: { from } } as any)}
             accessibilityRole="link"
