@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/atossaUI';
 import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
@@ -15,6 +15,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function LoginScreen() {
   usePageTitle('Sign in');
   const router = useRouter();
+  const short = useWindowDimensions().height < 640; // 320x568: the Help now block must not push Sign in off the first screen
   const login = useAuthStore((s) => s.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,8 +46,8 @@ export default function LoginScreen() {
 
   return (
     <ScreenLarge title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
-      <PreLoginHelp style={{ marginBottom: space.md }} />
-      <View style={{ gap: space.xl }}>
+      <PreLoginHelp style={{ marginBottom: short ? space.xs : space.md }} />
+      <View style={{ gap: short ? space.sm : space.xl }}>
         <TextField
           label="Email"
           value={email}
@@ -74,7 +75,7 @@ export default function LoginScreen() {
         </View>
       </View>
 
-      <View style={{ marginTop: space.xxl, gap: space.xs }}>
+      <View style={{ marginTop: short ? space.md : space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
         <Button label={loading ? 'Signing in…' : 'Sign in'} loading={loading} onPress={handleLogin} />
         <Button label="Create a new account" variant="text" onPress={() => router.replace('/(auth)/register')} />
