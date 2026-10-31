@@ -185,3 +185,12 @@ def test_run59_everyday_wordings_urgent_and_their_quiet_twins():
               "hit my head on a cupboard, a bit sore but fine",
               "confused by the forms at the clinic", "coughed up phlegm, a cold"]:
         assert not k(q), q
+
+
+def test_fainting_at_needles_as_always_is_quiet_but_other_signs_beside_it_still_fire():
+    from app.services.output_guard import is_emergency as k
+    assert not k("I felt faint at the dentist but I always do with needles.")
+    for u in ["I fainted and now I have crushing chest pain, I usually faint with needles but this is different",
+              "I felt faint with heavy bleeding, soaking a pad every half hour, always do with needles though",
+              "I passed out and hit my head, I always faint at the sight of blood but now I can't remember"]:
+        assert k(u), u

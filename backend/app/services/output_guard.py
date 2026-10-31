@@ -530,7 +530,7 @@ def _is_past(clause: str) -> bool:
 
 
 _FAINT_WORD = re.compile(r"faint(?:ed|ing)?", re.I)
-_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b", re.I)
+_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b|\b(?:always|usually|every time|as usual)\b.{0,20}\b(?:needles?|blood tests?|injections?|jabs?|the sight of blood)\b|\b(?:needles?|blood tests?|injections?|jabs?|the sight of blood)\b.{0,25}\b(?:always|usually|every time|as usual)\b", re.I)
 
 
 def _hits(rx, text: str, sh: bool = False) -> bool:
