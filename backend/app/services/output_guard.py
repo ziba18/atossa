@@ -1840,7 +1840,7 @@ _SL_OTHER = re.compile(r"\b(?:dizz\w*|spinning|fell over|falling (?:over|to one 
 _SL_ONSET = re.compile(r"\b(?:sudden\w*|out of (?:nowhere|the blue)|all of a sudden|just now|came on|minutes? ago|this morning|last night|woke (?:up )?with)\b", re.I)
 # B44 (run37): a limb that 'gave way / gave out / stopped working' is itself a sudden change (nhs.uk/conditions/stroke/symptoms, read 30 Oct 2026)
 _SL_ONSET = re.compile(_SL_ONSET.pattern + r"|\b(?:legs?|arms?|hands?|side)\b[^.!?;]{0,25}\b(?:gave (?:way|out)|stopped working)\b", re.I)
-_SL_BENIGN = re.compile(r"\b(?:dentist|dental|injection|anaesthe\w*|wearing off|wear off|slept on|sleeping on|fell asleep on|lying on|sat on|pins and needles|always|usual\w*|years? ago|months? ago|bell'?s palsy|gym|leg day|workout|carrying|shopping|sprain\w*|physio\w*|vaccin\w*|jab|cramp|had (?:a few|some|too many|two|three|four|five|six|\d+) (?:drinks|pints|beers|glasses of wine)|after (?:a few |some )?drinks|nervous|anxious|exhausted|crying|migraine|aura|neurologist|screens?|contacts|stood up too fast|period|cold|typ\w+|crossed|cross-legged|sitting|tired|run|on my feet|moving house|shaking it|game|last (?:year|month)|imagination|joking|lol|haha|stress\w*|for (?:months|years|weeks)|every (?:morning|day|night)|GP knows|toddler|cute|chill?i\w*|spicy|since (?:I|he|she|they) (?:broke|hurt|injured|had|sprained)|since (?:my|his|her|their) (?:op|operation|surgery|accident|injury|fall|break)|in the (?:summer|spring|autumn|winter)|(?:from|after) the (?:jab|vaccine|flu jab|chilli|cold|op|operation|walk|train))\b", re.I)
+_SL_BENIGN = re.compile(r"\b(?:glass(?:es)? of (?:wine|prosecco)|wine|dentist|dental|injection|anaesthe\w*|wearing off|wear off|slept on|sleeping on|fell asleep on|lying on|sat on|pins and needles|always|usual\w*|years? ago|months? ago|bell'?s palsy|gym|leg day|workout|carrying|shopping|sprain\w*|physio\w*|vaccin\w*|jab|cramp|had (?:a few|some|too many|two|three|four|five|six|\d+) (?:drinks|pints|beers|glasses of wine)|after (?:a few |some )?drinks|nervous|anxious|exhausted|crying|migraine|aura|neurologist|screens?|contacts|stood up too fast|period|cold|typ\w+|crossed|cross-legged|sitting|tired|run|on my feet|moving house|shaking it|game|last (?:year|month)|imagination|joking|lol|haha|stress\w*|for (?:months|years|weeks)|every (?:morning|day|night)|GP knows|toddler|cute|chill?i\w*|spicy|since (?:I|he|she|they) (?:broke|hurt|injured|had|sprained)|since (?:my|his|her|their) (?:op|operation|surgery|accident|injury|fall|break)|in the (?:summer|spring|autumn|winter)|(?:from|after) the (?:jab|vaccine|flu jab|chilli|cold|op|operation|walk|train))\b", re.I)
 _SL_OLD = re.compile(r"\b(?:(?:\d+|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|a few|few|couple of|a couple of) days? (?:ago|back|before)|last week|(?:a|one|two) weeks? ago|a week ago|on (?:mon|tues|wednes|thurs|fri|satur|sun)day|the other day|at the weekend|last weekend)\b", re.I)
 
 
@@ -1880,6 +1880,76 @@ def _stroke_slot(t: str) -> bool:
     if _SL_OLD.search(t) or (_SL_BENIGN.search(t) and core + min(other, 1) < 2):
         return False
     return core >= 1 or (other >= 2 and bool(_SL_ONSET.search(t)))
+
+
+# S-546 (Safety run 67): lips, tongue or mouth swelling that came on fast or after a likely trigger, in any wording (nhs.uk/conditions/anaphylaxis,
+# read 1 Nov 2026: "swelling of the lips, mouth, throat or tongue" with a trigger is a 999 sign). Needs a swelling word on a mouth part AND
+# speed, a trigger, or a second sign. Bitten tongue, filler, dentist, ulcer, cold sore, dryness, balm and old swelling stay quiet.
+_MS_PART = r"(?:lips?|tongue|mouth)"
+_MS_SWELL = r"(?:swell\w*|swollen|bigger|huge|enormous|ballooned?|ballooning|puffed up|puffing up)"
+_MS_SWELLRX = re.compile(r"\b" + _MS_PART + r"\b[^.!?;]{0,40}?\b" + _MS_SWELL + r"\b|\b" + _MS_SWELL + r"\b[^.!?;]{0,15}?\b" + _MS_PART + r"\b", re.I)
+_MS_FAST = re.compile(r"\b(?:fast|quickly|rapid\w*|suddenly|within (?:the |an )?(?:hour|minutes?)|in (?:about |just |only )?(?:\w+ )?(?:minutes?|mins|an hour|no time)|getting (?:bigger|worse)|just (?:now|started)|reacting|allerg\w+|sting|stung|(?:since|after) (?:eating|taking|the|my|his|her) (?:\w+ ){0,2}(?:nuts?|peanuts?|prawns?|shellfish|fish|egg|tablets?|pills?|antibiotics?|medic\w+|injection|jab|bite|sting|meal|dinner|lunch|food)|new (?:tablets?|medic\w+|pills?))\b", re.I)
+_MS_SECOND = re.compile(r"\b(?:tight (?:throat|chest)|throat (?:feels? )?(?:tight|closing)|wheez\w*|faint\w*|hard to (?:swallow|breathe)|can'?t swallow|hives|dizzy)\b", re.I)
+_MS_QUIETRX = re.compile(r"\b(?:bit|bitten|biting|filler|fillers|botox|dentist|dental|ulcer|cold sore|dry|cracked|balm|burnt|burned|hot tea|yesterday|last week|weeks? ago|chapped|piercing|braces)\b", re.I)
+
+
+def _mouth_swell(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    if not _MS_SWELLRX.search(t) or _MS_QUIETRX.search(t):
+        return False
+    return bool(_MS_FAST.search(t) or _MS_SECOND.search(t))
+
+
+# S-545 (Safety run 67): a painful (or red, or sick-making) eye together with hazy / foggy / dim / blurred sight or halos round lights, in any
+# wording and about anyone (nhs.uk/conditions/glaucoma, 13 Jun 2025: "call 999 or go to A&E if symptoms come on suddenly"). Screens, new glasses,
+# hay fever, gritty conjunctivitis, stye, dilating drops, mascara, goggles and "clears in the morning" stay quiet.
+_EY_EYE = re.compile(r"\beyes?\b", re.I)
+_EY_SIGHT = re.compile(r"\b(?:haz\w+|fogg\w+|misty|mist|dim\w*|cloudy|clouded|blurr\w+|halos?|rings? (?:round|around)|can'?t see (?:properly|right|out of)|cannot see (?:properly|out of)|lost (?:the )?(?:sight|vision)|gone (?:foggy|blurry|dim|dark))\b", re.I)
+_EY_PAIN = re.compile(r"\b(?:pain\w*|aching|aches?|hurts?|hurting|throbbing|agony|sore|red|bright red|sick|nause\w+|being sick|vomit\w*)\b", re.I)
+_EY_PAINSTRICT = re.compile(r"\b(?:pain\w*|aching|aches?|hurts?|hurting|throbbing|agony|sick|nause\w+|being sick|vomit\w*)\b|\bred and (?:sore|painful)\b|\bbright red\b", re.I)
+_EY_QUIET = re.compile(r"\b(?:screens?|laptop|computer|phone all day|glasses|contacts?|hay ?fever|pollen|itchy|gritty|conjunctivitis|sticky|stye|styes|eyelid|lid\b|dilat\w+|eye test|optician|mascara|goggles|swimming|chlorine|flight|plane|crying|cried|migraine|aura|shampoo|soap|onion|staring|first thing|clears?|cleared|adjust\w*|dry eyes?|tired)\b", re.I)
+
+
+def _eye_sudden(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_EY_EYE.search(t) and _EY_SIGHT.search(t) and _EY_PAINSTRICT.search(t) and _EY_PAIN.search(t) and not _EY_QUIET.search(t))
+
+
+# S-547 (Safety run 67): sepsis in lay wording. A fever / chills / shaking word, plus a "very unwell" word (awful, so ill, something very wrong,
+# dizzy, faint, confused, breathing fast), plus an infection source (wound, cut, UTI, chest infection, pus, hot red skin with a line) or a high
+# temperature (nhs.uk/conditions/sepsis 999 box, page last reviewed 14 May 2026, read 1 Nov 2026). Colds and flu with a normal-sounding picture,
+# nerves, exercise and "settled / feel better / ok now" stay quiet.
+_SP_TEMP = re.compile(r"\b(?:fever\w*|chills|shaking|shaky|shivering|shivery|rigors?|burning up|high temp\w*|temp\w* (?:of |is |was )?(?:39|40|41)\b|39(?:\.\d)?\b)", re.I)
+_SP_ILL = re.compile(r"\b(?:feel(?:ing)? (?:so |really |very |absolutely )?(?:awful|terrible|ill|dreadful)|so ill|very ill|really ill|something (?:is |feels )?(?:very |really )?wrong|dizzy|faint\w*|confus\w+|not making sense|breathing (?:really |very )?fast|can'?t stand|too weak|drowsy|mottled)\b", re.I)
+_SP_SRC = re.compile(r"\b(?:wound|c-?section|stitches|cut|uti|water infection|chest infection|pus|weeping|leaking|line up my (?:leg|arm)|red and hot|hot and red|hot and weeping|since the operation|after the operation|mottled)\b", re.I)
+_SP_HIGH = re.compile(r"\b(?:high temp\w*|temp\w* (?:of |is |was )?(?:39|40|41)\b|39(?:\.\d)?\b|burning up)", re.I)
+_SP_QUIET = re.compile(r"\b(?:settled|feel(?:ing)? (?:better|ok|okay|fine)|nerves|interview|coffee|running|bus|swimming|pool|flu\b|(?:a|got a|common|just a) cold\b|jab|vaccin\w+|period|hot flush|no fever|healing well|itchy)\b", re.I)
+
+
+def _sepsis_lay(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    if not (_SP_TEMP.search(t) and not _SP_QUIET.search(t)):
+        return False
+    ill = {m.group(0).lower()[:5] for m in _SP_ILL.finditer(t)}
+    return bool(ill and (_SP_SRC.search(t) or (_SP_HIGH.search(t) and len(ill) >= 2)))
+
+
+# S-556 (Safety run 67, p136): meningitis signs in any wording. Needs two of three groups: head/neck (bad headache, neck stiff / won't move / can't bend),
+# light hurts, non-fading rash or purple spots; plus fever / shivering / sick / confused / very sleepy / floppy. nhs.uk/conditions/meningitis (999 for
+# stiff neck, rash that does not fade, light sensitivity with fever). "No fever" plus a stated everyday cause, and fading rashes, stay quiet.
+_MN_HEAD = re.compile(r"\b(?:terrible|killer|severe|pounding|worst|awful|bad) headache|\bhead(?: is)? pounding|\bneck (?:is |so |wont |won'?t )?(?:stiff|move|bend)\w*|\b(?:can'?t|cant|cannot) (?:bend|move|turn) (?:my |his |her )?neck|\bneck so stiff", re.I)
+_MN_LIGHT = re.compile(r"\b(?:light|lights)\b[^.!?;]{0,20}\b(?:hurts?|hurting|bothers?|sore)\b|\bhates? the light|\bphotophobi\w+", re.I)
+_MN_RASH = re.compile(r"\b(?:rash|spots|blotch\w*)\b[^.!?;]{0,40}\b(?:won'?t|wont|doesn'?t|does not|not) fade|\b(?:purple|dark red) spots|\bspots? (?:that )?stay when pressed|\bnon-?blanching", re.I)
+_MN_UNWELL = re.compile(r"\b(?:fever\w*|high temp\w*|burning up|hot|shivering|sick|vomit\w*|confused|floppy|very sleepy|cries when picked up|high pitched cry)\b", re.I)
+_MN_QUIET = re.compile(r"\b(?:no fever|fades when|heat rash|sleeping (?:badly|on)|screens|gym|hangover|migraine|tension)\b", re.I)
+
+
+def _mening_concept(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    if _MN_QUIET.search(t):
+        return False
+    groups = sum(bool(r.search(t)) for r in (_MN_HEAD, _MN_LIGHT, _MN_RASH))
+    return bool(groups >= 2 and _MN_UNWELL.search(t)) or bool(_MN_RASH.search(t) and _MN_UNWELL.search(t) and re.search(r"\b(?:toddler|baby|child|son|daughter)\b", t, re.I))
 
 
 # B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
@@ -1984,7 +2054,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text) or _sepsis_lay(user_text) or _mening_concept(user_text)):
         return "medical"
     return kind
 
