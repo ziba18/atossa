@@ -345,6 +345,19 @@ function plain999(t0: string): boolean {
   return false;
 }
 
+// S-543 (backend _infant_concept): a baby or small child who is hard to wake, floppy or not responding, or who refuses feeds /
+// drinks with another drowsy or unwell sign, in any wording and without a temperature. Normal-child markers keep it quiet.
+const INF_WHO = mk(P.INFWHO_SRC), INF_KIN = mk(P.INFKIN_SRC), INF_AGE = mk(P.INFAGEOK_SRC), INF_HARD = mk(P.INFHARD_SRC), INF_SOFT = mk(P.INFSOFTSLEEPY_SRC);
+const INF_FEED = mk(P.INFFEEDREFUSE_SRC), INF_SECOND = mk(P.INFSECOND_SRC), INF_NOWET = mk(P.INFNOWET_SRC), INF_QUIET = mk(P.INFQUIET_SRC), INF_NEG = mk(P.INFNEGHARD_SRC);
+function infantConcept(t0: string): boolean {
+  const t = t0.replace(/\u2019/g, "'");
+  if (!(INF_WHO.test(t) || (INF_KIN.test(t) && INF_AGE.test(t)))) return false;
+  if (INF_QUIET.test(t) || INF_NEG.test(t)) return false;
+  if (INF_HARD.test(t)) return true;
+  if (INF_FEED.test(t) && (INF_SOFT.test(t) || (t.match(new RegExp(P.INFSECOND_SRC, 'gi')) ?? []).length >= 2)) return true;
+  return INF_NOWET.test(t) && (INF_SOFT.test(t) || INF_SECOND.test(t));
+}
+
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
 export function urgentSignpost(rawText: string): string | null {
   // run 60 (backend emergency_kind): the later whole-note rules read this text too, so the same spelling corrections apply
@@ -357,7 +370,7 @@ export function urgentSignpost(rawText: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
