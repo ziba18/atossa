@@ -83,12 +83,13 @@ const LIVE_REPORT = mk(P.LIVEREPORT_SRC), FAINT_WORD = new RegExp('^(?:' + P.FAI
 const OTHER_NOW = mk(P.OTHERNOW_SRC), REPORTED = mk(P.REPORTED_SRC), AGE_PAST = mk(P.AGEPAST_SRC), IN_CARE = mk(P.INCARE_SRC);
 const HEAVY_PHRASE = new RegExp(P.HEAVYPHRASE_SRC, 'gi'), HEAVY_USUAL_Q = mk(P.HEAVYUSUALQ_SRC), HEAVY_USUAL_CTRL = mk(P.HEAVYUSUALCTRL_SRC);
 const BLOOD346 = mk(P.BLOOD346_SRC), SIGN346 = mk(P.SIGN346_SRC), PAST_Q346 = mk(P.PASTQ346_SRC), BAD346 = mk(P.BAD346_SRC), CANTSTAND346 = mk(P.CANTSTAND346_SRC);
-const WAKE342 = mk(P.WAKE342_SRC), EYES342 = mk(P.EYES342_SRC), HOT342 = mk(P.HOT342_SRC), SIGN342 = mk(P.SIGN342_SRC), MORN342 = mk(P.MORN342_SRC);
+const WAKE342 = mk(P.WAKE342_SRC), EYES342 = mk(P.EYES342_SRC), HOT342 = mk(P.HOT342_SRC), SIGN342 = mk(P.SIGN342_SRC), MORN342 = mk(P.MORN342_SRC), SCREEN342 = mk(P.SCREEN342_SRC);
 const NEG342 = new RegExp(P.NEG342_SRC, 'gi'), S343 = mk(P.S343_SRC), S343_SIGN = mk(P.S343SIGN_SRC), QUIET347 = mk(P.QUIET347_SRC);
 
 // Mirrors backend `_hard_to_wake342` (S-342): hard to wake / can't keep eyes open with a fever or floppy/confused sign.
 function hardToWake342(t: string): boolean {
   t = t.replace(/\u2019/g, "'");
+  if (SCREEN342.test(t) && !HOT342.test(t.replace(NEG342, ''))) return false; // S-552b
   if (EYES342.test(t) && HOT342.test(t.replace(NEG342, ''))) return true;
   if (!WAKE342.test(t)) return false;
   if (SIGN342.test(t.replace(NEG342, ''))) return true;

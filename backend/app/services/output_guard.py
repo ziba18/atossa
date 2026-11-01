@@ -644,7 +644,7 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     r"\bnumb(?:ness)?\b.{0,30}\bface\b.{0,40}\b(?:arm|leg)\b.{0,15}\b(?:weak|limp)|\bface\b.{0,20}\bnumb(?:ness)?\b.{0,40}\b(?:arm|leg)\b.{0,15}\b(?:weak|limp)|"
                     r"\bcough\w*\b.{0,40}(?<!no )(?<!without )(?<!any )\bblood\b|(?<!no )(?<!without )\bblood\b.{0,40}\bcough\w*\b|"
                     r"\b(?:arm|leg)\b.{0,15}\b(?:went|gone|is|feels?) (?:limp|dead|weak)\b.{0,40}\bcan'?t (?:hold|lift|move)|"
-                    r"\b(?:tongue|throat)\b.{0,40}\b(?:swollen(?! (?:glands?|nodes?|lymph))|swelling|closing)\b|^(?!(?=.*\b(?:dentist|dental|numbing|botox|fillers?)\b)(?!.*\b(?:throat|breath\w*|swallow\w*|tongue|hives|rash|dizz\w*|wheez\w*|faint\w*)\b)).*\blips?\b.{0,40}\b(?:swollen|swelling)\b|"
+                    r"(?<!bit my )(?<!bitten my )(?<!burnt my )(?<!burned my )\b(?:tongue|throat)\b.{0,40}\b(?:swollen(?! (?:glands?|nodes?|lymph))|swelling|closing)\b|^(?!(?=.*\b(?:dentist|dental|numbing|botox|fillers?)\b)(?!.*\b(?:throat|breath\w*|swallow\w*|tongue|hives|rash|dizz\w*|wheez\w*|faint\w*)\b)).*\blips?\b.{0,40}\b(?:swollen|swelling)\b|"
                     r"\b(?:(?:swollen|bloated) (?:belly|stomach|tummy)|(?:belly|stomach|tummy)\b.{0,15}\b(?:swollen|bloated))\b.{0,60}\b(?:vomit\w*|being sick)\b.{0,60}\bcan'?t (?:pass wind|poo|go to the toilet)|"
                     r"\b(?:double|extra|too much)\b.{0,25}\b(?:pills|tablets|dose|medication)\b.{0,60}\b(?:drowsy|very sleepy|strange|can'?t stay awake)\b|"
                     r"\bdiabet\w+\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\b(?:shaking|blurr\w+|confused|sweating)\b|\b(?:shaking|blurr\w+|confused|sweating)\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\bdiabet\w+|"
@@ -2024,7 +2024,7 @@ _PL_STATE = re.compile(
 _PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
 _PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
 _PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
-_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|(?:health visitor|midwife|gp|doctor|nurse) (?:said|says|checked)|said (?:it'?s|it is|that'?s) normal|was indigestion|in hospital|on the ward|recovered|doing well|phone|laptop|computer|tablet|ipad|app|screen|website|wifi|router|printer|engine|server)\b", re.I)
+_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|cartoons?|peppa|bluey|paw patrol|because (?:he|she|they)(?:'s| is| are) (?:watching|playing|engrossed)|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|(?:health visitor|midwife|gp|doctor|nurse) (?:said|says|checked)|said (?:it'?s|it is|that'?s) normal|was indigestion|in hospital|on the ward|recovered|doing well|phone|laptop|computer|tablet|ipad|app|screen|website|wifi|router|printer|engine|server)\b", re.I)
 
 
 def _plain999(t: str) -> bool:
@@ -2130,8 +2130,14 @@ _SIGN342 = re.compile(r"\b(?:burning|boiling|very hot|high temperature|fever|flo
 _NEG342 = re.compile(r"\b(?:no|without|not|never)\s+(?:a\s+)?(?:fever|temperature)\b", re.I)
 _MORN342 = re.compile(r"\b(?:alarm|snooz\w+|school|morning|refresh\w+|shift|overslept|baby|slept badly|kept waking|teenager|groggy)\b", re.I)
 
+_SCREEN342 = re.compile(r"\b(?:cartoons?|peppa|bluey|paw patrol|tv|telly|ipad|tablet game|headphones|video game|youtube)\b|because (?:he|she|they)(?:'s| is| are) (?:watching|playing|engrossed)", re.I)
+
+
 def _hard_to_wake342(t):
     t = t.replace("’", "'")
+    # S-552b (run 68): ignoring someone because of a screen, cartoon or game is not a hard-to-wake sign unless a fever / floppy / blue word is also there
+    if _SCREEN342.search(t) and not _HOT342.search(_NEG342.sub("", t)):
+        return False
     if _EYES342.search(t) and _HOT342.search(_NEG342.sub("", t)):
         return True
     if not _WAKE342.search(t):

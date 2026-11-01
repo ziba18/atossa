@@ -9,3 +9,9 @@ def test_pillow_is_not_a_pill():
 def test_swollen_glands_are_not_a_swollen_throat():
     assert not g.is_emergency("sore throat and swollen glands, temp 38, tired")
     assert g.is_emergency("my throat feels swollen and tight")
+
+
+def test_bitten_tongue_and_cartoon_stay_quiet():
+    assert not g.is_emergency("bit my tongue and it is swollen and sore")
+    assert not g.is_emergency("he is not responding because he is watching Peppa Pig")
+    assert g.is_emergency("my tongue is swollen and my throat is closing")
