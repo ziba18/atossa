@@ -82,7 +82,18 @@ export function ScreenLarge({
           {children}
         </View>
       )}
-      {footer ? <View style={[styles.column, wide && { maxWidth: 1040 }, styles.footer, !wash && { backgroundColor: colors.surface }]}>{footer}</View> : null}
+      {footer ? (
+        <View style={[styles.column, wide && { maxWidth: 1040 }, styles.footer, !wash && { backgroundColor: colors.surface }]}>
+          {/* A short fade over the last lines of the scrolling page, so a row is never sliced hard by the bar. */}
+          <LinearGradient
+            pointerEvents="none"
+            aria-hidden
+            colors={[(wash ? colors.canvas : colors.surface) + '00', wash ? colors.canvas : colors.surface]}
+            style={{ position: 'absolute', left: 0, right: 0, top: -25, height: 24 }}
+          />
+          {footer}
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
