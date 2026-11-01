@@ -182,6 +182,14 @@ export default function ProfileScreen() {
           detail={Platform.OS === 'web' ? 'Reminders come with the iPhone app' : 'Your daily reminder and its time'}
           onPress={() => router.push('/(tabs)/profile/settings' as any)}
         />
+        {user?.has_password ? (
+          <GroupRow
+            icon="lock"
+            label="Change password"
+            detail="Other phones signed in to this account will be signed out"
+            onPress={() => router.push('/(tabs)/profile/change-password' as any)}
+          />
+        ) : null}
         {IS_PILOT ? null : (
           <GroupRow
             icon="users"

@@ -21,6 +21,10 @@ class User(Base):
     token_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
+    @property
+    def has_password(self) -> bool:
+        return bool(self.hashed_password)
+
     profile: Mapped["Profile"] = relationship("Profile", back_populates="user", uselist=False)
 
 

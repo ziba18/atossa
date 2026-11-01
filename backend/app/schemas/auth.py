@@ -32,6 +32,9 @@ class SocialAuthRequest(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: str
+    # True when the account has an email password (Apple/Google-only accounts: False). The app shows
+    # Profile > Change password only when this is true (PM-B155).
+    has_password: bool = False
 
     class Config:
         from_attributes = True
