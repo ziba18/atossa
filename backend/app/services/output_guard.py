@@ -1983,6 +1983,24 @@ def _clot_concept(t: str) -> bool:
     return bool(re.search(r"\bclot\b", t, re.I) and leg)
 
 
+# S-556 (Safety run 67, p136): meningitis signs in any wording. Needs two of three groups: head/neck (bad headache, neck stiff / won't move / can't bend),
+# light hurts, non-fading rash or purple spots; plus fever / shivering / sick / confused / very sleepy / floppy. nhs.uk/conditions/meningitis (999 for
+# stiff neck, rash that does not fade, light sensitivity with fever). "No fever" plus a stated everyday cause, and fading rashes, stay quiet.
+_MN_HEAD = re.compile(r"\b(?:terrible|killer|severe|pounding|worst|awful|bad) headache|\bhead(?: is)? pounding|\bneck (?:is |so |wont |won'?t )?(?:stiff|move|bend)\w*|\b(?:can'?t|cant|cannot) (?:bend|move|turn) (?:my |his |her )?neck|\bneck so stiff", re.I)
+_MN_LIGHT = re.compile(r"\b(?:light|lights)\b[^.!?;]{0,20}\b(?:hurts?|hurting|bothers?|sore)\b|\bhates? the light|\bphotophobi\w+", re.I)
+_MN_RASH = re.compile(r"\b(?:rash|spots|blotch\w*)\b[^.!?;]{0,40}\b(?:won'?t|wont|doesn'?t|does not|not) fade|\b(?:purple|dark red) spots|\bspots? (?:that )?stay when pressed|\bnon-?blanching", re.I)
+_MN_UNWELL = re.compile(r"\b(?:fever\w*|high temp\w*|burning up|hot|shivering|sick|vomit\w*|confused|floppy|very sleepy|cries when picked up|high pitched cry)\b", re.I)
+_MN_QUIET = re.compile(r"\b(?:no fever|fades when|heat rash|sleeping (?:badly|on)|screens|gym|hangover|migraine|tension)\b", re.I)
+
+
+def _mening_concept(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    if _MN_QUIET.search(t):
+        return False
+    groups = sum(bool(r.search(t)) for r in (_MN_HEAD, _MN_LIGHT, _MN_RASH))
+    return bool(groups >= 2 and _MN_UNWELL.search(t)) or bool(_MN_RASH.search(t) and _MN_UNWELL.search(t) and re.search(r"\b(?:toddler|baby|child|son|daughter)\b", t, re.I))
+
+
 # B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
 # choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
 # same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
@@ -2094,7 +2112,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _stroke_hedge(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text) or _sepsis_lay(user_text) or _clot_concept(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _stroke_hedge(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text) or _sepsis_lay(user_text) or _clot_concept(user_text) or _mening_concept(user_text)):
         return "medical"
     return kind
 

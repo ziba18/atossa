@@ -341,6 +341,14 @@ function clotConcept(t0: string): boolean {
   if (CL_CHEST.test(t) && CL_CTX.test(t) && CL_RACE.test(t)) return true;
   return leg && /\bclot\b/i.test(t);
 }
+// S-556 (backend _mening_concept): two of head/neck, light, non-fading rash plus an unwell word; a child with a non-fading rash and an unwell word.
+const MN_HEAD = mk(P.MNHEAD_SRC), MN_LIGHT = mk(P.MNLIGHT_SRC), MN_RASH = mk(P.MNRASH_SRC), MN_UNWELL = mk(P.MNUNWELL_SRC), MN_QUIET = mk(P.MNQUIET_SRC);
+function meningConcept(t0: string): boolean {
+  const t = t0.replace(/\u2019/g, "'");
+  if (MN_QUIET.test(t)) return false;
+  const groups = [MN_HEAD, MN_LIGHT, MN_RASH].filter((r) => r.test(t)).length;
+  return (groups >= 2 && MN_UNWELL.test(t)) || (MN_RASH.test(t) && MN_UNWELL.test(t) && /\b(?:toddler|baby|child|son|daughter)\b/i.test(t));
+}
 function strokeHedge(t0: string): boolean {
   let t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   if (SH_QUIET.test(t) || SL_OLD.test(t)) return false;
@@ -405,7 +413,7 @@ export function urgentSignpost(rawText: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text) || strokeHedge(text) || mouthSwell(text) || eyeSudden(text) || sepsisLay(text) || clotConcept(text))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text) || strokeHedge(text) || mouthSwell(text) || eyeSudden(text) || sepsisLay(text) || clotConcept(text) || meningConcept(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
