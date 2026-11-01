@@ -21,3 +21,17 @@ once a week on their own laptop. Agents never run it against production.
 Dry run done by AI Brain (PM-B147, 1 Nov 2026) against a local Postgres 16 seeded by `alembic upgrade head` + synthetic rows
 (3 users, 25 records): `restore test: users=3 health_records=25`, dump mode 600; refused in-repo folder, missing folder,
 unset variable; unreachable server -> `pg_dump failed (nothing kept)`, no file left. shellcheck clean.
+
+Second dry run (PM-B151, AI Brain run57, 1 Nov 2026 03:30 UTC): throwaway Postgres 16 (`initdb -A trust`, unix socket
+`/tmp`, port 5491, no TCP), seeded by hand with 3 `users` + 25 `health_records` rows (synthetic, `@example.org`), run as a
+non-root user. Never prod. Output:
+```
+backup: dumping to /home/pgtest/out/atossa-20261101T033036Z.dump
+backup: dump done (8.0K)
+restore test: users=3 health_records=25
+backup: OK. Keep the last 4 weekly dumps; delete older ones (and any dump holding a deleted account within 28 days, Safety C166).
+```
+Source counts (`psql` on the seeded DB): users=3, health_records=25 -> **restore row counts match**. Dump file mode `-rw-------`.
+
+**Step 0 (PM-B153):** do not run this on real patient data until the /privacy text that names the 28-day backup window is live
+(branch `claude/ai-brain-support-email`, waiting for Safety C175's sentence).
