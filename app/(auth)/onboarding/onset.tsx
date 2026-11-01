@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { Button, ChipGroup, InlineError, type ChipOption } from '../../../components/atossa/kit';
@@ -74,9 +74,14 @@ export default function OnboardingOnset() {
     }
   };
 
+  // 320x568 class: Next stays pinned under the years so it is on the first screen; Skip follows the years.
+  const short = useWindowDimensions().height < 640;
+  const nextButton = <Button label={busy ? 'Saving…' : last ? 'Next' : 'Next area'} loading={busy} disabled={!year} onPress={save} />;
+
   return (
     <OnboardingScreen
       step={4}
+      footer={short ? <>{error ? <InlineError message={error} /> : null}{nextButton}</> : undefined}
       editing={Boolean(edit)}
       back={{ label: 'Back', onPress: () => (i > 0 ? setI(i - 1) : router.back()) }}
       title="When did you first notice this?"
@@ -100,9 +105,9 @@ export default function OnboardingOnset() {
           accessibilityHint="Shows or hides the years before the last ten"
         />
       )}
-      <View style={{ marginTop: space.xxl, gap: space.sm }}>
-        <InlineError message={error} />
-        <Button label={busy ? 'Saving…' : last ? 'Next' : 'Next area'} loading={busy} disabled={!year} onPress={save} />
+      <View style={{ marginTop: short ? space.sm : space.xxl, gap: space.sm }}>
+        {short ? null : <InlineError message={error} />}
+        {short ? null : nextButton}
         <Button label="Skip" variant="text" onPress={advance} />
       </View>
     </OnboardingScreen>
