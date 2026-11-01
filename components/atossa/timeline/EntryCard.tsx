@@ -130,7 +130,7 @@ export function EntryCard({
       return (
         <PressableCard
           onPress={onPress}
-          accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will save to your account when you are back online' : '', words, strengthA11y, facts, urgent ?? ''].filter(Boolean).join('. ')}
+          accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will save to your account when you are back online' : '', words, urgent ?? '', strengthA11y, facts].filter(Boolean).join('. ')}
           accessibilityHint="Opens the note"
         >
           <View style={[styles.stack, lowH ? { gap: space.xxs } : null]}>
