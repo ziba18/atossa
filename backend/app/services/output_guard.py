@@ -1882,6 +1882,30 @@ def _stroke_slot(t: str) -> bool:
     return core >= 1 or (other >= 2 and bool(_SL_ONSET.search(t)))
 
 
+# S-550 (Safety run 67, PM C161): hedged stroke as a concept test. Hedges ("probably nothing but", "sorry if this is nothing",
+# "maybe its stress") are removed first; then the note is read for signs in different areas (face, arm/leg/hand, speech, sight) said
+# in loose words (funny, odd, off, uneven, struggling to find words). Two areas, or one area with a sudden/minutes-ago word, fires
+# (nhs.uk/conditions/stroke FAST box: call 999 for face, arm, speech, and any sudden sign). Old (days ago), benign causes
+# (dentist, slept on it, wine, nerves) and past-history lines stay quiet.
+_SH_HEDGE = re.compile(r"\b(?:probably|possibly|maybe|perhaps|might be|could be|sorry|hope)\b[^.!?;,]{0,30}\b(?:nothing|silly|stupid|overreacting|stress\w*|tired\w*|fine|dramatic|bother\w*)\b|\b(?:sorry (?:to bother|if)|not sure if|im sure its|i'?m sure it'?s|feel stupid asking|just checking|a bit worried)\b", re.I)
+_SH_LOOSE = r"(?:funny|odd|off|strange|weird|wrong|jumbled|muddled|slurr\w*|slurry|thick|uneven|crooked|lopsided|droop\w*|sagg?\w*|weak\w*|numb\w*|heavy|clumsy|limp|stiff|hanging|struggl\w+|trouble|difficulty|can'?t (?:find|say|get)|nonsense)"
+_SH_FACE = re.compile(r"\b(?:face|smile|mouth|lips?|cheek)\b[^.!?;]{0,40}?\b" + _SH_LOOSE + r"|\b" + _SH_LOOSE + r"\b[^.!?;]{0,20}?\b(?:face|smile|mouth|lips?|cheek)\b", re.I)
+_SH_LIMB = re.compile(r"\b(?:arm|hand|leg|fingers?|grip|side)\b[^.!?;]{0,40}?\b" + _SH_LOOSE + r"|\b" + _SH_LOOSE + r"\b[^.!?;]{0,20}?\b(?:arm|hand|leg|fingers?|grip|side)\b|\b(?:can'?t|cant|cannot) (?:lift|hold|grip|raise)\b", re.I)
+_SH_SPEECH = re.compile(r"\b(?:speech|words?|talk\w*|speak\w*|say(?:ing)?|voice|sentences?)\b[^.!?;]{0,40}?\b" + _SH_LOOSE + r"|\b" + _SH_LOOSE + r"\b[^.!?;]{0,20}?\b(?:speech|words?|talk\w*|speak\w*|voice)\b|\bslurr\w*", re.I)
+_SH_SIGHT = re.compile(r"\b(?:lost|losing|loss of|blurr\w+|went (?:blurry|dark|black)|double)\b[^.!?;]{0,25}\b(?:sight|vision|eye|see|seeing)\b|\b(?:sight|vision|eye)\b[^.!?;]{0,25}\b(?:lost|blurr\w+|went (?:blurry|dark|black)|double)\b", re.I)
+_SH_SUDDEN = re.compile(r"\b(?:sudden\w*|out of nowhere|all of a sudden|just (?:now|started)|(?:a few|few|couple of|\d+|ten|five|two|three) (?:mins?|minutes|hours?) ago|an hour ago|this morning|came on|woke (?:up )?with|started (?:about |around )?(?:a few |\d+ |ten |five )?(?:mins?|minutes|hours?)|for a (?:couple of|few) (?:mins|minutes))\b", re.I)
+_SH_QUIET = re.compile(r"\b(?:pins and needles|dentist|dental|numbed|wearing off|wear off|slept on|sleeping on|lying on|gym|wine|drinks?|pints?|drunk|nervous|nerves|presenting|moisturi\w+|puffy|crying|years? ago|months? ago|rehab|physio\w*|improving|doing well|bells? palsy|always|usual|glasses|typing|run\b|stroke (?:years|ago))", re.I)
+
+
+def _stroke_hedge(t: str) -> bool:
+    t = _SK_NEG.sub(" ", t.replace("\u2019", "'"))
+    if _SH_QUIET.search(t) or _SL_OLD.search(t):
+        return False
+    t = _SH_HEDGE.sub(" ", t)
+    areas = sum(bool(r.search(t)) for r in (_SH_FACE, _SH_LIMB, _SH_SPEECH, _SH_SIGHT))
+    return areas >= 2 or (areas >= 1 and bool(_SH_SUDDEN.search(t)) and bool(_SH_SPEECH.search(t) or _SH_FACE.search(t)))
+
+
 # B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
 # choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
 # same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
@@ -1984,7 +2008,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _stroke_hedge(user_text)):
         return "medical"
     return kind
 
