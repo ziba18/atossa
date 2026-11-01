@@ -52,7 +52,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ScreenLarge title="Create an account" subtitle="Your notes are stored under your account and only shared when you share them." back={{ label: 'Back' }}>
+    <ScreenLarge title={"Create an\u00a0account"} subtitle="Your notes are stored under your account and only shared when you share them." back={{ label: 'Back' }}>
       <PreLoginHelp style={{ marginBottom: short ? space.xs : space.md }} />
       <View style={{ gap: short ? space.sm : space.xl }}>
         <TextField label="Your name" value={name} onChangeText={(v) => { setName(v); clear('name'); }} autoCapitalize="words" autoComplete="name" textContentType="name" error={errors.name} />

@@ -37,7 +37,7 @@ const MODES: { value: TimelineMode; label: string }[] = [
 function weekSummary(items: ListItem[]): string {
   const notes = items.filter((x): x is Extract<ListItem, { kind: 'symptom' }> => x.kind === 'symptom');
   const worsts = notes.map((x) => worstOf(x.rec.data)).filter((n): n is number => n != null);
-  return [notesLabel(notes.length), worsts.length ? `worst ${Math.max(...worsts)}/10` : ''].filter(Boolean).join(' · ');
+  return [notesLabel(notes.length), worsts.length ? `worst\u00a0${Math.max(...worsts)}/10` : ''].filter(Boolean).join(' · ');
 }
 
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
@@ -247,7 +247,7 @@ function ListView({
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
           <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? (short ? 0 : space.md) : space.xxl }}>
             <View style={{ flexDirection: 'row', flexWrap: tiny ? 'wrap' : 'nowrap', alignItems: 'center', columnGap: space.sm, rowGap: 0, marginBottom: short ? space.xs : space.sm }}>
-              <Txt variant="groupLabel" accessibilityRole="header" aria-level={2} style={{ fontFamily: fonts.serif, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label}</Txt>
+              <Txt variant="groupLabel" accessibilityRole="header" aria-level={2} style={{ fontFamily: fonts.serif, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label.replace(/(\d) ([A-Z][a-z]{2})/g, '$1\u00a0$2')}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
               {tiny ? null : <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />}
               {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (
