@@ -386,3 +386,17 @@ def test_voice_and_relayed_wordings_s535():
                  "my mum took her usual tablets as prescribed and she is sleepy after lunch",
                  "i took a bunch of vitamin gummies and feel weird lol"]:
         assert not g.is_emergency(line), line
+
+
+def test_understated_wordings_s537():
+    from app.services import output_guard as g
+    for line in ["my period is only a bit heavy but ive changed my pad every 20 minutes for three hours and feel woozy",
+                 "its probably just gas but the pain goes up into my jaw and left shoulder and im clammy",
+                 "my wee is stopped completely since yesterday and my belly is huge and painful",
+                 "faint rash and stiff neck and fever"]:
+        assert g.is_emergency(line), line
+    for line in ["my 3 year old has a slight cold and a faint heat rash on cheeks, playing and eating",
+                 "i change my pad every 30 minutes at work because of the heat, feel fine",
+                 "i ran and the stitch pain goes up to my shoulder, sweaty from the gym",
+                 "my wee stopped smelling after i drank water, belly is a bit bloated"]:
+        assert not g.is_emergency(line), line
