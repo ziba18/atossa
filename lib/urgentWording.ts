@@ -317,6 +317,9 @@ const SL_FACE = mk(P.SLFACE_SRC), SL_SIDEW = mk(P.SLSIDEW_SRC), SL_MOTOR = mk(P.
 const strokeOld = (t: string) => SL_OLD.test(t.replace(/\u2019/g, "'"));
 // S-550 (backend _stroke_hedge): hedged stroke signs in two areas, or one face/speech sign with a sudden/minutes-ago word.
 const SH_HEDGE = new RegExp(P.SHHEDGE_SRC, 'gi'), SH_FACE = mk(P.SHFACE_SRC), SH_LIMB = mk(P.SHLIMB_SRC), SH_SPEECH = mk(P.SHSPEECH_SRC), SH_SIGHT = mk(P.SHSIGHT_SRC), SH_SUDDEN = mk(P.SHSUDDEN_SRC), SH_QUIET = mk(P.SHQUIET_SRC);
+// S-546 (backend _mouth_swell): lips / tongue / mouth swelling that came on fast, after a likely trigger, or with a second sign.
+const MS_SWELL = mk(P.MSSWELL_SRC), MS_FAST = mk(P.MSFAST_SRC), MS_SECOND = mk(P.MSSECOND_SRC), MS_QUIET = mk(P.MSQUIET_SRC);
+const mouthSwell = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return MS_SWELL.test(t) && !MS_QUIET.test(t) && (MS_FAST.test(t) || MS_SECOND.test(t)); };
 function strokeHedge(t0: string): boolean {
   let t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   if (SH_QUIET.test(t) || SL_OLD.test(t)) return false;
@@ -379,7 +382,7 @@ export function urgentSignpost(rawText: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text) || strokeHedge(text))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text) || strokeHedge(text) || mouthSwell(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
