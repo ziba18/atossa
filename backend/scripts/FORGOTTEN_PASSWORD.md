@@ -5,10 +5,12 @@ checks from Safety (`agents/safety/rights-runbooks.md` "Forgotten password", run
 Run by the owner only, on the owner's own machine. Agents never run it and never touch production.
 
 ## What she sees in the app
-Forgot password screen (Safety wording B):
-"Email us from the address you signed up with. We'll check it's you and give you a temporary
-password; your saved notes stay as they are. If you signed up with Apple or Google, use that
-button on the sign-in screen instead."
+Forgot password screen (Safety C154 wording A, as built in `claude/design-run104` `app/(auth)/forgot-password.tsx`):
+"You can't reset your password in the app yet. If you signed up with Apple or Google, use that button on the
+sign-in screen. Otherwise, email us from the address you signed up with and tell us what happened. Your saved
+notes are not deleted."
+(The web build leaves out the Apple/Google sentence. The address under it comes from `EXPO_PUBLIC_SUPPORT_EMAIL`;
+empty = no address and no mail button. /privacy and /terms read `SUPPORT_EMAIL` on Render, PM-B153.)
 
 ## Steps
 1. **The request must come from the email address on her account.** A request from any other
@@ -29,8 +31,9 @@ button on the sign-in screen instead."
      Do not copy it into email, chat or a file.
 4. **Give it only on a call-back you start** to the phone number on the pilot sign-up sheet. Never
    to a number the caller gives, never in writing. Read it in groups of four (no 0/O/1/l/I in it).
-5. **She signs in and changes it straight away** in Profile. The app does not force this yet
-   (Safety S-544), so ask her to confirm she has changed it.
+5. **She changes it: Profile -> Change password (from r105 on).** Until that build is on her phone there is no
+   screen for it, so ask her to change it on the next build and log that you asked (the app does not force a
+   change yet, Safety S-544 / PM-B150 spec).
 6. Every old session (for example on a lost phone) has already ended (`token_version` + 1).
    Her notes are untouched.
 7. **Log** date + account id (the tool prints neither email nor password to the log; the
