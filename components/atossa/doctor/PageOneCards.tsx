@@ -113,6 +113,21 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
       </Card>,
     );
   }
+  if (impacts && impacts.id === 'impacts' && impacts.items.length) {
+    cards.push(
+      <Card key="impacts">
+        <Txt variant="groupLabel">{impacts.title}</Txt>
+        <View style={{ gap: space.xxs, marginTop: space.sm }}>
+          {impacts.items.slice(0, 4).map((i) => (
+            <Pressable key={i.label} onPress={() => openDays(i.label, i.dates)} disabled={!i.dates?.length} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
+              <Txt variant="body" style={{ flexShrink: 1, flexGrow: 1 }}>{i.label} · {plural(i.days, 'day')}</Txt>
+              {i.dates?.length ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
+            </Pressable>
+          ))}
+        </View>
+      </Card>,
+    );
+  }
   if (periods && periods.id === 'periods' && periods.runs.length) {
     cards.push(
       <Card key="periods">
@@ -126,21 +141,6 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
                 {r.flows ? <Txt variant="secondary">{r.flows.replace("Flow (chosen by the patient)", "Flow")}</Txt> : null}
               </View>
               {r.dates?.length ? <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View> : null}
-            </Pressable>
-          ))}
-        </View>
-      </Card>,
-    );
-  }
-  if (impacts && impacts.id === 'impacts' && impacts.items.length) {
-    cards.push(
-      <Card key="impacts">
-        <Txt variant="groupLabel">{impacts.title}</Txt>
-        <View style={{ gap: space.xxs, marginTop: space.sm }}>
-          {impacts.items.slice(0, 4).map((i) => (
-            <Pressable key={i.label} onPress={() => openDays(i.label, i.dates)} disabled={!i.dates?.length} accessibilityRole="button" accessibilityHint="Shows these days in the Timeline" style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
-              <Txt variant="body" style={{ flexShrink: 1, flexGrow: 1 }}>{i.label} · {plural(i.days, 'day')}</Txt>
-              {i.dates?.length ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
             </Pressable>
           ))}
         </View>
