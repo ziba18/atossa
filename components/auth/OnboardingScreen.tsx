@@ -14,7 +14,7 @@ export const ONBOARDING_STEPS = 5;
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
-  step, title, helper, badge, back, children, scrollRef, editing,
+  step, title, helper, badge, back, children, scrollRef, editing, footer,
 }: {
   step: number;
   title: string;
@@ -26,6 +26,8 @@ export function OnboardingScreen({
   scrollRef?: React.RefObject<ScrollViewInstance | null>;
   /** Opened later from Profile, outside the sign-up flow: no progress strip or step count. */
   editing?: boolean;
+  /** Pinned under the scrolling content (short phones keep the main button on screen). */
+  footer?: React.ReactNode;
 }) {
   // Under ~240 pt of layout width (200% text on a 320 phone) the 34 pt title broke words mid-letter.
   usePageTitle(editing ? title : `Step ${step} of ${ONBOARDING_STEPS}`);
@@ -64,6 +66,7 @@ export function OnboardingScreen({
         </View>
         {children}
       </ScrollView>
+      {footer ? <View style={styles.footer}>{footer}</View> : null}
     </SafeAreaView>
   );
 }
@@ -74,6 +77,7 @@ const styles = StyleSheet.create({
     width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center',
     paddingHorizontal: layout.gutter, paddingBottom: space.xxxl,
   },
+  footer: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter, paddingVertical: space.sm, gap: space.xs, borderTopWidth: 1, borderTopColor: colors.hairline, backgroundColor: colors.canvas },
   head: { paddingTop: space.sm, marginBottom: space.xxl },
   noBack: { height: 44 },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.sm },

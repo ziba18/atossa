@@ -4,16 +4,15 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { DATA_LINES } from '../../../constants/dataLocation';
 import {
-  Button, Card, ConfirmCard, HeroNumber, InlineError, TextField, SafetyLine, ScreenLarge, Txt, showToast,
+  Button, Card, ConfirmCard, InlineError, TextField, SafetyLine, ScreenLarge, Txt, showToast,
 } from '../../../components/atossa/kit';
 import { Group, GroupHeading, GroupRow } from '../../../components/atossa/records/GroupedRows';
 import { savedLabel } from '../../../components/atossa/records/RecordsList';
 import {
   firstParam,
 } from '../../../components/atossa/records/recordKinds';
-import { useCountUp } from '../../../components/atossa/capture/TodayCards';
 import { DOMAINS, ONSET_GROUP_LABEL, onsetFromHistory, type OnsetGroup } from '../../../lib/records/summary';
-import { formatShortDate, noteCount, notesLabel } from '../../../lib/records/format';
+
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
@@ -61,15 +60,6 @@ export default function ProfileScreen() {
 
   const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : '';
   const recordsTotal = records.medicine.length + records.appointment.length + records.history.length;
-  // The "your record" summary: how many notes, and the span they cover.
-  const noteDates = records.symptom.map((n) => n.data.date).filter(Boolean).sort();
-  const total = noteCount(records.symptom);
-  const shownTotal = useCountUp(total);
-  const span = noteDates.length
-    ? noteDates[0] === noteDates[noteDates.length - 1]
-      ? `On ${formatShortDate(noteDates[0])}`
-      : `First note ${formatShortDate(noteDates[0])} · latest ${formatShortDate(noteDates[noteDates.length - 1])}`
-    : '';
   // "First noticed" per area, as she saved it (a year, "not sure", or her own words); never worked out from her notes.
   const onsets = onsetFromHistory(records.history);
   const onsetGroups = (Object.keys(onsets) as OnsetGroup[]).sort((a, b) => DOMAINS.findIndex((d) => d.id === a) - DOMAINS.findIndex((d) => d.id === b));
@@ -139,17 +129,7 @@ export default function ProfileScreen() {
 
   return (
     <ScreenLarge title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
-      <HeroNumber
-        big={String(shownTotal)}
-        line={total === 0 ? 'notes so far' : `${total === 1 ? 'note' : 'notes'} in your record`}
-        sub={total === 0 ? 'Your first note starts your record' : span}
-        onPress={total === 0 ? undefined : () => router.push('/(tabs)/timeline' as any)}
-        accessibilityHint="Opens Timeline"
-        keepSub
-        filled
-      />
-
-      <Group style={{ marginTop: space.md }}>
+      <Group>
         <GroupRow
           icon="user"
           label={name || 'Your details'}
@@ -320,8 +300,8 @@ export default function ProfileScreen() {
           style={{ marginTop: space.xl }}
           onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
           actions={[
-            { label: deleting ? 'Deleting…' : 'Delete account', variant: 'destructive', onPress: onDeleteAccount },
             { label: 'Download my notes first', variant: 'text', onPress: () => { setConfirmingDelete(false); setExportDone(false); setExporting(true); } },
+            { label: deleting ? 'Deleting…' : 'Delete account', variant: 'destructive', onPress: onDeleteAccount },
             { label: 'Cancel', variant: 'text', onPress: () => setConfirmingDelete(false) },
           ]}
         />

@@ -37,7 +37,7 @@ export default function OnboardingConsentScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
+    <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
       <View style={{ alignItems: 'flex-end' }}><HelpNowLink /></View>
       <Txt variant="hero" accessibilityRole="header" style={styles.title}>Before you start</Txt>
@@ -66,5 +66,5 @@ export default function OnboardingConsentScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter, paddingBottom: space.xxxl },
-  title: { paddingTop: 44 + space.sm, marginBottom: space.xxl },
+  title: { paddingTop: space.md, marginBottom: space.xl },
 });

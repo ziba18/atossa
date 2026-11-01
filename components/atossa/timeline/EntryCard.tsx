@@ -130,7 +130,7 @@ export function EntryCard({
       return (
         <PressableCard
           onPress={onPress}
-          accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will save to your account when you are back online' : '', words, strengthA11y, facts, urgent ?? ''].filter(Boolean).join('. ')}
+          accessibilityLabel={[kindWord, hideDate ? '' : top, item.rec.pending ? 'Saved on this phone, will save to your account when you are back online' : '', words, urgent ?? '', strengthA11y, facts].filter(Boolean).join('. ')}
           accessibilityHint="Opens the note"
         >
           <View style={[styles.stack, lowH ? { gap: space.xxs } : null]}>
@@ -140,7 +140,7 @@ export function EntryCard({
             {/* Under her words (PM-A201, same card, same wording and colour), full text, shown by the wording trigger only (Safety run38 ruling 3). */}
             {urgent ? (
               <View style={[styles.urgent, narrow ? { paddingLeft: space.xs } : null]}>
-                <Txt variant="secondary" style={{ color: colors.ink2 }}>{urgent.replace('NHS 111', 'NHS\u00a0111')}</Txt>
+                <Txt variant={width < 360 ? 'caption' : 'secondary'} style={{ color: colors.ink2 }}>{urgent.replace('NHS 111', 'NHS\u00a0111')}</Txt>
               </View>
             ) : null}
             {tag != null || facts ? (

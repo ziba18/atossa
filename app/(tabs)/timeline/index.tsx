@@ -333,16 +333,20 @@ function MonthView({
   };
 
   // On a short phone (height under 600) the note key sits above the calendar, so the numbers under the days are explained before the fold.
-  const shortKey = useWindowDimensions().height < 700 && useWindowDimensions().width >= 240 && noteDays > 0;
+  const dims = useWindowDimensions(); // one hook call: calling it twice behind && changed the hook count when the window crossed 700 pt tall
+  const shortKey = dims.height < 700 && dims.width >= 240 && noteDays > 0;
   const noteKeyRow = (
     <MonthKeyRow glyph={<View style={{ alignItems: 'center' }}><View style={keyStyles.disc}><Txt style={keyStyles.discNum}>7</Txt></View><Txt style={keyStyles.under}>8</Txt></View>}>
       {shortKey ? 'Circle: a note. Number: strongest rating, out of 10.' : 'A day with a note; the number under it is the strongest rating, out of 10.'}
     </MonthKeyRow>
   );
 
+  // Under 700 pt tall the key sits above the calendar, so 'Log a period' moves below it and a 6-week month shows more rows.
+  const logPeriod = <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: shortKey ? 0 : -space.sm }} />;
+
   return (
     <View style={{ marginTop: shortKey ? space.xs : space.lg, gap: shortKey ? space.sm : space.lg }}>
-      <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: shortKey ? -space.md : -space.sm }} />
+      {shortKey ? null : logPeriod}
       {shortKey ? <View accessible accessibilityLabel="Key. A circled day has a note; the number under it is the strongest rating that day, out of 10.">{noteKeyRow}</View> : null}
       <MonthCalendar
         year={month.y}
@@ -369,6 +373,7 @@ function MonthView({
           ) : <Txt key={r.key} variant="secondary" color={colors.ink2}>{r.text}</Txt>)}
         </View>
       ) : null}
+      {shortKey ? logPeriod : null}
     </View>
   );
 }
