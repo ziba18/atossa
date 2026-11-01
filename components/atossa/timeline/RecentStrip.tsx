@@ -68,7 +68,7 @@ export function RecentStrip({ symptoms, flush, twoRows, band, onDayPress, onPatt
               // The day is a picture (digit, letter); the button is a transparent layer over it, so it holds no text that could differ from its name.
               <View key={c.key} style={colStyle as any}>
                 {body}
-                <Pressable onPress={() => onDayPress(c.key)} accessibilityRole="button" accessibilityLabel={`${formatDay(c.key, 'always')}, ${c.worst != null ? `at worst ${c.worst} out of 10` : c.noted ? 'note, no rating' : 'no note'}`} accessibilityHint="Shows this day" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+                <Pressable hitSlop={{ left: 1, right: 1 }} onPress={() => onDayPress(c.key)} accessibilityRole="button" accessibilityLabel={`${formatDay(c.key, 'always')}, ${c.worst != null ? `at worst ${c.worst} out of 10` : c.noted ? 'note, no rating' : 'no note'}`} accessibilityHint="Shows this day" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
               </View>
             );
           }
