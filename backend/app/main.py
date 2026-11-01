@@ -47,11 +47,14 @@ async def security_headers(request, call_next):
     return response
 
 
+from fastapi import Depends  # noqa: E402
+from app.dependencies import require_password_ok  # noqa: E402
+
 app.include_router(auth.router)
-app.include_router(profiles.router)
-app.include_router(connections.router)
-app.include_router(chat.router)
-app.include_router(records.router)
+app.include_router(profiles.router, dependencies=[Depends(require_password_ok)])  # PM-B158
+app.include_router(connections.router, dependencies=[Depends(require_password_ok)])  # PM-B158
+app.include_router(chat.router, dependencies=[Depends(require_password_ok)])  # PM-B158
+app.include_router(records.router, dependencies=[Depends(require_password_ok)])  # PM-B158
 app.include_router(legal.router)
 app.include_router(basket_buddy.router)
 

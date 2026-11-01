@@ -118,8 +118,8 @@ def test_export_shape_has_only_real_columns_and_no_secret_like_keys():
         real = {c.name for c in tables[name].c}
         for row in rows:
             assert set(row) <= real, (name, set(row) - real)
-            # token_version is a sign-out counter, not a credential (kept; Safety may hide it).
-            assert not [k for k in row if k.startswith("_") or (secretish.search(k) and k != "token_version")], (name, sorted(row))
+            # token_version is a sign-out counter, must_change_password a yes/no flag (PM-B158): neither is a credential.
+            assert not [k for k in row if k.startswith("_") or (secretish.search(k) and k not in ("token_version", "must_change_password"))], (name, sorted(row))
     assert out["tables"].get("connected_accounts", []) == []  # an empty table is an empty list
     datas = [r["data"] for r in out["tables"]["health_records"]]
     assert sorted(datas, key=repr) == sorted([{}, ""], key=repr)  # empty fields stay empty, never another row's data

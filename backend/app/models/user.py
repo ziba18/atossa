@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timezone
+from sqlalchemy import false as sa_false
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -19,6 +20,9 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     # Bumped to sign the account out everywhere: tokens carry the number they were issued with.
     token_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    # PM-B150/B158: set by scripts/set_temp_password.py; data endpoints answer 403 password_change_required until
+    # POST /auth/change-password clears it.
+    must_change_password: Mapped[bool] = mapped_column(Boolean, default=False, server_default=sa_false(), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     @property

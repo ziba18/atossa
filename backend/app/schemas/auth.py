@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import field_validator, BaseModel, EmailStr, Field
 
 
 class RegisterRequest(BaseModel):
@@ -35,6 +35,13 @@ class UserResponse(BaseModel):
     # True when the account has an email password (Apple/Google-only accounts: False). The app shows
     # Profile > Change password only when this is true (PM-B155).
     has_password: bool = False
+    # PM-B158: true after a one-time password; the app opens Change password (forced=1) before anything else.
+    must_change_password: bool = False
+
+    @field_validator("must_change_password", mode="before")
+    @classmethod
+    def _none_is_false(cls, v):  # a not-yet-flushed User row has None
+        return bool(v)
 
     class Config:
         from_attributes = True

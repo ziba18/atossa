@@ -16,4 +16,4 @@ def test_social_only_account_has_no_password():
 
 def test_hash_never_in_response():
     u = User(id="u1", email="a@example.org", hashed_password="$2b$hash")
-    assert set(UserResponse.model_validate(u).model_dump()) == {"id", "email", "has_password"}
+    assert set(UserResponse.model_validate(u).model_dump()) == {"id", "email", "has_password", "must_change_password"}

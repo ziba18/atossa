@@ -57,6 +57,7 @@ def set_temp_password(db: Session, email: str) -> str:
     temp = make_temp_password()
     user.hashed_password = hash_password(temp)
     user.token_version = (user.token_version or 0) + 1
+    user.must_change_password = True  # PM-B158: the app forces Change password before any data
     db.commit()
     security_events.record("temp_password_set")
     logger.warning("temp password set by owner script for account %s (sessions ended)", user.id)

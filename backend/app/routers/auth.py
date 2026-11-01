@@ -149,6 +149,7 @@ def change_password(body: ChangePasswordRequest, db: Session = Depends(get_db), 
     if body.new_password == body.current_password:
         raise HTTPException(status_code=400, detail="Choose a different password")
     current_user.hashed_password = hash_password(body.new_password)
+    current_user.must_change_password = False  # PM-B158: her own password now; data endpoints open again
     current_user.token_version += 1  # every other signed-in device must sign in again
     db.commit()
     # This device keeps its session: hand back tokens for the new version.
