@@ -80,8 +80,9 @@ export function GroupRow({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join(' ')}
-      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, tint && { borderLeftWidth: 4, borderLeftColor: colors.ink }, pressed && { backgroundColor: colors.canvas }]}
+      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, pressed && { backgroundColor: colors.canvas }]}
     >
+      {tint ? <View aria-hidden pointerEvents="none" style={{ position: 'absolute', left: 0, top: space.sm, bottom: space.sm, width: 4, borderTopRightRadius: 2, borderBottomRightRadius: 2, backgroundColor: colors.ink }} /> : null}
       {icon && !tight ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
       <View style={styles.text}>
         {/* The trailing space keeps label and detail apart in the page text, so the spoken name can start with it (WCAG 2.5.3). */}
