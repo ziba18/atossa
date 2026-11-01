@@ -2027,6 +2027,13 @@ _INF_NEG_HARD = re.compile(r"\b(?:isn'?t|not|no) (?:floppy|limp|lethargic|drowsy
 
 
 
+# S-402b / p132 (Safety run 67): a baby who feels very hot, or cold and mottled, to a parent with no thermometer, plus a second unwell sign
+# (breathing fast, cannot be settled, weak cry, sleeping through feeds). nhs.uk/conditions/fever-in-children (3 Jan 2024) and the baby-under-3-months
+# fever line; the parent's touch is the thermometer. Playful/normal markers keep it quiet through _INF_QUIET.
+_INF_TOUCH = re.compile(r"\b(?:burning hot|burning up|(?:really |very |so )?hot to (?:the )?touch|feels? (?:really |very |so )?hot|hot all over|cold and mottled|clammy)\b", re.I)
+_INF_UNWELL2 = re.compile(r"\b(?:breathing (?:quickly|fast|hard|noisily)|(?:won'?t|wont|can'?t|cant) (?:stop crying|be settled)|nothing settles|weak cry|crying a weak|sleeping through (?:all )?(?:her|his|the) feeds?|not feeding|won'?t (?:feed|drink)|wont (?:feed|drink)|limp|floppy|grunting|very quiet|gone quiet|won'?t look at me)\b", re.I)
+
+
 def _infant_concept(text: str) -> bool:
     t = text.replace("\u2019", "'")
     if not (_INF_WHO.search(t) or (_INF_KIN.search(t) and _INF_AGE_OK.search(t))):
@@ -2038,6 +2045,8 @@ def _infant_concept(text: str) -> bool:
     if _INF_FEED_REFUSE.search(t) and (_INF_SOFT_SLEEPY.search(t) or len(_INF_SECOND.findall(t)) >= 2):
         return True
     if _INF_NOWET.search(t) and (_INF_SOFT_SLEEPY.search(t) or _INF_SECOND.search(t)):
+        return True
+    if _INF_TOUCH.search(t) and _INF_UNWELL2.search(t):
         return True
     return False
 

@@ -371,6 +371,7 @@ function plain999(t0: string): boolean {
 // S-543 (backend _infant_concept): a baby or small child who is hard to wake, floppy or not responding, or who refuses feeds /
 // drinks with another drowsy or unwell sign, in any wording and without a temperature. Normal-child markers keep it quiet.
 const INF_WHO = mk(P.INFWHO_SRC), INF_KIN = mk(P.INFKIN_SRC), INF_AGE = mk(P.INFAGEOK_SRC), INF_HARD = mk(P.INFHARD_SRC), INF_SOFT = mk(P.INFSOFTSLEEPY_SRC);
+const INF_TOUCH = mk(P.INFTOUCH_SRC), INF_UNWELL2 = mk(P.INFUNWELL2_SRC);
 const INF_FEED = mk(P.INFFEEDREFUSE_SRC), INF_SECOND = mk(P.INFSECOND_SRC), INF_NOWET = mk(P.INFNOWET_SRC), INF_QUIET = mk(P.INFQUIET_SRC), INF_NEG = mk(P.INFNEGHARD_SRC);
 function infantConcept(t0: string): boolean {
   const t = t0.replace(/\u2019/g, "'");
@@ -378,7 +379,8 @@ function infantConcept(t0: string): boolean {
   if (INF_QUIET.test(t) || INF_NEG.test(t)) return false;
   if (INF_HARD.test(t)) return true;
   if (INF_FEED.test(t) && (INF_SOFT.test(t) || (t.match(new RegExp(P.INFSECOND_SRC, 'gi')) ?? []).length >= 2)) return true;
-  return INF_NOWET.test(t) && (INF_SOFT.test(t) || INF_SECOND.test(t));
+  if (INF_NOWET.test(t) && (INF_SOFT.test(t) || INF_SECOND.test(t))) return true;
+  return INF_TOUCH.test(t) && INF_UNWELL2.test(t);
 }
 
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
