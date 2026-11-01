@@ -33,7 +33,7 @@ export default function OnboardingNameScreen() {
   };
 
   return (
-    <OnboardingScreen step={1} title="What should we call you?" helper="You can change this any time.">
+    <OnboardingScreen step={1} title={"What should we call\u00a0you?"} helper="You can change this any time.">
       <TextField
         label="Your name"
         value={name}
