@@ -62,8 +62,9 @@ export default function RegisterScreen() {
 
       <View style={{ marginTop: short ? space.md : space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
-        <Button label={loading ? 'Creating your account…' : 'Create account'} loading={loading} onPress={handleRegister} />
+        {/* The terms sit directly above the button they apply to (PM D-s104-6). */}
         <LegalLinks />
+        <Button label={loading ? 'Creating your account…' : 'Create account'} loading={loading} onPress={handleRegister} />
         <Button label="I already have an account" variant="text" onPress={() => router.replace('/(auth)/login')} />
       </View>
 
