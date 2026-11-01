@@ -110,7 +110,7 @@ function DayGrid({ m, onOpenDays }: { m: PatternsModel; onOpenDays?: (label: str
       <View style={{ flexDirection: 'row', marginTop: space.sm, gap: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         {WEEKDAY_LETTERS.map((w, i) => <Txt key={i} variant="caption" style={{ flex: 1, textAlign: 'center' }}>{w}</Txt>)}
       </View>
-      <View style={{ gap: 4, marginTop: 4 }} accessible accessibilityLabel={`${rated} of ${m.totalDays} days have a rating. Each day shows the strongest number you gave.`}>
+      <View style={{ gap: 4, marginTop: 4 }} accessibilityLabel={`${rated} of ${m.totalDays} days have a rating. Each day shows the strongest number you gave.`}>
         {rows.map((r, ri) => (
           <View key={ri} style={{ flexDirection: 'row', gap: 4 }}>
             {r.map((d, ci) => {
@@ -120,6 +120,8 @@ function DayGrid({ m, onOpenDays }: { m: PatternsModel; onOpenDays?: (label: str
                 <Pressable
                   key={ci}
                   disabled={!logged || !onOpenDays}
+                  accessibilityRole={logged && onOpenDays ? 'button' : undefined}
+                  accessibilityLabel={`${formatDate(d.date, true)}: ${d.value != null ? `strongest rating ${d.value} out of 10` : logged ? 'logged, no number' : 'nothing logged'}${d.bleeding ? ', bleeding' : ''}`}
                   onPress={() => onOpenDays?.(formatDate(d.date, true), [d.date])}
                   style={{ flex: 1, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: logged ? colors.white : colors.sunken, borderWidth: 1, borderColor: logged ? colors.borderStrong : 'transparent', overflow: 'hidden' }}
                 >
