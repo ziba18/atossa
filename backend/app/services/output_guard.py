@@ -1939,6 +1939,25 @@ def _eye_sudden(t: str) -> bool:
     return bool(_EY_EYE.search(t) and _EY_SIGHT.search(t) and _EY_PAINSTRICT.search(t) and _EY_PAIN.search(t) and not _EY_QUIET.search(t))
 
 
+# S-547 (Safety run 67): sepsis in lay wording. A fever / chills / shaking word, plus a "very unwell" word (awful, so ill, something very wrong,
+# dizzy, faint, confused, breathing fast), plus an infection source (wound, cut, UTI, chest infection, pus, hot red skin with a line) or a high
+# temperature (nhs.uk/conditions/sepsis 999 box, page last reviewed 14 May 2026, read 1 Nov 2026). Colds and flu with a normal-sounding picture,
+# nerves, exercise and "settled / feel better / ok now" stay quiet.
+_SP_TEMP = re.compile(r"\b(?:fever\w*|chills|shaking|shaky|shivering|shivery|rigors?|burning up|high temp\w*|temp\w* (?:of |is |was )?(?:39|40|41)\b|39(?:\.\d)?\b)", re.I)
+_SP_ILL = re.compile(r"\b(?:feel(?:ing)? (?:so |really |very |absolutely )?(?:awful|terrible|ill|dreadful)|so ill|very ill|really ill|something (?:is |feels )?(?:very |really )?wrong|dizzy|faint\w*|confus\w+|not making sense|breathing (?:really |very )?fast|can'?t stand|too weak|drowsy|mottled)\b", re.I)
+_SP_SRC = re.compile(r"\b(?:wound|c-?section|stitches|cut|uti|water infection|chest infection|pus|weeping|leaking|line up my (?:leg|arm)|red and hot|hot and red|hot and weeping|since the operation|after the operation|mottled)\b", re.I)
+_SP_HIGH = re.compile(r"\b(?:high temp\w*|temp\w* (?:of |is |was )?(?:39|40|41)\b|39(?:\.\d)?\b|burning up)", re.I)
+_SP_QUIET = re.compile(r"\b(?:settled|feel(?:ing)? (?:better|ok|okay|fine)|nerves|interview|coffee|running|bus|swimming|pool|flu\b|(?:a|got a|common|just a) cold\b|jab|vaccin\w+|period|hot flush|no fever|healing well|itchy)\b", re.I)
+
+
+def _sepsis_lay(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    if not (_SP_TEMP.search(t) and not _SP_QUIET.search(t)):
+        return False
+    ill = {m.group(0).lower()[:5] for m in _SP_ILL.finditer(t)}
+    return bool(ill and (_SP_SRC.search(t) or (_SP_HIGH.search(t) and len(ill) >= 2)))
+
+
 # B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
 # choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
 # same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
@@ -2041,7 +2060,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _stroke_hedge(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _stroke_hedge(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text) or _sepsis_lay(user_text)):
         return "medical"
     return kind
 

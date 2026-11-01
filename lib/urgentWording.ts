@@ -323,6 +323,14 @@ const mouthSwell = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); retur
 // S-545 (backend _eye_sudden): painful / red / sick-making eye with hazy, dim or blurred sight or halos; everyday eye lines stay quiet.
 const EY_EYE = mk(P.EYEEYE_SRC), EY_SIGHT = mk(P.EYESIGHT_SRC), EY_PAIN = mk(P.EYEPAIN_SRC), EY_PAINS = mk(P.EYEPAINS_SRC), EY_QUIET = mk(P.EYEQUIET_SRC);
 const eyeSudden = (t0: string) => { const t = t0.replace(/\u2019/g, "'"); return EY_EYE.test(t) && EY_SIGHT.test(t) && EY_PAINS.test(t) && EY_PAIN.test(t) && !EY_QUIET.test(t); };
+// S-547 (backend _sepsis_lay): fever / chills / shaking + very unwell word + infection source or high temperature; colds, nerves and "settled" stay quiet.
+const SP_TEMP = mk(P.SPTEMP_SRC), SP_SRC = mk(P.SPSRC_SRC), SP_HIGH = mk(P.SPHIGH_SRC), SP_QUIET = mk(P.SPQUIET_SRC), SP_ILL = new RegExp(P.SPILL_SRC, 'gi');
+function sepsisLay(t0: string): boolean {
+  const t = t0.replace(/\u2019/g, "'");
+  if (!SP_TEMP.test(t) || SP_QUIET.test(t)) return false;
+  const ill = new Set((t.match(SP_ILL) ?? []).map((m) => m.toLowerCase().slice(0, 5)));
+  return ill.size > 0 && (SP_SRC.test(t) || (SP_HIGH.test(t) && ill.size >= 2));
+}
 function strokeHedge(t0: string): boolean {
   let t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
   if (SH_QUIET.test(t) || SL_OLD.test(t)) return false;
@@ -385,7 +393,7 @@ export function urgentSignpost(rawText: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text) || strokeHedge(text) || mouthSwell(text) || eyeSudden(text))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text) || strokeHedge(text) || mouthSwell(text) || eyeSudden(text) || sepsisLay(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
