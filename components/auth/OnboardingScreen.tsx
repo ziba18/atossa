@@ -29,7 +29,10 @@ export function OnboardingScreen({
 }) {
   // Under ~240 pt of layout width (200% text on a 320 phone) the 34 pt title broke words mid-letter.
   usePageTitle(editing ? title : `Step ${step} of ${ONBOARDING_STEPS}`);
-  const narrow = useWindowDimensions().width < 240;
+  const win = useWindowDimensions();
+  const narrow = win.width < 240;
+  // 320x568 class: the question's controls and the Next button must share the first screen, so the title steps down a size and the gaps tighten.
+  const short = win.height < 640;
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView
@@ -40,7 +43,7 @@ export function OnboardingScreen({
         automaticallyAdjustKeyboardInsets
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.head}>
+        <View style={[styles.head, short && { marginBottom: space.md }]}>
           <View style={styles.topRow}>
             <View style={{ flexShrink: 1 }}>{back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}</View>
             <HelpNowLink />
@@ -56,7 +59,7 @@ export function OnboardingScreen({
             </>
           )}
           {badge ? <View style={styles.badge}><Txt variant="caption" color={colors.ink}>{badge}</Txt></View> : null}
-          <Txt variant={narrow ? 'title' : 'hero'} accessibilityRole="header">{title}</Txt>
+          <Txt variant={narrow || short ? 'title' : 'hero'} accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>
         {children}

@@ -57,7 +57,9 @@ function ChatScreen() {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [placeholder, setPlaceholder] = useState(DEFAULT_PLACEHOLDER);
-  const winW = useWindowDimensions().width;
+  const win = useWindowDimensions();
+  const winW = win.width;
+  const hideStarters = win.height < 600; // 320x568: the chips would peek half-cut above the composer, and they only change the hint
   const [drawer, setDrawer] = useState(false);
   const [attach, setAttach] = useState(false);
   const [bleeding, setBleeding] = useState(false);
@@ -113,7 +115,7 @@ function ChatScreen() {
             <Txt variant="hero" style={[styles.center, { marginTop: space.sm }]} accessibilityLabel={PROMPT}>
               {winW < 360 ? PROMPT : PROMPT_LINES}
             </Txt>
-            <View style={styles.starters} accessibilityLabel="Ways to start">
+            {hideStarters ? null : <View style={styles.starters} accessibilityLabel="Ways to start">
               {STARTER_CHIPS.map((label) => (
                 <Pressable
                   key={label}
@@ -129,7 +131,7 @@ function ChatScreen() {
                   <Txt variant="secondary" color={colors.plum} style={styles.center} maxFontSizeMultiplier={1.6}>{label}</Txt>
                 </Pressable>
               ))}
-            </View>
+            </View>}
           </ScrollView>
         ) : (
           <ScrollView

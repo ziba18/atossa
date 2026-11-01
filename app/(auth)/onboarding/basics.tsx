@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ScrollView, View, type ScrollViewInstance } from 'react-native';
+import { View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { Button, ChipGroup, InlineError, TextField, type ChipOption } from '../../../components/atossa/kit';
@@ -31,6 +31,8 @@ const chipOptions = (options: number[], withOther?: boolean): ChipOption[] => [
  */
 export default function OnboardingBasics() {
   const router = useRouter();
+  const short = useWindowDimensions().height < 640; // 320x568: Next must be whole on the first screen
+  const gapBelow = short ? space.md : space.xxl;
   const scrollRef = useRef<ScrollViewInstance>(null);
   const [part, setPart] = useState<'cycle' | 'period'>('cycle');
   const [cycle, setCycle] = useState<Choice | null>(null);
@@ -101,7 +103,7 @@ export default function OnboardingBasics() {
             style={{ marginTop: space.xl }}
           />
         ) : null}
-        <View style={{ marginTop: space.xxl, gap: space.sm }}>
+        <View style={{ marginTop: gapBelow, gap: space.sm }}>
           <InlineError message={error} />
           <Button label="Next" onPress={handleCycleNext} />
         </View>
@@ -124,7 +126,7 @@ export default function OnboardingBasics() {
         onChange={(v) => setPeriod(toChoice(v))}
         accessibilityLabel="Days your period lasts"
       />
-      <View style={{ marginTop: space.xxl, gap: space.sm }}>
+      <View style={{ marginTop: gapBelow, gap: space.sm }}>
         <InlineError message={error} />
         <Button label={loading ? 'Saving…' : 'Next'} loading={loading} onPress={handleNext} />
       </View>
