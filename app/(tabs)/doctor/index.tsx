@@ -370,7 +370,7 @@ export default function DoctorScreen() {
           <InlineError message={noteError} style={{ marginTop: space.xs }} />
         </View>
       ) : null}
-          <Step title="Your summary page">
+          <Step title="Your summary">
             <DocumentPreview doc={doc} tall={desk} noCard={thumbUp} />
           </Step>
           <View style={{ marginTop: space.sm, marginLeft: -space.xs, alignItems: 'flex-start' }}>

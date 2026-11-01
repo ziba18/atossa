@@ -1121,7 +1121,7 @@ function wordsTableHtml(quotes: DocQuote[]): string {
 
 /**
  * Visits and history as a compact table on the page (date · what · details), so a typical
- * summary stays on one A4 page. Each detail keeps its label ("I was told: ...") so nothing is
+ * summary stays short (Sam's seed prints on 2 A4 pages; the screen shows the real count). Each detail keeps its label ("I was told: ...") so nothing is
  * read as the app's own words. The on-screen document uses its own layout.
  */
 function datedTableHtml(items: DatedItem[]): string {
