@@ -400,3 +400,20 @@ def test_understated_wordings_s537():
                  "i ran and the stitch pain goes up to my shoulder, sweaty from the gym",
                  "my wee stopped smelling after i drank water, belly is a bit bloated"]:
         assert not g.is_emergency(line), line
+
+
+def test_oblique_crisis_and_relayed_wordings_s538():
+    from app.services import output_guard as g
+    for line in ["my flatmate has locked herself in the bathroom and says she has taken everything in the cabinet",
+                 "i feel like i am watching myself from outside and i cant feel anything and i have the tablets next to me",
+                 "i hit rock bottom, im writing goodbye messages to my family",
+                 "i was sick and now my pee is bright red and i have a sharp pain in my back and fever",
+                 "i got hit on the head by a ball, felt ok, now hours later im vomiting and very sleepy",
+                 "my 6 week old baby has a bulging soft spot and keeps being sick and is very sleepy"]:
+        assert g.is_emergency(line), line
+    for line in ["i have my vitamin tablets next to me on the desk and i feel numb from the cold",
+                 "im writing goodbye messages to my colleagues, last day at work tomorrow",
+                 "blood in my wee and a bit of back ache, no fever, drinking lots",
+                 "i bumped my head on a cupboard, no vomiting, not sleepy, fine",
+                 "my baby has a soft spot that looks normal, feeding well and sleepy after a feed"]:
+        assert not g.is_emergency(line), line
