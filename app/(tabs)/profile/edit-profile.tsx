@@ -73,7 +73,7 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <ScreenLarge title="My details" back={{ label: 'Profile' }}>
+    <ScreenLarge title="My details" back={{ label: 'Profile' }} footer={<><InlineError message={error} /><Button label="Save my details" icon="check" loading={saving} onPress={save} /></>}>
       <View style={{ gap: space.xl }}>
         <TextField label="Your name" value={name} onChangeText={touch(setName)} autoCapitalize="words" />
 
@@ -89,8 +89,6 @@ export default function EditProfileScreen() {
         <TextField label="Usual days between periods" hint="From the start of one period to the start of the next" value={cycle} onChangeText={digits(setCycle)} keyboardType="number-pad" maxLength={2} />
         <TextField label="Usual period length in days" hint="How many days your period usually lasts" value={period} onChangeText={digits(setPeriod)} keyboardType="number-pad" maxLength={2} />
 
-        <InlineError message={error} />
-        <Button label="Save my details" icon="check" loading={saving} onPress={save} />
       </View>
     </ScreenLarge>
   );
