@@ -1,21 +1,19 @@
 import React, { useRef, useState } from 'react';
-import { Platform, ScrollView, View, type ScrollViewInstance } from 'react-native';
+import { Platform, ScrollView, View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { DATA_LINES } from '../../../constants/dataLocation';
 import {
   Button, Card, ConfirmCard, HeroNumber, InlineError, TextField, SafetyLine, ScreenLarge, Txt, showToast,
 } from '../../../components/atossa/kit';
-import type { IconName } from '../../../components/ui/Icon';
 import { Group, GroupHeading, GroupRow } from '../../../components/atossa/records/GroupedRows';
 import { savedLabel } from '../../../components/atossa/records/RecordsList';
 import {
-  ALLERGY_TYPE, KIND_INFO, firstParam, recordTitle, sortRecords, type RecordDataKind,
+  firstParam,
 } from '../../../components/atossa/records/recordKinds';
 import { useCountUp } from '../../../components/atossa/capture/TodayCards';
-import { nextAppointment } from '../../../components/atossa/capture/AppointmentCard';
 import { DOMAINS, ONSET_GROUP_LABEL, onsetFromHistory, type OnsetGroup } from '../../../lib/records/summary';
-import { formatRecordDateInline, formatShortDate, noteCount, notesLabel } from '../../../lib/records/format';
+import { formatShortDate, noteCount, notesLabel } from '../../../lib/records/format';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
@@ -29,26 +27,6 @@ import { IS_PILOT } from '../../../lib/pilot';
 /** Visible tab title (the `from` param HeaderAvatar passes) → tab route name. */
 const TAB_ROUTES: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
 
-const RECORD_KINDS: RecordDataKind[] = ['medicine', 'appointment', 'history'];
-const RECORD_ICONS: Record<RecordDataKind, IconName> = { medicine: 'pill', appointment: 'calendar', history: 'file-text' };
-
-/** One line under a Records row: the newest item (or the next appointment), so the row says something before it is opened. */
-function previewLine(kind: RecordDataKind, records: ReturnType<typeof useRecordsStore.getState>['records']): string | undefined {
-  if (kind === 'appointment') {
-    const next = nextAppointment(records.appointment);
-    if (next) return `Next: ${formatShortDate(next.data.date)}${next.data.who.trim() ? ` · ${next.data.who.trim()}` : ''}`;
-  }
-  // An allergy line is a standing statement, not a dated event: it never leads the 'Latest' preview.
-  const sorted = sortRecords(kind, (records[kind] as any[]).filter((r) => r.data.type !== ALLERGY_TYPE && r.data.type !== 'When it started (in my words)'));
-  // A medicine still being taken leads the row; otherwise the newest one.
-  const current = kind === 'medicine' ? sorted.find((r: any) => !r.data.stopped) : undefined;
-  const newest = current ?? sorted[0];
-  if (!newest) return kind === 'history' && records.history.some((r) => r.data.type === ALLERGY_TYPE) ? 'Allergies in your words' : undefined;
-  const d = newest.data as any;
-  const date = formatRecordDateInline(kind === 'medicine' ? d.started : d.date, kind === 'medicine' ? d.startedPrecision : d.datePrecision);
-  const title = recordTitle(kind, d);
-  return `${current ? 'Current' : 'Latest'}: ${title.length > 24 ? `${title.slice(0, 23).trimEnd()}…` : title}${date ? ` · ${date}` : ''}`;
-}
 
 /** Preview mode only: whether Sam's sample data has been cleared this session. */
 let previewCleared = false;
@@ -77,13 +55,11 @@ export default function ProfileScreen() {
   const [exportError, setExportError] = useState('');
   const [exportDone, setExportDone] = useState(false);
   const scrollRef = useRef<ScrollViewInstance | null>(null);
+  // Under 600 pt tall the 'Help now' link is already at the top of the screen, so its duplicate row gives the room to Records.
+  const shortScreen = useWindowDimensions().height < 600;
 
   const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : '';
-  const counts: Record<RecordDataKind, number> = {
-    medicine: records.medicine.length,
-    appointment: records.appointment.length,
-    history: records.history.length,
-  };
+  const recordsTotal = records.medicine.length + records.appointment.length + records.history.length;
   // The "your record" summary: how many notes, and the span they cover.
   const noteDates = records.symptom.map((n) => n.data.date).filter(Boolean).sort();
   const total = noteCount(records.symptom);
@@ -113,9 +89,6 @@ export default function ProfileScreen() {
     if (tabs) (tabs as any).navigate(TAB_ROUTES[from]);
     else router.navigate(`/(tabs)/${TAB_ROUTES[from]}` as any);
   };
-
-  const openList = (kind: RecordDataKind) =>
-    router.push({ pathname: '/(tabs)/profile/records/[kind]', params: { kind: KIND_INFO[kind].slug } } as any);
 
   const onSampleData = () => {
     if (sampleCleared) {
@@ -198,28 +171,27 @@ export default function ProfileScreen() {
         </Group>
       ) : null}
 
-      <Group style={{ marginTop: space.md }}>
-        <GroupRow
-          icon="heart-pulse"
-          label="Help now"
-          detail="999, NHS 111, Samaritans"
-          onPress={() => router.push('/(tabs)/profile/help-now' as any)}
-        />
-      </Group>
+      {shortScreen ? null : (
+        <Group style={{ marginTop: space.md }}>
+          <GroupRow
+            icon="heart-pulse"
+            label="Help now"
+            detail="999, NHS 111, Samaritans"
+            onPress={() => router.push('/(tabs)/profile/help-now' as any)}
+          />
+        </Group>
+      )}
 
       <GroupHeading title="Records" style={{ marginTop: space.xxl }} />
       <Group>
-        {RECORD_KINDS.map((kind) => (
-          <GroupRow
-            key={kind}
-            icon={RECORD_ICONS[kind]}
-            label={KIND_INFO[kind].listTitle}
-            detail={previewLine(kind, records) ?? 'Nothing added yet'}
-            value={counts[kind] ? String(counts[kind]) : undefined}
-            onPress={() => openList(kind)}
-            accessibilityLabel={[KIND_INFO[kind].listTitle, previewLine(kind, records) ?? 'Nothing added yet', counts[kind] ? `${counts[kind]} saved` : ''].filter(Boolean).join(' ')}
-          />
-        ))}
+        <GroupRow
+          icon="file-text"
+          label="Your records"
+          detail="Medicines, appointments, health history"
+          value={recordsTotal ? String(recordsTotal) : undefined}
+          onPress={() => router.push('/(tabs)/profile/records' as any)}
+          accessibilityLabel={`Your records. Medicines, appointments, health history. ${recordsTotal ? `${recordsTotal} saved` : 'Nothing added yet'}`}
+        />
       </Group>
 
       <GroupHeading title="Settings" style={{ marginTop: space.xxl }} />
