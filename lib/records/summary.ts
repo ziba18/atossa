@@ -72,16 +72,16 @@ export type SectionId =
   | 'sex' | 'mood' | 'eating';
 
 /** Section titles, in document order. Sensitive ones are off unless switched on per summary. */
-// Order = app-blueprint §3.7a page 1: (agenda) · main symptoms pattern · periods · associated
-// (the sensitive ones sit here) · impact · tried · history/medicines · in my words. Appointments
+// Order = app-blueprint §3.7a page 1, with impact moved up (PM A266, doctor-v2 §32): (agenda) · main symptoms pattern · impact · periods · associated
+// (the sensitive ones sit here) · tried · history/medicines · in my words. Appointments
 // follow history (§3.7a lists none; kept for the visit write-ups).
 export const SECTION_META: { id: SectionId; title: string; sensitive: boolean }[] = [
   { id: 'frequency', title: 'How often and how strong', sensitive: false },
+  { id: 'impacts', title: 'What it got in the way of', sensitive: false },
   { id: 'periods', title: 'Periods logged', sensitive: false },
   { id: 'sex', title: 'Sex & intimacy', sensitive: true },
   { id: 'mood', title: 'Mood', sensitive: true },
   { id: 'eating', title: 'Eating', sensitive: true },
-  { id: 'impacts', title: 'What it got in the way of', sensitive: false },
   { id: 'tried', title: 'What I’ve tried', sensitive: false },
   { id: 'history', title: 'Health history', sensitive: false },
   { id: 'appointments', title: 'Appointments', sensitive: false },
