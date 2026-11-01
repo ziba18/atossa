@@ -87,6 +87,7 @@ export type IconName =
   | 'sun'
   | 'list'
   | 'sliders'
+  | 'filter-lines'
   | 'menu'
   | 'image'
   | 'paperclip'
@@ -752,6 +753,15 @@ export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = IC
             <Path {...shared} d="M20 12h2" />
             <Path {...shared} d="m6.34 17.66-1.41 1.41" />
             <Path {...shared} d="m19.07 4.93-1.41 1.41" />
+          </>
+        );
+
+      case 'filter-lines':
+        return (
+          <>
+            <Path {...shared} d="M4 6h16" />
+            <Path {...shared} d="M7 12h10" />
+            <Path {...shared} d="M10 18h4" />
           </>
         );
 
