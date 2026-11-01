@@ -416,3 +416,11 @@ def test_oblique_crisis_and_relayed_wordings_s538():
                  "i bumped my head on a cupboard, no vomiting, not sleepy, fine",
                  "my baby has a soft spot that looks normal, feeding well and sleepy after a feed"]:
         assert not g.is_emergency(line), line
+
+
+def test_pregnant_bleeding_with_clots_and_pale_s540():
+    from app.services import output_guard as g
+    assert g.is_emergency("my sister is 12 weeks and has been bleeding with clots and cramps for hours and is white")
+    for line in ["period cramps for 6 weeks and a bit pale, bleeding with clots normal for me",
+                 "i am 12 weeks, no clots, only spotting, a bit pale from the winter"]:
+        assert not g.is_emergency(line), line
