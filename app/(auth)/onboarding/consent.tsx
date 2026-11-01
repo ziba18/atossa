@@ -66,5 +66,5 @@ export default function OnboardingConsentScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter, paddingBottom: space.xxxl },
-  title: { paddingTop: 44 + space.sm, marginBottom: space.xxl },
+  title: { paddingTop: space.md, marginBottom: space.xl },
 });
