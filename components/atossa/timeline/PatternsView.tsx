@@ -122,7 +122,7 @@ function DayGrid({ m, onOpenDays }: { m: PatternsModel; onOpenDays?: (label: str
                   disabled={!logged || !onOpenDays}
                   accessibilityRole={logged && onOpenDays ? 'button' : undefined}
                   accessibilityLabel={`${formatDate(d.date, true)}: ${d.value != null ? `strongest rating ${d.value} out of 10` : logged ? 'logged, no number' : 'nothing logged'}${d.bleeding ? ', bleeding' : ''}`}
-                  onPress={() => onOpenDays?.(formatDate(d.date, true), [d.date])}
+                  onPress={() => onOpenDays?.(formatDate(d.date, true), [d.date], d.logged ? 'symptom' : 'bleeding')}
                   style={{ flex: 1, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: logged ? colors.white : colors.sunken, borderWidth: 1, borderColor: logged ? colors.borderStrong : 'transparent', overflow: 'hidden' }}
                 >
                   <Txt variant="caption" color={colors.ink} style={{ fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'], opacity: d.value != null ? 1 : 0.5 }}>{d.value != null ? d.value : logged ? '·' : '–'}</Txt>
