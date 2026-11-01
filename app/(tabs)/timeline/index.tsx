@@ -340,9 +340,12 @@ function MonthView({
     </MonthKeyRow>
   );
 
+  // Under 700 pt tall the key sits above the calendar, so 'Log a period' moves below it and a 6-week month shows more rows.
+  const logPeriod = <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: shortKey ? 0 : -space.sm }} />;
+
   return (
     <View style={{ marginTop: shortKey ? space.xs : space.lg, gap: shortKey ? space.sm : space.lg }}>
-      <Button variant="text" label="Log a period" onPress={onLogPeriod} style={{ alignSelf: 'flex-end', marginBottom: shortKey ? -space.md : -space.sm }} />
+      {shortKey ? null : logPeriod}
       {shortKey ? <View accessible accessibilityLabel="Key. A circled day has a note; the number under it is the strongest rating that day, out of 10.">{noteKeyRow}</View> : null}
       <MonthCalendar
         year={month.y}
@@ -369,6 +372,7 @@ function MonthView({
           ) : <Txt key={r.key} variant="secondary" color={colors.ink2}>{r.text}</Txt>)}
         </View>
       ) : null}
+      {shortKey ? logPeriod : null}
     </View>
   );
 }
