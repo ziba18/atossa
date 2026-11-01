@@ -400,7 +400,7 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
           {areas.map((r) => (
             <View key={r.label} style={isPage ? { flexDirection: 'row', gap: 8 } : undefined}>
               <Txt style={[st.meta, isPage && { width: 132 }]}>{r.label}</Txt>
-              <Txt style={[st.meta, isPage && { flex: 1 }, { color: r.muted ? C.ink2 : C.ink }]}>{r.text}</Txt>
+              <Txt style={[st.meta, isPage && { flex: 1 }, { color: r.muted ? C.ink2 : C.ink }]}>{isPage ? r.text : r.text.replace(/( · \d+ days?) · (?=\S)/g, '$1\n')}</Txt>
             </View>
           ))}
         </View>
