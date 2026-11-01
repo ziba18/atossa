@@ -2541,3 +2541,15 @@ _WHOLE = re.compile(
     r"(?=[\s\S]{0,200}?\b(?:pain|cramp\w*|stabbing|sharp|agony)\b)"
     r"(?=[\s\S]{0,200}?\b(?:very pale|gone (?:very )?pale|went (?:very )?pale|so pale|looks? (?:very )?pale|white as|ghostly)\b)",
     _WHOLE.flags)
+
+
+# S-563 (Safety run 68, p138): sudden sight trouble in one or both eyes said without the word "sudden": "can't see properly out of one eye since an hour ago"
+# (own or relayed), or the sight going dim/grey in the eyes with head pain. nhs.uk/conditions/glaucoma (read 1 Nov 2026): sudden blurred sight,
+# halos or severe eye pain = 999/A&E. Glasses, contacts, make-up, chlorine, screens, standing up fast and "usual" stay quiet.
+_VL_QUIET = r"\b(?:contacts?|glasses|mascara|chlorine|screens?|stood up|standing up|usual|cinema|lol|hay ?fever|just woke|woke up)\b"
+_WHOLE = re.compile(
+    _WHOLE.pattern + "|" + r"^(?![\s\S]{0,200}?" + _VL_QUIET + r")(?=[\s\S]{0,200}?\b(?:can'?t|cant|cannot|unable to) see (?:properly |clearly |anything |much )?(?:out of|with|from|in) (?:one|the left|the right|my left|my right|his|her|my|their) eye\b)"
+    r"(?=[\s\S]{0,200}?\b(?:since (?:an hour|this morning|just now|a few minutes|about an hour|\d+ (?:minutes|hours?))|for the last (?:hour|\d+ (?:minutes|hours?))|an hour ago|just now|all of a sudden|suddenly)\b)"
+    r"|^(?![\s\S]{0,200}?" + _VL_QUIET + r")(?=[\s\S]{0,200}?\b(?:went|gone|going|gone all) (?:dim|grey|gray|dark|black) in (?:both|my|one|the left|the right) eyes?\b)"
+    r"(?=[\s\S]{0,200}?\bhead\w*\b[^.!?;]{0,15}\b(?:pounding|splitting|hurts?|killing|agony)\b|[\s\S]{0,200}?\b(?:pounding|splitting) head)",
+    _WHOLE.flags)
