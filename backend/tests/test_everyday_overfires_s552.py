@@ -15,3 +15,10 @@ def test_bitten_tongue_and_cartoon_stay_quiet():
     assert not g.is_emergency("bit my tongue and it is swollen and sore")
     assert not g.is_emergency("he is not responding because he is watching Peppa Pig")
     assert g.is_emergency("my tongue is swollen and my throat is closing")
+
+
+def test_coffee_grounds_wordings():
+    for t in ["i threw up and it looked like coffee granules", "i was sick and it looked like ground coffee", "sick was dark brown, coffee-ground stuff"]:
+        assert g.is_emergency(t), t
+    for t in ["i drink ground coffee every morning and it was fine", "love the smell of coffee granules"]:
+        assert not g.is_emergency(t), t
