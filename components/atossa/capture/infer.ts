@@ -111,7 +111,7 @@ function scoreFrom(lower: string): number | undefined {
   for (const m of lower.matchAll(new RegExp(`\\b(${NUM})\\s*(?:/|out of)\\s*(?:10|ten)\\b`, 'g'))) found.push(toNum(m[1]));
   for (const m of lower.matchAll(new RegExp(`\\b(?:rated(?: it)?|scor(?:ed|ing)(?: it)?|give it|gave it|pain (?:scale|level) (?:says|is|was|of)|was|is|then)\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s+(?:of|sided|thing|more|time|other|off|day|way|side|that|who|which|to|too|for)\\b)(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "pain 6 after a short walk": the word pain straight before a number is a score (B105).
-  for (const m of lower.matchAll(new RegExp(`\\bpain\\s+(?:level\\s+|score\\s+)?(${NUM})\\b(?!\\s*(?:or|to|-|–|days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%|tablets?|pills?))`, 'g'))) found.push(toNum(m[1]));
+  for (const m of lower.matchAll(new RegExp(`\\bpain\\s+(?:level\\s+|score\\s+)?(${NUM})\\b(?!\\s*(?:or|to|-|–|sided?|days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%|tablets?|pills?))`, 'g'))) found.push(toNum(m[1]));
   // "it's a four but it spikes to an eight": a peak is the worst, whatever else was said.
   for (const m of lower.matchAll(new RegExp(`\\b(?:(?:spikes?|goes up|goes|rises?|peaks?|climbs?|gets?|up)\\s+to|(?:peaked|topped out)\\s+(?:at|to))\\s+(?:an?\\s+)?(${NUM})(?:ish)?\\b(?!\\s*(?:days?|weeks?|hours?|mins?|minutes?|times|months?|years?|am|pm|o['’]clock|%))`, 'g'))) found.push(toNum(m[1]));
   // "it hit a nine for twenty minutes": reaching a score is a peak too.
@@ -119,7 +119,7 @@ function scoreFrom(lower: string): number | undefined {
   // "about a 4 most days, 7 on Tuesday": a score tied to a day is a score too (the highest wins below).
   for (const m of lower.matchAll(new RegExp(`(?:^|[,;]\\s*|\\band\\s+)(${NUM})\\s+on\\s+(?:mon|tues|wednes|thurs|fri|satur|sun)day\\b`, 'g'))) found.push(toNum(m[1]));
   // "5 or 6", "9 maybe 10" standing alone as the score (end of clause): the higher one is the worst. Not "2 or 3 days".
-  for (const m of lower.matchAll(new RegExp(`(?:^|[,;:]\\s*|\\b(?:was|is|about|around|prob(?:ably)?|like)\\s+(?:an?\\s+)?)(${NUM})\\s*(?:or|maybe|to|-|–)\\s*(?:an?\\s+)?(${NUM})(?=\\s*(?:$|[.,;!?]|it was|out of|\\/|at (?:its|it['’]s|the) worst))`, 'g'))) {
+  for (const m of lower.matchAll(new RegExp(`(?:^|[,;:]\\s*|\\b(?:was|is|about|around|prob(?:ably)?|like|pain)\\s+(?:an?\\s+)?)(${NUM})\\s*(?:or|maybe|to|-|–)\\s*(?:an?\\s+)?(${NUM})(?=\\s*(?:$|[.,;!?]|it was|out of|\\/|at (?:its|it['’]s|the) worst))`, 'g'))) {
     found.push(Math.max(toNum(m[1]), toNum(m[2])));
   }
   if (!found.length || /\b(?:about|around|maybe|like)\s+(?:a\s+)?\d/.test(lower)) {

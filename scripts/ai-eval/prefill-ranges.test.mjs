@@ -15,6 +15,9 @@ const CASES = [
   ['7 or 8 at its worst', 8],
   ['the pain is at about 7', 7],
   ['pain was 6/10', 6],
+  ['pain 1 side only', undefined],
+  ['pain 5 or 6', 6],
+  ['back pain 3 times today', undefined],
   ['about a 4 most days, 7 on Tuesday', 7],
 ];
 for (const [note, want] of CASES) test(`${note} -> ${want}`, () => assert.equal(prefillFrom(note).worst, want));
