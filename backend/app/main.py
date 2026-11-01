@@ -1,3 +1,6 @@
+import os
+import re
+
 from fastapi import Depends, FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -56,9 +59,20 @@ app.include_router(legal.router)
 app.include_router(basket_buddy.router)
 
 
+_SHA = re.compile(r"[0-9a-f]{7,40}")
+
+
+def build_version() -> str:
+    """The git commit this process was deployed from, so the owner can see which code is live.
+    Render sets RENDER_GIT_COMMIT for every deploy (render.com/docs/environment-variables).
+    Anything that is not a plain hex sha is reported as 'unknown', never echoed."""
+    sha = os.environ.get("RENDER_GIT_COMMIT", "").strip().lower()
+    return sha if _SHA.fullmatch(sha) else "unknown"
+
+
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "version": build_version()}
 
 
 @app.get("/warmup")
