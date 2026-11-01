@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, space } from '../../constants/atossaUI';
+import { colors, fonts, space } from '../../constants/atossaUI';
 import { Button, Txt } from '../atossa/kit';
 import { PreLoginHelp } from '../help/PreLoginHelp';
 import type { StartupPhase } from '../../lib/startup';
@@ -21,7 +21,7 @@ export function StartupScreen({ phase, onRetry, retrying }: { phase: StartupPhas
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
       <View style={styles.column}>
-        <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa">Atossa</Txt>
+        <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
         {unreachable ? (
           <View style={styles.block} accessibilityLiveRegion="assertive">
             <Txt variant="title" accessibilityRole="header">{STARTUP_UNREACHABLE_TITLE}</Txt>
@@ -30,7 +30,7 @@ export function StartupScreen({ phase, onRetry, retrying }: { phase: StartupPhas
           </View>
         ) : (
           <View style={styles.block} accessibilityLiveRegion="polite">
-            <ActivityIndicator size="large" color={colors.plum} accessibilityLabel="Opening" />
+            <ActivityIndicator size="large" style={{ alignSelf: 'flex-start' }} color={colors.plum} accessibilityLabel="Opening" />
             {phase === 'waking' || retrying ? <Txt variant="body" color={colors.ink2}>{STARTUP_WAKING_LINE}</Txt> : null}
           </View>
         )}
@@ -44,6 +44,7 @@ export function StartupScreen({ phase, onRetry, retrying }: { phase: StartupPhas
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: { flex: 1, justifyContent: 'center', padding: space.xl, gap: space.lg, maxWidth: 560, width: '100%', alignSelf: 'center' },
-  block: { gap: space.md, alignItems: 'flex-start' },
+  wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
+  block: { gap: space.md, alignItems: 'stretch' },
   help: { marginTop: space.md },
 });
