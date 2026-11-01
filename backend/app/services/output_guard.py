@@ -1930,6 +1930,42 @@ _WHOLE = re.compile(_WHOLE.pattern + "|" + r"^(?![\s\S]{0,160}?\b(?:stored|high 
 # S-483: a child who swallowed tablets, medicine or a cleaning product is the nhs.uk poisoning case with no quantity word needed
 _WHOLE = re.compile(_WHOLE.pattern + "|" + r"^(?![\s\S]{0,160}?\b(?:stored|high cupboard|locked|child ?proof|safe to|ask the pharmacist|vitamin|gummy|gummies|calpol|as prescribed|by the nurse|by the doctor|(?:nurse|pharmacist|doctor|gp) (?:said|says|told)|pharmacist|cake|themed|toy)\b)(?=[\s\S]{0,120}?\b(?:daughter|son|baby|toddler|child|kid|little (?:one|boy|girl)|\d+ ?(?:year|yr|month)s? old)\b)(?=[\s\S]{0,160}?\b(?:swallowed|ate|eaten|chewed|drank|drunk)\b[^.!?]{0,30}\b(?:tablets?|pills?|medicine|medication|painkillers?|capsules?|bleach|detergent|cleaning (?:product|fluid|spray)|dishwasher (?:tablet|pod)|batter(?:y|ies))\b)", re.I)
 
+# S-543 (Safety run 66): a baby or small child who is hard to wake, floppy, not responding, or who refuses feeds / drinks with another
+# drowsy or unwell sign, said in any wording and without a temperature (nhs.uk/conditions/fever-in-children 999 box, reviewed 3 Jan 2024:
+# "drowsy and hard to wake", "not responding like they normally do, or is not interested in feeding or normal activities").
+# A concept test (who x state), not a phrase list: the phrase rules S-511..S-515 caught 0 extra of Data's 21 blind lines.
+# Normal-child markers (teething, jabs, nursery, picky eating, "back to normal", "feeding fine", playing) keep it quiet.
+# who: a baby / small child (any relayed form)
+_INF_WHO = re.compile(r"\b(?:baby|babies|newborn|infant|toddler|bub|bubba|little (?:one|girl|boy|man|lady)|wee (?:man|one|girl|boy|lad)|lo|(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve) ?(?:-| )?(?:month|mth|mo|week|wk|day)s?(?: |-)?(?:old|olds)?|(?:1|2|3|4|one|two|three|four)(?: |-)?(?:year|yr|y)s?(?: |-)?old|(?:[1-4]) ?yo|1 ?year old)\b", re.I)
+_INF_KIN = re.compile(r"\b(?:son|daughter|nephew|niece|grand(?:son|daughter|child)|boy|girl|child|kid)\b", re.I)
+_INF_AGE_OK = re.compile(r"\b(?:\d+ ?(?:mo|mths?|wks?)\b|(?:age|aged|who is|is) ?\(?(?:[1-4]|one|two|three|four)\)?(?! ?(?:times|days|hours|weeks|months|pm|am|\d))|(?:son|daughter|boy|girl|lad|lass|child|kid|nephew|niece|grandson|granddaughter|grandchild|baby|toddler)(?: is|'s|,)? ?\(?(?:[1-4]|one|two|three|four)\)?(?! ?(?:times|days|hours|weeks|months|pm|am|o'?clock|mins|minutes|\d))|\((?:[1-4])\)|(?:is|aged) (?:one|two|three|four)\b|(?:[1-9]|1[0-9]|2[0-9]|3[0-6]|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve) ?(?:-| )?(?:month|mth|week|wk|day)s?|(?:[1-4]|one|two|three|four) ?(?:-| )?(?:year|yr)s?(?: |-)?old|[1-4] ?yo)\b", re.I)
+# strong state-of-alertness signs (a 999 line on the NHS fever page on their own)
+_INF_HARD = re.compile(r"\b(?:(?:hard|difficult|impossible|struggl\w+|cant|can'?t|cannot|couldn'?t|won'?t|wont|wouldn'?t) (?:to |able to )?(?:wake|rouse|waking|open (?:his|her|their) eyes)\w*|(?:hardly|barely|can'?t|cant) (?:get|manage)[^.!?]{0,20}(?:open (?:his|her|their|its) eyes|wake|rouse|attention)|(?:can'?t|cant|cannot) (?:get|rouse|wake)[^.!?]{0,20}(?:attention|respon\w+|awake)|not (?:waking|able to wake|rousable)|limp|floppy|lethargic|unresponsive|(?:not|n'?t|hardly|barely) (?:really )?(?:respond\w*|react\w*|reacting|answer\w*|stirs?|stirring)|barely (?:opens?|open) (?:his|her|their) eyes|(?:can'?t|cant|cannot|won'?t|wont) (?:get|make) (?:him|her|them)[^.!?]{0,15}(?:talk|look|answer|respond)|(?:won'?t|wont|doesn'?t|does not|didn'?t) (?:look at|know) (?:me|us)|doesn'?t know (?:me|us)|limp as a rag|gone (?:all |completely |very )?(?:limp|floppy|quiet and still)|eyes rolling|won'?t respond|(?:glassy|blank|vacant|glazed) (?:eyes|stare)|glazed|half asleep|drifting in and out|in and out of (?:sleep|consciousness)|(?:doesn'?t|does not|didn'?t|wont|won'?t) (?:answer|reply|talk)|just (?:lies|lying|stares|staring)[^.!?]{0,15}(?:there|at)|(?:stares|staring) (?:at the wall|blankly|into space)|keeps? going blank|out of it|extremely drowsy|too sleepy to|struggl\w+ to stay awake|hard to keep (?:him|her|them) awake|can'?t stay awake)", re.I)
+# softer signs: need a second concept
+_INF_SOFT_SLEEPY = re.compile(r"\b(?:very sleepy|really sleepy|so sleepy|drowsy|sleeping (?:all day|all the time|through (?:his|her|every|the) feeds?)|slept for \d+ hours|sleepy|lie[s]? there|not (?:her|him)self|not like (?:her|him)|quiet|whimper\w*)\b", re.I)
+_INF_FEED_REFUSE = re.compile(r"\b(?:won'?t|wont|wouldn'?t|not|refus\w+|turning away from|hasn'?t|has not|stopped|off|no interest)\b[^.!?;]{0,25}\b(?:feed\w*|bottle|milk|latch\w*|suckl\w*|suck\w*|breast|eat\w*|food|drink\w*|juice|interested in)\b|\b(?:off (?:his|her|their) feeds)\b|turning away from (?:every|the|each) (?:bottle|feed)|(?:uninterested|uninterested) in|\bstopped feeding\b|\b(?:hasn'?t|has not) (?:had|wanted|taken) (?:a |any )?(?:proper )?(?:feed|milk|drink|bottle)", re.I)
+_INF_SECOND = re.compile(r"\b(?:burning up|very hot|hot to touch|high temp\w*|fever\w*|feels? (?:cold|hot)|cold hands|cold (?:and|hands)|pale|grey\w*|gray|blue|mottled|blotchy|yellow\w*|breathing (?:funny|fast|noisily|hard)|grunt\w*|rash|sick|vomit\w*|no (?:wet )?nappies|hasn'?t (?:passed urine|wee'?d|had a wet|drunk)|no wet nappy|wet nappies? (?:have )?stopped|whimper\w*|high[- ]pitched|drowsy|very sleepy|extremely|lethargic|floppy|limp|stare\w*|staring)\b", re.I)
+_INF_QUIET = re.compile(r"\b(?:teething|tantrum|stubborn|fussy|picky|biscuits?|veg\w*|puree|spoon|weaning|jabs?|vaccin\w+|nursery|nap time|bedtime|go to sleep|slept through the night|sleeps? through the night|back to normal|back to (?:her|his) (?:usual|normal) self|eating well|feeding (?:fine|well|ok|okay)|feeds? well|gaining weight|health visitor (?:happy|said)|bouncing|playing|period|run(?:ning)? about|last week|yesterday but today|was (?:off|sleepy|floppy)\b[^.!?]{0,40}\b(?:now|today) (?:fine|ok|back|better)|growing|my (?:own|mum|dad)|i am so tired)\b", re.I)
+_INF_NOWET = re.compile(r"\b(?:no wet nappy|no (?:wet )?nappies|hasn'?t (?:drunk|passed urine|wee'?d|had a wet)|(?:won'?t|wont) (?:take|drink) (?:any )?(?:fluids?|water|milk))\b", re.I)
+_INF_NEG_HARD = re.compile(r"\b(?:isn'?t|not|no) (?:floppy|limp|lethargic|drowsy)\b|\bwakes? (?:up )?(?:and|for|easily)", re.I)
+
+
+
+def _infant_concept(text: str) -> bool:
+    t = text.replace("\u2019", "'")
+    if not (_INF_WHO.search(t) or (_INF_KIN.search(t) and _INF_AGE_OK.search(t))):
+        return False
+    if _INF_QUIET.search(t) or _INF_NEG_HARD.search(t):
+        return False
+    if _INF_HARD.search(t):
+        return True
+    if _INF_FEED_REFUSE.search(t) and (_INF_SOFT_SLEEPY.search(t) or len(_INF_SECOND.findall(t)) >= 2):
+        return True
+    if _INF_NOWET.search(t) and (_INF_SOFT_SLEEPY.search(t) or _INF_SECOND.search(t)):
+        return True
+    return False
+
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
     # run 60: the later whole-note rules below read this text too, so the same spelling corrections apply to them
@@ -1948,7 +1984,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text))):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text)):
         return "medical"
     return kind
 
