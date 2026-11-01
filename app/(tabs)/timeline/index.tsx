@@ -337,7 +337,7 @@ function MonthView({
   const shortKey = dims.height < 700 && dims.width >= 240 && noteDays > 0;
   const noteKeyRow = (
     <MonthKeyRow glyph={<View style={{ alignItems: 'center' }}><View style={keyStyles.disc}><Txt style={keyStyles.discNum}>7</Txt></View><Txt style={keyStyles.under}>8</Txt></View>}>
-      {shortKey ? 'Circle: a note. Number: strongest rating, out of 10.' : 'A day with a note; the number under it is the strongest rating, out of 10.'}
+      {shortKey ? `Circle: a note. Number: strongest rating, out of 10.${bleedingDays && dims.height >= 640 ? ' Red line: bleeding.' : ''}` : 'A day with a note; the number under it is the strongest rating, out of 10.'}
     </MonthKeyRow>
   );
 
@@ -347,7 +347,7 @@ function MonthView({
   return (
     <View style={{ marginTop: shortKey ? space.xs : space.lg, gap: shortKey ? space.sm : space.lg }}>
       {shortKey ? null : logPeriod}
-      {shortKey ? <View accessible accessibilityLabel="Key. A circled day has a note; the number under it is the strongest rating that day, out of 10.">{noteKeyRow}</View> : null}
+      {shortKey ? <View accessible accessibilityLabel={`Key. A circled day has a note; the number under it is the strongest rating that day, out of 10.${bleedingDays && dims.height >= 640 ? ' A red line is a day with bleeding logged.' : ''}`}>{noteKeyRow}</View> : null}
       <MonthCalendar
         year={month.y}
         month0={month.m0}
