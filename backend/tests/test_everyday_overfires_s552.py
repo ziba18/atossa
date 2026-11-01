@@ -22,3 +22,9 @@ def test_coffee_grounds_wordings():
         assert g.is_emergency(t), t
     for t in ["i drink ground coffee every morning and it was fine", "love the smell of coffee granules"]:
         assert not g.is_emergency(t), t
+
+
+def test_screen_veto_never_hides_a_child_who_will_not_wake():
+    for t in ["she wont wake up even with the cartoons on",
+              "he is not responding to me, hes drowsy and the cartoon is still playing"]:
+        assert g.is_emergency(t), t

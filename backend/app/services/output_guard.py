@@ -2133,10 +2133,13 @@ _MORN342 = re.compile(r"\b(?:alarm|snooz\w+|school|morning|refresh\w+|shift|over
 _SCREEN342 = re.compile(r"\b(?:cartoons?|peppa|bluey|paw patrol|tv|telly|ipad|tablet game|headphones|video game|youtube)\b|because (?:he|she|they)(?:'s| is| are) (?:watching|playing|engrossed)", re.I)
 
 
+_WAKEWORD342 = re.compile(r"wak(?:e|ing)|rouse|drows\w+|sleepy|floppy|limp|unconscious|unresponsive|passed out", re.I)
+
+
 def _hard_to_wake342(t):
     t = t.replace("’", "'")
     # S-552b (run 68): ignoring someone because of a screen, cartoon or game is not a hard-to-wake sign unless a fever / floppy / blue word is also there
-    if _SCREEN342.search(t) and not _HOT342.search(_NEG342.sub("", t)):
+    if _SCREEN342.search(t) and not _HOT342.search(_NEG342.sub("", t)) and not _WAKEWORD342.search(t):
         return False
     if _EYES342.search(t) and _HOT342.search(_NEG342.sub("", t)):
         return True

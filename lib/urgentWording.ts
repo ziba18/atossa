@@ -87,9 +87,10 @@ const WAKE342 = mk(P.WAKE342_SRC), EYES342 = mk(P.EYES342_SRC), HOT342 = mk(P.HO
 const NEG342 = new RegExp(P.NEG342_SRC, 'gi'), S343 = mk(P.S343_SRC), S343_SIGN = mk(P.S343SIGN_SRC), QUIET347 = mk(P.QUIET347_SRC);
 
 // Mirrors backend `_hard_to_wake342` (S-342): hard to wake / can't keep eyes open with a fever or floppy/confused sign.
+const WAKEWORD342 = /wak(?:e|ing)|rouse|drows\w+|sleepy|floppy|limp|unconscious|unresponsive|passed out/i;
 function hardToWake342(t: string): boolean {
   t = t.replace(/\u2019/g, "'");
-  if (SCREEN342.test(t) && !HOT342.test(t.replace(NEG342, ''))) return false; // S-552b
+  if (SCREEN342.test(t) && !HOT342.test(t.replace(NEG342, '')) && !WAKEWORD342.test(t)) return false; // S-552b
   if (EYES342.test(t) && HOT342.test(t.replace(NEG342, ''))) return true;
   if (!WAKE342.test(t)) return false;
   if (SIGN342.test(t.replace(NEG342, ''))) return true;
