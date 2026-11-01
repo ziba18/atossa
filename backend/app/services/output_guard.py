@@ -1958,6 +1958,31 @@ def _sepsis_lay(t: str) -> bool:
     return bool(ill and (_SP_SRC.search(t) or (_SP_HIGH.search(t) and len(ill) >= 2)))
 
 
+# S-555 (Safety run 67, p135): clot signs in any wording. (a) one swollen / hot / hard / painful leg, calf or thigh PLUS breath trouble or a breathing-in chest
+# pain; (b) that leg picture with a clot risk context (new contraceptive or pill, flight, operation, c-section, just had a baby); (c) breathing-in chest
+# pain with racing heart and a risk context. nhs.uk/conditions/deep-vein-thrombosis and /pulmonary-embolism (999 for breathlessness or chest pain with a
+# swollen leg). Cramp, both legs, ankles at day end, sport bruises, "gone" and long-standing lines stay quiet.
+_CL_LEG = re.compile(r"\b(?:leg|calf|thigh)\b[^.!?;]{0,40}?\b(?:swollen|swelling|hot|warm|hard|throbbing|red)\b|\b(?:swollen|swelling|hot|hard|throbbing)\b[^.!?;]{0,25}?\b(?:leg|calf|thigh)\b|\bcalf\b[^.!?;]{0,20}\b(?:tender|painful|sore)\b", re.I)
+_CL_BREATH = re.compile(r"\b(?:breathless\w*|short of breath|(?:can'?t|cant|cannot|struggling to|trouble to) (?:get|catch) (?:her|his|my|their)? ?breath|hard to breathe|chest (?:hurts?|pain|stabbing)[^.!?;]{0,20}breath\w*|(?:stabbing|sharp) [^.!?;]{0,20}breathing in|pain when i breathe in)\b", re.I)
+_CL_CTX = re.compile(r"\b(?:contraceptive|the pill|on the pill|flight|flew|operation|surgery|c-?section|just had a baby|had a baby|weeks? postnatal|new coil|hrt)\b", re.I)
+_CL_PAIN = re.compile(r"\b(?:painful|pain|sore|tender|throbbing|hurts?)\b", re.I)
+_CL_CHEST = re.compile(r"\b(?:stabbing|sharp)\b[^.!?;]{0,25}\b(?:breathing in|breathe in)\b|\bchest\b[^.!?;]{0,25}\b(?:breathing in|breathe in)\b", re.I)
+_CL_RACE = re.compile(r"\b(?:heart (?:is )?racing|racing heart|palpitations)\b", re.I)
+_CL_QUIET = re.compile(r"\b(?:cramps?|both (?:legs|sides|ankles)|ankles?|running|football|bruis\w+|stitch|gone|stretched|fell asleep|usual|jet lagged|unfit|not new|gym|not painful|no heat|cool|compression|slightly|no pain|painless|no swelling)\b", re.I)
+
+
+def _clot_concept(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    if _CL_QUIET.search(t):
+        return False
+    leg = bool(_CL_LEG.search(t))
+    if leg and (_CL_BREATH.search(t) or (_CL_CTX.search(t) and _CL_PAIN.search(t)) or (_CL_CTX.search(t) and len(re.findall(r"\b(?:swollen|hot|warm|hard|throbbing|red)\b", t, re.I)) >= 2)):
+        return True
+    if _CL_CHEST.search(t) and _CL_CTX.search(t) and _CL_RACE.search(t):
+        return True
+    return bool(re.search(r"\bclot\b", t, re.I) and leg)
+
+
 # B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
 # choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
 # same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
@@ -2069,7 +2094,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _stroke_hedge(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text) or _sepsis_lay(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _stroke_hedge(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text) or _sepsis_lay(user_text) or _clot_concept(user_text)):
         return "medical"
     return kind
 
