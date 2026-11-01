@@ -68,10 +68,11 @@ export function Button({
       ]}
     >
       {loading ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} size={20} color={fg} /> : null}
+      {/* onDark text buttons are underlined: on the plum card a plain white label reads as a caption, not a link. */}
       <Txt
         variant="headline"
         color={fg}
-        style={[{ textAlign: 'center', flexShrink: 1 }, small && { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20 }]}
+        style={[{ textAlign: 'center', flexShrink: 1 }, small && { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20 }, onDark && variant === 'text' && { textDecorationLine: 'underline' }]}
       >
         {label}
       </Txt>
