@@ -504,7 +504,7 @@ _EMERGENCY = re.compile(
     r"clots? (?:as (?:big|large) as) (?:a |an )?(?:orange|lemon|apple|fist|golf ball|tennis ball|egg|plum)|"
     r"(?:vomit\w*|throwing up|being sick|sick|coughing) (?:up )?blood|(?:lips|fingers).{0,30}\b(?:turning|turned|gone|going|went) (?:a )?(?:blue|bluey|bluish)\b|\bblue lips\b(?!.{0,40}\b(?:blueberr\w*|blackcurrant|lolly|lollies|slush\w*|sweets?|food colou?ring|dye|lipstick|lip ?(?:balm|gloss|tint)|cold water)\b)|"
     r"sudden(?:ly)? (?:loss of vision|lost (?:my )?vision|can'?t see|blind)|loss of vision in one eye|"
-    r"(?:pain|cramp\w*).{0,40}pregnant|bleeding.{0,60}(?:has not|hasn'?t) stopped|(?:huge|massive|giant|enormous) clots?|(?:words|speech).{0,20}(?:came out wrong|slurred|garbled)|(?:side|face) (?:went|gone|is|feels?) numb|throat.{0,25}(?:swollen|closing)|(?:swollen|closing) throat|unable to (?:breathe|catch (?:my|his) breath|get (?:any )?air)|(?:was|went|am|i'?m|been|being) unconscious|unconscious for (?:a|an|\d+|some|few)\b|lost consciousness|baby.{0,12}(?:not|n'?t|stopped).{0,6}mov\w+|"
+    r"(?:pain|cramp\w*).{0,40}pregnant|bleeding.{0,60}(?:has not|hasn'?t) stopped|(?:huge|massive|giant|enormous) clots?|(?:words|speech).{0,20}(?:came out wrong|slurred|garbled)|(?:side|face) (?:went|gone|is|feels?) numb|throat.{0,25}(?:swollen(?! (?:glands?|nodes?|lymph))|closing)|(?:swollen|closing) throat|unable to (?:breathe|catch (?:my|his) breath|get (?:any )?air)|(?:was|went|am|i'?m|been|being) unconscious|unconscious for (?:a|an|\d+|some|few)\b|lost consciousness|baby.{0,12}(?:not|n'?t|stopped).{0,6}mov\w+|"
     r"pain (?:in|across|around) (?:my )?chest|(?:chest|jaw).{0,40}(?:down|into|to|spreading|spreads).{0,20}(?:left |my )?(?:arm|jaw)|"
     r"(?:left|my) arm.{0,30}(?:chest|jaw))\b",
     re.I,
@@ -644,7 +644,7 @@ _WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )
                     r"\bnumb(?:ness)?\b.{0,30}\bface\b.{0,40}\b(?:arm|leg)\b.{0,15}\b(?:weak|limp)|\bface\b.{0,20}\bnumb(?:ness)?\b.{0,40}\b(?:arm|leg)\b.{0,15}\b(?:weak|limp)|"
                     r"\bcough\w*\b.{0,40}(?<!no )(?<!without )(?<!any )\bblood\b|(?<!no )(?<!without )\bblood\b.{0,40}\bcough\w*\b|"
                     r"\b(?:arm|leg)\b.{0,15}\b(?:went|gone|is|feels?) (?:limp|dead|weak)\b.{0,40}\bcan'?t (?:hold|lift|move)|"
-                    r"\b(?:tongue|throat)\b.{0,40}\b(?:swollen|swelling|closing)\b|^(?!(?=.*\b(?:dentist|dental|numbing|botox|fillers?)\b)(?!.*\b(?:throat|breath\w*|swallow\w*|tongue|hives|rash|dizz\w*|wheez\w*|faint\w*)\b)).*\blips?\b.{0,40}\b(?:swollen|swelling)\b|"
+                    r"\b(?:tongue|throat)\b.{0,40}\b(?:swollen(?! (?:glands?|nodes?|lymph))|swelling|closing)\b|^(?!(?=.*\b(?:dentist|dental|numbing|botox|fillers?)\b)(?!.*\b(?:throat|breath\w*|swallow\w*|tongue|hives|rash|dizz\w*|wheez\w*|faint\w*)\b)).*\blips?\b.{0,40}\b(?:swollen|swelling)\b|"
                     r"\b(?:(?:swollen|bloated) (?:belly|stomach|tummy)|(?:belly|stomach|tummy)\b.{0,15}\b(?:swollen|bloated))\b.{0,60}\b(?:vomit\w*|being sick)\b.{0,60}\bcan'?t (?:pass wind|poo|go to the toilet)|"
                     r"\b(?:double|extra|too much)\b.{0,25}\b(?:pills|tablets|dose|medication)\b.{0,60}\b(?:drowsy|very sleepy|strange|can'?t stay awake)\b|"
                     r"\bdiabet\w+\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\b(?:shaking|blurr\w+|confused|sweating)\b|\b(?:shaking|blurr\w+|confused|sweating)\b.{0,80}\b(?:shaking|blurr\w+|confused|sweating)\b.{0,60}\bdiabet\w+|"
@@ -1210,7 +1210,7 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:after the (?:long )?run|
 
 # run12 (PM class l, own v99 first contact 2/10 missed): face, lips, mouth, tongue or throat swelling or tightness, or wheeze,
 # soon after a new medicine. nhs.uk/conditions/anaphylaxis: "Call 999". Dental numbing, a cold sore, an old swelling that has gone stay quiet.
-_NEWMED = (r"(?:new (?:\w+ ){0,2}(?:medicine|medication|tablets?|pills?|antibiotics?|painkillers?|antihistamines?|injection|dose)|first (?:dose|time taking)|"
+_NEWMED = (r"(?:new (?:\w+ ){0,2}(?:medicine|medication|tablets?|pills?|antibiotics?|painkillers?|antihistamines?|injection|dose)\b|first (?:dose|time taking)|"
            r"after the (?:injection|jab)|since the new|amoxicillin|penicillin|(?:after|since) (?:eating|having|a|the) (?:\w+ ){0,2}(?:peanuts?|nuts?|prawns?|shellfish|sesame|eggs?|sting|stung)|(?:was |got |been )?stung by|wasp|bee sting)")
 _ANA = (r"(?:\b(?:throat|tongue|lips?|mouth|face)\b[^.!?]{0,30}\b(?:swell\w*|swollen|puff\w*|tight\w*|closing|thick|huge)\b|\bswelled up\b|\bwheez\w*|"
         r"struggling to breathe|hard to (?:swallow|breathe)|can'?t (?:breathe|swallow))")
