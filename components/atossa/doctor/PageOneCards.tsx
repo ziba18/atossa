@@ -1,7 +1,7 @@
 // Page 1 of the summary as native cards for a phone: the thumbnail is too small to read, so the
 // first sections are repeated here at body size. Same numbers as the document (read from the same
 // DoctorDoc); descriptive only. "See the full page" opens the reflowed document.
-import React, { useState } from 'react';
+import React from 'react';
 import { Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTimelineSession } from '../timeline/session';
@@ -11,14 +11,12 @@ import { formatDay } from '../../../lib/records/format';
 import { thinView } from '../../../lib/records/thinCounts';
 import { Card, Txt } from '../kit';
 import { Icon } from '../../ui/Icon';
-import { WeekGrid } from './WeekGrid';
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
 /** `showAgenda` is false when the editable agenda field already sits above the cards. */
 export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showAgenda?: boolean }) {
   const winW = useWindowDimensions().width;
-  const [gridW, setGridW] = useState(0);
   const narrow = winW < 360;
   // 300-360 pt: the count and the worst rating sit side by side (two numbers above the fold, not one under the other).
   const pair = narrow && winW >= 300;
@@ -86,16 +84,6 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
               <View style={{ width: 20, flexShrink: 0 }}><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
             </Pressable>
           ) : <Txt variant="secondary" style={{ marginTop: space.sm }}>{`Worst: ${all.worstOn}`.replace(/(\d{1,2}) ([A-Z][a-z]{2})/g, '$1\u00a0$2').replace(/\b([A-Z][a-z]{2}) (\d{1,2}\u00a0)/g, '$1\u00a0$2').replace(/ \+ (\d+) more (days?)/, ' +\u00a0$1\u00a0more\u00a0$2')}</Txt>
-        ) : null}
-        {!thin.thin && !tight && freq.strip ? (
-          <View onLayout={(e) => setGridW(Math.floor(e.nativeEvent.layout.width))} style={{ marginTop: space.xs, alignItems: 'flex-start' }}>
-            {gridW > 0 ? (
-              <Pressable onPress={() => openDays('Days with a note', all?.dates)} disabled={!all?.dates?.length} accessibilityRole="button" accessibilityLabel={`Day by day, ${all?.days ?? 0} days with a note${freq.strip.days.some((d) => d.bleeding) ? ", bleeding days marked" : ""}`} accessibilityHint="Shows these days in the Timeline">
-                <WeekGrid strip={freq.strip} width={gridW} />
-              </Pressable>
-            ) : null}
-            <Txt variant="caption" color={colors.ink2} style={{ marginTop: space.xs }}>Each square is a day, oldest at the left. Darker = a stronger rating. Red line = bleeding logged.</Txt>
-          </View>
         ) : null}
         <View style={{ gap: space.sm, marginTop: tight ? space.xs : space.md, paddingTop: tight ? space.xs : space.md, borderTopWidth: 1, borderTopColor: colors.hairline }}>
           {areas.slice(0, 3).map((b) => {
