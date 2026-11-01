@@ -1900,6 +1900,21 @@ def _mouth_swell(t: str) -> bool:
     return bool(_MS_FAST.search(t) or _MS_SECOND.search(t))
 
 
+# S-545 (Safety run 67): a painful (or red, or sick-making) eye together with hazy / foggy / dim / blurred sight or halos round lights, in any
+# wording and about anyone (nhs.uk/conditions/glaucoma, 13 Jun 2025: "call 999 or go to A&E if symptoms come on suddenly"). Screens, new glasses,
+# hay fever, gritty conjunctivitis, stye, dilating drops, mascara, goggles and "clears in the morning" stay quiet.
+_EY_EYE = re.compile(r"\beyes?\b", re.I)
+_EY_SIGHT = re.compile(r"\b(?:haz\w+|fogg\w+|misty|mist|dim\w*|cloudy|clouded|blurr\w+|halos?|rings? (?:round|around)|can'?t see (?:properly|right|out of)|cannot see (?:properly|out of)|lost (?:the )?(?:sight|vision)|gone (?:foggy|blurry|dim|dark))\b", re.I)
+_EY_PAIN = re.compile(r"\b(?:pain\w*|aching|aches?|hurts?|hurting|throbbing|agony|sore|red|bright red|sick|nause\w+|being sick|vomit\w*)\b", re.I)
+_EY_PAINSTRICT = re.compile(r"\b(?:pain\w*|aching|aches?|hurts?|hurting|throbbing|agony|sick|nause\w+|being sick|vomit\w*)\b|\bred and (?:sore|painful)\b|\bbright red\b", re.I)
+_EY_QUIET = re.compile(r"\b(?:screens?|laptop|computer|phone all day|glasses|contacts?|hay ?fever|pollen|itchy|gritty|conjunctivitis|sticky|stye|styes|eyelid|lid\b|dilat\w+|eye test|optician|mascara|goggles|swimming|chlorine|flight|plane|crying|cried|migraine|aura|shampoo|soap|onion|staring|first thing|clears?|cleared|adjust\w*|dry eyes?|tired)\b", re.I)
+
+
+def _eye_sudden(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_EY_EYE.search(t) and _EY_SIGHT.search(t) and _EY_PAINSTRICT.search(t) and _EY_PAIN.search(t) and not _EY_QUIET.search(t))
+
+
 # B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
 # choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
 # same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
@@ -2002,7 +2017,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _mouth_swell(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _mouth_swell(user_text) or _eye_sudden(user_text)):
         return "medical"
     return kind
 
