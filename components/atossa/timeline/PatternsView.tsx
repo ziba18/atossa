@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, PixelRatio, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
-import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
+import { Button, Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, fonts, heights, severityRamp, space } from '../../../constants/atossaUI';
 import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
 import { Icon } from '../../ui/Icon';
@@ -199,6 +199,7 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
   const [stack, setStack] = useState(false);
+  const [showDays, setShowDays] = useState(false); // 12 weeks: the day-by-day grid is behind a button (13 rows)
   // On a narrow phone at normal text size the two small tiles share one row under the hero; at large text they stack.
   const pairTiles = stack && PixelRatio.getFontScale() < 1.3;
   const symptom = useRecordsStore((s) => s.records.symptom);
@@ -320,6 +321,14 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
         </PressableCard>
       </FadeIn>
       )}
+      {range === '12w' ? (
+        <FadeIn index={1}>
+          <View style={{ gap: space.md }}>
+            <Button label={showDays ? 'Hide each day' : 'Show each day'} variant="secondary" onPress={() => setShowDays((v) => !v)} accessibilityHint="Shows or hides the strongest rating for each of the 84 days" />
+            {showDays ? <DayGrid m={m} onOpenDays={onOpenDays} /> : null}
+          </View>
+        </FadeIn>
+      ) : null}
 
       {m.zones.length ? (
         <FadeIn index={2}>
