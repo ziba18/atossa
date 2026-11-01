@@ -315,6 +315,15 @@ function strokeLay(t0: string): boolean {
 // another sign; an episode 2-14 days old (Safety C13) is not the 999 block.
 const SL_FACE = mk(P.SLFACE_SRC), SL_SIDEW = mk(P.SLSIDEW_SRC), SL_MOTOR = mk(P.SLMOTOR_SRC), SL_EYE = mk(P.SLEYE_SRC), SL_SPEECH = mk(P.SLSPEECH_SRC), SL_HEAD = mk(P.SLHEAD_SRC), SL_OTHER = new RegExp(P.SLOTHER_SRC, 'gi'), SL_ONSET = mk(P.SLONSET_SRC), SL_BENIGN = mk(P.SLBENIGN_SRC), SL_OLD = mk(P.SLOLD_SRC), SL_ARMUP = mk(P.SLARMUP_SRC), SL_BILAT = new RegExp(P.SLBILAT_SRC, 'gi');
 const strokeOld = (t: string) => SL_OLD.test(t.replace(/\u2019/g, "'"));
+// S-550 (backend _stroke_hedge): hedged stroke signs in two areas, or one face/speech sign with a sudden/minutes-ago word.
+const SH_HEDGE = new RegExp(P.SHHEDGE_SRC, 'gi'), SH_FACE = mk(P.SHFACE_SRC), SH_LIMB = mk(P.SHLIMB_SRC), SH_SPEECH = mk(P.SHSPEECH_SRC), SH_SIGHT = mk(P.SHSIGHT_SRC), SH_SUDDEN = mk(P.SHSUDDEN_SRC), SH_QUIET = mk(P.SHQUIET_SRC);
+function strokeHedge(t0: string): boolean {
+  let t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
+  if (SH_QUIET.test(t) || SL_OLD.test(t)) return false;
+  t = t.replace(SH_HEDGE, ' ');
+  const areas = [SH_FACE, SH_LIMB, SH_SPEECH, SH_SIGHT].filter((r) => r.test(t)).length;
+  return areas >= 2 || (areas >= 1 && SH_SUDDEN.test(t) && (SH_SPEECH.test(t) || SH_FACE.test(t)));
+}
 // B24 (backend _leg_long_back): one leg, > 1 day, stated back / sciatica cause, no onset word = the sciatica GP box, not the stroke block.
 const SL_LEGONLY = mk(P.SLLEGONLY_SRC), SL_UPPER = mk(P.SLUPPER_SRC), SL_LONG = mk(P.SLLONG_SRC), SL_BACKCAUSE = mk(P.SLBACKCAUSE_SRC);
 const legLongBack = (t: string) => SL_LEGONLY.test(t) && !SL_UPPER.test(t) && SL_LONG.test(t) && SL_BACKCAUSE.test(t) && !SL_ONSET.test(t);
@@ -370,7 +379,7 @@ export function urgentSignpost(rawText: string): string | null {
   // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
   if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
   // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
-  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text))) line = URGENT_SIGNPOST;
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)) || infantConcept(text) || strokeHedge(text))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
