@@ -18,6 +18,9 @@ type AnyRoute = { key?: string; name: string; params?: any; state?: { key?: stri
  * Three tabs as a floating white pill: text labels, unselected ink2, selected white on an ink pill.
  * Hidden while the keyboard is up.
  */
+// Profile sub-screens that are forms with a pinned Save: one rule, tab bar hidden on a short phone (PM A298).
+const FORM_SCREENS = ['records/[kind]/[id]', 'change-password', 'edit-profile'];
+
 export function MainTabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const [keyboard, setKeyboard] = useState(false);
@@ -34,7 +37,7 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
   // A record form (add / edit a medicine, appointment…) is a task with Back in its header, like an iOS modal form: on a short phone
   // the tab bar is hidden so the Save button and its reason line stay on the first screens (PM D-s104-8). Help now stays in the page header.
   const nestedTop = active?.state?.routes?.[active.state.index ?? 0];
-  if (keyboard || (short && active?.name === 'profile' && nestedTop?.name === 'records/[kind]/[id]')) return null;
+  if (keyboard || (short && active?.name === 'profile' && FORM_SCREENS.includes(nestedTop?.name ?? ''))) return null;
   // Profile and its records (opened from the avatar) are not a tab: no tab is active there (PM rule, blueprint §4); Back returns to where the avatar was tapped.
   const activeName = active && VISIBLE_TABS.includes(active.name) ? active.name : undefined;
   const routes = state.routes.filter((r) => VISIBLE_TABS.includes(r.name));
