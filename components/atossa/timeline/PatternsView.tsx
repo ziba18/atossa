@@ -123,7 +123,7 @@ function DayGrid({ m, onOpenDays }: { m: PatternsModel; onOpenDays?: (label: str
                   onPress={() => onOpenDays?.(formatDate(d.date, true), [d.date])}
                   style={{ flex: 1, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: logged ? colors.white : colors.sunken, borderWidth: 1, borderColor: logged ? colors.borderStrong : 'transparent', overflow: 'hidden' }}
                 >
-                  <Txt variant="caption" color={colors.ink} style={{ fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'], opacity: d.value != null ? 1 : 0.45 }}>{d.value != null ? d.value : logged ? '·' : ''}</Txt>
+                  <Txt variant="caption" color={colors.ink} style={{ fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'], opacity: d.value != null ? 1 : 0.5 }}>{d.value != null ? d.value : logged ? '·' : '–'}</Txt>
                   {d.bleeding ? <View aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 4, backgroundColor: colors.clay }} /> : null}
                 </Pressable>
               );
@@ -131,7 +131,7 @@ function DayGrid({ m, onOpenDays }: { m: PatternsModel; onOpenDays?: (label: str
           </View>
         ))}
       </View>
-      <Txt variant="caption" style={{ marginTop: space.xs }}>Number = strongest rating that day. Dot = a note with no number. Red edge = bleeding logged.</Txt>
+      <Txt variant="caption" style={{ marginTop: space.xs }}>Number: strongest rating that day. Dot: logged, no number. Dash: nothing logged. Red edge: bleeding logged.</Txt>
     </Card>
   );
 }
