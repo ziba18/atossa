@@ -41,7 +41,8 @@ export default function WelcomeScreen() {
 
         <PreLoginHelp />
 
-        <View style={styles.hero}>
+        {/* 830-900 pt phones (no steps strip): the spare height goes into the gaps of the hero, not one empty band above the footer (PM A295). */}
+        <View style={[styles.hero, !short && noSteps && win.height >= 830 && styles.heroRoomy]}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>
             Note how you feel.{'\n'}
             <Txt variant="hero" color={colors.plum} style={short || win.width < 380 ? undefined : styles.heroLine}>Bring a summary.</Txt>
@@ -109,6 +110,7 @@ const styles = StyleSheet.create({
   // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
   // anchored actions (not above the headline).
   hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.lg },
+  heroRoomy: { gap: space.xl, paddingTop: space.lg, paddingBottom: space.sm },
   example: { gap: space.xs, marginTop: space.sm },
   exampleShort: { gap: space.xs, marginTop: space.sm, paddingVertical: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
