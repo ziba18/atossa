@@ -44,7 +44,7 @@ export function HeroCard() {
         <Button onDark label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md, alignSelf: 'stretch' }} />
       ) : (
         <>
-          <View style={styles.heroMic}>
+          <View style={[styles.heroMic, short && styles.heroMicRow]}>
             <MicButton
               invite
               onDark
@@ -53,11 +53,19 @@ export function HeroCard() {
               accessibilityHint="Opens a new note and starts recording"
             />
             {/* The primary action's label outranks the secondary link (V7). */}
-            <Txt variant="headline" color={colors.white} style={styles.micLabel} aria-hidden>
-              Tap to talk
-            </Txt>
+            {short ? (
+              // 568 pt phones: mic on the left, label and the typed route stacked beside it (saves about 100 pt).
+              <View style={{ flexShrink: 1, alignItems: 'flex-start' }}>
+                <Txt variant="headline" color={colors.white} aria-hidden>Tap to talk</Txt>
+                <Button onDark label="Type instead" variant="text" small align="start" onPress={() => openCapture({ mode: 'type' })} />
+              </View>
+            ) : (
+              <Txt variant="headline" color={colors.white} style={styles.micLabel} aria-hidden>
+                Tap to talk
+              </Txt>
+            )}
           </View>
-          <Button onDark label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
+          {short ? null : <Button onDark label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />}
         </>
       )}
     </Card>
@@ -351,6 +359,7 @@ const styles = StyleSheet.create({
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
   heroMic: { alignItems: 'center', marginTop: space.xl, gap: space.sm },
   micLabel: { textAlign: 'center' },
+  heroMicRow: { flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch', marginTop: space.md, gap: space.md },
   chipsWrap: { marginHorizontal: -layout.gutter },
   chipsRow: { flexDirection: 'row', gap: space.xs, paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
   fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },
