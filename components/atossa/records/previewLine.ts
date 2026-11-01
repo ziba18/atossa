@@ -22,5 +22,5 @@ export function previewLine(kind: RecordDataKind, records: ReturnType<typeof use
   const d = newest.data as any;
   const date = formatRecordDateInline(kind === 'medicine' ? d.started : d.date, kind === 'medicine' ? d.startedPrecision : d.datePrecision);
   const title = recordTitle(kind, d);
-  return `${current ? 'Current' : 'Latest'}: ${title.length > 24 ? `${title.slice(0, 23).trimEnd()}…` : title}${date ? ` · ${date}` : ''}`;
+  return `${current ? 'Current' : 'Latest'}: ${title.length > 24 ? `${title.slice(0, 23).trimEnd()}…` : title}${date ? ` · ${kind === 'medicine' ? `${current ? 'since' : 'started'} ` : ''}${date}` : ''}`;
 }
