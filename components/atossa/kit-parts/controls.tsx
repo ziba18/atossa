@@ -361,7 +361,7 @@ export function SegmentedControl<T extends string>({
             accessibilityLabel={label}
             accessibilityState={{ selected }}
             aria-selected={selected}
-            hitSlop={{ top: 4, bottom: 4 }}
+            hitSlop={{ top: 7, bottom: 7 }}
             style={[styles.seg, selected && styles.segSelected]}
           >
             <Txt maxFontSizeMultiplier={1.6} numberOfLines={1} style={[styles.segText, narrow && { fontSize: tiny ? 10.5 : 12 }, selected && { color: colors.ink }]}>
