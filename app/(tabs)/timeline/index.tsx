@@ -112,7 +112,11 @@ export default function TimelineScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
           <View style={{ flex: 1, minWidth: 0 }}><SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} /></View>
           {mode === 'list' ? (
-            <IconButton icon="filter-lines" label={filter === 'All' && !dayFilter ? 'Filter notes. Showing everything' : 'Filter notes. A filter is on'} color={colors.plum} onPress={() => setFilterOpen(true)} />
+            <View>
+              <IconButton icon="filter-lines" label={filter === 'All' && !dayFilter ? 'Filter notes. Showing everything' : 'Filter notes. A filter is on'} color={colors.plum} onPress={() => setFilterOpen(true)} />
+              {/* A filled dot says a filter is on without relying on the spoken label. */}
+              {filter !== 'All' || dayFilter ? <View aria-hidden pointerEvents="none" style={{ position: 'absolute', top: 8, right: 8, width: 10, height: 10, borderRadius: 5, backgroundColor: colors.plum, borderWidth: 2, borderColor: colors.canvas }} /> : null}
+            </View>
           ) : <View style={{ width: 44 }} />}
         </View>
       ) : (
