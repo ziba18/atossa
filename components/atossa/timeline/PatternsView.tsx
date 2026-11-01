@@ -246,7 +246,7 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
     <View style={{ gap: space.md, marginTop: space.lg }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', columnGap: space.sm, rowGap: space.xs }}>
         <Txt variant="hero" accessibilityRole="header" style={{ fontSize: 24, lineHeight: 30, flexShrink: 1 }}>{rangeText}</Txt>
-        <SegmentedControl accessibilityLabel="Patterns range" style={{ width: 168 }} options={PATTERNS_RANGES.map((r) => ({ value: r.value, label: r.label }))} value={range} onChange={setRange} />
+        <SegmentedControl accessibilityLabel="Patterns range" style={{ width: 168, maxWidth: '100%' }} options={PATTERNS_RANGES.map((r) => ({ value: r.value, label: r.label }))} value={range} onChange={setRange} />
       </View>
 
       <FadeIn index={0}>
