@@ -2335,5 +2335,8 @@ _WHOLE = re.compile(_WHOLE.pattern
                     + r"|\b(?:vomiting|being sick|throwing up)\b[^.!?]{0,15}\b(?:non[- ]?stop|all day|constantly)\b[^.!?]{0,60}\b(?:breathing (?:really |very )?fast|fast breathing|rapid breathing|can'?t get my breath)\b|\b(?:breathing (?:really |very )?fast|fast breathing|rapid breathing)\b[^.!?]{0,60}\b(?:vomiting|being sick|throwing up)\b[^.!?]{0,15}\b(?:non[- ]?stop|all day|constantly)\b"
                     + r"|\bstabbing\b.{0,25}\b(?:stomach|belly|tummy)\b.{0,60}\b(?:high temp\w*|fever\w*|shivering)\b"
                     + r"|^(?=[\s\S]*\b(?:pregnan\w+|\d+ weeks)\b)[\s\S]*\b(?:fell|fall|knock\w*|hit)\b[\s\S]{0,60}\b(?:belly|bump|stomach)\b.{0,30}\b(?:hard|rock|tight|painful|bleed\w*)\b"
-                    + r"|\b(?:knock|bang|bump|blow|hit)\w*\b.{0,30}\bhead\b.{0,80}\b(?:confus\w+|can'?t remember|cant remember|don'?t know where|keep vomiting|repeatedly sick)\b|\b(?:confus\w+|can'?t remember where|cant remember where)\b.{0,60}\b(?:knock|bang|blow|hit)\w*\b.{0,15}\bhead\b",
+                    + r"|\b(?:knock|bang|bump|blow|hit)\w*\b.{0,30}\bhead\b.{0,80}\b(?:confus\w+|can'?t remember|cant remember|don'?t know where|keep vomiting|repeatedly sick)\b|\b(?:confus\w+|can'?t remember where|cant remember where)\b.{0,60}\b(?:knock|bang|blow|hit)\w*\b.{0,15}\bhead\b"
+                    + r"|^(?=[\s\S]{0,300}?\b(?:tummy|belly|stomach|abdomen)\b[^.!?]{0,30}\b(?:rock[- ]?hard|rigid|hard (?:as|like) (?:a )?(?:board|rock)|(?:swollen|bloated) and hard|(?<!bit )(?:very |really )?hard)\b)"
+                    + r"(?=[\s\S]{0,300}?(?:\b(?:cry\w*|scream\w*|sob\w*|howl\w*|doubled over|in tears)\b[^.!?]{0,30}\b(?:pain|agony|hurts?)\b|\bpain\b[^.!?]{0,25}\b(?:crying|screaming|in tears)\b))"
+                    + r"(?=[\s\S]{0,300}?(?<!not )(?<!n't )(?<!isn't )\b(?:very pale|pale|grey|gray|ashen|clammy|gone white|white as a (?:sheet|ghost))\b)",
                     _WHOLE.flags)

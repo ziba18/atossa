@@ -360,3 +360,16 @@ def test_double_dose_with_heart_going_mad_and_shaking_s533():
         assert g.is_emergency(line), line
     for line in ["my heart is going mad at this show, taking my meds as normal", "took my usual meds, a bit hot, heart rate normal"]:
         assert not g.is_emergency(line), line
+
+
+def test_relayed_hard_belly_crying_pale_s534():
+    from app.services import output_guard as g
+    for line in ["she has been sick all day and now her tummy is hard and she is crying with pain and has gone very pale",
+                 "my daughter has been vomiting since last night, her belly is rock hard and she keeps screaming with the pain, she looks grey",
+                 "my friend has had a tummy bug all day, now her stomach is rigid, she is in tears with pain and white as a sheet"]:
+        assert g.is_emergency(line), line
+    for line in ["my daughter's tummy is a bit hard after a big dinner but she is playing fine",
+                 "he cried with pain at the dentist and went pale but he is fine now",
+                 "she is crying with pain from her period cramps but heat pad helped, not pale",
+                 "my belly is hard and bloated before my period, sore but ok, painkillers help"]:
+        assert not g.is_emergency(line), line
