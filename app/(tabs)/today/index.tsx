@@ -69,7 +69,8 @@ export default function TodayScreen() {
     <>
       <HeroCard />
       {/* The one big number sits right under the capture card: capture stays first, the proof of the record is next. */}
-      {loadedFor ? <View style={{ marginTop: gap }}><HeroNumberCard /></View> : null}
+      {loadedFor ? <View style={{ marginTop: gap }}><HeroNumberCard /></View>
+        : loading ? <View style={{ marginTop: gap }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
       {strip}
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
@@ -84,12 +85,8 @@ export default function TodayScreen() {
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
       {capture}
-      {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
-      {loadedFor ? null
-        : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
-      {loading && !loadedFor ? (
-        <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
-      ) : (
+      {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. The loading skeleton sits where the number will be (right under the capture card), so it is on the first screen. */}
+      {loading && !loadedFor ? null : (
       <View style={{ marginTop: space.xl, gap: space.xl }}>
         {latest ? (<><LatestNoteCard note={latest} /><OnsetConfirmRow note={latest} /></>) : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
         {loadedFor ? <AppointmentCard inviteOnly /> : null}
