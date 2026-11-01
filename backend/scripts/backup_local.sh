@@ -60,4 +60,4 @@ count() { "$PSQL" -h "$tmp" -U restore_check -d restore_check -Atqc "select coun
 users="$(count users)"; records="$(count health_records)"
 echo "restore test: users=$users health_records=$records"
 [ "$users" != missing ] && [ "$records" != missing ] || die "restore test FAILED: a core table is missing"
-echo "backup: OK. Keep the last 4 weekly dumps; delete older ones (and any dump of a deleted account within 30 days)."
+echo "backup: OK. Keep the last 4 weekly dumps; delete older ones (and any dump holding a deleted account within 28 days, Safety C166)."

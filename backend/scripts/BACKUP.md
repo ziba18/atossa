@@ -14,8 +14,8 @@ once a week on their own laptop. Agents never run it against production.
    `PG_BIN=$(brew --prefix postgresql@17)/bin`).
 3. **What it prints:** the dump path and size, then `restore test: users=N health_records=N` from a throwaway local Postgres
    that is deleted straight after. `backup: OK` = the dump is proven. `restore test FAILED` = keep your older dumps.
-4. **Keep:** the last 4 weekly dumps; delete older ones; delete any dump holding an account that was deleted, within 30 days
-   (Finance backup-card item 3; retention number = Safety C166).
+4. **Keep:** the last 4 weekly dumps; delete older ones; delete any dump holding an account that was deleted, within 28 days
+   (Finance backup-card item 3; retention = Safety C166, 1 Nov: 4 weekly dumps, up to 28 days after deletion; owner confirms).
 5. **Scope:** `public` schema only (every Atossa table). Basket Buddy users live in a separate Supabase project and are not in it.
 
 Dry run done by AI Brain (PM-B147, 1 Nov 2026) against a local Postgres 16 seeded by `alembic upgrade head` + synthetic rows
