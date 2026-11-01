@@ -224,7 +224,6 @@ export default function ProfileScreen() {
 
       <GroupHeading title="Account" style={{ marginTop: space.xxl }} />
       <Group>
-        <GroupRow icon="lock" label="Change password" onPress={() => router.push('/(tabs)/profile/change-password')} />
         <GroupRow
           icon="log-out"
           label="Sign out"

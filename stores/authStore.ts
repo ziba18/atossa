@@ -29,8 +29,6 @@ interface AuthState {
   register: (email: string, password: string, display_name?: string) => Promise<void>;
   loginWithApple: (idToken: string, displayName?: string | null, authorizationCode?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
-  /** Sets a new password (needs the current one). Other devices are signed out; this one keeps a fresh session. */
-  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   signOut: () => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
   deleteAccount: () => Promise<void>;
@@ -84,15 +82,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       api.get<Profile>('/me'),
     ]);
     set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
-  },
-
-  changePassword: async (currentPassword, newPassword) => {
-    const tokens = await api.post<{ access_token: string; refresh_token: string }>(
-      '/auth/change-password',
-      { current_password: currentPassword, new_password: newPassword },
-    );
-    await saveTokens(tokens.access_token, tokens.refresh_token);
-    set({ session: { access_token: tokens.access_token } });
   },
 
   loginWithApple: async (idToken, displayName, authorizationCode) => {
