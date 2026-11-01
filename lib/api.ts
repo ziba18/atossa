@@ -58,6 +58,15 @@ export function setSessionExpiredHandler(cb: () => void) {
   _onSessionExpired = cb;
 }
 
+// PM-B158: after a one-time password the server answers data routes with 403 `password_change_required`.
+// The token is fine, so it is KEPT (never treated as a sign-out); the app opens Change password (forced=1) instead.
+export const PASSWORD_CHANGE_REQUIRED = 'password_change_required';
+let _onPasswordChangeRequired: (() => void) | null = null;
+
+export function setPasswordChangeRequiredHandler(cb: (() => void) | null) {
+  _onPasswordChangeRequired = cb;
+}
+
 type RefreshResult = { token: string } | { token: null; network: boolean };
 
 async function refreshOnce(): Promise<RefreshResult> {
@@ -140,6 +149,7 @@ async function request<T>(
       const json = await res.json();
       detail = String(json.detail ?? detail);
     } catch {}
+    if (res.status === 403 && detail === PASSWORD_CHANGE_REQUIRED) _onPasswordChangeRequired?.();
     throw new ApiError(res.status, detail);
   }
 
