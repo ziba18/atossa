@@ -154,3 +154,13 @@ export const api = {
   patch:  <T>(path: string, body: unknown)  => request<T>('PATCH', path, body),
   delete: <T>(path: string)                 => request<T>('DELETE', path),
 };
+
+// PM-B155: Profile > Change password. The server ends every other session (token_version + 1) and returns
+// fresh tokens for this device, which are stored so this phone stays signed in.
+export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  const t = await api.post<{ access_token: string; refresh_token: string }>('/auth/change-password', {
+    current_password: currentPassword,
+    new_password: newPassword,
+  });
+  await saveTokens(t.access_token, t.refresh_token);
+}

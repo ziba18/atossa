@@ -13,6 +13,7 @@ export interface AuthSession {
 export interface AuthUser {
   id: string;
   email: string;
+  has_password?: boolean;
 }
 
 interface AuthState {

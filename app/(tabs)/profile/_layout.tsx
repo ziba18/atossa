@@ -12,6 +12,7 @@ export default function ProfileLayout() {
         <Stack.Screen name="settings" />
         <Stack.Screen name="friends" />
         <Stack.Screen name="help-now" />
+        <Stack.Screen name="change-password" />
         <Stack.Screen name="records/[kind]/index" />
         <Stack.Screen name="records/[kind]/[id]" />
       </Stack>
