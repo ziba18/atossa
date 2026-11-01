@@ -33,7 +33,8 @@ export default function ChangePasswordScreen() {
       next: !next ? 'Choose a new password.' : next.length < 8 ? 'Use at least 8 characters.' : '',
     };
     setErrors(e);
-    setError('');
+    // At 320 pt the second field's own message can sit under the Save bar, so its message is repeated above the button.
+    setError(e.next);
     if (e.current || e.next) return;
     if (IS_PREVIEW) { showToast('Preview only: nothing was changed.'); router.back(); return; }
     setSaving(true);
