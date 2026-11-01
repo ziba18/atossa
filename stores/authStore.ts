@@ -29,7 +29,7 @@ interface AuthState {
   register: (email: string, password: string, display_name?: string) => Promise<void>;
   loginWithApple: (idToken: string, displayName?: string | null, authorizationCode?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  signOut: (opts?: { keepLocal?: boolean }) => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
   deleteAccount: () => Promise<void>;
 }
@@ -110,9 +110,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
   },
 
-  signOut: async () => {
-    await clearOutbox(); // notes still waiting to send belong to this account
-    await clearSnapshot(); // the offline copy of her records too
+  signOut: async (opts) => {
+    if (!opts?.keepLocal) {
+      await clearOutbox(); // notes still waiting to send belong to this account
+      await clearSnapshot(); // the offline copy of her records too
+    }
     await deleteLastSharedPdf();
     const id = useAuthStore.getState().user?.id;
     if (id) await clearLocalChats(id);

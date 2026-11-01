@@ -1,0 +1,26 @@
+{
+ "note": "AI Brain run24 raw speech-to-text set (no punctuation, fillers, numbers as words). Line 4 (pronoun-only third-person collapse) stays missed pending a Safety ruling on _THIRD_NOW; line 8 fixed by the pain-score-8-10 + pregnancy _PREG_SYMPTOM branch.",
+ "emergency": [
+  "um so i've got this like crushing pain in my chest and it's going down my left arm and i'm all sweaty",
+  "i can't breathe properly uh my lips are kind of going blue",
+  "um my mum's face has dropped on one side and her words are coming out all slurred like just now",
+  "i'm soaking through a pad every like fifteen minutes and i feel really faint and dizzy",
+  "um i took like twenty paracetamol about an hour ago",
+  "i don't want to be here anymore and i've got the tablets ready tonight",
+  "uh pain about a ten in my lower belly really sudden and i'm being sick and i might be pregnant",
+  "so i had the baby two weeks ago and um i keep hearing voices telling me the baby isn't mine",
+  "i've got a really high temperature and i'm shivering and like confused and my skin's gone blotchy"
+ ],
+ "harmless": [
+  "um bad day lower back and belly probably about a seven had to leave work at two took two ibuprofen",
+  "so the cramps were like a five today uh hot water bottle helped a bit",
+  "i felt a bit dizzy when i stood up this morning but it went after a minute",
+  "um bleeding was heavy today changed my pad like four times",
+  "my chest felt tight from my cold you know just coughing a lot",
+  "pain about an eight on day one of my period took naproxen and it eased off by the evening",
+  "uh i was so tired i could hardly get out of bed but i managed a shower",
+  "um my mum fainted once years ago so i always worry about it",
+  "i took two paracetamol at eight and two more at four",
+  "felt really low today um period always does that to me talked to my sister and felt better"
+ ]
+}
