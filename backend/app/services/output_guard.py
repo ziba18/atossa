@@ -1882,6 +1882,24 @@ def _stroke_slot(t: str) -> bool:
     return core >= 1 or (other >= 2 and bool(_SL_ONSET.search(t)))
 
 
+# S-546 (Safety run 67): lips, tongue or mouth swelling that came on fast or after a likely trigger, in any wording (nhs.uk/conditions/anaphylaxis,
+# read 1 Nov 2026: "swelling of the lips, mouth, throat or tongue" with a trigger is a 999 sign). Needs a swelling word on a mouth part AND
+# speed, a trigger, or a second sign. Bitten tongue, filler, dentist, ulcer, cold sore, dryness, balm and old swelling stay quiet.
+_MS_PART = r"(?:lips?|tongue|mouth)"
+_MS_SWELL = r"(?:swell\w*|swollen|bigger|huge|enormous|ballooned?|ballooning|puffed up|puffing up)"
+_MS_SWELLRX = re.compile(r"\b" + _MS_PART + r"\b[^.!?;]{0,40}?\b" + _MS_SWELL + r"\b|\b" + _MS_SWELL + r"\b[^.!?;]{0,15}?\b" + _MS_PART + r"\b", re.I)
+_MS_FAST = re.compile(r"\b(?:fast|quickly|rapid\w*|suddenly|within (?:the |an )?(?:hour|minutes?)|in (?:about |just |only )?(?:\w+ )?(?:minutes?|mins|an hour|no time)|getting (?:bigger|worse)|just (?:now|started)|reacting|allerg\w+|sting|stung|(?:since|after) (?:eating|taking|the|my|his|her) (?:\w+ ){0,2}(?:nuts?|peanuts?|prawns?|shellfish|fish|egg|tablets?|pills?|antibiotics?|medic\w+|injection|jab|bite|sting|meal|dinner|lunch|food)|new (?:tablets?|medic\w+|pills?))\b", re.I)
+_MS_SECOND = re.compile(r"\b(?:tight (?:throat|chest)|throat (?:feels? )?(?:tight|closing)|wheez\w*|faint\w*|hard to (?:swallow|breathe)|can'?t swallow|hives|dizzy)\b", re.I)
+_MS_QUIETRX = re.compile(r"\b(?:bit|bitten|biting|filler|fillers|botox|dentist|dental|ulcer|cold sore|dry|cracked|balm|burnt|burned|hot tea|yesterday|last week|weeks? ago|chapped|piercing|braces)\b", re.I)
+
+
+def _mouth_swell(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    if not _MS_SWELLRX.search(t) or _MS_QUIETRX.search(t):
+        return False
+    return bool(_MS_FAST.search(t) or _MS_SECOND.search(t))
+
+
 # B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
 # choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
 # same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
@@ -1984,7 +2002,7 @@ def emergency_kind(user_text: str):
     if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
             and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
         return None
-    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text)):
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text)) or _infant_concept(user_text) or _mouth_swell(user_text)):
         return "medical"
     return kind
 
