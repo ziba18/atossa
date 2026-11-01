@@ -6,7 +6,8 @@ import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useState } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
+import { IS_PREVIEW } from '../../../lib/preview/flag';
+import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt, showToast } from '../../../components/atossa/kit';
 import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
 import { PeriodCard } from '../../../components/atossa/capture/PeriodCard';
 import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
@@ -31,6 +32,9 @@ function greeting(name: string | null | undefined): string {
   // Without a name a bare 'Morning' reads like a label, so spell the greeting out.
   return first ? `${part}, ${first}` : part === 'Hello' ? part : `Good ${part.toLowerCase()}`;
 }
+
+// Design preview only (dev bundle, EXPO_PUBLIC_DESIGN_PREVIEW=1): lets the state-matrix renders put the screen in loading / error / first-run / saved.
+if (IS_PREVIEW) Object.assign(globalThis, { __records: useRecordsStore, __toast: showToast });
 
 export default function TodayScreen() {
   const router = useRouter();
