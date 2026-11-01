@@ -7,12 +7,12 @@ import { PreLoginHelp } from '../help/PreLoginHelp';
 import type { StartupPhase } from '../../lib/startup';
 
 /**
- * DRAFT words pending Safety C146 (PRD pm/prd/start-up-waking.md req. 2 + 5): do not ship without Safety GO.
- * No error codes, no blame, nothing to buy.
+ * Safety C146 GO words (safety/run65-c146-c147-startup-words-lint.md, 1 Nov 2026): do not edit without Safety.
+ * 'Your notes are still saved' is true only while tokens and the outbox are kept: never show this screen on the 401/403 path.
  */
 export const STARTUP_WAKING_LINE = 'Opening your notes… this can take up to a minute.';
 export const STARTUP_UNREACHABLE_TITLE = 'Can’t reach Atossa right now';
-export const STARTUP_UNREACHABLE_LINE = 'Nothing has been deleted. Please try again in a moment.';
+export const STARTUP_UNREACHABLE_LINE = 'Your notes are still saved. Check your connection, then try again.';
 export const STARTUP_TRY_AGAIN = 'Try again';
 
 /** The opening screen while her tokens exist and the start-up check has no answer yet. Never Welcome. */
