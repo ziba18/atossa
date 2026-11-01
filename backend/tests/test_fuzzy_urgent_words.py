@@ -373,3 +373,16 @@ def test_relayed_hard_belly_crying_pale_s534():
                  "she is crying with pain from her period cramps but heat pad helped, not pale",
                  "my belly is hard and bloated before my period, sore but ok, painkillers help"]:
         assert not g.is_emergency(line), line
+
+
+def test_voice_and_relayed_wordings_s535():
+    from app.services import output_guard as g
+    for line in ["so my pain got really bad on my right side and then i threw up and now im shaking and burning up",
+                 "I want to finish my life, I have the way, tonight I do it",
+                 "my girlfriend took a bunch of her tablets and shes saying weird things and getting sleepy"]:
+        assert g.is_emergency(line), line
+    for line in ["my pain was really bad on my right side last week and i threw up once, shaking from the cold, fine now",
+                 "i need to finish my life story book tonight",
+                 "my mum took her usual tablets as prescribed and she is sleepy after lunch",
+                 "i took a bunch of vitamin gummies and feel weird lol"]:
+        assert not g.is_emergency(line), line
