@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors, layout, space } from '../../../constants/atossaUI';
 import { Button, Card, InlineError, SwitchRow, Txt } from '../../../components/atossa/kit';
+import { HelpNowLink } from '../../../components/auth/HelpNowLink';
 import { openLegal } from '../../../components/auth/LegalLinks';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
@@ -38,6 +39,7 @@ export default function OnboardingConsentScreen() {
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
+      <View style={{ alignItems: 'flex-end' }}><HelpNowLink /></View>
       <Txt variant="hero" accessibilityRole="header" style={styles.title}>Before you start</Txt>
       <Card>
         <Txt variant="body">Atossa saves what you tell it so you can show your doctor a clear summary.</Txt>

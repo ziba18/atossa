@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, useWindowDimensions, type ScrollViewInstance } from 'react-native';
+import { HelpNowLink } from './HelpNowLink';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, layout, space } from '../../constants/atossaUI';
 import { BackChevron, Txt } from '../atossa/kit';
@@ -40,7 +41,10 @@ export function OnboardingScreen({
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.head}>
-          {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
+          <View style={styles.topRow}>
+            <View style={{ flexShrink: 1 }}>{back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}</View>
+            <HelpNowLink />
+          </View>
           {editing ? null : (
             <>
               <View style={styles.segments} aria-hidden>
@@ -69,6 +73,7 @@ const styles = StyleSheet.create({
   },
   head: { paddingTop: space.sm, marginBottom: space.xxl },
   noBack: { height: 44 },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.sm },
   step: { marginTop: space.xs, marginBottom: space.xs },
   badge: {
     alignSelf: 'flex-start', marginTop: space.sm, marginBottom: space.xs, paddingHorizontal: space.md, paddingVertical: 4,
