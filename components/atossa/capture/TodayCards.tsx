@@ -30,10 +30,13 @@ const PROMPT = 'What’s been going on with your body?';
 
 export function HeroCard() {
   // Under 280 pt wide (200% text) the 30 pt serif prompt wraps to five lines and pushes the actions off the screen.
-  const narrow = useWindowDimensions().width < 280;
+  const win = useWindowDimensions();
+  const narrow = win.width < 280;
+  // 568 pt phones: a 26 pt prompt keeps the 7-day card's header and strip above the tab bar.
+  const short = win.height < 600 && !narrow;
   return (
     <Card tone="hero" style={[styles.hero, { backgroundColor: severityRamp[4], borderColor: severityRamp[4] }]}>
-      <Txt variant="hero" color={colors.white} style={[styles.center, narrow && { fontSize: 22, lineHeight: 28 }]} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
+      <Txt variant="hero" color={colors.white} style={[styles.center, narrow && { fontSize: 22, lineHeight: 28 }, short && { fontSize: 26, lineHeight: 32 }]} accessibilityRole="header" aria-level={2} accessibilityLabel={PROMPT}>
         {PROMPT}
       </Txt>
       {Platform.OS === 'web' ? (

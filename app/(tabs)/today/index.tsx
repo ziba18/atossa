@@ -45,10 +45,12 @@ export default function TodayScreen() {
   const setTimelineMode = useTimelineSession((s) => s.setMode);
   const setOpenDay = useTimelineSession((s) => s.setOpenDay);
   const [bleeding, setBleeding] = useState(false);
+  // 568 pt phones: card gaps shrink one step so the 7-day strip (with weekday letters) clears the tab bar.
+  const gap = useWindowDimensions().height < 600 ? space.sm : space.md;
   const latest = latestNote(symptoms);
   // Capture first on every phone (owner decision, 28 Oct): a one-line chip, the capture card, the 14-day strip, then the quick rows.
   const strip = loadedFor && symptoms.length > 0 ? (
-    <View style={{ marginTop: space.md }}>
+    <View style={{ marginTop: gap }}>
       {/* Patterns need a few notes to say anything; from 7 on, one tap from here (Timeline > Patterns). */}
       <RecentStrip
         symptoms={symptoms}
@@ -63,7 +65,7 @@ export default function TodayScreen() {
     <>
       <HeroCard />
       {/* The one big number sits right under the capture card: capture stays first, the proof of the record is next. */}
-      {loadedFor ? <View style={{ marginTop: space.md }}><HeroNumberCard /></View> : null}
+      {loadedFor ? <View style={{ marginTop: gap }}><HeroNumberCard /></View> : null}
       {strip}
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
