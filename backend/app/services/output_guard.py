@@ -2524,3 +2524,14 @@ _WHOLE = re.compile(_WHOLE.pattern
                     # S-541 (run 65, p102): relayed blue lips; relayed pale + sweaty + jaw/arm/chest pain
                     + r"|^(?![\s\S]{0,200}?\b(?:cold|freezing|swimming|pool|sea|ice lolly|lipstick|lip balm|chapped|dry lips|berry|berries|smoothie|juice|lolly|sweets?|blueberr\w*|cherry|wine)\b)(?=[\s\S]{0,200}?\b(?:her|his|their) lips (?:are|have gone|went|look|looks|turned|have turned|is) (?:\w+ )?(?:blue|grey|gray))",
                     _WHOLE.flags)
+
+
+# S-554 (Safety run 68, p134): early pregnancy (said as "N weeks and ...", "pregnant" or a missed period) + pain on one side + gone pale, own or relayed.
+# nhs.uk/conditions/ectopic-pregnancy lists pain low on one side with looking very pale as a 999 sign. Usual-pain, ovulation and "not pregnant" notes stay quiet.
+_WHOLE = re.compile(
+    _WHOLE.pattern + "|" + r"^(?![\s\S]{0,200}?\b(?:not pregnant|no pain|usual|ovulat\w*|period pain|asking|booked)\b)"
+    r"(?=[\s\S]{0,200}?(?:\bpregnan\w*\b|(?<!for )(?<!over )(?<!past )(?<!last )(?<!in )\b(?:[5-9]|1[0-2]) weeks (?:and|along|gone)\b|\bmissed (?:a |her |my )?period\b))"
+    r"(?=[\s\S]{0,200}?\b(?:right|left|one) side\b)"
+    r"(?=[\s\S]{0,200}?\b(?:pain|cramp\w*|stabbing|sharp|agony)\b)"
+    r"(?=[\s\S]{0,200}?\b(?:very pale|gone (?:very )?pale|went (?:very )?pale|so pale|looks? (?:very )?pale|white as|ghostly)\b)",
+    _WHOLE.flags)
