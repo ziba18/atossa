@@ -346,6 +346,7 @@ export default function ProfileScreen() {
           onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
           actions={[
             { label: deleting ? 'Deleting…' : 'Delete account', variant: 'destructive', onPress: onDeleteAccount },
+            { label: 'Download my notes first', variant: 'text', onPress: () => { setConfirmingDelete(false); setExportDone(false); setExporting(true); } },
             { label: 'Cancel', variant: 'text', onPress: () => setConfirmingDelete(false) },
           ]}
         />
