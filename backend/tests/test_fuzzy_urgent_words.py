@@ -360,3 +360,75 @@ def test_double_dose_with_heart_going_mad_and_shaking_s533():
         assert g.is_emergency(line), line
     for line in ["my heart is going mad at this show, taking my meds as normal", "took my usual meds, a bit hot, heart rate normal"]:
         assert not g.is_emergency(line), line
+
+
+def test_relayed_hard_belly_crying_pale_s534():
+    from app.services import output_guard as g
+    for line in ["she has been sick all day and now her tummy is hard and she is crying with pain and has gone very pale",
+                 "my daughter has been vomiting since last night, her belly is rock hard and she keeps screaming with the pain, she looks grey",
+                 "my friend has had a tummy bug all day, now her stomach is rigid, she is in tears with pain and white as a sheet"]:
+        assert g.is_emergency(line), line
+    for line in ["my daughter's tummy is a bit hard after a big dinner but she is playing fine",
+                 "he cried with pain at the dentist and went pale but he is fine now",
+                 "she is crying with pain from her period cramps but heat pad helped, not pale",
+                 "my belly is hard and bloated before my period, sore but ok, painkillers help"]:
+        assert not g.is_emergency(line), line
+
+
+def test_voice_and_relayed_wordings_s535():
+    from app.services import output_guard as g
+    for line in ["so my pain got really bad on my right side and then i threw up and now im shaking and burning up",
+                 "I want to finish my life, I have the way, tonight I do it",
+                 "my girlfriend took a bunch of her tablets and shes saying weird things and getting sleepy"]:
+        assert g.is_emergency(line), line
+    for line in ["my pain was really bad on my right side last week and i threw up once, shaking from the cold, fine now",
+                 "i need to finish my life story book tonight",
+                 "my mum took her usual tablets as prescribed and she is sleepy after lunch",
+                 "i took a bunch of vitamin gummies and feel weird lol"]:
+        assert not g.is_emergency(line), line
+
+
+def test_understated_wordings_s537():
+    from app.services import output_guard as g
+    for line in ["my period is only a bit heavy but ive changed my pad every 20 minutes for three hours and feel woozy",
+                 "its probably just gas but the pain goes up into my jaw and left shoulder and im clammy",
+                 "my wee is stopped completely since yesterday and my belly is huge and painful",
+                 "faint rash and stiff neck and fever"]:
+        assert g.is_emergency(line), line
+    for line in ["my 3 year old has a slight cold and a faint heat rash on cheeks, playing and eating",
+                 "i change my pad every 30 minutes at work because of the heat, feel fine",
+                 "i ran and the stitch pain goes up to my shoulder, sweaty from the gym",
+                 "my wee stopped smelling after i drank water, belly is a bit bloated"]:
+        assert not g.is_emergency(line), line
+
+
+def test_oblique_crisis_and_relayed_wordings_s538():
+    from app.services import output_guard as g
+    for line in ["my flatmate has locked herself in the bathroom and says she has taken everything in the cabinet",
+                 "i feel like i am watching myself from outside and i cant feel anything and i have the tablets next to me",
+                 "i hit rock bottom, im writing goodbye messages to my family",
+                 "i was sick and now my pee is bright red and i have a sharp pain in my back and fever",
+                 "i got hit on the head by a ball, felt ok, now hours later im vomiting and very sleepy",
+                 "my 6 week old baby has a bulging soft spot and keeps being sick and is very sleepy"]:
+        assert g.is_emergency(line), line
+    for line in ["i have my vitamin tablets next to me on the desk and i feel numb from the cold",
+                 "im writing goodbye messages to my colleagues, last day at work tomorrow",
+                 "i bumped my head on a cupboard, no vomiting, not sleepy, fine",
+                 "my baby has a soft spot that looks normal, feeding well and sleepy after a feed"]:
+        assert not g.is_emergency(line), line
+
+
+def test_pregnant_bleeding_with_clots_and_pale_s540():
+    from app.services import output_guard as g
+    assert g.is_emergency("my sister is 12 weeks and has been bleeding with clots and cramps for hours and is white")
+    for line in ["period cramps for 6 weeks and a bit pale, bleeding with clots normal for me",
+                 "i am 12 weeks, no clots, only spotting, a bit pale from the winter"]:
+        assert not g.is_emergency(line), line
+
+
+def test_relayed_blue_lips_and_pale_sweaty_jaw_s541():
+    from app.services import output_guard as g
+    for line in ["my daughter says her tummy hurts so much and her lips are blue"]:
+        assert g.is_emergency(line), line
+    for line in ["my daughter swam for an hour and her lips are blue from the cold, she is warming up and laughing"]:
+        assert not g.is_emergency(line), line
