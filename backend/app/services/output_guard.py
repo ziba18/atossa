@@ -1904,7 +1904,7 @@ def _mouth_swell(t: str) -> bool:
 # wording and about anyone (nhs.uk/conditions/glaucoma, 13 Jun 2025: "call 999 or go to A&E if symptoms come on suddenly"). Screens, new glasses,
 # hay fever, gritty conjunctivitis, stye, dilating drops, mascara, goggles and "clears in the morning" stay quiet.
 _EY_EYE = re.compile(r"\beyes?\b", re.I)
-_EY_SIGHT = re.compile(r"\b(?:haz\w+|fogg\w+|misty|mist|dim\w*|cloudy|clouded|blurr\w+|halos?|rings? (?:round|around)|can'?t see (?:properly|right|out of)|cannot see (?:properly|out of)|lost (?:the )?(?:sight|vision)|gone (?:foggy|blurry|dim|dark))\b", re.I)
+_EY_SIGHT = re.compile(r"\b(?:haz\w+|fogg\w+|misty|mist|dim\w*|cloudy|clouded|blurr\w+|halos?|rings? (?:round|around)|rainbow[- ]?(?:coloured |colored )?(?:circles?|rings?|halos?|colou?rs?)|can'?t see (?:properly|right|out of)|cannot see (?:properly|out of)|lost (?:the )?(?:sight|vision)|gone (?:foggy|blurry|dim|dark))\b", re.I)
 _EY_PAIN = re.compile(r"\b(?:pain\w*|aching|aches?|hurts?|hurting|throbbing|agony|sore|red|bright red|sick|nause\w+|being sick|vomit\w*)\b", re.I)
 _EY_PAINSTRICT = re.compile(r"\b(?:pain\w*|aching|aches?|hurts?|hurting|throbbing|agony|sick|nause\w+|being sick|vomit\w*)\b|\bred and (?:sore|painful)\b|\bbright red\b", re.I)
 _EY_QUIET = re.compile(r"\b(?:screens?|laptop|computer|phone all day|glasses|contacts?|hay ?fever|pollen|itchy|gritty|conjunctivitis|sticky|stye|styes|eyelid|lid\b|dilat\w+|eye test|optician|mascara|goggles|swimming|chlorine|flight|plane|crying|cried|migraine|aura|shampoo|soap|onion|staring|first thing|clears?|cleared|adjust\w*|dry eyes?|tired)\b", re.I)
