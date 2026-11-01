@@ -4,12 +4,25 @@ Served as plain HTML so there is one public URL for each (the App Store listing 
 privacy policy URL, and the app links here). Keep them true to what the app actually does:
 update this file whenever the app starts collecting or sharing something new.
 """
+import os
+import re
+
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
 router = APIRouter(tags=["legal"])
 
-CONTACT_EMAIL = "zamaniziba18@gmail.com"
+# Support address shown on /privacy and /terms. Set SUPPORT_EMAIL on Render (the same address the
+# app's Forgot password screen shows). Unset or not an email -> the "Questions?" line is hidden, so a
+# personal address is never printed by default (PM-B153, gate 11).
+_EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+
+
+def contact_email() -> str:
+    value = (os.environ.get("SUPPORT_EMAIL") or "").strip()
+    return value if _EMAIL_RE.match(value) else ""
+
+
 EFFECTIVE_DATE = "2 October 2026"
 
 # Colours from the app's "Warm Paper, Deep Ink" palette (constants/atossaUI.ts).
@@ -39,7 +52,7 @@ _PAGE = """<!doctype html>
 <p class="meta">Effective {date}</p>
 {body}
 <hr>
-<p class="meta">Questions? Email <a href="mailto:{email}">{email}</a>.</p>
+{contact}
 </main></body>
 </html>"""
 
@@ -170,7 +183,9 @@ before a significant change takes effect.</p>
 
 
 def _render(title: str, body: str) -> HTMLResponse:
-    return HTMLResponse(_PAGE.format(title=title, body=body, date=EFFECTIVE_DATE, email=CONTACT_EMAIL))
+    email = contact_email()
+    contact = f'<p class="meta">Questions? Email <a href="mailto:{email}">{email}</a>.</p>' if email else ""
+    return HTMLResponse(_PAGE.format(title=title, body=body, date=EFFECTIVE_DATE, contact=contact))
 
 
 @router.get("/privacy", response_class=HTMLResponse, include_in_schema=False)
