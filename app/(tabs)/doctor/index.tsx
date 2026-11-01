@@ -392,7 +392,7 @@ export default function DoctorScreen() {
           accessibilityState={{ expanded: customise }}
           accessibilityLabel="Customise this summary"
           style={{
-            marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm,
+            marginTop: space.md, flexDirection: 'row', alignItems: 'center', gap: space.sm,
             minHeight: heights.secondary, paddingVertical: space.sm,
           }}
         >
@@ -452,7 +452,7 @@ export default function DoctorScreen() {
         </>
       )}
 
-      <SafetyLine style={{ marginTop: space.xxl }} />
+      <SafetyLine style={{ marginTop: space.xl }} />
       {inlineBar && (nothingYet || winHeight < 400) ? <View style={{ marginTop: space.xl }}>{footer}</View> : null}
     </ScreenLarge>
   );
