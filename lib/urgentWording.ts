@@ -11,7 +11,7 @@ const QUOTES: Record<string, string> = { '\u2018': "'", '\u2019': "'", '\u02bc':
 export const URGENT_SIGNPOST =
   'If you have severe sudden pain, very heavy bleeding or feel faint, call 999 or go to A&E, or call NHS 111.';
 export const SELF_HARM_SIGNPOST =
-  `If you might act on these thoughts, call 999 now. You can also call Samaritans free, any time, on ${SAMARITANS_NUMBER}, or call NHS 111.`;
+  `If you might act on these thoughts, call 999 now. You can also call Samaritans free, any time, on ${SAMARITANS_NUMBER}, or call NHS 111. You could also tell someone you trust.`;
 
 
 const HOMOGLYPHS: Record<string, string> = {
@@ -34,11 +34,18 @@ function normalise(text: string): string {
   // stretched letters ("sooo heavily") and doubled spaces ("chest  pain"); mirrors backend `_norm`
   t = t.replace(/([A-Za-z])\1{2,}/g, '$1');
   t = t.replace(/\b(ive|im|cant|dont|doesnt|didnt|isnt|wasnt|havent|hasnt|couldnt|wouldnt|shouldnt|arent|wont)\b/gi, (m) => { const l = m.toLowerCase(); return l === 'ive' ? "i've" : l === 'im' ? "i'm" : m.slice(0, -1) + "'" + m.slice(-1); });
+  // run26 A76 (speech-to-text): apostrophe-less "shes/hes/babys" and an unhyphenated "co codamol"; mirrors backend `_norm`
+  const APOS: Record<string, string> = { shes: "she's", hes: "he's", babys: "baby's", thats: "that's", theres: "there's", youre: "you're", theyre: "they're" };
+  t = t.replace(/\b(shes|hes|babys|thats|theres|youre|theyre)\b/gi, (m) => APOS[m.toLowerCase()]);
+  t = t.replace(/\bco codamol\b/gi, 'co-codamol').replace(/\bflu like\b/gi, 'flu-like');
   t = t.replace(/[^\S\n]+/g, ' ');
   // dictation fillers ("um i cant like breathe") and "wanna"; mirrors backend `_norm`
   t = t.replace(/\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*/gi, '');
   t = t.replace(/\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+/gi, '$1 ');
+  t = t.replace(/\b(took|taken|to|is|was|am|and|but|so|just|really|had|has|with|my|then)\s+like\s+(?!being\b|i\b|i'm\b|i\u2019m\b|something\b|a (?:bang|knife|stabbing|hammer|vice|weight|punch)\b|there\b|it\b)/gi, '$1 ');
   t = t.replace(/\bwanna\b/gi, 'want to');
+  // S-272 dictation slip: "took to many tablets" = "too many" (only after a taking verb); mirrors backend `_norm`
+  t = t.replace(/\b(took|taken|taking|had|swallowed) to (many|much)\b/gi, '$1 too $2');
   // dictated number words (S-223); mirrors backend `_norm`
   const UNITS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
   const TENS: Record<string, number> = { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
@@ -63,9 +70,61 @@ function normalise(text: string): string {
 
 // Same decision as the backend `_hits`: a match counts unless its clause is negated, in the past, about someone else or resolved.
 const mk = (src: string) => new RegExp(src, 'i');
+const S364CTX = mk(P.S364CTX_SRC), S364HEAVY = mk(P.S364HEAVY_SRC), S364QUIET = mk(P.S364QUIET_SRC), S365 = mk(P.S365_SRC), S365QUIET = mk(P.S365QUIET_SRC);
+const PD_FAMILY = new RegExp(P.PDFAM_SRC, 'gi'), PD_CTX = mk(P.PDCTX_SRC), PD_SECOND = mk(P.PDSECOND_SRC), PD_SICK = mk(P.PDSICK_SRC), PD_FEVER = mk(P.PDFEVER_SRC), PD_USUAL = mk(P.PDUSUAL_SRC), PD_RES = mk(P.PDRES_SRC);
+// B6 (backend _pd_second): sick needs a usual marker to go quiet; fever words need usual AND settled.
+const pdSecond = (t: string) => PD_SECOND.test(t) || (mk(P.MSPREG_SRC).test(t) && !mk(P.MSNOT_SRC).test(t)) || (PD_SICK.test(t) && !PD_USUAL.test(t)) || (PD_FEVER.test(t) && !(PD_USUAL.test(t) && PD_RES.test(t)));
+const SK_FACE = mk(P.SKFACE_SRC), SK_FACE_FX = mk(P.SKFACEFX_SRC), SK_SPEECH = mk(P.SKSPEECH_SRC), SK_SPEECH_FX = mk(P.SKSPEECHFX_SRC), SK_LIMB = mk(P.SKLIMB_SRC), SK_LIMB_FX = mk(P.SKLIMBFX_SRC), SK_SIDE = mk(P.SKSIDE_SRC), SK_ONSET = mk(P.SKONSET_SRC), SK_BENIGN = mk(P.SKBENIGN_SRC), SK_SAG = mk(P.SKSAG_SRC), SK_NEG = new RegExp(P.SKNEG_SRC, 'gi');
 const BODY = mk(P.BODY_SRC), EMERG = mk(P.EMERG_SRC), SELF = mk(P.SELF_SRC), SELF2 = mk(P.SELF2_SRC);
 const LASTREL = new RegExp('^(?:' + P.LASTREL_SRC + ')$', 'i'), PRESENT = mk(P.PRESENT_SRC);
 const NEG = mk(P.NEG_SRC), PAST = mk(P.PAST_SRC), OTHER = mk(P.OTHER_SRC), RES = mk(P.RES_SRC);
+// run19 (S-307, backend _hits): another person as subject is quiet unless the clause says it is happening now.
+const LIVE_REPORT = mk(P.LIVEREPORT_SRC), FAINT_WORD = new RegExp('^(?:' + P.FAINTWORD_SRC + ')$', 'i'), FAINT_REC = mk(P.FAINTREC_SRC);
+const OTHER_NOW = mk(P.OTHERNOW_SRC), REPORTED = mk(P.REPORTED_SRC), AGE_PAST = mk(P.AGEPAST_SRC), IN_CARE = mk(P.INCARE_SRC);
+const HEAVY_PHRASE = new RegExp(P.HEAVYPHRASE_SRC, 'gi'), HEAVY_USUAL_Q = mk(P.HEAVYUSUALQ_SRC), HEAVY_USUAL_CTRL = mk(P.HEAVYUSUALCTRL_SRC);
+const BLOOD346 = mk(P.BLOOD346_SRC), SIGN346 = mk(P.SIGN346_SRC), PAST_Q346 = mk(P.PASTQ346_SRC), BAD346 = mk(P.BAD346_SRC), CANTSTAND346 = mk(P.CANTSTAND346_SRC);
+const WAKE342 = mk(P.WAKE342_SRC), EYES342 = mk(P.EYES342_SRC), HOT342 = mk(P.HOT342_SRC), SIGN342 = mk(P.SIGN342_SRC), MORN342 = mk(P.MORN342_SRC);
+const NEG342 = new RegExp(P.NEG342_SRC, 'gi'), S343 = mk(P.S343_SRC), S343_SIGN = mk(P.S343SIGN_SRC), QUIET347 = mk(P.QUIET347_SRC);
+
+// Mirrors backend `_hard_to_wake342` (S-342): hard to wake / can't keep eyes open with a fever or floppy/confused sign.
+function hardToWake342(t: string): boolean {
+  t = t.replace(/\u2019/g, "'");
+  if (EYES342.test(t) && HOT342.test(t.replace(NEG342, ''))) return true;
+  if (!WAKE342.test(t)) return false;
+  if (SIGN342.test(t.replace(NEG342, ''))) return true;
+  return !MORN342.test(t) && !/refresh/i.test(t);
+}
+// run 59 (backend _S492_NO): a question the writer answers herself ("Chest pain? No, it's heartburn")
+// run 59 (backend _TYPOS): common misspellings corrected before the lists run
+const TYPOS: Record<string, string> = {"swallowd": "swallowed", "swalowd": "swallowed", "soked": "soaked", "sudenly": "suddenly", "speek": "speak", "stif": "stiff", "fevr": "fever", "temprature": "temperature", "breathin": "breathing", "sweatin": "sweating", "purpl": "purple", "breakfst": "breakfast", "bleding": "bleeding", "blleeding": "bleeding", "blod": "blood", "blooding": "bleeding", "bloood": "blood", "brathe": "breathe", "breif": "brief", "brethe": "breathe", "brething": "breathing", "colapse": "collapse", "colapsed": "collapsed", "dizy": "dizzy", "dizzey": "dizzy", "dizzi": "dizzy", "evrything": "everything", "evrywhere": "everywhere", "gunna": "gonna", "lfe": "life", "miscariage": "miscarriage", "miscarrage": "miscarriage", "miscarrige": "miscarriage", "myelf": "myself", "mysefl": "myself", "myslf": "myself", "pian": "pain", "pregant": "pregnant", "pregnat": "pregnant", "pregnent": "pregnant", "pregnet": "pregnant", "prenant": "pregnant", "seizer": "seizure", "seizeure": "seizure", "seziure": "seizure", "sezure": "seizure", "shortnes": "shortness", "shortnss": "shortness", "shotness": "shortness", "siezure": "seizure", "sucide": "suicide", "suicid": "suicide", "suiside": "suicide", "swalllowed": "swallowed", "swalowed": "swallowed", "swollowed": "swallowed", "unconcious": "unconscious", "unconsious": "unconscious", "vomitting": "vomiting", "vommiting": "vomiting"};
+const TYPO_RX = new RegExp('\\b(?:' + Object.keys(TYPOS).map((k) => (k === 'seizer' ? 'seizer(?! of\\b)' : k)).sort((a, b) => b.length - a.length).join('|') + ')\\b', 'gi');
+// run 60 (backend _fuzz, S-495): one-letter slips of a few urgent words; real words are never touched
+const FUZZ_TARGETS = ['bleeding', 'breathe', 'breathing', 'pregnant', 'collapsed', 'seizure', 'vomiting', 'unconscious', 'miscarriage', 'suicide'];
+const FUZZ_REAL = new Set('bleedings bleeping blending breaching breath breathed breather breathes breathings breaths breathy breeding collapse collapses miscarriages pregnane regnant seizures suicida suicided suicides wreathe wreathing'.split(' '));
+const FUZZ_RX = /\b[a-z]{6,12}\b/gi;
+function d1(a: string, b: string): boolean {
+  const la = a.length, lb = b.length;
+  if (Math.abs(la - lb) > 1 || a === b) return false;
+  if (la === lb) {
+    const diff: number[] = [];
+    for (let i = 0; i < la; i++) if (a[i] !== b[i]) diff.push(i);
+    return diff.length === 1 || (diff.length === 2 && diff[1] === diff[0] + 1 && a[diff[0]] === b[diff[1]] && a[diff[1]] === b[diff[0]]);
+  }
+  if (la > lb) { const x = a; a = b; b = x; }
+  let i = 0;
+  while (i < a.length && a[i] === b[i]) i++;
+  return a.slice(i) === b.slice(i + 1);
+}
+function fuzz(m: string): string {
+  const w = m.toLowerCase();
+  if (FUZZ_REAL.has(w) || w in TYPOS || FUZZ_TARGETS.includes(w)) return m;
+  for (const t of FUZZ_TARGETS) if (d1(w, t)) return t;
+  return m;
+}
+const S492_NO = /\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?/gi;
+// S-522: face sensation + arm heavy/weak + speech odd keeps "pins and needles" (the idiom list would remove it); same test as output_guard.py
+const S522_RX = [P.S522_SRC, P.S522ARM_SRC, P.S522SPEECH_SRC].map((x) => new RegExp(x, 'i')), S522_QUIET = new RegExp(P.S522QUIET_SRC, 'i');
+const S522_TRIO = (t: string) => S522_RX.every((r) => r.test(t)) && !S522_QUIET.test(t);
 const CLAUSE = new RegExp(P.CLAUSE_SRC, 'gi'), IDIOM = new RegExp(P.IDIOM_SRC, 'gi'), LEGBREATH = new RegExp(P.LEGBREATH_SRC, 'i');
 
 /** Mirrors backend `_is_past`: "last week" with a present-tense word in the clause is not past tense. */
@@ -84,6 +143,16 @@ function isPast(clause: string): boolean {
 const WHOLE = new RegExp(P.WHOLE_SRC, 'is');
 // run08 v80: wish to be dead + worked out how, one sentence (same past/negation checks as WHOLE).
 const SELFW = new RegExp(P.SELFW_SRC, 'i');
+const SHCTXW = new RegExp(P.SHCTXW_SRC, 'i'); // B79 (run43 prototype)
+// B52 (run39, backend _sh_act): an act said by anyone (overdose taken, self-injury bleeding, plan for tonight, relayed threat).
+const SHACT = new RegExp(P.SHACT_SRC, 'gi'), SHACTQ = new RegExp(P.SHACTQ_SRC, 'i');
+// run13 (A54, backend _BIRTH_TIME): the birth and its time phrase are context, not the symptom's time.
+const BIRTH_TIME = /\b(?:had (?:the|my) baby|gave birth|given birth|(?:the |my )?baby (?:was )?born)\b(?: (?:\w+ ){0,2}(?:ago|last (?:week|month)|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day))?/gi;
+
+// S-489 (backend _hits_whole): another person's present chest sign told in words ("my mum is grey and sweaty and her chest is crushing")
+const S489_BODY = /\bchest\b.{0,35}\b(?:crush\w*|squeez\w*|gripped|vice)\b/i, S489_SIGN = /\b(?:grey|gray|sweaty|clammy|pale|ashen|sweating)\b/i;
+const S489_NOT = /\b(?:was|were|last (?:year|month|week)|ago|fine|better|ok|okay|alright|exams?|work|stress\w*)\b/i;
+
 function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
   const m = rx.exec(text);
   if (!m) return false;
@@ -91,7 +160,50 @@ function hitWhole(text: string, rx: RegExp = WHOLE): boolean {
   const from = text.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
   const end = text.slice(m.index + m[0].length).search(/[.;!?\n]/);
   const sentence = text.slice(from, end < 0 ? undefined : m.index + m[0].length + end);
-  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence) || OTHER.test(text.slice(0, m.index)));
+  return !(NEG.test(text.slice(Math.max(0, m.index - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!.replace(/\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b/gi, ' ')) || isPast(sentence.replace(BIRTH_TIME, ' ')) || (OTHER.test(text.slice(0, m.index)) && !(S489_BODY.test(m[0]) && S489_SIGN.test(sentence) && !S489_NOT.test(sentence))));
+}
+
+function shAct(text: string): boolean {
+  const t = text.slice(0, 20000);
+  for (const m of t.matchAll(SHACT)) {
+    const from = t.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
+    const end = t.slice(m.index! + m[0].length).search(/[.;!?\n]/);
+    const sentence = t.slice(from, end < 0 ? undefined : m.index! + m[0].length + end);
+    if (NEG.test(t.slice(Math.max(0, m.index! - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(sentence) || SHACTQ.test(sentence)) continue;
+    return true;
+  }
+  return false;
+}
+
+// B61 (run41, backend _sh_class): PM self-harm classes, any subject; quiet words veto within the same window.
+const ADHERENCE = new RegExp(P.ADHERENCE_SRC, 'i'), ADHPHRASE = new RegExp(P.ADHPHRASE_SRC, 'gi');
+const SHCLASS = new RegExp(P.SHCLASS_SRC, 'i'), SHCLASSQ = new RegExp(P.SHCLASSQ_SRC, 'i');
+function shClass(text: string): boolean {
+  // B67 (run41): windows of up to 3 sentences, as the backend
+  const parts = text.slice(0, 20000).split(/[.;!?\n]/);
+  for (const size of [1, 2, 3]) {
+    for (let i = 0; i + size <= parts.length; i++) {
+      const w = parts.slice(i, i + size).join('. ');
+      if (SHCLASS.test(w) && !SHCLASSQ.test(w)) return true;
+    }
+  }
+  return false;
+}
+
+// B55 (run39, backend _cauda): saddle numbness, both legs new/worse, bladder or bowel accident not felt; any subject.
+const CAUDA = new RegExp(P.CAUDA_SRC, 'gi'), CAUDAQ = new RegExp(P.CAUDAQ_SRC, 'i'), CAUDANEW = new RegExp(P.CAUDANEW_SRC, 'i');
+function cauda(text: string): boolean {
+  const t = text.slice(0, 20000);
+  for (const m of t.matchAll(CAUDA)) {
+    const from = t.slice(0, m.index).search(/[.;!?\n][^.;!?\n]*$/) + 1;
+    const end = t.slice(m.index! + m[0].length).search(/[.;!?\n]/);
+    const sentence = t.slice(from, end < 0 ? undefined : m.index! + m[0].length + end);
+    if (NEG.test(t.slice(Math.max(0, m.index! - 40), m.index).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(sentence) || CAUDAQ.test(sentence)) continue;
+    const g = m[0].toLowerCase();
+    if ((g.includes('both') || g.includes('sex')) && !CAUDANEW.test(sentence)) continue;
+    return true;
+  }
+  return false;
 }
 
 const THIRD = new RegExp(P.THIRD_SRC, 'is');
@@ -135,9 +247,9 @@ function otherHistRescue(text: string): boolean {
 }
 
 const PREG = /\bpregnan\w+\b/i;
-const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b/i;
+const PREG_SYMPTOM = /\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain|pain (?:is |was |about |around |like |of )*(?:an? )?(?:8|9|10|eight|nine|ten)\b(?! ?(?:days?|weeks?|hours?|mins?|minutes?|am|pm|o'?clock)))\b/i;
 
-function hit(pattern: RegExp, text: string): boolean {
+function hit(pattern: RegExp, text: string, sh = false): boolean {
   const re = new RegExp(pattern.source, 'gi');
   for (const clause of text.split(CLAUSE)) {
     if (!clause) continue;
@@ -146,31 +258,151 @@ function hit(pattern: RegExp, text: string): boolean {
     while ((m = re.exec(clause)) !== null) {
       const before = clause.slice(0, m.index);
       const after = clause.slice(m.index + m[0].length);
-      if (!(NEG.test(before.slice(-40).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(clause) || OTHER.test(before) || RES.test(after))) return true;
+      if (!(NEG.test(before.slice(-40).split(/[.;:!?\n,]|\bbut\b/).pop()!) || isPast(clause) || RES.test(after)
+        // PM-B66 (run42, backend _hits): for self-harm words a reporting verb keeps the match live (the report is the urgent fact)
+        || (OTHER.test(before) && ((!(sh && REPORTED.test(before)) && (!OTHER_NOW.test(clause) || (REPORTED.test(before) && !LIVE_REPORT.test(clause)))) || IN_CARE.test(text))) || AGE_PAST.test(clause)
+        || (FAINT_WORD.test(m[0]) && FAINT_REC.test(text))
+        // S-488 (backend _hits): "pain so bad yesterday, 9, but gone this morning": past word and resolved word in different clauses
+        || (m[0].toLowerCase() === 'pain so bad' && /\b(?:yesterday|last (?:night|week))\b/i.test(clause) && /\b(?:gone|better|eased|settled)\b/i.test(text.slice(text.indexOf(clause) + clause.length)) && !/\b(?:still|again|now|worse|getting)\b/i.test(text)))) return true;
       if (m[0].length === 0) re.lastIndex++;
     }
   }
   return false;
 }
 
+// S-372 (backend _pelvic_fever): pelvic / period pain with fever words, or with being sick / very unwell and no period word.
+const PF_PAIN = mk(P.PFPAIN_SRC), PF_FEVER = mk(P.PFFEVER_SRC), PF_SICK = mk(P.PFSICK_SRC), PF_PERIOD = mk(P.PFPERIOD_SRC), PF_NEG = new RegExp(P.PFNEG_SRC, 'gi');
+const PF_FINE = mk(P.PFFINE_SRC), PF_STRICT = mk(P.PFSTRICT_SRC), PF_GASTRO = mk(P.PFGASTRO_SRC);
+const PF_GONE = /\b(?:over now|gone now|(?:has |have |had )?(?:gone|passed|cleared|settled|broke|went down)(?: now| again)?\b|all over|back to normal)/i;
+function pelvicFever(t0: string): boolean {
+  if (!PF_PAIN.test(t0)) return false;
+  const t = t0.replace(/\u2019/g, "'").replace(PF_NEG, ' ');
+  const strict = PF_STRICT.test(t);
+  if (PF_FINE.test(t)) return false;
+  if (PF_GASTRO.test(t) && !strict) return false;
+  if (t.split(/[.!?;\n]+/).some((c) => PF_FEVER.test(c) && !isPast(c) && !(PF_GONE.test(c) && !/\b(?:back|again|returned|still)\b/i.test(c)))) return true;
+  return PF_SICK.test(t) && strict && !PF_PERIOD.test(t);
+}
+// S-377 (backend _flow_shock): a heavy-flow phrase with a shock pair (cold + shaky, shaky + weak, cold + weak).
+const FS_FLOW = mk(P.FSFLOW_SRC), FS_COLD = mk(P.FSCOLD_SRC), FS_SHAKY = mk(P.FSSHAKY_SRC), FS_WEAK = mk(P.FSWEAK_SRC), FS_BENIGN = mk(P.FSBENIGN_SRC);
+function flowShock(t: string): boolean {
+  if (!FS_FLOW.test(t) || FS_BENIGN.test(t)) return false;
+  const c = FS_COLD.test(t), s = FS_SHAKY.test(t), w = FS_WEAK.test(t);
+  return (c && s) || (s && w) || (c && w);
+}
+// S-381 + A91 (backend _preg_shoulder): pregnant + bleeding + shoulder pain, or pain that stops daily tasks.
+const MS_NEGB = new RegExp(P.MSNEGB_SRC, 'gi'), MS_PREG = mk(P.MSPREG_SRC), MS_BLEED = mk(P.MSBLEED_SRC), MS_SHOULDER = mk(P.MSSHOULDER_SRC), MS_FUNC = mk(P.MSFUNC_SRC), MS_NOT = mk(P.MSNOT_SRC);
+const pregShoulder = (t: string) => MS_PREG.test(t) && MS_BLEED.test(t.replace(MS_NEGB, ' ')) && (MS_SHOULDER.test(t) || MS_FUNC.test(t)) && !MS_NOT.test(t);
+// B19 / prd/help-now §16 (backend _preg_light_box): pregnant + light bleeding + mild pain + still functioning = 111 box, not 999.
+const PB_LIGHT = mk(P.PBLIGHT_SRC), PB_OK = mk(P.PBOK_SRC), PB_SEV = mk(P.PBSEV_SRC), PB_WORDS = new RegExp(P.PBWORDS_SRC, 'gi');
+const pregLightBox = (t0: string) => {
+  const t = t0.replace(/\u2019/g, "'");
+  return MS_PREG.test(t) && PB_LIGHT.test(t) && PB_OK.test(t) && !PB_SEV.test(t) && !MS_NOT.test(t) && signpostOnce(t.replace(PB_WORDS, ' ')) === null;
+};
+function strokeLay(t0: string): boolean {
+  const t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
+  let n = 0;
+  if (SK_FACE.test(t) && SK_FACE_FX.test(t)) n += 1;
+  if (SK_SAG.test(t) && SK_FACE.test(t) && !SK_BENIGN.test(t)) n += 2;
+  if (SK_SPEECH.test(t) && SK_SPEECH_FX.test(t)) n += 1;
+  if (SK_LIMB.test(t) && SK_LIMB_FX.test(t)) n += 1;
+  if (n === 0 || (SK_BENIGN.test(t) && n < 2)) return false;
+  const face = SK_FACE.test(t) && SK_FACE_FX.test(t);
+  return n >= 2 || SK_ONSET.test(t) || (face && SK_SIDE.test(t));
+}
+
+// B16 (backend _stroke_slot / _stroke_old): body part x deficit in one sentence; dizzy / confused / falling only beside
+// another sign; an episode 2-14 days old (Safety C13) is not the 999 block.
+const SL_FACE = mk(P.SLFACE_SRC), SL_SIDEW = mk(P.SLSIDEW_SRC), SL_MOTOR = mk(P.SLMOTOR_SRC), SL_EYE = mk(P.SLEYE_SRC), SL_SPEECH = mk(P.SLSPEECH_SRC), SL_HEAD = mk(P.SLHEAD_SRC), SL_OTHER = new RegExp(P.SLOTHER_SRC, 'gi'), SL_ONSET = mk(P.SLONSET_SRC), SL_BENIGN = mk(P.SLBENIGN_SRC), SL_OLD = mk(P.SLOLD_SRC), SL_ARMUP = mk(P.SLARMUP_SRC), SL_BILAT = new RegExp(P.SLBILAT_SRC, 'gi');
+const strokeOld = (t: string) => SL_OLD.test(t.replace(/\u2019/g, "'"));
+// B24 (backend _leg_long_back): one leg, > 1 day, stated back / sciatica cause, no onset word = the sciatica GP box, not the stroke block.
+const SL_LEGONLY = mk(P.SLLEGONLY_SRC), SL_UPPER = mk(P.SLUPPER_SRC), SL_LONG = mk(P.SLLONG_SRC), SL_BACKCAUSE = mk(P.SLBACKCAUSE_SRC);
+const legLongBack = (t: string) => SL_LEGONLY.test(t) && !SL_UPPER.test(t) && SL_LONG.test(t) && SL_BACKCAUSE.test(t) && !SL_ONSET.test(t);
+function strokeSlot(t0: string): boolean {
+  const t = t0.replace(/\u2019/g, "'").replace(SK_NEG, ' ');
+  if (legLongBack(t)) return false;
+  const rest = [SL_EYE, SL_SPEECH, SL_HEAD].filter((r) => r.test(t)).length;
+  const other = new Set(Array.from(t.matchAll(SL_OTHER), (m) => m[0].toLowerCase().slice(0, 4))).size;
+  // B16c (backend _stroke_slot): one arm that can't be lifted/kept up fires whatever the cause; both-sided eyelids are not a droop.
+  if (SL_ARMUP.test(t) && !SL_OLD.test(t)) return true;
+  const motor = SL_FACE.test(t.replace(SL_BILAT, ' ')) || (SL_MOTOR.test(t.replace(SL_BILAT, ' ')) && (SL_SIDEW.test(t) || SL_ONSET.test(t) || rest > 0 || other > 0));
+  const core = rest + (motor ? 1 : 0);
+  if (SL_OLD.test(t) || (SL_BENIGN.test(t) && core + Math.min(other, 1) < 2)) return false;
+  return core >= 1 || (other >= 2 && SL_ONSET.test(t));
+}
+
+// B23 (backend _plain999): plain 999 words about anyone now (subject x state in one clause); idioms, hypotheticals,
+// history, sleep pauses and pets stay quiet.
+const PL_STATE = mk(P.PLSTATE_SRC), PL_SUBJ = mk(P.PLSUBJ_SRC), PL_NEG = mk(P.PLNEG_SRC), PL_HYPO = mk(P.PLHYPO_SRC), PL_QUIET = mk(P.PLQUIET_SRC);
+function plain999(t0: string): boolean {
+  for (const clause of t0.replace(/\u2019/g, "'").split(/[.!?;\n]+/)) {
+    const m = PL_STATE.exec(clause);
+    if (!m || PL_QUIET.test(clause) || isPast(clause)) continue;
+    const before = clause.slice(0, m.index);
+    if (PL_NEG.test(before) || PL_HYPO.test(before) || !PL_SUBJ.test(before + ' ' + m[0])) continue;
+    return true;
+  }
+  return false;
+}
+
 /** The fixed line to show for this text, or null. Self-harm wording gets the support lines. */
-export function urgentSignpost(text: string): string | null {
-  const line = signpostOnce(text);
+export function urgentSignpost(rawText: string): string | null {
+  // run 60 (backend emergency_kind): the later whole-note rules read this text too, so the same spelling corrections apply
+  const text = rawText.replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(FUZZ_RX, fuzz);
+  let line = signpostOnce(text);
+  // S-347 (backend emergency_kind): a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on the
+  // heavy phrase alone; it is blanked and the note re-read. Any faint / pale / hourly-pad / worse-than-usual word keeps it.
+  if (line === URGENT_SIGNPOST && HEAVY_USUAL_Q.test(text) && !HEAVY_USUAL_CTRL.test(text)) line = signpostOnce(text.replace(HEAVY_PHRASE, 'bleeding'));
+  if (line === URGENT_SIGNPOST && pregLightBox(text)) line = null;
+  // S-371 (backend emergency_kind): period pain / heavy flow words alone are not the 999 block; a second sign keeps it.
+  if (line === URGENT_SIGNPOST && PD_CTX.test(text) && !pdSecond(text) && signpostOnce(text.replace(PD_FAMILY, ' ')) !== URGENT_SIGNPOST) line = null;
+  // S-349b (backend emergency_kind): stroke signs said by their effect; only when nothing else fired.
+  if (line === null && (((strokeLay(text) || strokeSlot(text)) && !strokeOld(text)) || pelvicFever(text) || flowShock(text) || pregShoulder(text) || plain999(normalise(text)))) line = URGENT_SIGNPOST;
   // run11 (backend emergency_kind): a line break must not hide a self-harm plan; re-read with line breaks as commas.
   if (line === null && text.includes('\n') && signpostOnce(text.replace(/\n/g, ', ')) === SELF_HARM_SIGNPOST) return SELF_HARM_SIGNPOST;
   return line;
 }
 
+// PM-B66 (run42, backend _relay_swap): someone else's suicidal words in reported speech are read back in the first person.
+const RELAY_SH = /\b(?:says?|said|told me|tells me|is telling me|keeps saying|kept saying|texted me|messaged me|wrote)\b(?: that)?[ ,]+([^.!?\n]+)/gi;
+const RELAY_SWAP: [RegExp, string][] = ([
+  [String.raw`\b(?:she|he|they)'s\b`, "I'm"], [String.raw`\b(?:she|he|they)'re\b`, "I'm"], [String.raw`\b(?:she|he|they) (?:is|are)\b`, 'I am'],
+  [String.raw`\b(?:she|he|they) (?:has|have)\b`, 'I have'], [String.raw`\b(?:she|he|they) (?:doesn'?t|don'?t|does not|do not)\b`, "I don't"],
+  [String.raw`\b(?:she|he|they) (?:wants|want)\b`, 'I want'], [String.raw`\b(?:she|he|they) (?:was|were)\b`, 'I was'],
+  [String.raw`\b(?:she|he|they) (?:feels|feel)\b`, 'I feel'], [String.raw`\b(?:she|he|they) (?:thinks|think)\b`, 'I think'],
+  [String.raw`\b(?:she|he|they)\b`, 'I'], [String.raw`\b(?:herself|himself|themselves|themself)\b`, 'myself'], [String.raw`\b(?:him|them)\b`, 'me'],
+  [String.raw`\bher\b(?= *(?:[,;]|$|any ?more|now|tonight|today|and\b))`, 'me'], [String.raw`\b(?:her|his|their)\b`, 'my'],
+] as [string, string][]).map(([a, b]) => [new RegExp(a, 'gi'), b] as [RegExp, string]);
+const RELAY_JOKE = /\b(?:laugh\w*|joking|kidding|embarrass\w*|lol)\b/i; // a relayed joke is not read back as her own words
+function relaySwap(text: string): string {
+  return Array.from(text.slice(0, 20000).matchAll(RELAY_SH), (m) => RELAY_JOKE.test(m[1]) ? '' : RELAY_SWAP.reduce((c, [rx, rep]) => c.replace(rx, rep), m[1])).filter((c) => c).join('. ').replace(IDIOM, ' '); // relayed idiom blanked as for her own words
+}
+
 function signpostOnce(text: string): string | null {
   const n0 = normalise(text);
-  const t = (LEGBREATH.test(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, ''); // lead-in at the start: strip the '. ' it leaves
+  const t0 = (LEGBREATH.test(n0) || S522_TRIO(n0) ? n0 : n0.replace(IDIOM, ' ')).replace(LEADIN, '. ').replace(/^[ .]+/, '').replace(TYPO_RX, (w) => TYPOS[w.toLowerCase()]).replace(FUZZ_RX, fuzz).replace(S492_NO, ' '); // lead-in at the start: strip the '. ' it leaves
+  const t = ADHERENCE.test(t0) ? t0.replace(ADHPHRASE, ' ') : t0; // B62 (run41): adherence with 'all' / 'every' is not an act
   // run28 S-240: a line break between clauses must not hide a whole-note plan line, so it is also tried with ", ".
-  if (hit(SELF, t) || hit(SELF2, t) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
+  if (hit(SELF, t, true) || hit(SELF2, t, true) || hitWhole(t, SHCTXW) || hitWhole(t, SELFW) || hitWhole(t.replace(/\n/g, ', '), SELFW)) return SELF_HARM_SIGNPOST;
+  const relayed = relaySwap(t);
+  if (relayed && (hit(SELF, relayed) || hit(SELF2, relayed))) return SELF_HARM_SIGNPOST; // PM-B66 (run42)
+  if (shAct(t)) return SELF_HARM_SIGNPOST; // B52 (run39)
+  if (shClass(t)) return SELF_HARM_SIGNPOST; // B61 (run41)
   // draft run 22 (Safety to review): past self-harm + present intent anywhere in the note = highest risk, not history.
   if ((SELF.test(t) || SELF2.test(t)) && AGAIN.test(t)) return SELF_HARM_SIGNPOST;
   if (hit(BODY, t) || hit(EMERG, t) || hitWhole(t)) return URGENT_SIGNPOST;
   if (procFever(t.slice(0, 20000)) || otherHistRescue(t)) return URGENT_SIGNPOST;
+  if (cauda(t)) return URGENT_SIGNPOST; // B55 (run39)
   if ((THIRD.test(t.slice(0, 20000)) || THIRDC.test(t.slice(0, 20000))) && !isPast(t)) return URGENT_SIGNPOST;
-  if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)) return URGENT_SIGNPOST;
+  // S-364 / S-365 (backend _emergency_kind): after a loss or birth heavy bleeding with a shock sign or large clots; five shock / ectopic / confusion shapes
+  if (S364CTX.test(t) && S364HEAVY.test(t) && !S364QUIET.test(t)) return URGENT_SIGNPOST;
+  if (S365.test(t) && !S364QUIET.test(t) && !S365QUIET.test(t)) return URGENT_SIGNPOST;
+  if (PREG.test(t) && hit(PREG_SYMPTOM, t) && !/\bnot pregnant\b|\bpregnancy test\b/i.test(t)
+    && !(/\b(?:lost|ended) (?:the|my) pregnancy\b|\bpregnancy (?:loss|ended)\b/i.test(t) && !/\b(?:severe|sharp|one-sided|worse|stabbing|soaking|gushing|heavy|dizz\w+|faint\w*)\b/i.test(t))) return URGENT_SIGNPOST;
+  // S-342 / S-343 / S-346 prototypes (backend _emergency_kind, Safety run 40-41)
+  if (!QUIET347.test(t) && S343.test(t) && S343_SIGN.test(t) && !PAST_Q346.test(t)) return URGENT_SIGNPOST;
+  if (!QUIET347.test(t) && hardToWake342(t)) return URGENT_SIGNPOST;
+  if (!PAST_Q346.test(t) && ((BLOOD346.test(t) && SIGN346.test(t)) || BAD346.test(t)
+    || (!QUIET347.test(t) && CANTSTAND346.test(t) && /\bpain\b|\bhurts?\b|\bbleed\w*/i.test(t)))) return URGENT_SIGNPOST;
   return null;
 }

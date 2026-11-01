@@ -145,11 +145,18 @@ def _norm(text: str) -> str:
     # stretched letters ("sooo heavily") and doubled spaces ("chest  pain")
     t = re.sub(r"([A-Za-z])\1{2,}", r"\1", t)
     t = re.sub(r"\b(ive|im|cant|dont|doesnt|didnt|isnt|wasnt|havent|hasnt|couldnt|wouldnt|shouldnt|arent|wont)\b", lambda m: {"ive": "i've", "im": "i'm"}.get(m.group(1).lower(), m.group(1)[:-1] + "'" + m.group(1)[-1:]), t, flags=re.I)  # typed without apostrophes
+    # run26 A76 (speech-to-text): apostrophe-less "shes/hes/babys" and an unhyphenated "co codamol" read as typed
+    t = re.sub(r"\b(shes|hes|babys|thats|theres|youre|theyre)\b", lambda m: {"shes": "she's", "hes": "he's", "babys": "baby's", "thats": "that's", "theres": "there's", "youre": "you're", "theyre": "they're"}[m.group(1).lower()], t, flags=re.I)
+    t = re.sub(r"\bco codamol\b", "co-codamol", t, flags=re.I)
+    t = re.sub(r"\bflu like\b", "flu-like", t, flags=re.I)
     t = re.sub(r"[^\S\n]+", " ", t)  # tabs and runs of spaces become one space (newlines stay: they end a clause)
     # dictation fillers ("um i cant like breathe") and "wanna"/"gonna"
     t = re.sub(r"\b(?:um+|uh+|erm|er|hmm+)\b[ ,]*", "", t, flags=re.I)
     t = re.sub(r"\b(i|it|they|cant|can't|wont|won't|dont|don't|is|am|are|was)\s+like\s+", r"\1 ", t, flags=re.I)
+    t = re.sub(r"\b(took|taken|to|is|was|am|and|but|so|just|really|had|has|with|my|then)\s+like\s+(?!being\b|i\b|i'm\b|i\u2019m\b|something\b|a (?:bang|knife|stabbing|hammer|vice|weight|punch)\b|there\b|it\b)", r"\1 ", t, flags=re.I)  # run28 S-246: "took like a whole packet", "want to like not be here"
     t = re.sub(r"\bwanna\b", "want to", t, flags=re.I)
+    # S-272 dictation slip: "took to many tablets" = "too many" (only after a taking verb)
+    t = re.sub(r"\b(took|taken|taking|had|swallowed) to (many|much)\b", r"\1 too \2", t, flags=re.I)
     # dictated number words (S-223): tens ("twenty", "thirty five"), "thirty nine point two", and small counts before pads/tampons/tablets
     _units = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
     _tens = {"twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90}
@@ -255,6 +262,29 @@ _NEG = re.compile(r"\b(?:no|not|never|nothing|without|isn'?t|wasn'?t|aren'?t|did
                   r"nor|none|n'?t|not even|hardly|a bit|slightly|a little|bit of a)\b|\bn't\b", re.I)
 _PAST = re.compile(r"\b(?:(?:years?|months?|weeks?) ago|a (?:while|long time) ago|ages ago|(?:19|20)\d\d|(?<!since )last (?:year|decade|month|week)|as a (?:teen\w*|child)|used to|in the past|back then|never since|in year \d{1,2}\b(?![^.]*\b(?:today|now|just|this (?:morning|afternoon)|tonight)\b)|at (?:age )?(?:1[0-9]|2[0-9])(?![ \d]?(?:am|pm|weeks?|minutes?|mins?|hours?|days?|o'?clock|%))|when i was (?:a )?(?:teen\w*|kid|child|younger|(?:1[0-9]|[5-9])(?! ?(?:weeks?|days?|hours?|minutes?|mins?|months?|am|pm|o'?clock|%|:|\.\d)))|(?:fainted|passed out|blacked out|collapsed) aged (?:1[0-9]|[5-9]))\b", re.I)
 _OTHER = re.compile(r"\b(?:my (?:sister|mum|mom|friend|mother|dad|brother|colleague|daughter)|she|he|they|her|his|their)\b", re.I)
+_OTHER_NOW = re.compile(r"\b(?:right now|now|just now|at the moment|currently|still|is|isn'?t|are|aren'?t|won'?t|can'?t|keeps?|has gone|have gone)\b", re.I)
+# B30 (run34): the carer register says "now" with a contraction: "she's coughing up blood", "they're struggling", "my mum's got ..."
+_OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:she|he|they)'(?:s|re)\b(?! (?:had|been fine|always|never|usually))|\b\w+'s (?:got|getting|having|\w+ing)\b", re.I)
+# PM-B66 (run42): a present 'has/have (got/just/suddenly)' is now too: "my dad has crushing chest pain going to his jaw", "her face
+# has dropped" (nhs.uk heart-attack + stroke pages, read 31 Oct 2026); "has had / been / always / never" stays history.
+_OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:has|have)(?: (?:got|just|suddenly))?\b(?! (?:had|been|always|never|ever|got (?:over|better)|recovered))", re.I)
+# B72 (run42): "his chest feels crushed", "their chest feels really heavy" = a present feeling of a named body part
+_OTHER_NOW = re.compile(_OTHER_NOW.pattern + r"|\b(?:her|his|their) (?:chest|face|arm|leg|jaw|neck|lips?|speech) feels\b", re.I)
+_REPORTED = re.compile(r"\b(?:told|(?<!can't )(?<!cant )(?<!cannot )tells?|says?|said|reckons?|thinks?|thought)\b"   # B35: "can't tell me what year it is" is a sign, not hearsay
+                       r""
+                       # run20 (Safety p209 false on run19): "my partner is worried about his chest tightness" reports a worry, not an event now
+                       r"|\b(?:is|are|'s|'re|gets?|got) (?:a bit |really |very |so )?(?:worried|anxious|concerned|nervous|stressed) about\b", re.I)   # someone else giving information
+_LIVE_REPORT = re.compile(r"\b(?:just (?:rang|called|texted|messaged)|on my way|right now|at the moment|as we speak|cannot get up|can'?t get up)\b", re.I)
+# B43b (run38): a report of a state that is true NOW is not hearsay: "Tom says he can't breathe", "my son told me his chest
+# is tight", "she said Dad has collapsed", "he thinks he swallowed ..." (nhs.uk when-to-call-999, read 30 Oct 2026). Needs a
+# third-person pronoun/name + present tense (or just-happened collapse/overdose) right after the verb; "says she had", "said
+# it was", "says I ..." stay hearsay.
+_LIVE_REPORT = re.compile(_LIVE_REPORT.pattern + r"|\b(?:says|tells me|is telling me|keeps saying|told me|said|texted|messaged)\b (?:that )?(?:\w+ ){0,1}"
+                          r"(?:(?:she|he|they)(?:'s(?! (?:had|been))|'re| is| are| can'?t| cannot| isn'?t| won'?t)|(?:his|her|their) \w+ (?:is|are|feels?|has gone)|\w+ has (?:just )?(?:collapsed|fainted|passed out|stopped breathing))\b"
+                          r"(?![^.!?;]{0,60}\b(?:fine|ok|okay|better|alright|all right|recovered|checked|sorted|settled)\b)"
+                          r"|\b(?:thinks?|reckons?) (?:she|he|they) (?:has |have |'s |'ve |just )?(?:swallowed|taken|took|overdosed)\b", re.I)
+_AGE_PAST = re.compile(r"\bwhen (?:i|he|she|they|we) (?:was|were) (?:\d{1,2}|a (?:kid|child|teen\w*|baby|toddler|student))\b", re.I)
+_IN_CARE = re.compile(r"\b(?:in hospital|being looked after|on the ward|in a&e|at a&e|doctors? (?:is|are) with)\b", re.I)   # already being cared for
 _BODY = [
     r"can'?t (?:breathe|catch my breath|get (?:any )?air)(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)", r"struggling to breathe", r"chest (?:pain|is tight|tightness|hurts?)",
     r"(?:tight|crushing) chest", r"faint(?:ed|ing)?", r"passed out|blacked out|black(?:ing)? out", r"collaps\w+",
@@ -263,13 +293,16 @@ _BODY = [
     r"(?:swallowed|downed|took) (?:a whole|an entire|all (?:of )?the|a packet|a box|loads of).{0,30}(?:tablets|pills|packet|paracetamol|medication)", r"can'?t (?:straighten|stand|walk|move)",
     r"can'?t get enough air|wheez\w+.{0,30}(?:panic|air|breath)", r"off the scale|pain.{0,30}(?:ten|10) out of (?:ten|10)", r"lost (?:so |a lot of |too )?much blood|lost a lot of blood", r"can'?t get my breath|gasping|heart is (?:pounding|racing).{0,40}breath",
     r"agoni[sz]ing|doubled over", r"soaked .{0,15}(?:pads?|tampons?).{0,25}(?:half an hour|an hour|\d+ minutes)",
-    r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
+    r"passing (?:huge|big|large) clots", r"too many (?:pills|tablets)", 
+    # run18 (own S-301 set, first contact 6/8 missed): taking far more than the dose, nhs.uk/medicines/paracetamol-for-adults (reviewed 24 Mar 2026: NHS 111 if more than the packet says; 999 if told A&E)
+    # Needs a taking verb; "doctor says I take too many", asking the pharmacist, "to remember" stay quiet (no past verb).
+    r"\b(?:took|taken|swallowed|had)\b (?:(?:far|way|loads|lots|much) )?(?:more (?:\w+ ){0,4}than (?:i should(?: have)?|i'?m (?:meant|supposed) to|the (?:box|packet|leaflet|label) says|(?:the )?recommended|allowed|prescribed)|double the (?:max\w*|dose|amount)|(?:way|far) too many)\b", r"(?:pad|tampon|towel)s? (?:is|are|was|were) (?:full|soaked|saturated) in (?:\d+ (?:minutes|mins)|an? (?:hour|few minutes))",
     r"(?:bleeding|soaking|through) .{0,30}(?:under|less than|within) (?:an|one) hour", r"can'?t stop (?:the )?bleeding", r"bleeding .{0,30}(?:won'?t|will not) stop", r"losing (?:a lot of|so much|too much) blood", r"breathing (?:very|really|so) (?:fast|quickly|rapidly)|(?:not|n[o']t|isn[o']t) making (?:any )?sense|(?:rash|spots|marks)[^.]{0,30}(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) fade[^.]{0,20}press|(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)(?=[^.]{0,80}\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b)|\b(?:unwell|confus\w*|fever|faint\w*|dizz\w*|drows\w*|breath\w*|cold|clammy|very ill|shak\w+|shiver\w*|rash|can'?t wake|sepsis)\b[^.]{0,80}(?:blotchy (?:skin|lips|tongue)|(?:skin|lips|tongue)[^.]{0,15}blotchy)|\bsepsis\b|septic", r"(?:rash|spots?|marks?) (?:that )?(?:does ?n[o']?t|do ?n[o']?t|won'?t|will not) (?:fade|go|disappear)[^.]{0,30}glass|sandpaper[- ]?(?:like )?rash|bright red (?:palms|soles|tongue)", r"(?:toilet|bowl)(?: water| bowl)? (?:turned|went|was|is|looked|looks) (?:bright |dark )?red|red (?:toilet|bowl) water|(?:toilet|bowl) (?:was |is )?(?:full of|filled with|covered in) blood|blood (?:filled|filling|covered) the (?:toilet|bowl)|(?:lots?|loads) of blood in the (?:toilet|bowl)",
     r"(?:trouble|difficulty|hard to|struggling to) breath\w*", r"pressure in (?:my )?chest", r"(?:gonna|going to|about to) (?:be sick and )?pass(?:ing)? out", r"(?:non[- ]?stop|constant\w*) bleeding|bleeding (?:non[- ]?stop|constantly|for (?:\d+|three|four|a few) weeks)",
     r"seizure|convuls\w+|(?<!wig )(?<!bra )(?<!dress )(?<!shoe )(?<!coil )(?<!implant )(?<!ring )fitting\b(?! (?:room|appointment))", r"(?:feel|feels|feeling) like (?:i'?m |i am )?(?:dying|i'?m going to die)", r"can'?t (?:wake|rouse) (?:my|him|her|them|the)\b",
     r"(?:stabbing|knife).{0,40}(?:curled up|on the floor)|(?:curled up|on the floor).{0,40}(?:stabbing|agony)",
     r"(?:took|taken|swallowed|downed) a load of\b.{0,30}",
-    r"lips (?:are |turning |gone |going )?blue", r"struggling to (?:get )?(?:air|breath\w*)",
+    r"lips (?:are |turning |gone |going )?blue(?! (?:from|because of|after) (?:the |a )?(?:cold|sea|swim\w*|pool|ice|lipstick|lip ?(?:balm|gloss|tint)|smoothie|blueberr\w*|slush\w*|dye)\b)", r"struggling to (?:get )?(?:air|breath\w*)",
     r"face (?:is )?(?:drooping|dropping)|slurred speech|speech (?:is |has gone |went )?slurred|can'?t (?:lift|move) (?:my )?(?:arm|leg)",
     r"(?:having|think i(?:'m| am)?|might be having|am having) (?:\w+ ){0,3}miscarr\w+", r"feel(?:ing)? (?:sick|nauseous) and (?:sweaty|clammy)",
     r"\bmiscarr\w+.{0,40}(?:blood|bleed|pain)|(?:blood|bleed|pain).{0,40}\bmiscarr\w+",
@@ -281,16 +314,20 @@ _BODY = [
     r"(?:soak\w*|drench\w*|bleed\w*|blood)(?: is)?(?: going)? (?:thru|through) (?:my )?(?:jeans|trousers|pants|leggings|skirt|dress|sheets|the bed|the mattress)",
     r"(?:soaked|drenched|ruined) (?:the |my )?(?:bed|sheets|mattress)\b.{0,30}\bblood|\bblood\b.{0,30}\b(?:soaked|drenched) (?:the |my )?(?:bed|sheets|mattress)\b",
     r"\b(?:left |right )?arm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b.{0,50}\b(?:jaw|sweat\w*)\b|\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*)\b.{0,50}\b(?:sweat\w*|(?:left |right )?arm)\b",
-    r"soaking (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour)",
+    r"soak(?:ing|ed)? (?:through )?(?:a |my |an? )?(?:pad|tampon|towel|clothes)s?(?: (?:an|every|each) hour| (?:every|each) (?:half[- ]hour|half an hour|(?:15|20|30|45) ?min\w*))",
     r"(?:pad|tampon)s? (?:every|each|an) hour", r"(?:changed|changing) (?:my )?(?:pad|tampon)s? (?:\w+ times )?(?:in|every|each) (?:an|one|half an) hour",
     r"blood everywhere", r"(?:very |really |so |extremely )?heav(?:y|ily) bleeding", r"bleeding (?:really |very |so )?heav(?:y|ily)(?!\b[^.!?;]{0,30}\b(?:day (?:one|two|three|four|[1-4])|changed (?:my )?(?:pads?|tampons?) (?:only )?(?:twice|once))\b)",
     r"bleeding (?:a )?(?:huge|massive|lot|loads)(?! (?:more|heavier) than (?:usual|normal|before|i (?:usually|normally)))", r"clots (?:the size|as big|bigger)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)", r"severe (?:sudden )?(?:pain|belly|abdominal|pelvic)",
-    r"worst pain|worst (?:I'?ve|i have) ever|pain (?:came|comes) on suddenly|sudden(?:ly)? (?:stabbing|sharp|severe|intense)",
+    r"worst pain(?!\s+(?:today|this (?:week|month|cycle|morning|afternoon|evening)|of the (?:day|week|month|year|cycle)|so far|was (?:at|during|on|after|around|about|a|an|day|\d)|(?:today )?(?:is|was) (?:about |around )?(?:a |an )?\d))|worst (?:I'?ve|i have) ever|pain (?:came|comes) on suddenly|sudden(?:ly)? (?:stabbing|sharp|severe|intense)",
     r"excruciating|unbearable", r"pain is (?:10|ten)(?:/| out of )(?:10|ten)", r"(?:10|ten)(?:/| out of )(?:10|ten) pain",
-    r"can'?t stand up", r"pregnan\w+.{0,60}(?:bleed|pain|spotting)|(?:bleed|pain|spotting).{0,60}pregnan\w+",
+    r"can'?t stand up", r"(?<!lost the )(?<!lost my )(?<!ended the )(?<!ended my )pregnan\w+.{0,60}(?:bleed|(?<!no )pain|spotting)|(?:bleed|(?<!no )pain|spotting).{0,60}(?<!lost the )(?<!lost my )pregnan\w+",
     r"(?:\d{1,2}|\w{3,8}) weeks pregnant.{0,60}(?:pain|bleed|spotting)", r"pregnan\w+.{0,80}(?:one[- ]sided|on one side|shoulder)|(?:one[- ]sided|on one side|shoulder).{0,80}pregnan\w+", r"positive (?:pregnancy )?test.{0,60}(?:pain|bleed)", r"high fever.{0,40}(?:severe|pain)|(?:severe|pain).{0,40}high fever",
     # NHS "pelvic pain" 999 list (nhs.uk/conditions/pelvic-pain, read 2026-10-26)
-    r"sudden(?:ly)? (?:feel |felt |am |got |become |became )?(?:confused|disori\w+)|confused and (?:dizzy|disori\w+)",
+    # B35 (run34): sudden confusion in carer words (nhs.uk when-to-call-999 'sudden confusion'); "suddenly confused by the letter / which day" is not it
+    r"sudden(?:ly)? (?:feel |felt |am |got |become |became |gone |went |really |very |so |all )*(?:confused|disori\w+|muddled)(?! (?:about|by|with|which|why|whether|over|what|at|as to)\b)|confused and (?:dizzy|disori\w+)|"
+    r"(?:confused|disori\w+|muddled)\b(?! (?:about|by|with|which|why|whether|over|what|at)\b)[^.!?;]{0,30}\b(?:out of nowhere|all of a sudden|suddenly)\b|(?:all of a sudden|out of nowhere)\b[^.!?;]{0,20}\b(?:confused|disori\w+|muddled)\b(?! (?:about|by|with|which|why|whether|over|what|at)\b)|"
+    # B35n (run35): not when the same clause says it is long-standing / followed up / a look change ('some mornings, the memory clinic', 'new haircut')
+    r"(?:(?:doesn'?t|does not|can'?t work out|cannot work out) (?:know )?where (?:she|he|they) (?:is|are)\b|(?:doesn'?t|does not|didn'?t|did not) recogni[sz]e (?:me|us|her|him|them|his|her)\b)(?![^.!?;]{0,60}\b(?:some (?:mornings|days|nights|times)|sometimes|often|always|usually|for (?:years|months|ages)|memory clinic|dementia|alzheimer\w*|haircut|hair|beard|glasses|costume|mask|make-?up|laugh\w*|joke\w*|on the phone|in the dark)\b)",
     r"(?:severe|sharp|intense).{0,40}(?:light-?headed|dizz\w+)|(?:light-?headed|dizz\w+).{0,40}(?:severe|intense)",
     r"(?:very |really |so )pale.{0,40}(?:sick|dizz\w+|faint\w*|sharp)",
 ]
@@ -301,7 +338,7 @@ _SELF = [
     r"(?:thinking (?:about|of)|want(?:ing)? to) taking (?:all|every)\b.{0,20}(?:tablets|pills|medication|painkillers)",
     r"(?:not|won'?t|n't) (?:going to )?wake up (?:tomorrow|again)|(?:don'?t|do not) want to wake up",
     # run 01 probe 2 (4/10 missed): UK/teen distress wording; also covers the not-exist item of set v23 (S-140)
-    r"(?:can'?t|cannot) do this (?:any ?more|anymore)\b(?! without)", r"(?:want|wanna|wants) (?:to )?(?:just )?(?:be gone|not exist)\b|(?:thinking|think|thought) about not existing|what'?s the point (?:of|in) (?:going on|living|carrying on|anything)",
+    r"(?:can'?t|cannot) do this (?:any ?more|anymore)\b(?! without)", r"(?:want|wanna|wants) (?:to )?(?:just )?(?:be gone|not exist)\b(?![^.!?]{0,40}\b(?:meeting|boring|lesson|class|lecture|call|office|train)\b)|(?:thinking|think|thought) about not existing|what'?s the point (?:of|in) (?:going on|living|carrying on|anything)",
     r"(?:too many|a load of|loads of) (?:painkillers|tablets|pills)\b.{0,25}on purpose|on purpose.{0,25}(?:tablets|pills|painkillers)",
     # run 01 (S-154, probe 13: 3/8 missed): thoughts of harming a child, of crashing a car, hearing voices
     r"(?:might|going to|want to|thoughts? of|thinking (?:of|about)) (?:hurt|harm|hurting|harming) (?:my|the) (?:baby|child|kids?|son|daughter)\b", r"(?:thoughts?|thinking|urge|want|wanted|imagin\w+|picturing) (?:of |about |to )?(?:driving|drive|crashing|crash|steering|steer) (?:my |the )?car (?:into|off)\b",
@@ -309,12 +346,12 @@ _SELF = [
     # run 01 (S-142): self-injury without the word 'harm', and doubt about carrying on
     r"\bcut myself(?! (?:a|an|some|another|shaving|on|while|with|opening|chopping|cooking|slicing|badly on)\b)", r"(?:not sure|don'?t know|unsure) (?:if |whether )?i want to (?:carry on|keep going|go on|keep living|live)\b",
     r"suicid\w+", r"kill(?:ing)? (?:myself|me)", r"(?:want|wants|need) (?:it|this|everything|things) (?:all )?to (?:stop|end)",
-    r"end(?:ing)? things", r"(?:took|taken|taking) (?:a load|lots|too many|an overdose)\b.{0,30}(?:tablets|pills|paracetamol)|overdos\w+",
+    r"end(?:ing)? things\b(?! (?:with|between) (?:my |his |her |their |our |the )?(?:boyfriend|girlfriend|partner|ex|husband|wife|fianc\w+|bf|gf|him|her|them)\b)", r"(?:took|taken|taking) (?:a load|lots|too many|an overdose)\b.{0,30}(?:tablets|pills|paracetamol)|overdos\w+",
     r"(?:tablets|pills).{0,30}don'?t care what happens", r"self[- ]harm\w*", r"(?:want|wanna|going) to die", r"\bwa+nn?a+ (?:to )?die\b", r"\bsuic?[ci]de\b|\bsucid\w*", r"\bkil (?:myself|me)\b", r"(?:got|have|took|taken) the (?:tablets|pills) out|(?:looking|staring) at (?:the|my) (?:tablets|pills)", r"(?:took|taken|swallowed) too many (?:pils|pilss|tabs|tablits)\b", r"end(?:ing)? it all",
     r"end(?:ing)? my (?:own )?life", r"(?:don'?t|do not) want to be (?:alive|here)(?: anymore| any more)?", r"hurt(?:ing)? myself",
     r"cutting myself|(?:been|keep|kept|started) cutting\b|cutting again", r"(?:want|wanna) to (?:just )?disappear(?: forever)?", r"better off (?:dead|without me)", r"(?:take|taking|took|takes) my (?:own )?life",
-    r"(?:took|taken|swallowed) all (?:of )?(?:my|the) (?:paracetamol|tablets|pills|painkillers|medication)", r"(?:sleep|asleep|bed).{0,25}(?:never|not) (?:wake|waking) up", r"(?:no|any) reason to (?:keep )?(?:living|live|go on)(?! (?:in|at|with|near)\b)|don'?t see any (?:reason|point) (?:to|in) (?:keep )?(?:living|live|go on|going on|carry on|carrying on)",
-    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b", r"no point (?:in )?(?:going on|living|being here)",
+    r"(?:took|taken|swallowed) all (?:of )?(?:my|the) (?:paracetamol|tablets|pills|painkillers|medication)(?![^.!?;]{0,40}\b(?:for the (?:week|month|day|course)|(?:new|repeat|next) prescription|as (?:prescribed|directed)|the (?:gp|doctor|pharmacist|nurse) (?:said|told|gave|prescribed))\b)", r"(?:sleep|asleep|bed).{0,25}(?:never|not) (?:wake|waking) up", r"(?:no|any) reason to (?:keep )?(?:living|live|go on)(?! (?:in|at|with|near)\b)|don'?t see any (?:reason|point) (?:to|in) (?:keep )?(?:living|live|go on|going on|carry on|carrying on)",
+    r"(?:thought|thinking) about not being here|not being here (?:any ?more|at all)", r"no point (?:to|in) (?:anything|living|life|going on|being here)(?: any ?more)?", r"(?:looking|searching) (?:at|for) ways to (?:end it|die|kill myself)", r"(?:burden|a burden) to (?:everyone|everybody|my family)\b.{0,30}\b(?:want out|gone|leave|disappear)", r"what'?s the point of me being (?:alive|here)", r"(?:got|have|made|having) a plan (?:to|for) (?:end|ending|kill|killing|hurt|hurting)", r"better off (?:if i (?:was|were) (?:gone|dead)|without me)", r"written (?:a |some )?(?:notes?|letters?)\b.{0,25}\b(?:family|mum|mom|partner|everyone|goodbye)|goodbye (?:note|letter)", r"(?:can\'?t|cannot|don\'?t) see (?:a|any) way (?:out|forward|through)(?! of (?:the|a|this|that) (?:car ?park|building|maze|station|room|queue|traffic|meeting|shop|hospital|estate|town)\b)", r"(?:scratch\w*|cutting|cut|burning|hitting|hurting) (?:my |at my )?(?:arms?|legs?|thighs?|wrists?|myself)\b.{0,30}\b(?:bleed\w*|blood|raw)", r"\b(?:everything|it all|my life|the pain and everything) (?:to )?(?:end|be over|stop) for good\b", r"no point (?:in )?(?:carrying on|going on|living|continuing)\b", r"unaliv\w*", r"\bkms\b", r"(?:don'?t|do not|no longer) see the point (?:in )?(?:going on|living|being here|anything|carrying on)", r"thinking (?:about|of) ending it\b(?! with (?:this|that|our|work|uni|him|her|them)\b| with (?:the|my) (?:project|job|course|relationship|boyfriend|girlfriend|partner|husband|wife|band|business|degree)\b)", r"no point (?:in )?(?:going on|living|being here)",
 ]
 # run07 set v75 (first contact 20/20 missed): a plan said without die/kill/suicide. Coverage map = the three C-SSRS
 # screener classes (wish to be dead, method, preparation; cssrs.columbia.edu); Atossa never screens or asks these.
@@ -340,6 +377,14 @@ _SELF += [
     _MEDS + r" (?:saved|stashed|hidden|stockpiled|put by)(?: up| away)?\b.{0,40}\btonight'?s the night\b|" + _MEDS + r" (?:saved|stashed|stockpiled) up\b(?![^.]{0,30}\b(?:for (?:the |my )?(?:holiday|trip|travel)|in case)\b)",
     r"(?:won'?t|will not|not going to) be (?:here|around|alive) (?:for (?:it|that|them|christmas|her|his)|by then|next (?:week|month|year)|much longer|any ?more|for long)\b(?![^.]{0,30}\b(?:holiday|away|abroad|work|trip|hospital|course)\b)",
 ]
+# B53 (run39, PM plain-999 classes; nhs.uk when-to-call-999, read 2026-10-30): choking said by its effect, a collapse said as
+# 'went down ... isn't getting up', an asthma attack the inhaler is not easing, a chest gripped (carer register).
+_BODY += [
+    r"\b(?:stuck|lodged) in (?:my|his|her|their|the) (?:throat|windpipe)\b[^.!?;]{0,40}\b(?:can'?t|cannot|won'?t) (?:cough|get|breathe|swallow|speak)\w*|\bcan'?t cough it (?:out|up)\b",
+    r"\b(?:went|gone|dropped|keeled) (?:down|over)\b(?! with\b)[^.!?;]{0,30}\b(?:isn'?t|is not|not|won'?t|can'?t|hasn'?t) (?:getting up|get up|got up|moving|answering|responding|waking)\b",
+    r"\b(?:asthma|inhaler)\b[^.!?;]{0,30}\b(?:isn'?t|is not|not|still not|won'?t) (?:easing|helping|working|touching it)\b(?![^.!?;]{0,30}\b(?:empty|run out|ran out|expired|old one)\b)",
+    r"\b(?:gripping|clutching|grabbing|clasping) (?:his|her|their|my|at (?:his|her|their|my)) chest\b(?![^.!?;]{0,25}\b(?:laugh\w*|giggl\w*|joke\w*|drama\w*)\b)",
+]
 _BODY_RX = re.compile(r"(?:" + "|".join(_BODY) + r")", re.I)
 # run 27 set p129 (first contact 4/10 missed): "everyone would be better off if I wasn't around", "nobody will notice when I'm gone", tablets lined up beside "no point"
 _SELF += [
@@ -352,21 +397,23 @@ _CLAUSE = re.compile(r"[.;!?\n]+|,\s*|\bbut\b|\band\b(?=\s+(?:i|it|the|my|now|ju
 
 SELF_HARM = (
     "I'm really sorry you're feeling this way, and I'm glad you said so. If you might act on these "
-    "thoughts, call 999 now. You can also call Samaritans free, any time, on 116 123, or call NHS 111."
+    "thoughts, call 999 now. You can also call Samaritans free, any time, on 116 123, or call NHS 111. "
+    "You could also tell someone you trust."
 )
 
 # Safety's phrase lists (claude/safety-everything), kept alongside the lists below; both go
 # through the same negation/past/third-person check in emergency_kind().
 _SELF_HARM_RX = re.compile(
-    r"\b(?:suicid\w+|kill(?:ing)? myself|end(?:ing)? my (?:own )?life|self[- ]harm\w*|want(?:ed)? to die|"
+    r"\b(?:suicid\w+|kill(?:ing)? myself|end(?:ing)? my (?:own )?life|self[- ]harm\w*|want(?:ed)? to die|(?:don'?t|do not|can'?t|cannot) (?:think i can |know if i can |trust myself to )?keep myself safe|"
     r"don'?t want to (?:be here|live|wake up)|end it all|hurt(?:ing)? myself|overdos\w+|"
     r"nothing (?:left )?to live for|no reason to (?:live|go on|be here)|(?:might|going to|gonna|want to|thinking (?:of|about)) (?:harm|hurt|injure) myself|"
     r"(?:gonna|going to|about to|will) (?:take|swallow|down) (?:all|every one of|the whole lot of) (?:these|my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
-    r"(?:took|taken|swallowed|had) (?:all|every one|the whole lot) (?:of )?(?:my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)|"
-    r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds)|"
+    r"(?:took|taken|swallowed|had) (?:all|every one|the whole lot) (?:of )?(?:my|the) (?:\w+ ){0,2}(?:pills|tablets|painkillers|meds|medication)(?![^.!?;]{0,40}\b(?:for the (?:week|month|day|course)|(?:new|repeat|next) prescription|as (?:prescribed|directed)|the (?:gp|doctor|pharmacist|nurse) (?:said|told|gave|prescribed))\b)|"
+    r"(?:took|taken|swallowed|had) (?:a )?(?:handful|load|loads|whole (?:packet|box|bottle|strip)|entire (?:packet|box|bottle|strip)) of (?:my |the )?(?:pills|tablets|painkillers|paracetamol|ibuprofen|medication|medicine|meds|antidepressants|sleeping (?:pills|tablets))|"
+    r"(?:thoughts?|thinking) of ending it\b(?! with (?:this|that|our|work|uni|him|her|them)\b| with (?:the|my) (?:project|job|course|relationship|boyfriend|girlfriend|partner|husband|wife|band|business|degree)\b)|(?:thinking|thought|thoughts|keep thinking) (?:of|about) (?:jumping (?:off|from) (?:the |a |an |that )?(?:\w+ ){0,2}(?:bridge|roof|cliff|building|balcony|window|tower|flats|car park|viaduct|pier|edge)|(?:jumping|throwing myself) (?:in front of|under) (?:a |the )?(?:train|bus|car|lorry|tube))|"
     r"(?:don'?t|do not|can'?t|cannot) see (?:the |any )?point (?:in |of )?(?:being alive|living|going on|carrying on|life)|no point (?:in )?(?:living|going on|being alive)|"
     r"(?:everyone|everybody|they|family|friends) (?:would|will|'d) be better off without me|wish i (?:was|were) dead|wish i (?:would|could) (?:just )?not wake up|"
-    r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)|"
+    r"(?:took|taken|swallowed) (?:too many|a lot of|all (?:my|the)) (?:pills|tablets|painkillers)(?![^.!?;]{0,40}\b(?:for the (?:week|month|day|course)|(?:new|repeat|next) prescription|as (?:prescribed|directed)|the (?:gp|doctor|pharmacist|nurse) (?:said|told|gave|prescribed))\b)|"
     # set p83 (hormone/diagnosis distress; first contact 3/12 self-harm lines missed)
     r"(?:i would|i'?d|would) be better off (?:not alive|not here|not living)|(?:thinking|thought|thoughts) (?:of|about) ways to (?:not wake up|end it)|"
     r"(?:ways|way) to not wake up|scared (?:of )?what i (?:might|could|will) do|afraid (?:of )?what i (?:might|could|will) do)\b"
@@ -378,20 +425,74 @@ _SELF_HARM_RX = re.compile(
     r"\b(?:looked up|googled|searched)\b.{0,25}\bhow many (?:pills|tablets|paracetamol|painkillers)\b(?= (?:it takes|to (?:overdose|die|kill)|would (?:kill|be fatal)|is (?:too many|fatal|a lethal)))",
     re.I,
 )
+# B73 (run42): indirect suicidal statements and goodbye acts in plain first-person words (nhs.uk help-for-suicidal-thoughts,
+# signs list: no point / no reason to go on, giving away belongings, saying goodbye; read 31 Oct 2026); 'go on the trip',
+# 'keep going to that class', 'giving away my old clothes' stay quiet.
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\bcan'?t see (?:a|any) (?:reason|point) (?:to |in )(?:go(?:ing)? on|keep(?:ing)? going|carry(?:ing)? on|living|being here)\b(?! (?:the|to|with|at|in|this|that|a|for)\b)"
+    + r"|\bno reason for me to (?:live|go on|keep going|be here)\b(?! (?:in|at|near|with|there|before|until|by|after|on|for|during|when)\b)"
+    + r"|\bgiving away (?:all )?(?:of )?my (?:things|stuff|belongings|possessions)\b(?=[^.!?]{0,60}\b(?:goodbye|bye|letters?|note)\b)", re.I)
+# S-475 (Safety run 57): perceived burdensomeness ('everyone would be happier if I was gone') and 'had enough' + a plan or
+# method word, plain first person. A work, weather, queue, gym or holiday word later in the same sentence keeps it quiet.
+_S475_Q = r"(?![^.!?;\n]{0,80}\b(?:rain|weather|work|job|queue|traffic|exam|homework|essay|school|diet|gym|meeting|cooking|laundry|holiday|haha|lol|office|booked|joking|plan (?:for|to) (?:the )?(?:weekend|holiday|party|trip|dinner|wedding))\b)"
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\b(?:everyone|everybody|they|my (?:family|friends|kids|children|partner|mum|dad)|people)\b" + _S475_Q + r"[^.!?;\n]{0,25}\b(?:would be|'d be|be|were|are) (?:so much )?(?:happier|better off|better|relieved)\b[^.!?;\n]{0,15}\b(?:if i (?:was|were) (?:gone|dead|not (?:here|around)|never (?:born|here))|if i (?:wasn'?t|weren'?t) (?:here|around|alive|born)(?! (?:on|at|in|for|today|tomorrow)\b)|if i (?:died|disappeared|wasn'?t alive)|without me(?! (?:on|at|in|for)\b)|when i'?m gone|if i'?m gone)", re.I)
+
+# PM-B74 (run43): two sign classes from samaritans.org/difficultconversations (quoted by PM, read 31 Oct 2026): "feeling
+# hopeless, helpless or worthless" and "feeling trapped by life circumstances they can't see a way out of, or feeling unable
+# to escape their thoughts". First person present only ('felt a bit hopeless' stays quiet); 'hopeless at/about/with',
+# 'trapped wind', 'a way out of the meeting' and 'a burden to my family when I'm in bed' stay quiet; 'helpless', 'tearful', 'tired', 'hard to cope' alone never fire.
+_SH_FEEL = r"\b(?:i'?m|im|i am|i feel|i just feel|i'?ve (?:been )?feel(?:ing)?|feeling)(?: like)? (?:so |completely |totally |utterly |really |just |very |such )*"
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|" + _SH_FEEL + r"(?:worthless|a waste of space)\b(?! (?:at|as a|when it comes)\b)"
+    + r"|" + _SH_FEEL + r"hopeless\b(?! (?:at|about|with|when it comes|for (?:the|this|today|tonight))\b)(?=[^.!?]{0,60}\b(?:nothing|never|no (?:hope|point|future|way)|anymore|any more|for me|life|everything|get better)\b)"
+    + r"|\b(?:there'?s|there is|i have|i'?ve got) no hope (?:left )?(?:for me|any ?more|at all)\b|\bnothing (?:is )?(?:ever )?going to get better for me\b"
+    + r"|" + _SH_FEEL + r"trapped\b(?! wind)(?=[^.!?]{0,60}\b(?:way out|my (?:own )?life|this life|escape|no exit|never (?:end|get out))\b)"
+    + r"|" + _SH_FEEL + r"(?:a burden|useless|a failure) and (?:so |completely |totally |utterly )?worthless\b"
+    + r"|\b(?:can'?t|cannot) escape (?:from )?(?:my (?:own )?)?(?:thoughts|head|mind)\b", re.I)
+# B79 (run43 PROTOTYPE): the same hopeless/trapped context branches read per sentence, so a comma between the feeling and its
+# context ('I feel so trapped, there's no way out') no longer cuts the lookahead (_CLAUSE splits on ', ').
+_SH_CTX_WHOLE = re.compile(_SH_FEEL + r"(?:hopeless\b(?! (?:at|about|with|when it comes|for (?:the|this|today|tonight))\b)(?=[^.!?]{0,60}\b(?:nothing|never|no (?:hope|point|future|way)|anymore|any more|for me|life|everything|get better)\b)"
+    + r"|trapped\b(?! wind)(?=[^.!?]{0,60}\b(?:way out|my (?:own )?life|this life|escape|no exit|never (?:end|get out))\b))", re.I)
+
+# PM-B82 (run44): first-person indirect ideation families written from own set sets/pmb82-indirect-run44.json (before code)
+# and Safety C93 (option A: same SELF_HARM message, conditional 999 line). Bare 'hopeless' at a clause end, 'a burden to everyone',
+# 'don't really want to be here', 'wish I could disappear', 'what's the point anymore', 'had enough of life', 'no future for me',
+# 'nothing left for me', 'don't want to carry on', 'giving up on everything'. Quiet look-alikes ('hopeless at maths', 'disappear
+# into bed', 'had enough of the bloating', 'giving up on dairy', 'a burden on my partner on bad days') stay quiet.
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|" + _SH_FEEL + r"hopeless\b(?=\s*(?:[.!?,;]|$)| (?:about (?:everything|life|my life|the future|it all)|and (?:helpless|worthless|trapped|alone)|all the time|every day|tonight)\b)"
+    + r"|\b(?:i'?m|im|i am|i feel like|i feel) (?:such )?a burden (?:to|on) (?:everyone|everybody|all of them|the world)\b"
+    + r"|\b(?:don'?t|do not) (?:really|even|honestly) want to be (?:here|alive)\b(?! (?:at|in|for|with|on|today|tomorrow|tonight)\b)"
+    + r"|\bwish i could (?:just )?disappear\b(?! (?:into|under|in|for|to|from|off|until|till)\b)"
+    + r"|\bwhat'?s (?:even )?the point (?:any ?more|of (?:anything|it all|me))\b"
+    + r"|\b(?:had|have had|i'?ve had) enough of (?:life|living|being alive|everything(?=\s*(?:[.!?,;]|$| (?:and|now|any ?more)\b)))\b(?! (?:hurting|being|going|today)\b)"
+    + r"|\bcan'?t see (?:a|any) future (?:for (?:myself|me)|any ?more)\b"
+    + r"|\bnothing left for me\b(?! (?:to (?:do|try|eat|take|read)|at|in)\b)"
+    + r"|\b(?:don'?t|do not) want to (?:carry on|go on|keep going)\b(?! (?:with|at|taking|working|the|this|that|my|to)\b)"
+    + r"|\bgiv(?:e|ing) up on (?:everything|life|living)\b", re.I)
+# S-515 (run 62, p85 indirect self-harm, 7/12 missed): searching for ways to end it, taking everything in the cabinet, tonight is the night, thinking about jumping
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern
+    + r"|\b(?:don'?t|do not|can'?t|cannot|dont) (?:really |even )?see (?:the|any) point (?:in|of) (?:tomorrow(?![’'ʼ]s)|the future|going on|carrying on|living|being alive|waking up)\b"
+    + r"|\b(?:looking|searching|googl\w+|reading) (?:up )?(?:for )?(?:ways|how) to (?:end it|die|kill myself|end my life)\b"
+    + r"|\b(?:i'?m|im|i am|i will|i'?ll) (?:going to|gonna) take (?:everything|all of (?:it|them)|all (?:the |my )?(?:tablets|pills|meds|medication))\b (?:that'?s )?(?:in|from) (?:the |my )?(?:cabinet|cupboard|drawer|bathroom)\b(?! (?:and|to) (?:clean|sort|tidy|throw|bin))"
+    + r"|\btonight is the night\b(?=[^.!?]{0,60}\b(?:enough|end|hurting|done|can'?t)\b)"
+    + r"|\b(?:keep|keeps|been|am|i'?m) thinking about (?:jumping(?= *(?:[.!?,;]|$|off (?:a|the) (?:bridge|roof|balcony|building|cliff)|in front))|hanging myself|ending it)", re.I)
+
 _EMERGENCY = re.compile(
     r"\b(?:bleed\w* (?:so|too|this) much|(?:blood|bleed\w*)[^.;!?]{0,40}running down (?:my )?legs|(?:mottled|ashen) skin|"
     r"(?:baby|babies)(?:'s)? (?:kicks?|movements?) (?:have |has )?(?:stopped|slowed|reduced)|(?:not|n'?t) (?:feeling|felt|feel) (?:the |my )?baby (?:move|moving|kick)\w*|"
     r"can'?t (?:get|stand) up|(?:pain|cramps?) (?:is |are )?making me (?:throw up|vomit|be sick|faint|pass out)|puddle of blood|soaked (?:in|with) blood|blood[- ]soaked|"
     r"something (?:has |just )?(?:burst|popped|ripped|torn|tore)|feels? like (?:something|it) (?:has )?(?:burst|popped|ripped|torn|tore)|"
-    r"can'?t keep (?:any )?(?:water|fluids?|anything) down|(?:trouble|difficulty|problems?) (?:getting|catching) (?:my )?breath|(?:trouble|difficulty|problems?) breathing|lips? (?:look|looks|are|is|have gone) (?:blue|grey|gray)|"
+    r"can'?t keep (?:any )?(?:water|fluids?|anything) down|(?:trouble|difficulty|problems?) (?:getting|catching) (?:my )?breath|(?:trouble|difficulty|problems?) breathing|lips? (?:look|looks|are|is|have gone) (?:blue|grey|gray)(?! (?:from|because of|after) (?:the |a )?(?:cold|sea|swim\w*|pool|ice|lipstick|lip ?(?:balm|gloss|tint)|smoothie|blueberr\w*|slush\w*|dye)\b)|"
     r"passing (?:fresh |bright red |lots of |loads of |a lot of )?blood\b(?! clots?)|blood in (?:my )?(?:vomit|poo|stool)|"
-    r"(?:my )?face (?:has |had |is |just )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
-    r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
+    r"(?:my )?face (?:has |had |is |just )?(?:suddenly )?(?:dropped|drooping|drooped)|(?:slurring|slurred) (?:my |the )?(?:words|speech)|words? (?:are |is )?slurr\w+|"
+    r"\bseizures?\b|(?:had|having|got|get|about to have) (?:a )?fit\b(?! of)(?! (?:about|over) (?!(?:the |a )?(?:last|past|weekend|night|morning|day|hour|few|\d+|ten|five|half)\b))(?! because (?:i|we|you)\b)|fit coming|(?:shaking|shaky) and confused|confused and (?:shaking|shaky)|"
     r"can'?t breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|can'?t breath\b|can'?t (?:catch|get) (?:my|a) breath(?![^.;!?]{0,30}\b(?:laugh\w*|giggl\w*|after (?:a |the |my |some )?(?:run|jog|gym|workout|exercise|sprint|stairs|walk|swim|dancing|dance)|running|jogging|climbing (?:the |a few |three |two )?(?:flights? of )?stairs|(?:up|down) the stairs|excitement|excited)\b)|struggling to breathe|chest pain|coughing up blood|"
     r"faint(?:ed|ing)?|passed out|passing out|(?:going|about) to pass out|blacked out|black(?:ing)? out|collaps\w+|"
     r"soaking (?:a |through (?:a )?)?pads? (?:an|every|each) hour|"
     r"bleeding through(?! (?:a |an |my |the )?(?:\w+ )?(?:pads?|tampons?|towels?|cups?)\b(?:(?!\b(?:an hour|1 hour|one hour|half an hour|\d+ ?min\w*|every hour|dizz\w*|faint\w*|light-?headed|weak|clots?)\b)[^.!?])*\b(?:(?:[2-9]|two|three|four|five|six|a few|several) hours?|overnight|in the night|all night)\b(?![^.!?]*\b(?:dizz\w*|faint\w*|light-?headed|weak|clots?)\b))|bleeding (?:heavily|badly)|(?:very |really |so )?heavy bleeding|bleed\w* heavi?l+y|bleeding (?:really |very |so )(?:heavily|badly)|"
-    r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|"
+    r"severe (?:sudden )?(?:\w+ ){0,2}pain|worst pain(?!\s+(?:today|this (?:week|month|cycle|morning|afternoon|evening)|of the (?:day|week|month|year|cycle)|so far|was (?:at|during|on|after|around|about|a|an|day|\d)|(?:today )?(?:is|was) (?:about |around )?(?:a |an )?\d))|unbearable pain|excruciating|in agony|agony|gushing blood|pool of blood|(?:can'?t|can hardly|hardly) breathe?(?![^.;!?]{0,25}\b(?:laugh\w*|giggl\w*)\b)|"
     r"worst (?:pain )?(?:i'?ve|i have) ever|pain so bad|(?:big )?clots? (?:the size of|bigger than)(?!(?: of)? (?:a |an )?(?:\d+p|£\d|pound coin|pea|peas|penny|coin|grape)\b)|pain (?:is |was )?unbearable|pain (?:is |was )?(?:a )?(?:10|ten)(?:/| out of )10|"
     r"sudden (?:sharp |stabbing )?pain|\bi(?:'?m| am| think i'?m)? (?:\w+ ){0,3}miscarr\w+|"
     r"pregnan\w+ and (?:bleeding|pain|cramp\w*)|(?:i'?m|i am|am) pregnant.{0,40}(?:bleeding|pain|cramp\w*)|"
@@ -401,7 +502,7 @@ _EMERGENCY = re.compile(
     r"(?:bled|soaked|soaking) through (?:two|three|four|five|several|a few|multiple|[2-9]|\d\d) (?:pads?|tampons?|towels?)(?: \w+){0,3} (?:in|within) (?:an? |one |two |half an |1 |2 )?(?:hours?|\d+ minutes?)|blood (?:is )?pouring|"
     r"(?:elephant|weight|something heavy|brick|rock).{0,25}(?:on|sitting on) (?:my )?chest|chest.{0,20}like (?:an? )?(?:elephant|weight|brick|vice|rock)|(?:sitting|standing|pressing) on (?:my )?chest|"
     r"clots? (?:as (?:big|large) as) (?:a |an )?(?:orange|lemon|apple|fist|golf ball|tennis ball|egg|plum)|"
-    r"(?:vomit\w*|throwing up|being sick|sick|coughing) (?:up )?blood|(?:lips|fingers).{0,30}\b(?:turning|turned|gone|going) blue\b|\bblue lips\b(?!.{0,40}\b(?:blueberr\w*|blackcurrant|lolly|lollies|slush\w*|sweets?|food colou?ring|dye|lipstick|lip ?(?:balm|gloss|tint)|cold water)\b)|"
+    r"(?:vomit\w*|throwing up|being sick|sick|coughing) (?:up )?blood|(?:lips|fingers).{0,30}\b(?:turning|turned|gone|going|went) (?:a )?(?:blue|bluey|bluish)\b|\bblue lips\b(?!.{0,40}\b(?:blueberr\w*|blackcurrant|lolly|lollies|slush\w*|sweets?|food colou?ring|dye|lipstick|lip ?(?:balm|gloss|tint)|cold water)\b)|"
     r"sudden(?:ly)? (?:loss of vision|lost (?:my )?vision|can'?t see|blind)|loss of vision in one eye|"
     r"(?:pain|cramp\w*).{0,40}pregnant|bleeding.{0,60}(?:has not|hasn'?t) stopped|(?:huge|massive|giant|enormous) clots?|(?:words|speech).{0,20}(?:came out wrong|slurred|garbled)|(?:side|face) (?:went|gone|is|feels?) numb|throat.{0,25}(?:swollen|closing)|(?:swollen|closing) throat|unable to (?:breathe|catch (?:my|his) breath|get (?:any )?air)|(?:was|went|am|i'?m|been|being) unconscious|unconscious for (?:a|an|\d+|some|few)\b|lost consciousness|baby.{0,12}(?:not|n'?t|stopped).{0,6}mov\w+|"
     r"pain (?:in|across|around) (?:my )?chest|(?:chest|jaw).{0,40}(?:down|into|to|spreading|spreads).{0,20}(?:left |my )?(?:arm|jaw)|"
@@ -422,9 +523,9 @@ _PRESENT = re.compile(r"\b(?:is|are|have|has|now|still|currently|today|i'?ve got
 
 # A baby or young child described as limp/floppy/not waking/with a rash that stays under pressure, or not feeding with a fever (NHS 999 lists for children; p110, first contact 2/2 missed)
 _THIRD_CHILD = re.compile(
-    r"(?:\b(?:my |our |the )?newborn|\bmy (?:baby|toddler|\d{1,2} (?:month|year)s? old|\d{1,2}[- ]?(?:month|year)[- ]old|little (?:girl|boy)|son|daughter|child))\b"
-    r"(?=[^.!?\n]{0,80}\b(?:limp|floppy|won'?t wake|can'?t wake|not waking|unresponsive|blue lips|purple rash|rash that (?:doesn'?t|won'?t) fade|not feeding|struggling to breathe)\b)"
-    r"(?![^.!?\n]{0,100}\b(?:fine now|ok now|okay now|was fine|recovered)\b)", re.I)
+    r"(?:\b(?:my |our |the )?newborn|\bmy (?:\w+'?s |\w+s' )?(?:baby|infant)\b|\bmy (?:niece|nephew|grandson|granddaughter|grandchild)\b|\bmy (?:baby|toddler|\d{1,2} (?:month|year)s? old|\d{1,2}[- ]?(?:month|year)[- ]old|little (?:girl|boy)|son|daughter|child))\b"
+    r"(?=[^.!?\n]{0,80}\b(?:limp|floppy|won'?t wake|can'?t wake|not waking|unresponsive|blue lips|purple rash|rash that (?:doesn'?t|won'?t) fade|not feeding|struggling to breathe|(?:very |really |so |too )?(?:sleepy|drowsy|hard to wake)\b[^.!?\n]{0,40}\b(?:won'?t|wont|refus\w+|not) (?:\w+ )?(?:feed\w*|(?:take\w* )?(?:a |the |every |all )?(?:bottle|milk|feeds?))|(?:won'?t|wont|refus\w+) (?:\w+ )?(?:feed\w*|(?:take\w* )?(?:a |the |every |all )?(?:bottle|milk|feeds?))\b[^.!?\n]{0,40}\b(?:sleepy|drowsy|hard to wake)\b)\b)"
+    r"(?![^.!?\n]{0,100}\b(?:fine now|ok now|okay now|was fine|recovered|laugh\w*|giggl\w*)\b)", re.I)
 
 
 def _is_past(clause: str) -> bool:
@@ -435,20 +536,58 @@ def _is_past(clause: str) -> bool:
     return False
 
 
-def _hits(rx, text: str) -> bool:
+_FAINT_WORD = re.compile(r"faint(?:ed|ing)?", re.I)
+_FAINT_RECOVERY = re.compile(r"\b(?:felt|feel|was|am|is) (?:fine|ok|okay|better|normal)\b(?: (?:after|once|when))?|\brecovered\b|\b(?:sat|lay) down\b.{0,40}\b(?:fine|better|ok|okay)\b|\b(?:ate|eaten|drank|had (?:something|a snack|some water))\b.{0,30}\b(?:fine|better|ok|okay|recovered|settled)\b|\b(?:always|usually|every time|as usual)\b.{0,20}\b(?:needles?|blood tests?|injections?|jabs?|the sight of blood)\b|\b(?:needles?|blood tests?|injections?|jabs?|the sight of blood)\b.{0,25}\b(?:always|usually|every time|as usual)\b", re.I)
+
+
+_S488_PAST = re.compile(r"\b(?:yesterday|last (?:night|week))\b", re.I)
+_S488_GONE = re.compile(r"\b(?:gone|better|eased|settled)\b", re.I)
+_S488_STILL = re.compile(r"\b(?:still|again|now|worse|getting)\b", re.I)
+
+
+# S-530 (run 64, p92b): a wish to be hit by a vehicle; self-injury told with self-hatred; "can't take the pain" at the edge of a platform/bridge/roof.
+_SELF_HARM_RX = re.compile(_SELF_HARM_RX.pattern + (
+    r"|\bwish (?:a|that a|the) (?:car|bus|train|lorry|truck|van)\b[^.!?;]{0,25}\b(?:would|could|might)\b[^.!?;]{0,10}\b(?:hit|run over|knock) me\b"
+    r"|\b(?:hate|hated) (?:my body|myself)\b[^.!?;]{0,60}\b(?:scratch\w*|cut|cutting|burn\w*)\b[^.!?;]{0,30}\b(?:bled|bleed\w*|blood)\b"
+), _SELF_HARM_RX.flags)
+
+
+def _hits(rx, text: str, sh: bool = False) -> bool:
     """A match counts unless its clause is negated, in the past, or about someone else."""
     for clause in _CLAUSE.split(text):
+        past = None  # S-507: _is_past depends on the clause only, so compute it once per clause, not once per match
+        seen = 0
         for m in rx.finditer(clause):
+            seen += 1
+            if seen > 25:  # S-507: a note repeating one phrase 25+ times with every earlier hit vetoed; stops quadratic work
+                break
             before = clause[: m.start()]
             after = clause[m.end():]
-            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or _is_past(clause) or _OTHER.search(before) or _RESOLVED.search(after):
+            if past is None and not _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]):
+                past = _is_past(clause)
+            if _NEG.search(_NEG_WINDOW.split(before[-40:])[-1]) or past or _RESOLVED.search(after):
+                continue
+            # run19 (S-307, structure not phrases): another person as the subject stays quiet UNLESS the same clause says it
+            # is happening now, so every existing urgent concept also fires for "my mum can't breathe" (NHS when-to-call-999)
+            # PM-B66 (run42): for self-harm words a report IS the urgent fact ("my son says everyone would be better off without him";
+            # nhs.uk help-for-suicidal-thoughts, 'Worried about someone else?', read 31 Oct 2026), so a reporting verb keeps it live.
+            relayed_sh = sh and _REPORTED.search(before)
+            if _OTHER.search(before) and ((not relayed_sh and (not _OTHER_NOW.search(clause) or (_REPORTED.search(before) and not _LIVE_REPORT.search(clause)))) or _IN_CARE.search(text)):
+                continue
+            if _AGE_PAST.search(clause):
+                continue
+            # run 59 (S-488): "pain so bad yesterday, 9, but gone this morning": the past word and the resolved word sit in different clauses
+            if m.group(0).lower() == "pain so bad" and _S488_PAST.search(clause) and _S488_GONE.search(text[text.find(clause) + len(clause):]) \
+                    and not _S488_STILL.search(text):
+                continue
+            if _FAINT_WORD.fullmatch(m.group(0)) and _FAINT_RECOVERY.search(text):
                 continue
             return True
     return False
 
 
 _PREG_WHOLE = re.compile(r"\bpregnan\w+\b", re.I)
-_PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain)\b", re.I)
+_PREG_SYMPTOM = re.compile(r"\b(?:bleeding|spotting|cramps? (?:are |is )?(?:getting )?worse|severe|sharp pain|one-sided|blurr\w+ vision|pain getting worse|pelvic pain|pain (?:is |was |about |around |like |of )*(?:an? )?(?:8|9|10|eight|nine|ten)\b(?! ?(?:days?|weeks?|hours?|mins?|minutes?|am|pm|o'?clock)))\b", re.I)
 
 
 # "the pain was killing me" describes pain, it is not a statement about self-harm.
@@ -458,8 +597,8 @@ _IDIOM = re.compile(
     r"|\b(?:(?:lower |upper )?back|tum|tummy|stomach|stomache|belly|head|neck|legs?|hips?|ovar(?:y|ies)|side|boobs?|breasts?|womb|pelvis|bum|knees?|feet|joints?|insides|guts)(?:\s+on (?:the|my) (?:left|right)(?: side)?)?(?:'s(?: been)?|\s+(?:is|are|was|were|has been|have been))?(?:\s+still)?(?:\s+(?:really|absolutely|literally|actually|just|properly))?\s+kill(?:ing|s|ed)? me\b"
     # everyday uses of words the lists react to: "faint" as an adjective, a blocked nose, a figure of speech,
     # a tumble at sport, breathlessness after exertion, waiting in agony for results
-    r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort)\b"
-    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?(?:through|thru) (?:my )?nose\b"
+    r"|\bfaint (?:pink|brown|red|ache|aches|cramps?|pain|twinges?|spotting|bleeding|line|smell|discomfort|streak|streaks|trace|traces|mark|marks|tinge|hint|headache)\b"
+    r"|\b(?:can'?t|cannot|hard to|difficult to|struggling to) breathe? (?:properly |well |easily )?(?:through|thru) (?:my |her |his |their )?nose\b"
     r"|\b(?:legs?|arms?|feet|foot|hands?)\b[^.!?;]{0,12}\b(?:fell|gone|went|going) (?:to )?(?:asleep|sleep|dead)\b|\bpins and needles\b|\bcan'?t (?:stand|get) up from (?:the )?(?:sofa|couch|chair)\b"
     r"|\bagony\b[^.!?]{0,25}\bfrom (?:the |my )?(?:gym|running|a run|workout|lifting|exercise|squats)\b"
     r"|\b(?:exams?|homework|revision|work|my job|school|the heat|traffic|this (?:weather|heat|queue|wait|essay))\b[^.!?]{0,15}\bkill(?:ing|s)? me\b"
@@ -469,6 +608,8 @@ _IDIOM = re.compile(
     # wanting a baby is not being pregnant (NHS pelvic pain page: 111 if "pregnant or may be pregnant"); run 01 ruling
     r"|\b(?:get|getting|become|becoming) pregnan\w*|\btrying (?:for|to have) a (?:baby|child)\b|\btrying to conceive\b"
     r"|\bcollaps\w+ (?:on|onto|into) (?:the |my )?(?:sofa|couch|bed|settee|chair)\b"
+    # S-482: a pet collapsing or fitting is a vet matter, not a note about the writer (the writer's own signs stay in the note)
+    r"|\b(?:my|our|the) (?:dog|cat|puppy|kitten|pet|rabbit|hamster|horse|bird)\b[^.!?;,]{0,30}\b(?:collaps\w+|faint\w*|passed out|seiz\w+|had a fit|fitting)\b"
     r"|\bfell over (?:at|in|during|while) (?:the )?(?:gym|running|jogging|skating|netball|football|dance|class)\b"
     r"|\b(?:short(?:ness)? of breath|can'?t (?:get|catch) my breath|out of breath)\b[^.;!?]{0,30}\b(?:after|when|while|during)\b[^.;!?]{0,25}\b(?:run\w*|climb\w*|stairs|exercis\w*|walk\w*|gym|workout|jog\w*|sprint\w*)\b"
     r"|\bagony (?:waiting|of waiting)\b"
@@ -486,7 +627,11 @@ _IDIOM = re.compile(
 
 
 # Two parts of one message split by a comma ("stabbing pain, curled up on the floor") need one look at the whole text.
-_WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left |right )?(?:jaw|arm)\b|"
+_WHOLE = re.compile(r"\btampon\b.{0,80}\b(?<!no )(?<!any )(?<!without )(?<!not )(?<!nor )(?:fever\w*|high temperature|burning hot|shivering|sunburn\w*|rash)\b|\b(?<!no )(?<!any )(?<!without )(?:fever\w*|high temperature|burning hot)\b.{0,60}\btampon\b|"
+                    r"\b(?:pain|ache)\b.{0,25}\b(?:side|tummy|belly|stomach|pelvi\w+)\b.{0,60}\b(?:want to throw up|throwing up|vomit\w*|being sick)\b.{0,60}\b(?:burning hot|fever\w*|high temperature|shivering)\b|"
+                    r"\bchest\b.{0,40}\b(?:tight|heavy|pressure)\b.{0,60}\b(?:left |right )?arm\b.{0,25}\b(?:weird|strange|funny|heavy|numb|tingl\w+|pins and needles)\b|"
+                    r"\b(?:left |right )?arm\b.{0,25}\b(?:weird|strange|funny|heavy|numb|tingl\w+)\b.{0,60}\bchest\b.{0,40}\b(?:tight|heavy|pressure)\b|"
+                    r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b(?:into|to|down|spread\w*) (?:my )?(?:left |right )?(?:jaw|arm)\b|"
                     # blind set v11 (2026-10-27): NHS 111/999 wording for DVT/PE, meningitis, stroke, cauda equina, acute abdomen
                     r"\b(?:stomach|belly|tummy|abdomen)\b.{0,15}\brock[- ]hard\b|"
                     r"\b(?:leg|calf)\b.{0,40}\b(?:swollen|swelling|ballooned|twice the size)\b.{0,80}\b(?:breathless|short of breath|can'?t breathe)|"
@@ -521,7 +666,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # run 01 (S-150, probe 10: 5/12 missed): sudden vision change in one eye, cauda equina wording, seizure, confusion with fever, waters breaking
                     r"\b(?:blurr\w*|lost|loss of|double) vision\b (?:came on |started |began )?(?:suddenly|all of a sudden)\b|\bsudden(?:ly)? (?:\w+ ){0,2}(?:blurr\w*|lost|double) vision\b|\bvision\b.{0,15}\b(?:went|goes|gone)\b.{0,15}\b(?:blurr\w+|black|dark|double)\b.{0,30}\b(?:one eye|suddenly)\b|\bblurr\w+ in one eye\b|"
                     r"\bcan'?t tell when i need (?:a |to )?(?:wee|pee|poo|go)\b|\bcan'?t (?:control|feel) (?:my )?(?:bladder|bowels?)\b|\bnumb\b.{0,40}\b(?:bladder|bowels?|between my legs)\b|"
-                    r"\b(?:had|having) (?:a )?(?:fit|seizure)\b(?! of)|\bconvuls\w+|\bshaking\b.{0,40}\bbit my tongue\b|\bbit my tongue\b.{0,40}\bshaking\b|"
+                    r"\b(?:had|having) (?:a )?(?:fit|seizure)\b(?! of)(?! (?:about|over) (?!(?:the |a )?(?:last|past|weekend|night|morning|day|hour|few|\d+|ten|five|half)\b))(?! because (?:i|we|you)\b)|\bconvuls\w+|\bshaking\b.{0,40}\bbit my tongue\b|\bbit my tongue\b.{0,40}\bshaking\b|"
                     r"\b(?:confused|forgetting where i am|disorientated)\b(?! about\b).{0,60}\b(?:high temperature|fever)\b(?! has (?:gone|settled|come down))|\b(?:high temperature|fever)\b.{0,60}\b(?:confused(?! about\b)|forgetting where i am|disorientated)\b|"
                     r"\bwaters (?:have |just )?broke\b|\bmy waters (?:have )?(?:broken|gone)\b|"
                     # run 01 (S-152, probe 11: 10/10 missed): painkiller overdose by count, stomach bleeding signs after painkillers, opioid mixed with alcohol or doubled, slow breathing, swollen lips
@@ -559,6 +704,16 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:pelvi\w+|tummy|stomach|abdom\w+|belly)\b.{0,15}\bpain\b.{0,80}\b(?:(?:very )?high temperature|fever)\b.{0,60}\b(?:chills|shivering|shivery)\b|"
                     # heart attack told in plain words, and the heavy-chest descriptions NHS lists (any clause)
                     r"\b(?:having|think i'?m having|might be having|feels? like i'?m having) (?:a )?heart attack\b|"
+                    # S-516 (run 62, p87): a relative or child swallowed her pills and is now sleepy / floppy / hard to wake
+                    r"\b(?:brother|sister|son|daughter|child|kid|toddler|baby|boyfriend|girlfriend|friend|mum|mom|dad|nan|gran\w*)\b[^.!?;]{0,25}\b(?:swallowed|ate|got into)\b[^.!?;]{0,30}\b(?:pills|tablets|medication|meds)\b(?![^.!?;]{0,40}\b(?:as normal|as usual|as prescribed|fine|ok|okay)\b)[^.!?;]{0,40}\b(?:sleepy|drowsy|floppy|unresponsive|hard to wake|won'?t wake|not waking)\b|"
+                    # S-524 (run 64, p90): mother/father/partner took many tablets and cannot be woken (either order)
+                    r"\b(?:mother|father|husband|wife|partner|mum|mom|dad|brother|sister|friend|nan|gran\w*|son|daughter|child)\b[^.!?;]{0,25}\b(?:took|has taken|had taken|taken)\b[^.!?;]{0,12}\b(?:many|lots of|loads of|a lot of|too many|so many)\b[^.!?;]{0,12}\b(?:tablets|pills|painkillers|meds)\b(?![^.!?;]{0,40}\b(?:as normal|as usual|as prescribed|fine|ok|okay)\b)[^.!?;]{0,50}\b(?:(?:not|isn'?t|is not|n'?t) able to wake|unable to wake|can'?t be woken|cannot be woken|won'?t wake|will not wake|not waking|not responding|unresponsive)\b|"
+                    r"\b(?:mother|father|husband|wife|partner|mum|mom|dad|brother|sister|friend|nan|gran\w*|son|daughter|child)\b[^.!?;]{0,25}\b(?:(?:not|isn'?t|is not|n'?t) able to wake|unable to wake|can'?t be woken|cannot be woken|won'?t wake|will not wake|not waking|not responding|unresponsive)\b[^.!?;]{0,30}[,;.]?\s*(?:she|he|they)\b[^.!?;]{0,12}\b(?:took|has taken|had taken|taken)\b[^.!?;]{0,12}\b(?:many|lots of|loads of|a lot of|too many|so many)\b[^.!?;]{0,12}\b(?:tablets|pills|painkillers|meds)\b|"
+                    # S-512 (run 62, p83 hedged forms): "think I might be having a stroke", relayed mouth drop, double insulin, painful red eye with halos
+                    r"\b(?:think i(?:'?m| am| might be| may be)|i (?:might|may|could) be|think (?:she|he)(?:'?s| is)|might be|may be) having (?:a )?(?:stroke|heart attack)\b(?! (?:assessment|scan|test|clinic|appointment|risk|of))|"
+                    r"\b(?:mouth|side of (?:her|his|their|my) (?:mouth|face)) (?:has |is |'s |have )?(?:dropped|drooping|drooped|sagging)\b(?! open)|"
+                    r"\b(?:took|taken|injected|had|gave myself) (?:double|twice|too much|an extra|two lots of)\b[^.!?;]{0,25}\binsulin\b|"
+                    r"^(?=.*\beyes?\b[^.!?;]{0,40}\b(?:very |really |so |suddenly )?(?:painful|aching)\b)(?=.*\bred\b)(?=.*\b(?:halos?|rainbow\w*)\b)|"
                     r"\bheavy (?:feeling|weight|pressure)\b.{0,20}\b(?:across|in|on) (?:my )?chest\b|\bchest\b.{0,40}\bsitting on (?:it|me)\b|"
                     # NHS sepsis wording: high temperature with confusion/drowsiness and shaking or no urine (any order)
                     r"^(?=.*\b(?:fever|high temperature)\b)(?=.*\b(?:confus\w*|drowsy)\b)(?=.*\b(?:shak\w+|shiver\w*|(?:haven'?t|not) (?:passed|had) (?:any )?(?:urine|a wee|wee)))|"
@@ -617,7 +772,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:drank|had)\b.{0,30}\b(?:vodka|alcohol|wine|whisky)\b.{0,40}\b(?:took|and took)\b.{0,20}\b(?:sleeping|pills|tablets)\b.{0,60}\b(?:stay awake|struggling|drowsy|slurr\w+)\b|"
                     r"\bbaby\b.{0,30}\b(?:under|less than) (?:3|three|2|two|1|one) months?\b.{0,40}\b(?:fever|high temperature)\b|"
                     # set p97 (midlife, HRT; first contact 2/12 missed)
-                    r"^(?=.*\b(?:calf|leg)\b.{0,20}\b(?:swollen|swelling)\b)(?=.*\b(?:hot|warm)\b)(?=.*\b(?:painful|tender|sore)\b)|\bbleeding like a tap\b|"
+                    r"^(?=.*\b(?:calf|leg)\b.{0,20}\b(?:swollen|swelling)\b)(?=.*\b(?:hot|warm)\b)(?=.*\b(?:painful|tender|sore)\b)|^(?!.*\b(?:sunburn\w*|in the sun|heat pad|hot water bottle|after (?:the |my )?(?:gym|run|yoga|walk|swim)|insect|mosquito|bite)\b)(?=.*\b(?:calf|leg)\b.{0,30}\b(?:hot|warm)\b)(?=.*\bred\b)(?=.*\b(?:sore|swollen|swelling|painful|tender)\b)|\bbleeding like a tap\b|"
                     # set p95 (retained tampon, assault with bleeding, genital infection, prolapse, early labour; first contact 7/12 missed)
                     r"^(?=.*\btampon\b)(?=.*(?:\bleft\b.{0,15}\bin for (?:days|\d+ days|a week)|\bstuck\b|\bforgot\w*|\bcan'?t find\b))(?=.*(?<!no )\b(?:smell\w*|fever|temperature(?! (?:of |is |was |at )?(?:3[0-7]|normal)\b)|rash|unwell)\b)|"
                     r"\b(?:raped|sexually assaulted|sexual assault|forced me)\b.{0,80}\b(?:bleed\w*|in a lot of pain|hurts? so)\b|"
@@ -638,6 +793,8 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"^(?=.*\bimplant\b)(?=.*\b(?:numb|tingling)\b)(?=.*\b(?:badly|severe\w*|spreading|whole arm)\b)|"
                     r"^(?=.*\b(?:zig-?zag|flashing|flickering)\b.{0,15}\b(?:lights?|lines)\b)(?=.*\b(?:numb|weak\w*|slurr\w*)\b.{0,15}\b(?:face|arm|speech)\b|.*\b(?:face|arm)\b.{0,15}\b(?:numb|weak)\b)|"
                     r"^(?=.*\b(?:coil|iud|ius)\b)(?=.*(?<!no )\b(?:shaking|chills|shiver\w*|fever|high temperature)\b)(?=.*\bpain\b)|"
+                    # S-514 (run 62, p84 diary): coil/IUD mentioned (any wording, e.g. "since the coil check") with shivering/fever and a bad smell or discharge
+                    r"^(?=.*\b(?:coil|iud|ius)\b)(?=.*(?<!no )(?<!without )(?<!not )\b(?:shiver\w*|chills|rigors|fever|temperature|(?:3[89]|4\d)(?:\.\d)?)\b)(?=.*(?<!no )(?<!without )\b(?:bad smell|smell\w*|foul|pus)\b)|"
                     # set p81 (high sugar, kidney infection, spreading skin infection, no wee, very high blood pressure; first contact 10/12 missed)
                     r"^(?=.*\b(?:thirsty|thirst)\b)(?=.*\b(?:weeing (?:loads|a lot|lots)|passing (?:huge|lots|loads)|wee loads|peeing (?:loads|a lot))\b)(?=.*\b(?:fruity|losing weight|vomit\w*|drowsy|sleepy)\b)|"
                     r"^(?=.*\b(?:blood sugar|blood glucose|sugar (?:meter|reading|level)|glucose (?:meter|reading|level)|my meter|meter says|reading (?:says|was|is))\b[^.?]{0,25}?\b(?:2\d|[3-9]\d)(?:\.\d)?\b(?!\s*(?:%|percent|minutes|mins|hours|days|g\b)))(?=.*\b(?:sick|sleepy|drowsy|vomit\w*|confus\w*|breathing fast)\b)|"
@@ -656,6 +813,8 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set p75 (medicine reactions and mixing; first contact 4/12 missed)
                     r"^(?=.*\brash\b.{0,30}\bspreading\b)(?=.*\b(?:lips?|tongue|face|eyelids?)\b.{0,20}\b(?:puffy|swollen|swelling)\b)|"
                     r"\b(?:took|taken|had) (?:double|twice|too many|an extra|two lots)\b.{0,50}\b(?:dose|tablets?|pills?|medication)\b.{0,60}\b(?:heart (?:is )?(?:pounding|racing)|shaking(?!\?)|drowsy|can'?t stay awake)\b|"
+                    r"\b(?:heart (?:is )?(?:going (?:mad|crazy|wild)|pounding|racing|hammering)|can'?t stop shaking)\b.{0,60}\b(?:taking|took|taken|had) (?:double|twice|too many|an extra)\b.{0,12}\b(?:meds|medication|tablets?|pills?|dose)\b|"
+                    r"\b(?:taking|took|taken|had) (?:double|twice|too many|an extra)\b.{0,12}\b(?:meds|medication|tablets?|pills?|dose)\b.{0,60}\b(?:heart (?:is )?(?:going (?:mad|crazy|wild)|hammering)|can'?t stop shaking)\b|"
                     r"\bwheez\w*\b.{0,30}\bitch\w*\b.{0,15}\ball over\b|\bitch\w*\b.{0,15}\ball over\b.{0,40}(?<!no )\bwheez\w*\b|"
                     r"\b(?:sleeping|tablets?|pills?|codeine|tramadol|diazepam)\b.{0,30}\b(?:with|and) (?:wine|alcohol|vodka|beer|a few drinks)\b.{0,70}\b(?:out of it|can'?t stay awake|very drowsy|slurr\w+|passing out)\b|"
                     # set p76 (after birth, section or miscarriage; first contact 3/12 missed)
@@ -690,7 +849,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"\b(?:pouring|gushing)\b.{0,15}\bblood\b|\bblood\b.{0,10}\b(?:pouring|gushing)\b|\bgush of blood\b|"
                     r"\bseeing stars\b|\blegs\b.{0,10}\b(?:going from under|giving (?:way|out)|gone from under)|"
                     r"\brigid as a board\b|\b(?:tummy|belly|stomach|abdomen) (?:is |went |feels? )(?:rigid|solid)\b(?! with (?:tension|stress|nerves|anxiety|worry))|"
-                    r"\b(?:mouth|face|eyelid)\b.{0,15}\b(?:droop\w*|dropped|falling)\b|\bcan'?t feel my (?:left|right) side\b|"
+                    r"\b(?:mouth|face|eyelid)\b.{0,15}\b(?:droop\w*|dropped(?! open)|falling)\b|\bcan'?t feel my (?:left|right) side\b|"
                     r"\b(?:lump|clot|tissue)\b.{0,15}\bcame out\b.{0,60}\b(?:freezing|clammy|faint|dizzy)\b|"
                     r"^(?=.*\b(?:after the op|post[- ]?op)\b)(?=.*\b(?:fever|high temperature)\b)(?=.*\b(?:swollen|smell\w*|pus|discharge))|"
                     r"\bchest\b.{0,15}\bsqueezing\b|\bsqueezing\b.{0,15}\bchest\b|"
@@ -707,6 +866,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set v17 (typed fast): pad counts with abbreviations, very hot + confused, sudden headache with stiff neck
                     r"\b(?:soaked|soaking|filled|gone through|went through|used)\b.{0,12}\b\d+ (?:pads?|tampons?)\b.{0,15}\b(?:in|within) (?:\d+|an?|one|two|three|four) (?:hrs?|hours?)\b|"
                     r"^(?=.*\b(?:very hot|burning up|fever|high temperature)\b)(?=.*\bconfus\w*)(?=.*\b(?:shak\w+|shiver\w*))|\bconfus\w*\b.{0,40}\b(?:don'?t|do not|dont) know (?:what day|where i am|who)\b|"
+                    r"\bmigraine\b.{0,25}\bworst (?:ever|of my life)\b.{0,60}\b(?:vomit\w*|being sick|stiff neck|can\'?t look at (?:the )?light|light (?:hurts|is hurting))\b|\bworst migraine (?:ever|of my life)\b.{0,60}\b(?:vomit\w*|being sick|stiff neck|neck (?:is )?stiff|can\'?t look at (?:the )?light)\b|" 
                     r"\b(?:sudden|terrible|worst|awful|explosive)\b.{0,15}\bheadache\b.{0,60}\b(?:neck (?:is |feels |has gone )?stiff|stiff neck|hit (?:w|with)|like being hit)\b|"
                     # sepsis / DKA / stroke / postnatal-infection wording (set v15, first contact 4/20 missed)
                     r"^(?=.*\b(?:burning up|rigors?|temperature (?:of )?(?:3[89]|4\d))\b)(?=.*\b(?:heart (?:racing|pounding)|(?:haven'?t|not) (?:peed|passed (?:any )?urine|had a wee)|tummy pain|confus\w*))|"
@@ -720,6 +880,46 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     # set p119 (hedged wording; first contact 2/10 missed): blood from the ears after a fall or knock, blue lips on a baby or child
                     r"\bblood\b.{0,20}\b(?:coming |running |leaking |dripping )?(?:out of|from) (?:both |my )?(?:ears?|nose and ears?)\b.{0,40}\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b|\b(?:fell|fall|hit|knock\w*|bang\w*|crash\w*|accident)\b.{0,40}\bblood\b.{0,20}\b(?:out of|from) (?:both |my )?ears?\b|"
                     r"\b(?:baby|toddler|child|son|daughter|newborn)(?:'s|s'| has| have)?\b.{0,25}\b(?:lips|face|skin)\b.{0,20}\b(?:gone |turned |going |look\w* |are |is )?(?:a bit |slightly |very )?(?:blue|grey|gray)\b|"
+                    # S-497 (run 60, p75): "my baby is blue around the lips" - colour named before the lips
+                    r"\b(?:baby|toddler|child|son|daughter|newborn)(?! blue)(?:'s|s'| has| have| is| looks?| looking)?\b.{0,25}\b(?:blue|bluish|grey|gray|purple) (?:around |near |at |on |in )?(?:the |his |her |their )?(?:lips|mouth)\b|\b(?:baby|toddler|child|son|daughter|newborn)(?! blue)\b.{0,25}\b(?:went|turned|gone|going|turning) (?:a bit |slightly |very )?(?:blue|grey|gray|purple)\b|"
+                    # S-509 (run 61, p81): fever with an immune-lowering medicine; a medicine taken twice with heart pounding / feeling sick
+                    r"^(?![\s\S]*\b(?:no fever|without fever|not feverish|no temperature)\b)(?=[\s\S]*\b(?:on|taking|started|having) (?:methotrexate|azathioprine|chemo\w*|immunosuppress\w*|biologics?|mycophenolate)\b)(?=[\s\S]*\b(?:fever|feverish|high temperature|chills|shivering)\b)|"
+                    r"\b(?:taken|took|had) (?:my )?(?:meds|medication|tablets|pills|dose)\b[^.!?;]{0,25}\b(?:twice|double|two times)\b(?![^.!?;]{0,25}\b(?:late|early|hours? (?:late|early))\b)[^.!?;]{0,40}\b(?:heart (?:is )?(?:pounding|racing)|feel(?:ing)? sick|drowsy|shaking|can'?t stay awake)\b|"
+                    # S-506 (run 61, p79): relayed cannot-feel-legs with lost bladder/bowel control; another person bleeding heavily and gone pale; half the vision going with a pounding head; vomiting with no wee since
+                    r"^(?=[\s\S]*\bcan'?t feel (?:her|his|my|their) legs\b)(?=[\s\S]*\b(?:lost control of|can'?t control|wetting|soiling) (?:her|his|my|their)? ?(?:bladder|bowels?)\b)|"
+                    r"^(?![\s\S]*\b(?:my period|usual|normal for me|settled|stopped)\b)(?=[\s\S]*\b(?:friend|mum|mom|sister|daughter|partner|wife|girlfriend|she|her)\b[^.!?;]{0,40}\bbleed\w*[^.!?;]{0,20}\b(?:heav\w+|a lot)\b)(?=[\s\S]*\b(?:gone|went|looks?|turned) (?:really |very |so )?(?:pale|grey|gray|white)\b)|"
+                    r"\b(?:flashing lights|zigzags?)\b[^.!?;]{0,40}\b(?:half|part|one side) (?:of )?(?:my )?(?:vision|sight)\b[^.!?;]{0,25}\b(?:goes|went|gone|disappear\w*|lost)\b|"
+                    r"\b(?:vomit\w*|throwing up|sick)\b[^.!?;]{0,30}\b(?:days?|hours)\b[^.!?;]{0,30}\b(?:haven'?t|have not|not|hasn'?t) (?:weed|peed|passed (?:any )?urine|had a wee|been for a wee)\b|"
+                    # S-505 (run 61, p78 hedged first-contact set): soaked several pads since a time marker; a relative suddenly unable to speak properly; blood on passing urine with fever; sudden calf pain with swelling
+                    r"^(?![\s\S]*\b(?:whole period|each period|every period|usually|normally|per day|a day|on average|last month|last year|ages ago)\b)(?=[\s\S]*\bsoaked (?:through )?(?:\d+|three|four|five|six|seven|eight|several|lots of|a lot of) (?:pads?|tampons?|towels?)\b[^.!?;]{0,30}\b(?:since|in the last|over the last|within|in (?:an|one|two|three|four) hours?|this morning|today|tonight)\b)|"
+                    r"\b(?:my|his|her) (?:mum|mom|dad|nan|gran|grandad|husband|wife|partner|friend|sister|brother)\b[^.!?;]{0,15}\b(?:suddenly )?(?:can'?t|cannot|couldn'?t) (?:speak|talk|get (?:her|his) words out)\b[^.!?;]{0,25}\b(?:all of a sudden|suddenly|just now|out of nowhere)\b|\b(?:my|his|her) (?:mum|mom|dad|nan|gran|grandad|husband|wife|partner|friend|sister|brother)\b[^.!?;]{0,15}\b(?:suddenly|just now) (?:can'?t|cannot|couldn'?t) (?:speak|talk)\b|"
+                    r"\bblood\b[^.!?;]{0,25}\b(?:when|while) (?:i|she) (?:pee|wee|urinate)\b[^.!?;]{0,40}\b(?:high )?(?:fever|temperature)\b|"
+                    r"^(?![\s\S]*\b(?:gym|run|ran|stretch\w*|settled|gone|eased|insect|bite|sting|cramp)\b)(?=[\s\S]*\bcalf\b)(?=[\s\S]*\b(?:swollen|swelling)\b)(?=[\s\S]*\b(?:sudden\w*|terrible|severe|sharp|agony|worst)\b)|"
+                    # S-503 (run 61): heart racing/pounding with feeling about to pass out, in the same note; settled, past or exercise-linked notes stay quiet
+                    r"^(?![\s\S]*\b(?:settled|fine now|eased|passed|yesterday|last (?:week|night|month)|earlier|gym|run(?:ning)?|stairs|coffee|exam|presentation|interview|a bit)\b)(?=[\s\S]{0,160}\b(?:heart|pulse)\b[^.!?;]{0,40}\b(?:rac\w+|pound\w+|going (?:crazy|so|really) fast|beating (?:so |really )?fast)\b)(?=[\s\S]{0,160}\b(?:will|going to|about to|might|think i'?ll) (?:pass|black) out\b|\bfeel(?:ing)? like (?:i'?ll|i will|i'?m going to|i might) (?:pass|black) out\b)|"
+                    # S-501 (run 61): lips purple/blue on another person who is struggling (to breathe); a newborn/baby pale or mottled and not feeding
+                    r"\b(?:her|his|their|my (?:baby|son|daughter|mum|mom|dad|nan|friend)'?s?) lips\b[^.!?;]{0,25}\b(?:look\w*|are|is|gone|turned|turning) (?:a bit |very |really )?(?:purple|blue|bluish|grey|gray)\b[^.!?;]{0,40}\b(?:struggl\w+(?! (?:with|at|in|on|to (?:pay|get|keep|focus|study|cope|concentrate|sleep|revise)))|gasp\w*|can'?t breathe|hard to breathe)\b|"
+                    r"\b(?:newborn|baby|infant)\b[^.!?;]{0,25}\b(?:look\w*|is|seems?) (?:very |really |so )?(?:pale|mottled|grey|gray)\b[^.!?;]{0,25}\b(?:and )?(?:mottled|floppy|pale|limp)\b[^.!?;]{0,30}\b(?:won'?t|wont|not|isn'?t|refus\w+) (?:\w+ )?(?:feed\w*|eat\w*|take\w* (?:a |the )?(?:bottle|milk))\b|"
+                    # S-498 (run 60, p75): bleeding that keeps getting heavier together with dizziness or fainting; "my period"/"usual" notes stay quiet
+                    r"^(?![\s\S]*\b(?:my period|period pain|usual|normal for me|no dizz\w+|not dizz\w+|stopped|settled|eased|gums?|nose ?bleeds?)\b)(?=[\s\S]{0,160}\bbleed\w*\b[^.!?;]{0,60}\b(?:getting|got|gets|becoming|become|becomes) (?:much |a lot |far )?(?:heavier|worse|more))(?=[\s\S]{0,160}\b(?:dizz\w+|faint\w*|light ?headed|woozy)\b)|"
+                    # S-517 (run 63, p88): stiff neck with a rash or dislike of light (any person), sudden loss of part of the vision; short or settled wording stays quiet
+                    r"^(?![\s\S]*\b(?:slept (?:funny|badly|wrong|awkward\w*)|no rash|no fever|after (?:the )?gym|pulled|muscle)\b)(?=[\s\S]*\b(?:stiff neck|neck (?:is |was |feels |has gone )?(?:very |really |so )?stiff)\b)(?=[\s\S]*\brash\b)(?![\s\S]*\b(?:usual|migraine|eczema|new soap|sunburn)\b)|"
+                    r"\b(?:half|part|some|most|all) (?:of )?(?:my|her|his) (?:vision|sight) (?:is |has |was |went |just )?(?:gone|lost|missing|black|blank|disappeared)\b(?![^.!?]{0,60}\b(?:screen|phone|laptop|glasses|lens|camera|game|crack\w*)\b)(?![^.!?]{0,40}\b(?:for a (?:second|moment|few seconds)|stood up|back to normal|now fine)\b)|\b(?:lost|losing) (?:the )?(?:vision|sight) in (?:one|my left|my right|an?) eye\b(?! of\b)(?![^.!?]{0,40}\b(?:for a (?:second|moment|few seconds)|back to normal)\b)|"
+                    # S-518 (run 63, p89): temperature 39 or more with pain and sickness or shaking; a baby of a few weeks that is hot; 10 or more painkillers taken; waters leaking before 37 weeks
+                    r"^(?![\s\S]*\b(?:last (?:week|month|year)|yesterday|gone now|settled|no pain|heat pad|heating pad|hot water bottle|heat patch|oven|shower|bath|sauna|hot tub|thermostat|setting|wash)\b)(?=[\s\S]*\b(?:temp(?:erature)?|fever) (?:of |is |was |at )?(?:39|40|41|42)\b)(?=[\s\S]*\bpain\b)(?=[\s\S]*\b(?:sick|vomit\w*|shak\w+|shiver\w*|chills|confus\w*)\b)|"
+                    r"^(?![\s\S]*\b(?:no fever|not hot|not feverish|normal temp\w*|temperature (?:is |was )?(?:normal|fine|ok|okay)|was hot yesterday|now fine)\b)(?=[\s\S]*\b(?:baby|newborn|son|daughter|little one|infant)\b)(?=[\s\S]*\b(?:[1-9]|[1-4]\d|5[0-6]|one|two|three|four|five|six|seven|eight|nine|ten) days? old\b|[\s\S]*\b(?:[1-8]|one|two|three|four|five|six|seven|eight) weeks? old\b)(?=[\s\S]*\b(?:hot|feverish|fever|high temp\w*|burning up|temperature of 3[89]|(?:has|got|having|running|with) an? (?:high )?temperature)\b)|"
+                    r"\b(?:took|taken|had|swallowed|ate) (?:1[0-9]|[2-9]\d|twelve|thirteen|fourteen|fifteen|twenty) (?:of (?:my |the )?)?(?:ibuprofen|paracetamol|co-?codamol|codeine|naproxen|aspirin|painkillers?)\b(?![^.!?]{0,30}\b(?:over (?:the |a )?(?:week|month|year)|since last|in total over)\b)|"
+                    r"^(?=[\s\S]*\b(?:gush|leak\w*|trickle|trickling)\b[^.!?]{0,15}\b(?:fluid|water|waters)\b|[\s\S]*\bwaters? (?:broke|have broken|went|has gone))(?=[\s\S]*\b(?:2[0-9]|3[0-6]|1[6-9]) ?weeks?\b)(?![\s\S]*\b(?:not pregnant|not leaking|was just wee|bottle|tap|glass|pipe|kettle|course|into the year)\b)|"
+                    r"^(?![\s\S]*\b(?:vitamins?|supplements?|multivit\w*|steps)\b)(?=[\s\S]*\b(?:ibuprofen|paracetamol|co-?codamol|codeine|naproxen|aspirin|painkillers?|tablets|pills)\b)(?=[\s\S]*\b(?:took|taken|had|swallowed) (?:1[0-9]|[2-9]\d|twelve|thirteen|fourteen|fifteen|twenty)\b[^.!?]{0,25}\b(?:by (?:accident|mistake)|accidentally|too many)\b)|"
+                    # S-520 (run 63, p90): tight throat with a puffy face, lips or tongue (any cause named); several sleeping pills with drink and cannot stay awake
+                    r"^(?![\s\S]*\b(?:no swelling|not swollen|not puffy|dentist|botox|fillers?)\b)(?=[\s\S]*\b(?:throat|chest)\b[^.!?]{0,15}\b(?:tight|closing|closed|tightening)\b|[\s\S]*\btight (?:throat|chest)\b)(?=[\s\S]*\b(?:face|lips?|tongue|eyes)\b[^.!?]{0,15}\b(?:puffy|swollen|swelling|puffing)\b|[\s\S]*\b(?:puffy|swollen|swelling) (?:face|lips?|tongue|eyes)\b)|"
+                    r"^(?![\s\S]*\b(?:but fine|all good|no worries|vitamins?)\b)(?=[\s\S]*\b(?:took|taken|had|swallowed) (?:a few|several|loads of|lots of|a handful of|half a packet of) (?:of )?(?:my |the )?(?:sleeping pills|sleepers|tablets|pills|meds|codeine|tramadol)\b)(?=[\s\S]*\b(?:whisky|whiskey|wine|vodka|alcohol|gin|rum|beer|drink)\b)(?=[\s\S]*\b(?:can\'?t (?:keep my eyes open|stay awake|stay up)|so (?:sleepy|drowsy)|eyes (?:are )?closing|passing out|blacking out)\b)|"
+                    # S-521 (run 63, p91): a hot, swollen, painful joint with a fever (septic joint); no fever or "no swelling" stays quiet
+                    r"^(?![\s\S]*\b(?:no fever|no swelling|not swollen|last (?:week|year)|gout|sprain\w*)\b)(?=[\s\S]*\b(?:joint|knee|hip|ankle|wrist|elbow|shoulder)\b[^.!?;]{0,30}\b(?:hot|swollen|red)\b[^.!?;]{0,30}\b(?:hot|swollen|red|painful)\b|[\s\S]*\b(?:hot|swollen|red)\b[^.!?;]{0,12}\b(?:swollen|painful|red)\b[^.!?;]{0,20}\b(?:joint|knee|hip|ankle|wrist|elbow|shoulder)\b)(?=[\s\S]*\b(?:fever|temp(?:erature)?)\b[^.!?;]{0,12}\b(?:3[89]|4[0-2])\b|[\s\S]*\b(?:fever|feverish|shiver\w*|chills)\b)|"
+                    # S-516 (run 63, p87): bleeding or a period that has gone on for weeks (or will not stop) with dizziness or fainting; "usual", "settled", "no dizzy" stay quiet
+                    r"^(?![\s\S]*\b(?:usual|normal for me|no dizz\w+|not dizz\w+|stopped|settled|eased|last (?:year|month))\b)(?=[\s\S]{0,160}\b(?:period|bleed\w*)\b[^.!?;]{0,40}\b(?:won'?t stop|will not stop|not stopped|hasn'?t stopped|(?:for|been|lasted|lasting) (?:over |about |nearly |more than )?(?:[2-9]|two|three|four|several|a few) weeks?|(?:for|been) (?:weeks|ages)))(?=[\s\S]{0,200}\b(?:dizz\w+|faint\w*|light ?headed|woozy)\b)|"
+                    # S-516: late pregnancy (weeks given) with a hard or rock-hard bump and pain or bleeding
+                    r"^(?=[\s\S]*\b(?:2[0-9]|3[0-9]|4[0-2]) ?weeks?\b|[\s\S]*\b(?:pregnan\w+|third trimester|due in)\b)(?=[\s\S]*\b(?:bump|belly|tummy|stomach|womb|uterus)\b[^.!?;]{0,25}\b(?:rock ?hard|hard as|very hard|so hard|rigid)\b|[\s\S]*\b(?:rock ?hard|very hard|so hard)\b[^.!?;]{0,25}\b(?:bump|belly|tummy|stomach)\b)(?=[\s\S]*\b(?:bleed\w*|blood|spotting)\b|[\s\S]*\b(?:bad|severe|sharp|constant|strong) pain\b)(?![\s\S]*\b(?:braxton|practice contraction\w*|tightening only|no (?:pain|bleeding))\b)|"
                     # arm numbness with jaw pain and sweating, split across clauses ("... and i'm sweating" starts a new clause; found by the apostrophe variant test)
                     r"^(?=.*\barm\b.{0,25}\b(?:numb|tingl\w+|heavy)\b)(?=.*\bjaw\b.{0,25}\b(?:hurts?|aches?|pain\w*|tight|clench\w*)\b)(?=.*\b(?:sweat\w*|clammy|breathless|feel sick|nausea\w*)\b)|"
                     # set p118 (first contact 2/10 missed): an ambulance called or needed, pain that keeps getting worse and will not stop
@@ -751,7 +951,7 @@ _WHOLE = re.compile(r"\bchest\b.{0,40}\b(?:tight|pain|pressure|heavy)\b.{0,80}\b
                     r"^(?=.*\b(?:blood sugar|glucose|meter)\b.{0,30}\b(?:says |reads |showing |shows )?\"?hi\"?\b)(?=.*\b(?:very thirsty|breathing fast|tummy hurts|vomit\w*|drowsy)\b)|"
                     r"\b(?:size of (?:an? )?(?:orange|grapefruit|fist|lemon)|big lumps?)\b.{0,60}\b(?:soaking|soaked)\b.{0,60}\bevery (?:\d+|few|ten|twenty|fifteen|thirty) ?(?:min\w*)\b|"
                     # set p106 (first contact 5/10 missed): fertility treatment swelling with breathlessness, pregnancy headache with flashing lights, bladder numbness in words, double-over pain with cold sweat, spreading hot red leg with chills
-                    r"^(?=.*\b(?:egg collection|egg retrieval|ivf|stimulation|injections?)\b)(?=.*\b(?:belly|tummy|abdomen|stomach)\b.{0,25}\b(?:huge|tight|swollen|bloated|hard)\b)(?=.*\b(?:can'?t breathe|barely breathe|short of breath|breathless\w*|struggling to breathe)\b)|"
+                    r"^(?=.*\b(?:egg collection|egg retrieval|ivf|stimulation|injections?)\b)(?=.*(?:\b(?:belly|tummy|abdomen|stomach)\b.{0,25}\b(?:huge|tight|swollen|bloated|hard)\b|\b(?:massively|hugely|so|very|really|extremely) (?:bloated|swollen)\b|\bbloated (?:massively|hugely)\b))(?=.*\b(?:can'?t breathe|barely breathe|short of breath|breathless\w*|struggling to breathe|(?:hardly|barely) (?:peed|passed (?:any )?(?:wee|urine))|barely any (?:wee|urine))\b)|"
                     r"^(?=.*\b(?:\d{2} weeks|pregnan\w+)\b)(?=.*\b(?:headache|head (?:is )?pounding|head hurts)\b)(?=.*\b(?:flashing lights?|flashes|seeing spots|blurr\w+ vision)\b)|"
                     r"\bcan'?t feel when i'?m (?:peeing|weeing|pooing|going)\b|\bcan'?t feel (?:myself )?(?:peeing|weeing)\b|"
                     r"\b(?:doubled me over|doubled over)\b.{0,60}\b(?:vomiting|being sick)\b.{0,60}\b(?:cold|clammy)\b.{0,15}\b(?:sweaty|and sweaty|sweat)\b|"
@@ -793,9 +993,13 @@ _SHOULDER = (r"(?:shoulder[- ]?tip|tip of (?:my |the )?shoulder|(?:end|top) of (
 _FEVER = (r"(?:(?<!no )(?<!not )(?<!without )(?<!any )fever\w*|high temperature|(?<!no )(?:a|running a) (?:temperature|temp)\b|temperature of|burning up|boiling hot|"
           r"(?<!a bit )(?<!a little )(?<!slightly )shiver\w*|the shivers|(?<!from the cold, )shaking|(?<!a bit )(?<!a little )(?<!slightly )shaky|rigou?rs|heart (?:is |'s )?(?:\w+ ){0,2}(?:racing|pounding)|heart(?:'s| is)? going (?:really |so )?fast|heart won'?t slow|\b(?:38|39|40)(?:\.\d)?\b)")
 # run09: Data's near-miss (d) 2/10 at first contact: "no surgery recently" and "my sister had a fever after her C-section".
-_PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?<!her )(?<!his )(?<!their )(?<!mum's )(?<!mom's )(?<!sister's )(?<!friend's )(?:(?:coil|iud|ius|mirena) (?:was )?(?:fitted|put in|inserted|in)\b|got my (?:coil|iud) in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c-?section|caesarean|"
-         r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b)\b")
-_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|fine since|from the cold|gone by|went away|settled|family history|(?:friend|sister|mum|mom|mother|partner|daughter|cousin|colleague) (?:had|has had|is having) (?:(?:a|an|her)\b[^.!?\n]{0,20})?(?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|c-?section))\b)"
+_PROC = (r"(?<!no )(?<!no recent )(?<!not had a )(?<!not had an )(?<!haven't had a )(?<!havent had a )(?<!without )(?<!her )(?<!his )(?<!their )(?<!mum's )(?<!mom's )(?<!sister's )(?<!friend's )(?:(?:coil|iud|ius|mirena) (?:was )?(?:fitted|put in|inserted|in)\b|got my (?:coil|iud) in|laparoscopy|hysteroscopy|surgery|operation|\bop\b|post-?op\b|c[- ]?section|caesarean|"
+         # run25 (own set voice-pp5class-run25, committed before code): childbirth is a recent procedure for the fever rule
+         # (nhs.uk/conditions/sepsis; speech-to-text writes "c section" and "had the baby nine days ago")
+         r"(?:had|have had) (?:the|my) baby(?! (?:jab|vaccin|clinic|check|group|class|shower))|gave birth|given birth|since (?:the|my) birth|"
+         r"egg collection|biopsy|procedure|ablation|\bd&c\b|\berpc\b|"
+         r"(?:since|after|following) (?:the |my )?(?:delivery|miscarriage|pregnancy loss|medical management)|post-?partum|post-?natal)\b")
+_PROC_NOT = r"(?![\s\S]*\b(?:before (?:my|the) (?:op|operation|surgery|procedure)|(?:had (?:the|my) baby|gave birth|given birth|since (?:the|my) birth)[^.;!?\n]{0,40}?(?:last year|a year ago|(?:years?|months?) ago|(?:back )?in (?:19|20)\d\d|last (?:spring|summer|autumn|winter))|(?:had (?:the|my) baby|gave birth|given birth) (?:back )?in (?:january|february|march|april|may|june|july|august|september|october|november|december)|booked|tomorrow|next (?:week|month)|(?:years?|months?) ago|all fine now|fine now|fine since|from the cold|gone by|went away|settled|family history|(?:friend|sister|mum|mom|mother|partner|daughter|cousin|colleague) (?:had|has had|is having) (?:(?:a|an|her)\b[^.!?\n]{0,20})?(?:op|operation|surgery|procedure|laparoscopy|hysteroscopy|biopsy|c-?section))\b)"
 _BACK = r"(?:back(?:'s| is| has)? (?:\w+ ){0,3}(?:pain|ache|hurts?|agony|bad|gone|killing|went)|back pain|bad back|my back went|lower back|sciatica)"
 _SADDLE = (r"(?:numb\w* (?:around|in|down|under) (?:my )?(?:bottom|bum|genitals|vagina|down there|privates|groin|anus)|numb\w* between my legs|"
            r"(?:bottom|bum|genitals|groin|saddle|down there)(?: area)? (?:feels? |is |has gone |gone |going )?numb|can'?t (?:really )?feel (?:it |anything )?(?:when i wipe|between my legs|down there))")
@@ -843,6 +1047,12 @@ _SELF_WHOLE = re.compile(
 # (1) no wee all day / for hours + a temperature or shivering (nhs.uk/conditions/sepsis, reviewed 14 May 2026);
 # (2) too many painkillers by accident (nhs.uk/medicines/paracetamol-for-adults "If you take too much": A&E, read 2026-10-28);
 # (3) sudden tummy pain with a hard or rigid belly (nhs.uk/conditions/stomach-ache 999 list, read 2026-10-28).
+# run12 (Safety run28 ruling Q2: "took a lot of paracetamol on purpose" keeps the Samaritans line; it got NO line on run11):
+# her own tablets taken on purpose / deliberately, whole note.
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + r"|\b(?:took|taken|taking|swallowed|had)\b[^.!?\n,]{0,40}\b" + _MEDS
+                         + r"\b[^.!?\n,]{0,20}\b(?:on purpose|deliberately|intentionally|to hurt myself)\b|\b(?:deliberately|intentionally) (?:took|taken|swallowed|had)\b[^.!?\n,]{0,40}\b" + _MEDS + r"\b", _SELF_WHOLE.flags)
+
+
 _NOWEE = (r"(?:(?:haven'?t|have not|hasn'?t|not|no|didn'?t) (?:had |done |been for |passed )?(?:a |any )?(?:wee|pee|urine)\b[^.!?]{0,30}"
           r"(?:all day|since|for (?:\d+|hours|ages)|in (?:\d+|over \d+) hours|today)|not (?:weed|peed|passed (?:any )?urine) (?:since|for|in|all day))")
 _ACC_OD = (r"(?:took|taken|had) (?:double|twice|more|too many|too much)(?: of)? (?:my |the )?(?:\w+ )?(?:painkillers|paracetamol|co-?codamol|ibuprofen|codeine|tablets|pills)\b"
@@ -854,12 +1064,80 @@ _WHOLE = re.compile(_WHOLE.pattern
                     + r"|^(?=[\s\S]*\b(?:sudden\w*|out of nowhere|all of a sudden)\b)(?=[\s\S]*(?:" + _HARDBELLY + r"))(?![\s\S]*\b(?:every period|as usual|from the gym)\b)", _WHOLE.flags)
 
 
+# run21 pelvic-pain PARAPHRASE concepts (own set pp-paraphrase-run21, committed before code; nhs.uk/conditions/pelvic-pain,
+# reviewed 24 Nov 2025, read 29 Oct 2026). A lower-tummy/pelvic pain context word AND one 999 sign said in plain speech:
+# passing out by its slang, shoulder-tip pain by its place, breathing trouble by its effect, heavy bleeding by pad/towel
+# speed or clot size, sudden confusion by repetition / nonsense / lost memory, and touch/move by what a jolt or a hand does.
+# Past/resolved or as-usual notes stay quiet (last month, nothing new, as always, usual, from the gym, unfit).
+_P_CTX = (r"\b(?:pelvi\w*|(?:lower|low) (?:tummy|belly|abdomen|down)|(?:tummy|belly|pain|ache|cramp\w*) (?:pain )?low down|pain down (?:low|below)|"
+          r"period[- ]type pain|low in my pelvis)\b")
+_P_QUIET = (r"(?![\s\S]*\b(?:last (?:month|period|time|year|week)|nothing new|as always|as usual|same as (?:always|every)|usual clots|from the gym|"
+            r"because i'?m unfit|exercises? (?:for the pain )?helped|helping|helped)\b)")
+_P_SIGN = (r"(?:\bblack(?:ed)? out\b|\bkeel(?:ed)? over\b|\bcame (?:round|to)\b|\bgone for a (?:few )?(?:seconds|second|minute)|"
+           r"\broom (?:is |keeps |kept |was )?spinning\b|\bsit on the floor before i (?:hit|fell)|"
+           r"\b(?:tip|top|point|end|edge) of (?:my |the )?(?:\w+ )?shoulder|\bshoulder (?:tip|point)\b|"
+           r"\bcan'?t (?:get|catch) (?:a full |my )?breath|\bcan'?t fill my lungs\b|\bgasping\b|\bbreath(?:ing)? (?:\w+ ){0,2}(?:fast and shallow|catches)|\bevery breath catches\b|"
+           r"\bpuffing\b[^.!?]{0,40}\b(?:lying|sitting|sofa|bed)\b|"
+           r"\bpad every (?:\d{1,2}|ten|fifteen|twenty|thirty) min|\bclots? (?:the size of|as big as) (?:a |an )?(?:plum|golf ?ball|lemon|orange|fist|egg)|"
+           r"\b(?:flooded|soaked|bled) (?:through )?(?:a |my |the )?(?:\w+ )?(?:pad|towel|jeans|sheets?)\b[^.!?]{0,40}\b(?:in (?:half an hour|\d+ min\w*|an hour|minutes)|sitting on it)|"
+           r"\bsoaked a towel\b|\bblood (?:just )?(?:pouring|gushing|streaming)\b|\b(?:gone|been|got) through [4-9] pads since\b|\bfar too much blood\b|"
+           r"\basked (?:her |him |them |you )?the same (?:thing|question) (?:\w+ )?(?:times|again and again|over and over)|\btalking (?:nonsense|gibberish)\b|"
+           r"\bwords came out (?:muddled|jumbled|wrong)\b[^.!?]{0,20}\b(?:all of a sudden|suddenly|out of nowhere)|\b(?:all of a sudden|suddenly|out of nowhere)\b[^.!?]{0,20}\bwords came out (?:muddled|jumbled)|"
+           r"\b(?:couldn'?t|can'?t|don'?t) (?:remember|work out) how i'?d? (?:got|get|ended up)\b|\bdidn'?t know it was (?:mon|tues|wednes|thurs|fri|satur|sun)day\b|"
+           r"\bevery (?:bump|jolt|step|movement)\b[^.!?]{0,30}\b(?:scream\w*|agony|cry|crying|through the roof)|"
+           r"\bshifting (?:at all )?(?:sends|makes)\b|\bfrozen in one position\b|"
+           r"\bcan'?t (?:bear|stand|let) (?:anyone|anything|the seatbelt|my clothes|clothes)[^.!?]{0,20}\b(?:press\w*|touch\w*|rest\w*)|\bcouldn'?t (?:even )?let the seatbelt rest)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _P_QUIET + r"(?=[\s\S]*" + _P_CTX + r")(?=[\s\S]*" + _P_SIGN + r")", _WHOLE.flags)
+
+
+# run21 S-328 postpartum psychosis (Safety High; own set s328-postpartum-run21 committed before code; nhs.uk/mental-health/conditions/
+# post-partum-psychosis, reviewed 18 Oct 2023, read 29 Oct 2026: "a medical emergency"; GP immediately / same day, 999 if imminent harm).
+# After-birth context AND one sign said in plain speech: hearing/seeing things that are not there, a fixed false belief (baby swapped,
+# being poisoned/watched/sent messages, chosen), no sleep for nights + racing talk or big plans, laughing-then-sobbing swings,
+# not making sense / not knowing the year. Baby blues, a professional's reassurance, someone else's past and 'laughed about it' stay quiet.
+_PP_CTX = (r"\b(?:baby (?:is|was) (?:\d+|a|one|two|three) (?:days?|weeks?) old|since (?:the|my|our) (?:birth|c-?section|delivery)|"
+           r"since (?:the|my|our) (?:baby|son|daughter|little one) (?:was born|came|arrived)|(?:after|since) having (?:her|him|the baby|my baby)|"
+           r"gave birth|had (?:my|the|our|her|their) baby|\b(?:she|i) had (?:him|her|them|the twins) (?:on \w+day|last week|(?:\w+ ){1,2}(?:days?|weeks?) ago)|post-?(?:partum|natal)|newborn|(?:days?|weeks?) after (?:having|giving birth|the birth))\b")
+_PP_QUIET = (r"(?![\s\S]*\b(?:baby blues|(?:midwife|health visitor|gp|doctor) (?:said|says) (?:it'?s|that'?s|lots|this is)|years ago|"
+             r"we (?:both )?laughed about it|it passed|(?:asking|ask) (?:my|the) (?:midwife|gp|doctor) about)\b)")
+_PP_SIGN = (r"(?:\b(?:hear\w*|see|seeing|saw|smell\w*)\b[^.!?]{0,60}\b(?:(?:aren'?t|isn'?t|wasn'?t|weren'?t|not) (?:really )?there|"
+            r"when the (?:flat|house|room) is empty|(?:nobody|no one|no-one) (?:is |was )?there)|\bhearing voices\b|"
+            r"\b(?:sure|convinced|know|certain|believe)\b[^.!?]{0,40}\b(?:swapped|switched|replaced|poison\w*|sending me (?:messages|signs)|"
+            r"watching (?:me|us|her|him)|spying|following me|out to get|plotting|trying to (?:harm|hurt|kill|poison|take))|\bi'?m (?:the )?chosen\b|"
+            r"\b(?:haven'?t|not|hardly) slept (?:in|for) (?:two|three|four|five|\d+|days|nights)\b[^.!?]{0,80}\b(?:talking (?:a mile a minute|really fast|non-?stop|so fast)|"
+            r"racing|plan\w* to)|\btalking a mile a minute\b|\blaughing then (?:sobbing|crying)\b|\b(?:sobbing|crying) then laughing\b|"
+            r"\bnot making (?:any )?sense\b|"
+            # run22 S-332 (own set s332-postpartum-wide-run22 committed before code): voices telling her anything, baby not hers,
+            # baby unsafe around her, chosen for a mission/purpose, not knowing who her family are, devices sending her messages
+            r"\bvoices? (?:keeps? |is |are )?(?:telling|saying|talking to|ordering|whispering to)\b|"
+            r"\b(?:baby|he|she|him|her|it) (?:is ?n'?t|is not|isn'?t) (?:really )?(?:hers|mine|my baby|her baby|ours)\b|\bnot (?:really )?(?:my|her) (?:own )?(?:baby|son|daughter)\b|"
+            r"\b(?:isn'?t|is not|not) safe (?:around|with) (?:me|her)\b|"
+            r"\b(?:picked|chosen|selected)\b[^.!?]{0,30}\b(?:special|mission|purpose)\b|\b(?:given|got|have|has) (?:me |her )?a (?:special |secret |holy )?mission\b|"
+            r"\b(?:didn'?t|doesn'?t|don'?t|did not|does not) (?:know|recogni[sz]e) (?:who )?(?:her|my|his) (?:own )?(?:mum|mom|mother|husband|partner|dad|family|sister|baby)\b|"
+            r"\b(?:tv|telly|radio|phone|news)\b[^.!?]{0,20}\b(?:is |are )?(?:sending|giving|talking to) (?:me|her) (?:messages|signs|secret)|\b(?:didn'?t|don'?t|did not|do not) know what (?:year|month|day) it (?:is|was)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PP_QUIET + r"(?=[\s\S]*" + _PP_CTX + r")(?=[\s\S]*" + _PP_SIGN + r")", _WHOLE.flags)
+
+
+# run22 S-331 (Safety ruling s331-pp2-concept-classes.md rows 1-3; own set s331-pelvic-classes-run22 committed before code; NHS pelvic pain
+# 999 list: heavy bleeding, fainting/collapse, confusion). Pad speed as a count in a short time; coming round on a floor / keeling over with
+# a bleeding or pain word; confusion by repetition or disorientation only with an operation, birth, fever or severe-pain context.
+_PAD_SPEED = (r"\b(?:two|three|four|five|six|several|[2-9]) (?:\w+ ){0,2}(?:pads?|tampons?|towels?)\b[^.!?]{0,40}?\b(?:in|within|under)"
+              r"(?: (?:about|under|less than|just over))? (?:an? hour(?: and a half)?|half an hour|(?:one|two|1|2) hours?|\d+ min\w*)\b")
+_FLOOR = r"\b(?:woke (?:up )?on the (?:\w+ )?floor|came (?:round|to) on the (?:\w+ )?floor|keel\w* over)\b"
+_REPEAT = (r"\b(?:keeps? asking (?:me )?the same (?:question|thing)|(?:does ?n'?t|does not|did ?n'?t|did not) know what (?:day|year|month) it is|"
+           r"(?:does ?n'?t|does not) know where (?:she|he) is|losing (?:her|his) words)\b")
+_REPEAT_CTX = r"\b(?:operation|surgery|op|fever|temperature|burning up|gave birth|had (?:the|her|my) baby|severe pain|agony)\b"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:as usual|like i always|years ago|last year)\b)(?=[\s\S]*" + _PAD_SPEED + r")"
+                    + r"|^(?![\s\S]*\b(?:years ago|last year|as a (?:child|teen\w*))\b)(?=[\s\S]*" + _FLOOR + r")(?=[\s\S]*\b(?:flooding|bleed\w*|blood|pain|agony)\b)"
+                    + r"|^(?=[\s\S]*" + _REPEAT + r")(?=[\s\S]*" + _REPEAT_CTX + r")", _WHOLE.flags)
+
+
 # run09 v84 (first contact 7/10 missed): a stiff neck plus a dislike of bright light or a high temperature, whole note
 # (nhs.uk/conditions/meningitis: "get emergency medical help"). Stiff neck alone, light alone, or her usual migraine stay quiet.
 _NECK = r"(?:(?:neck(?:'s| is| has)? (?:\w+ ){0,3}stiff|stiff neck|can'?t (?:bend|move) my neck|can'?t (?:touch|get) my chin to my chest))"
 _LIGHT = (r"(?:light (?:is )?(?:\w+ ){0,2}(?:hurt\w*|painful|unbearable)|(?:can'?t (?:stand|bear|look at)|sensitive to|hurt by) (?:the )?(?:bright )?lights?|"
           r"(?:bright )?lights? (?:are|is) (?:unbearable|painful)|bright light is painful)")
-_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|migraine|all fine now|not a (?:fever|temperature)|no (?:fever|temperature)|without (?:a )?(?:fever|temperature)|after the gym|high temperature room|temperature of the (?:heating|room|house|office)|heating is too (?:high|hot)|from (?:sleeping|the gym|my desk|sitting|the laptop|my laptop|work|the drive|driving))\b)(?=[\s\S]*" + _NECK
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:usual|same as always|(?<!worst )migraine\b(?![^.!?\n]{0,25}\bworst\b)|all fine now|not a (?:fever|temperature)|no (?:fever|temperature)|without (?:a )?(?:fever|temperature)|after the gym|high temperature room|temperature of the (?:heating|room|house|office)|heating is too (?:high|hot)|from (?:sleeping|the gym|my desk|sitting|the laptop|my laptop|work|the drive|driving))\b)(?=[\s\S]*" + _NECK
                     + r")(?=[\s\S]*(?:" + _LIGHT + r"|" + _FEVER + r"))", _WHOLE.flags)
 
 
@@ -886,6 +1164,270 @@ _WHOLE = re.compile(_WHOLE.pattern + r"|^" + _PREG_CTX + r"(?=[\s\S]*\b(?:contra
 _WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:no|not|haven'?t been|isn'?t) (?:vomit\w*|sick)\b)(?=[\s\S]*\b(?:vomit\w*|sick|throwing up|threw up)\b[^.!?\n]{0,15}\bgreen\b(?! (?:tea|smoothie|juice|salad|veg\w*|beans|light))|[\s\S]*\bgreen (?:sick|vomit|bile)\b)"
                     + r"(?=[\s\S]*\b(?:bloated|swollen|distended|hard belly|rigid)\b)", _WHOLE.flags)
 
+
+# run12 (PM class o, own v96 first contact 9/10 missed): more paracetamol / painkiller than the packet says, in everyday words.
+# nhs.uk/medicines/paracetamol-for-adults/common-questions-about-paracetamol-for-adults (reviewed 24 Mar 2026): "Get help from
+# NHS 111 if you've taken more paracetamol than it says on the packet or leaflet" (Safety run28 ruling: the one fixed line).
+_PK = r"(?:paracetamol|co-?codamol|painkillers?|ibuprofen|codeine|solpadeine|lemsip|night nurse|beechams)"
+_PK_COMBO = r"(?:lemsip|night nurse|beechams|cold and flu|co-?codamol|solpadeine|sudafed max)"
+# run16 (Data o-v2 false fire "paracetamol at 7, 11, 3 and 7, two each time"): four clock times only count when two
+# neighbours are 1-3 hours apart; four doses 4+ hours apart is inside the NHS limit (nhs.uk/medicines/paracetamol-for-adults).
+_O4_SHORT = "|".join(rf"(?<!\d){a}(?:am|pm)?[,\s]+(?:and\s+)?{(a + d - 1) % 12 + 1}(?!\d)" for a in range(1, 13) for d in (1, 2, 3))
+_OD_SIGN = (r"(?:(?:lost (?:track|count) of|not sure|no idea|can'?t remember) how many (?:\w+ ){0,2}" + _PK + r"\b|\bkept taking (?:them|it|more)\b|"
+            r"\bat (?=[\d\s,apmnd]{0,30}?(?:" + _O4_SHORT + r"))\d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+\d{1,2}(?:am|pm)?[,\s]+(?:and\s+)?\d{1,2}\b|more (?:\w+ ){0,2}than (?:it says on |what )?(?:the |my )?(?:packet|leaflet|box|label)(?: says)?|"
+            r"\b" + _PK + r"\b[^.!?\n,]{0,40}\bevery (?:hour|two hours|2 hours|1 hour|one hour|half an hour|30 minutes)\b|"
+            r"\b(?:[3-9]|three|four|five|six) (?:\w+ )?(?:paracetamol|painkillers|co-?codamol|tablets|pills) (?:at once|at a time|in one go)\b|"
+            r"\b(?:finished|took|had|taken|swallowed) (?:off )?the rest of (?:the |my )?(?:packet|box|strip)\b|"
+            r"\bdoubl(?:ed|ing) up on (?:my |the )?" + _PK + r"\b|\bdouble (?:doses?|dosing)\b|"
+            r"\b(?:took|taken|had|swallowed|finished) (?:a |the )?(?:whole|entire|full) (?:box|packet|strip|bottle|pack)\b|"
+            r"\b(?:ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty\w*|thirty\w*) (?:\w+ )?(?:paracetamol|painkillers|co-?codamol|tablets|pills)\b|"
+            r"\b(?:probably|about|around|maybe|like|nearly|over) (?:9|1\d|2\d)(?: or (?:1\d|2\d))? (?:since|today|so far|in total|now)\b|"
+            r"\b(?:9|1\d|2\d) (?:paracetamol|painkillers|co-?codamol) (?:today|since|so far|in total)\b)")
+_OD_QUIET = (r"(?![\s\S]*\b(?:as the (?:packet|leaflet) says|within the (?:leaflet|packet|dose|limit)|no other paracetamol|"
+             r"as (?:the|my) (?:gp|doctor|pharmacist) (?:said|advised))\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK + r"\b)(?=[\s\S]*" + _OD_SIGN + r")"
+                    + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK_COMBO + r"\b)(?=[\s\S]*\bparacetamol\b)(?=[\s\S]*\b(?:on top|together|as well|both (?:have|contain|had)|didn'?t realise|then (?:two|2) more)\b)", _WHOLE.flags)
+
+
+# run12 (PM class n, own v97 first contact 5/10 missed): a sudden, extremely painful headache with being sick, drowsiness,
+# confusion or light hurting. nhs.uk/conditions/subarachnoid-haemorrhage (reviewed 04 Sep 2025): "Call 999". Her usual
+# migraine, a slow build, a few seconds on standing, or someone else's headache stay quiet.
+_HA_SUDDEN = r"(?:sudden\w*|out of nowhere|all at once|in seconds|like a light switch|thunderclap|instant\w*|something pop\w* in my head|hit me)"
+_HA_SEVERE = r"(?:worst|most painful|excruciating|agonis\w+|agony|blinding|thunderclap|never had (?:pain|a headache|anything) like|horrendous|severe|unbearable)"
+_HA_SIGN = (r"(?:(?<!no )(?<!not )(?:been |being |keep |kept )?(?:sick|vomit\w*|throwing up|threw up)|drowsy|(?:very|so|really) sleepy|can'?t (?:stay awake|keep my eyes open)|"
+            r"confused|stiff neck|" + _LIGHT + r")")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?:(?=[\s\S]*\b(?:not like|unlike|different (?:from|to)|nothing like|worse than)\b)|(?![\s\S]*\b(?:usual|same as always|migraine|my normal|went (?:in|after) a few|hangover|tension|last year)\b))(?![\s\S]*\bmy (?:sister|mum|friend|brother|dad|partner)\b[^.!?\n]{0,30}\bheadache)"
+                    + r"(?=[\s\S]*\b" + _HA_SUDDEN + r")(?=[\s\S]*\b" + _HA_SEVERE + r")(?=[\s\S]*\bheadache|[\s\S]*\bpain at the back of my head)(?=[\s\S]*\b" + _HA_SIGN + r")", _WHOLE.flags)
+
+
+# run12 (PM class m, own v98 first contact 5/10 missed): back pain with weakness or numbness in BOTH legs.
+# nhs.uk/conditions/sciatica (reviewed 03 Dec 2024): "Go to A&E or call 999". One leg (sciatica), tired/achy legs stay quiet.
+_LEGS_BAD = r"(?:weak\w*|numb\w*|dead|giving way|give way|tingl\w*|pins and needles|heavy)"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:after the (?:long )?run|from sitting|cross-legged|restless legs|usual)\b)(?=[\s\S]*\bback(?:ache)?\b)"
+                    + r"(?=[\s\S]*\bboth\b|[\s\S]*\bcan'?t feel my legs\b)(?=[\s\S]*\blegs\b[^.!?]{0,40}\b" + _LEGS_BAD + r"\b|[\s\S]*\b" + _LEGS_BAD + r"\b[^.!?]{0,30}\blegs\b)", _WHOLE.flags)
+
+
+# run12 (PM class l, own v99 first contact 2/10 missed): face, lips, mouth, tongue or throat swelling or tightness, or wheeze,
+# soon after a new medicine. nhs.uk/conditions/anaphylaxis: "Call 999". Dental numbing, a cold sore, an old swelling that has gone stay quiet.
+_NEWMED = (r"(?:new (?:\w+ ){0,2}(?:medicine|medication|tablets?|pills?|antibiotics?|painkillers?|antihistamines?|injection|dose)|first (?:dose|time taking)|"
+           r"after the (?:injection|jab)|since the new|amoxicillin|penicillin|(?:after|since) (?:eating|having|a|the) (?:\w+ ){0,2}(?:peanuts?|nuts?|prawns?|shellfish|sesame|eggs?|sting|stung)|(?:was |got |been )?stung by|wasp|bee sting)")
+_ANA = (r"(?:\b(?:throat|tongue|lips?|mouth|face)\b[^.!?]{0,30}\b(?:swell\w*|swollen|puff\w*|tight\w*|closing|thick|huge)\b|\bswelled up\b|\bwheez\w*|"
+        r"struggling to breathe|hard to (?:swallow|breathe)|can'?t (?:breathe|swallow))")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:dentist|numbed|numbing|cold sore|gone now|hay fever|from crying)\b)(?=[\s\S]*\b" + _NEWMED + r")(?=[\s\S]*" + _ANA + r")", _WHOLE.flags)
+
+
+# run12 (PM class k, own v101 first contact 3/6 missed): bleeding after birth that is getting heavier, or clots / soaking pads,
+# with feeling cold, shaky, faint, dizzy or clammy. Safety run28 ruling Q1 (cuh.nhs.uk Rosie, read 2026-10-28: "Sudden or heavy
+# bleeding, especially if you feel dizzy"). Lighter or easing bleeding, heavy bleeding with "feel fine", someone else stay quiet.
+_AFTERBIRTH = (r"(?:had (?:the|my) baby|gave birth|given birth|since the birth|after (?:the )?birth|postpartum|post-partum|"
+               r"baby is \d+ (?:days?|weeks?) old|after my (?:c-section|caesarean))")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:lighter|easing|eased|feel fine|feeling fine|being looked after|my (?:sister|friend|cousin)\b))(?=[\s\S]*\b" + _AFTERBIRTH + r")"
+                    + r"(?=[\s\S]*\b(?:bleed\w*|blood)\b[^.!?\n]{0,40}\b(?:heavier|really heavy|very heavy|so heavy|gone heavy)\b|[\s\S]*\b(?:big|large|huge) clots\b|[\s\S]*\bsoaking (?:a |through )?(?:\w+ )?pads?\b)"
+                    + r"(?=[\s\S]*\b(?:cold|shaky|shaking|shivery|shivering|faint|dizzy|light-?headed|clammy|weak|passed out|pass out)\b)", _WHOLE.flags)
+
+
+# run12 (PM class t, own v102 first contact 6/6 missed): pregnant or just given birth + a headache painkillers don't help,
+# flashing lights or blurred vision, pain under the ribs, sudden swelling of face or hands, heartburn that won't settle.
+# nhs.uk/conditions/pre-eclampsia (reviewed 23 Mar 2026, cited by PM 19:00): midwife/maternity unit or 111 -> the one fixed line.
+_PET_CTX = r"(?=[\s\S]*\b(?:\d\d ?weeks|weeks pregnant|months pregnant|(?<!not )(?<!isn't )(?<!am not )pregnant|bump|" + _AFTERBIRTH + r")\b)"
+_PET_SIGN = (r"(?:\bheadache\b[^.!?\n]{0,50}\b(?:paracetamol|painkillers?|tablets)\b[^.!?\n]{0,15}\b(?:isn'?t|aren'?t|not|won'?t|doesn'?t|don'?t|hasn'?t|haven'?t)\b[^.!?\n]{0,10}\b(?:touch\w*|help\w*|shift\w*|work\w*|budg\w*)|"
+             r"\bflashing lights\b|\b(?:blurr\w+|blurry) vision\b|\bvision (?:is |has gone |went )?(?:blurr\w+|blurry|funny|fuzzy)\b|"
+             r"\b(?:just )?(?:under|below) (?:my |the )?ribs\b|"
+             r"\b(?:face|hands|fingers)\b[^.!?\n]{0,30}\b(?:suddenly|all of a sudden|really|very) (?:\w+ )?(?:swollen|puffy|swelled|swelling)\b|\bsudden(?:ly)? (?:\w+ )?swell\w*\b[^.!?\n]{0,20}\b(?:face|hands|fingers)\b|"
+             r"\bheadache\b[^.!?\n]{0,60}\b(?:paracetamol|painkillers?|tablets|ibuprofen|co-?codamol)\b[^.!?\n]{0,15}\b(?:does|do|did) nothing\b|"
+             r"\b(?:paracetamol|painkillers?|tablets|ibuprofen|co-?codamol)\b[^.!?\n]{0,15}\b(?:does|do|did) nothing\b[^.!?\n]{0,30}\bheadache\b|"
+             r"\bheadache\b[^.!?\n]{0,30}\b(?:won'?t|doesn'?t|not) (?:go|shift|ease|budge)\w*\b[^.!?\n]{0,20}\b(?:paracetamol|painkillers?|tablets|medicine|ibuprofen)\b|"
+             r"\bseeing (?:spots|stars|floaters|zigzags)\b|\b1[5-9]\d ?(?:/|over) ?(?:1\d\d|9\d)\b|"
+             r"\b(?:face|hands|fingers)\b[^.!?\n]{0,30}\b(?:swollen|puffy|puffed|swelled|swelling)\b(?: up)?[^.!?\n]{0,12}\b(?:overnight|suddenly|fast|quickly|all of a sudden)\b|"
+             r"\bheartburn\b[^.!?\n]{0,30}\b(?:won'?t|doesn'?t|not|isn'?t) (?:go|settle|shift|easing|stop|touch)\w*)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|in the heat|baby kicking|comes and goes|feet up|my usual migraine)\b)" + _PET_CTX
+                    + r"(?=[\s\S]*" + _PET_SIGN + r")", _WHOLE.flags)
+
+# run13 (PM class t again; own v105 first contact 8/11 missed on b89e77a, 7/11 after Safety's S-247): the same NHS list as
+# general patterns - pregnancy said any way (due in, expecting, twins, N weeks gone) + a medicine that does not help a headache
+# or heartburn, lights or blur in the eyes, face/hands swelling up, rings that won't come off. Source as run12 (pre-eclampsia, 23 Mar 2026).
+_PET_CTX2 = (r"(?=[\s\S]*\b(?:\d\d ?weeks|weeks (?:pregnant|gone)|months pregnant|(?<!not )(?<!isn't )(?<!am not )pregnant|bump|baby (?:is )?due|due (?:in|on|date)|"
+             r"expecting (?:in|a baby|twins|my)|pregnant with|twins|" + _AFTERBIRTH + r"|had (?:the|my) baby)\b)")
+_PET_RELIEF = r"(?:paracetamol|painkillers?|tablets|ibuprofen|co-?codamol|medicines?|gaviscon|rennie|antacids?|nothing)"
+_PET_NOHELP = (r"(?:(?:isn'?t|aren'?t|not|won'?t|doesn'?t|don'?t|hasn'?t|haven'?t|didn'?t) (?:\w+ )?(?:touch\w*|help\w*|shift\w*|work\w*|budg\w*|fix\w*|do anything)|"
+               r"(?:does|do|did) nothing|nothing (?:helps|shifts|touches|works|fixes))")
+_PET_SIGN2 = (r"(?:\b(?:headache|head\b[^.!?\n]{0,10}\b(?:thumping|pounding|banging)|heartburn)\b[^.!?\n]{0,60}\b" + _PET_RELIEF + r"\b[^.!?\n]{0,20}\b" + _PET_NOHELP + r"|"
+              r"\b(?:headache|heartburn)\b[^.!?\n]{0,40}\b" + _PET_NOHELP + r"|\b" + _PET_RELIEF + r"\b[^.!?\n]{0,20}\b" + _PET_NOHELP + r"\b[^.!?\n]{0,30}\b(?:headache|heartburn)\b|"
+              r"\b(?:flash\w*|sparkl\w*|flicker\w*|twinkl\w*|zig-?zag) (?:\w+ )?lights?\b|\blights in my eyes\b|\beyes (?:are |r |have gone |went |gone )?(?:blurr\w*|fuzzy|funny)\b|"
+              r"\b(?:face|hands|fingers)\b[^.!?\n]{0,25}\b(?:swollen|puffed|swelled|blown) up\b|\bswollen (?:face|hands|fingers)\b|"
+              r"\b(?:face|hands|fingers)\b[^.!?\n]{0,15}\bsuddenly (?:\w+ )?(?:swollen|puffy|puffed|swelled)\b|\brings? (?:won'?t|wont|will not|don'?t|can'?t) (?:come|get|go)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:sorted it|went after|gone after|slept it off|in the heat|baby kicking|comes and goes|feet up|my usual migraine|fit again|from screens|(?:all )?gone now|went down|settled now|my (?:sister|friend|mum|cousin) is pregnant)\b)" + _PET_CTX2
+                    + r"(?=[\s\S]*" + _PET_SIGN2 + r")", _WHOLE.flags)
+
+# run13 (PM class o again; own v106 first contact 4/10 missed on b89e77a): more paracetamol than the leaflet allows said as a
+# general pattern - doses closer than 4 hours apart, a second dose straight after, or a cold/flu or other paracetamol-containing
+# product taken as well. nhs.uk/medicines/paracetamol-for-adults (as run12): at least 4 hours between doses, max 4 doses in 24 hours.
+_PK_COMBO2 = r"(?:lemsip|night nurse|day nurse|beechams|cold (?:and|&) flu|co-?codamol|solpadeine|sudafed|day (?:and|&) night|max strength|panadol)"
+_OD_SIGN2 = (r"(?:\b(?:[2-9]|two|three|four|five|six) (?:doses|lots|times)\b[^.!?\n]{0,25}\bin (?:\d|one|two|three|an?) (?:hours?|hrs?)\b|"
+             r"\b(?:another|more|again)\b[^.!?\n]{0,15}\b(?:straight after|right after|soon after|straight away|an hour later|half an hour later)\b|"
+             r"\b(?:straight after|right after|an hour later)\b[^.!?\n]{0,15}\b(?:another|more|again)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK + r"\b)(?=[\s\S]*" + _OD_SIGN2 + r")"
+                    + r"|^" + _OD_QUIET + r"(?=[\s\S]*\b" + _PK_COMBO2 + r"\b)(?=[\s\S]*\bparacetamol\b)(?=[\s\S]*\b(?:plus|alongside|together|as well|on top|then (?:\w+ ){0,2}(?:more|another)|and (?:then )?(?:more )?paracetamol|with (?:my |the |some )?paracetamol|paracetamol (?:and|with|plus))\b)", _WHOLE.flags)
+
+# run13 (Safety S-249 / S-251 / S-252 classes; own v107 first contact 6/9 missed): severe OHSS after IVF or egg collection
+# (swollen belly + little wee or breathless; nhs.uk/conditions/ivf/risks), PID with a high temperature (nhs.uk/conditions/
+# pelvic-inflammatory-disease: "go to A&E" for severe lower tummy pain + high temperature), bleeding for weeks with weakness,
+# pain + a hard belly, and being sick with right-sided tummy pain and fever (nhs.uk/conditions/appendicitis).
+_FEVER_WORD = r"(?:high temperature|temperature of (?:3[89]|40)|fever(?! blister)|burning up|(?:3[89]|40)(?:\.\d)? ?(?:degrees|c)\b)"
+_WHOLE = re.compile(_WHOLE.pattern
+    + r"|^(?![\s\S]*\b(?:weeing (?:fine|normally|ok)|a bit bloated|bit bloated)\b)(?=[\s\S]*\b(?:ivf|egg (?:collection|retrieval)|fertility (?:injections?|drugs|treatment)|stimulation injections?)\b)"
+    + r"(?=[\s\S]*\b(?:belly|tummy|stomach|abdomen)\b[^.!?\n]{0,25}\b(?:huge|massive|really swollen|very swollen|so swollen|swollen|bloated|tight)\b)"
+    + r"(?=[\s\S]*\b(?:hardly|barely|can'?t|not|haven'?t) (?:\w+ )?(?:wee\w*|pee\w*)|[\s\S]*\b(?:short of breath|breathless|can'?t breathe)\b)"
+    + r"|^(?![\s\S]*\bno (?:fever|temperature)\b)(?=[\s\S]*\b" + _FEVER_WORD + r")(?=[\s\S]*\b(?:pelvic pain|pain (?:\w+ ){0,2}low|low(?:er)? (?:\w+ )?(?:tummy|belly|abdomen)|pain down below)\b)(?=[\s\S]*\bdischarge\b)"
+    + r"|^(?![\s\S]*\b(?:feel fine|on the new pill|on and off)\b)(?=[\s\S]*\b(?:(?:haven'?t|not|hasn'?t|never) stopped bleeding|bleeding (?:non[- ]stop|constantly|every day))\b[^.!?\n]{0,25}\b(?:for|in) (?:a|\d+|two|three|four|five|six) (?:weeks?|months?)\b)"
+    + r"(?=[\s\S]*\b(?:weak|pale|breathless|dizzy|faint\w*|can barely stand)\b)"
+    + r"|^(?![\s\S]*\b(?:dinner|meal|ate|eating|period pain as usual)\b)(?=[\s\S]*\b(?:constant|sharp|stabbing|severe)\b)(?=[\s\S]*\b(?:belly|tummy|stomach|abdomen)\b[^.!?\n]{0,20}\b(?:goes |is |feels |gone )?(?:hard|rigid)\b(?: (?:to (?:touch|press)|when (?:i )?press\w*))?)(?=[\s\S]*\b(?:touch|press\w*|constant)\b)"
+    + r"|^(?![\s\S]*\b(?:gym|running|run|stitch|fine now|after the curry)\b)(?=[\s\S]*\b(?:can'?t stop (?:being sick|vomiting|throwing up)|keep (?:being sick|vomiting|throwing up)|vomiting|throwing up)\b)"
+    + r"(?=[\s\S]*\b(?:right side|right[- ]hand side|lower right|bottom right|on the right)\b)(?=[\s\S]*(?:\b" + _FEVER_WORD + r"|\bi (?:feel|am|'m) (?:so |really |very )?hot\b|\bfeel hot\b))", _WHOLE.flags)
+
+# Safety run 29 (S-250, probe p143 8/10): fast or hard breathing with drowsiness and being sick (any order, any medicine) -> the one fixed line.
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\b(?:meditat\w*|yoga|exercis\w*|run|gym|stairs|walk\w*|laugh\w*|panic\w*)\b)(?=[\s\S]*\bbreath(?:ing|e|es)\b[^.!?\n]{0,15}\b(?:fast|rapid\w*|quick\w*|hard)\b|[\s\S]*\b(?:fast|rapid|deep)\b[^.!?\n]{0,10}\bbreath\w*)(?=[\s\S]*\b(?:drowsy|(?:very|so|really) sleepy)\b)(?=[\s\S]*(?<!no )(?<!not )\b(?:sick|vomit\w*|throwing up)\b)", _WHOLE.flags)
+
+# run14 A59 (class t, concept matcher instead of phrase templates): pregnancy or after-birth CONTEXT anywhere in the note x
+# one NHS pre-eclampsia SIGN anywhere (nhs.uk/conditions/pre-eclampsia/symptoms, read 28 Oct 2026: severe headache, vision
+# problems such as blurring or flashing, pain just below the ribs, vomiting, sudden swelling of the face, hands or feet;
+# it can start after the birth). Quiet when the note says it went / helped / felt better, or is about someone else.
+# Unseen t-unseen5 (written before this rule): 2/20 missed, 0/20 false (run13 10/20, 1/20); 0 false on 1505 saved quiet lines.
+_T_CTX = (r"\b(?:pregnan\w*|\d\d ?(?:weeks?|wks?)|weeks? \d\d|(?:first|second|third) trimester|postnatal|post-natal|delivered|"
+          r"(?:had|have) (?:a|the|my) (?:baby|daughter|son|boy|girl)|(?:baby|daughter|son) (?:is|was born) [\w ]{0,12}(?:days?|weeks?)|"
+          r"weeks (?:pregnant|gone)|due (?:in|date)|expecting|twins|bump|newborn|gave birth|given birth|since the birth|postpartum|c-section|caesarean)\b")
+_T_NOT = r"\bmy (?:friend|sister|mum|cousin) is\b|\bnot pregnant\b"
+_T_HEAD = (r"\b(?:headache|migraine|(?:bad|awful|horrible|terrible|sore) head\b|head\w*\b[^.!?\n]{0,20}\b(?:pound\w*|thump\w*|bang\w*|"
+           r"ache\w*|aches|pain\w*|hurt\w*|splitting|throbb\w*|killing))")
+_T_SEVERE = r"\b(?:worst|severe|crushing|splitting|killing|banging|pounding|thumping|throbbing|horrible|terrible|really bad|so much)\b"
+_T_PERSIST = (r"\b(?:won'?t (?:go|shift|help)|did nothing|(?:has|have|haven'?t|hasn'?t)\b[^.!?\n]{0,12}touched|nothing touches|for hours|"
+              r"since (?:yesterday|this morning)|not going|all day|for (?:two|2|three|3) days|nothing (?:helps|shifts|works)|"
+              r"(?:aren'?t|isn'?t|not|hasn'?t|haven'?t|won'?t|didn'?t) (?:\w+ )?(?:help\w*|work\w*|touch\w*|shift\w*|fix\w*))\b")
+_T_VISION = (r"\b(?:zig-?zags?|flash\w*|sparkl\w*|flicker\w*|seeing (?:spots|stars)|blurr\w*|blurry|fuzzy|hazy|"
+             r"lights (?:in|at the edge of) my eyes?|bright lights|(?:can'?t|cannot) see properly|"
+             r"(?:vision|sight|eyes|eyesight)\b[^.!?\n]{0,15}\b(?:gone|went|going|keeps going) (?:funny|dark|weird|strange|blurry|black))\b")
+_T_SWELL = (r"\b(?:face|hands?|fingers?|rings?)\b[^.!?\n]{0,40}\b(?:swell\w*|swollen|puff\w*|balloon\w*|like sausages|won'?t come off|(?:are|is) stuck)|"
+            r"\b(?:swell\w*|swollen|puff\w*)\b[^.!?\n]{0,15}\b(?:face|hands?|fingers?)\b")
+_T_SICK = r"\b(?:vomit\w*|being sick|been sick|keep being sick|throw\w* up|thrown up|feel sick)\b"
+_T_RES = (r"\b(?:gone (?:by|after|now)|went (?:after|down)|fine (?:by|after|now)|(?<!n't )(?<!not )(?<!never )(?:helped|works)|sorted|"
+          r"slept it off|(?:felt|feel|feeling) better|feet up|by evening|after standing|all gone)\b")
+_A = r"[\s\S]*"
+_T_SIGNS = "|".join([
+    f"(?={_A}{_T_HEAD}{_A[:-1]}{{0,60}}{_T_PERSIST})", f"(?={_A}{_T_VISION})",
+    rf"(?!{_A}\bankles?\b)(?!{_A}\bfeet\b(?!{_A}\b(?:face|hands)\b))(?={_A}{_T_SWELL})",
+    rf"(?={_A}\b(?:under|below) (?:my |the )?(?:right )?ribs\b)(?={_A}\b(?:pain|ache|sharp|stabbing|terrible|severe)\b)",
+    f"(?={_A}\\bheartburn\\b[^.!?\\n]{{0,60}}{_T_PERSIST})", f"(?={_A}{_T_HEAD})(?={_A}{_T_SEVERE})",
+    f"(?={_A}{_T_HEAD})(?={_A}{_T_SICK})", rf"(?={_A}\bsick (?:\d+|three|four|five) times)(?={_A}{_T_SWELL})"])
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}(?:{_T_NOT}))(?!{_A}{_T_RES})(?={_A}{_T_CTX})(?:{_T_SIGNS})", _WHOLE.flags)
+
+# run15 A61 (class o, concept rule beside _OD_SIGN): the NHS paracetamol limits as arithmetic instead of phrase templates.
+# nhs.uk/medicines/paracetamol-for-adults (read 29 Oct 2026): 1 or 2 tablets a dose, at least 4 hours between doses, no more
+# than 4 doses (8 tablets) in 24 hours; cold and flu remedies also contain paracetamol. Fires on (a) 3+ clock times each
+# 1-3 hours after the last, (b) 5+ lots/doses/times or a 9th+ tablet of the day, (c) two different paracetamol-containing
+# products in one note (Day Nurse + Night Nurse is the packet's own plan, quiet), (d) another dose minutes or 1-3 hours later.
+def _o_tok(h: int) -> str:
+    w = r"(?:12|midnight|midday|noon|twelve)" if h == 12 else f"(?:{h}|{['one','two','three','four','five','six','seven','eight','nine','ten','eleven'][h - 1]})"
+    return (r"(?<![\d/.,:])(?<!day )(?<!cd )(?:half (?:past )?)?" + w
+            + r"(?:am|pm|:[0-5]\d| ?(?:am|pm|o'?clock))?(?![\d/])(?! ?(?:out of|weeks?|days?|hours?|hrs?|mins?|minutes|tablets?|pills?|paracetamol|co-?codamol|lots|doses?|times|more|at|of|x\b|mg|ml))")
+
+
+_O_SEP = r"[^.!?;]{1,30}?"  # a list of times split over lines still counts
+_O_CLOCK = "|".join(_o_tok(a) + _O_SEP + "(?:" + "|".join(
+    _o_tok((a + d1 - 1) % 12 + 1) + _O_SEP + "(?:" + "|".join(_o_tok((a + d1 + d2 - 1) % 12 + 1) for d2 in (1, 2, 3)) + ")"
+    for d1 in (1, 2, 3)) + ")" for a in range(1, 13))
+_O_PARA = r"(?:paracetamol|co-?codamol|solpadeine|lemsip\w*|night nurse|day nurse|beechams|cold (?:and|&) flu|sudafed|panadol|calpol)"
+_O_PRODS = ["paracetamol", "co-?codamol", "solpadeine", r"lemsip\w*", "night nurse", "day nurse", "beechams", "cold (?:and|&) flu", "sudafed", "panadol"]
+_O_TWO = "|".join(rf"(?=[\s\S]*\b{p}\b)(?=[\s\S]*\b(?:{'|'.join(q for q in _O_PRODS if q != p and {p, q} != {'night nurse', 'day nurse'})})\b)" for p in _O_PRODS)
+_O_MANY = (r"\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten|eleven|twelve) (?:lots|doses)\b[^.!?\n]{0,30}\b" + _O_PARA + r"|\b" + _O_PARA
+           + r"\b[^.!?\n]{0,30}\b(?:[5-9]|1\d|five|six|seven|eight|nine|ten) (?:lots|doses)\b|\b(?:9|1\d|2\d)(?:st|nd|rd|th) (?:\w+ )?(?:" + _O_PARA[3:-1] + r"|tablets?|pills?|doses?)\b"
+           + r"|\b(?:9|1\d|2\d) (?:paracetamol|co-?codamol|tablets|pills)\b[^.!?\n]{0,15}\b(?:in (?:the last|a|one) (?:day|24 hours)|since (?:yesterday|this morning|last night|breakfast|lunch))\b"
+           + r"|\bevery (?:3|three) hours\b")
+_O_SOON = (r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:\d{1,2}|ten|twenty|thirty|forty|a few) (?:minutes|mins)\b (?:after|later)|"
+           r"\b(?:again|another|more)\b[^.!?\n]{0,25}\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) (?:after|later)\b|"
+           r"\b(?:an?|one|two|three|1|2|3|half an) (?:hours?|hrs?) later\b[^.!?\n]{0,15}\b(?:another|more|again)\b|\bat the same time\b")
+_O_QUIET = (r"(?![\s\S]*\b(?:no (?:other )?(?:paracetamol|tablets)|without paracetamol|instead of|i had nothing|(?:my|his|her) (?:son|daughter|mum|dad|partner|husband|wife|child|baby)\b[^.!?\n]{0,25}\b(?:took|takes|had)|"
+            r"for my (?:son|daughter|child|baby|kids?)|in the cupboard|in my bag|(?:\d|four|five|six|eight) hours apart|pack of|swapp\w*|switch\w*|changed (?:from|to)|bought|not (?:to )?(?:take|taking)\b[^.!?\n]{0,25}\b(?:with|on top)|"
+            # a question about mixing or dosing is not a report of having done it
+            r"(?:(?:can|could|should) i|is it (?:ok|okay|safe|fine|alright) to|safe to|am i allowed to) (?:\w+ ){0,3}(?:take|have|mix|use|give))\b)")
+_O_DOSED = r"(?:" + _O_PARA[3:-1] + r"|took|taken|had|doses?|tablets?|pills?)"   # the time list sits in a dosing sentence
+_WHOLE = re.compile(_WHOLE.pattern + r"|^" + _OD_QUIET + _O_QUIET + rf"(?={_A}\b{_O_PARA}\b)(?:(?={_A}\b{_O_DOSED}\b[^.!?;,]{{0,25}}?(?:{_O_CLOCK}))"
+                    + rf"|(?={_A}(?:{_O_CLOCK})\s+(?:of )?{_O_PARA})|(?={_A}(?:{_O_MANY}))|(?={_A}(?:{_O_SOON})))"
+                    + r"|^" + _OD_QUIET + _O_QUIET + rf"(?:{_O_TWO})", _WHOLE.flags)
+
+# run15 A62 (class n, concept rule like A59): a headache word anywhere x one NHS 999 headache sign anywhere in the note.
+# nhs.uk/conditions/headaches (reviewed 17 Apr 2024, read via PM 29 Oct 2026): call 999 if it came on suddenly and is extremely
+# painful, with numbness or weakness in the face or body, trouble speaking or with balance, drowsiness or confusion, loss of
+# vision, or a stiff neck or light hurting the eyes with a high temperature. Her usual headache, one that went or someone else's stay quiet.
+_N_HEAD = r"(?:headache|migraine|head\w*\b[^.!?\n]{0,25}\b(?:pound\w*|thump\w*|bang\w*|killing|splitting|agony|pain)|(?:pounding|thumping|splitting|banging) head|pain\b[^.!?\n]{0,20}\bback of my head)"
+_N_FEVER = r"(?:" + _FEVER_WORD + r"|high temp\b)"
+_N_SIGNS = "|".join([
+    rf"(?={_A}\b{_HA_SUDDEN})(?={_A}\b(?:{_HA_SEVERE[3:-1]}|splitting|killing|like (?:a|being) (?:hit|bang))\b)",
+    rf"(?={_A}\b(?:face|arm|leg|hand|body|side)\b[^.!?\n]{{0,25}}\b(?:numb|weak|droop\w*|dead|tingl\w*|floppy)\b|{_A}\b(?:numb|droopy) (?:face|arm|hand|side)\b)",
+    rf"(?={_A}\b(?:words?\b[^.!?\n]{{0,20}}\b(?:muddled|wrong|jumbled|garbled)|can'?t (?:get|find) (?:my |the )?words|slurr\w*|(?:talking|speaking) is (?:hard|difficult)|can'?t speak)\b)",
+    rf"(?={_A}\b(?:los(?:ing|t) (?:my )?balance|keep (?:falling|tipping) over|walking into (?:the )?walls|can'?t walk straight)\b)",
+    rf"(?={_A}\b(?:drowsy|can'?t (?:keep my eyes open|stay awake|think straight)|keep falling asleep|confused|muddled)\b)",
+    rf"(?={_A}\b(?:lost (?:the )?(?:vision|sight)|can'?t see (?:out of|properly out of)|(?:gone|went|going) (?:dark|black) in my (?:\w+ )?eye|gone blind)\b)",
+    rf"(?={_A}\b(?:stiff neck|neck\b[^.!?\n]{{0,15}}\b(?:stiff|won'?t bend|can'?t bend)|chin to (?:my )?chest)\b)(?={_A}\b{_N_FEVER})",
+    rf"(?={_A}\b(?:light\w*\b[^.!?\n]{{0,15}}\b(?:hurts?|painful|unbearable)|can'?t (?:look at|stand) (?:the )?lights?)\b)(?={_A}\b{_N_FEVER})"])
+_N_QUIET = (r"\b(?:usual|same as (?:always|every)|like always|hangover|sleeping funny|from the (?:desk|gym)|night shift|"
+            r"went (?:after|away|by)|passed|eased|better (?:after|now|today|by)|helped|worked|fine after|gone (?:by|now|after)|"
+            r"my (?:sister|mum|friend|brother|dad|partner)(?:'s)?\b[^.!?\n]{0,20}\bheadache|mum'?s headache)\b")
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_N_QUIET})(?={_A}\b{_N_HEAD})(?:{_N_SIGNS})", _WHOLE.flags)
+
+# run17 (Safety S-279, p168/p169 3/12 missed): a chest pressure word (crushing, pressure, heaviness, squeezing, band, weight) with
+# one more NHS heart-attack sign anywhere in the note (sweating, clammy, grey, jaw, arm, neck, back, lightheaded, dizzy, breathless,
+# sick). nhs.uk/conditions/heart-attack/symptoms: pressure, heaviness, tightness or squeezing across the chest, pain spreading to the
+# arms, jaw, neck, back or tummy, sweating, breathlessness, lightheaded, call 999. After exercise, a cold/cough or breasts stay quiet.
+# S-522 (run 64): pins and needles / tingling / numbness in the face with an arm or hand heavy or weak AND her speech odd.
+# "pins and needles" alone is a benign veto in the face-arm-speech rule; the three together are the NHS stroke signs (FAST).
+_S522 = (r"\b(?:pins and needles|tingl\w*|numb\w*|funny feeling)\b[^.!?;]{0,25}\b(?:face|cheek|lip|mouth)\b|\b(?:face|cheek|lip|mouth)\b[^.!?;]{0,25}\b(?:pins and needles|tingl\w*|numb\w*)\b")
+_S522_ARM = r"\b(?:arm|hand|leg)\b[^.!?;]{0,25}\b(?:heavy|weak|useless|limp|dead|won'?t (?:lift|move))\b|\b(?:heavy|weak|limp)\b[^.!?;]{0,12}\b(?:arm|hand)\b"
+_S522_SPEECH = r"\b(?:speech|voice|talking|words?)\b[^.!?;]{0,25}\b(?:odd|strange|weird|funny|different|slow|off|wrong|not right)\b"
+_S522_QUIET = r"\b(?:dentist|dental|injection|anaesthe\w*|always|usual\w*|years? ago|months? ago|last (?:week|year)|yesterday|was |used to|my (?:mum|dad|sister|brother|friend|nan)'?s?\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_S522_QUIET})(?={_A}{_S522})(?={_A}{_S522_ARM})(?={_A}{_S522_SPEECH})", _WHOLE.flags)
+
+# S-532 (run 64, p93): after a birth, seeing or hearing things / a belief someone will take or harm the baby (NHS: postpartum psychosis, call 999 / 111).
+_S532 = (r"^(?!{A}\b(?:years? ago|last year|my (?:mum|sister|friend|wife|partner)'?s?\b|film|programme|book|podcast))(?={A}\b(?:since the birth|since (?:i|we) had (?:the|my|our) baby|after (?:the birth|having (?:the|my) baby)|postnatal|postpartum|(?:had|gave birth to) (?:my|a) baby (?:\w+ ){{0,3}}(?:ago|last week|recently)))"
+         r"(?={A}\b(?:(?:seeing|hearing) (?:things|voices|people)|voices (?:are )?telling|someone (?:wants|is trying|will try) to (?:take|hurt|harm) (?:my|the) baby|(?:they|people) (?:are )?(?:going to|want to|will) take my baby)\b)").format(A=_A)
+_WHOLE = re.compile(_WHOLE.pattern + "|" + _S532, _WHOLE.flags)
+
+_CHEST_P = r"\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*|band|weight|elephant)\b[^.!?;]{0,40}\b(?:chest)\b|\bchest\b[^.!?;]{0,25}\b(?:crush\w*|pressure|heav(?:y|iness)|squeez\w*)\b"
+_CHEST_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|(?:left |right )?arm|neck|back|light ?headed|dizzy|short of breath|breathless|(?:feel\w* |being )sick)\b"
+_CHEST_QUIET = r"\b(?:after (?:the|a|my) (?:run|gym|workout|swim)|exercis\w*|from (?:my|a|the) (?:cold|cough)|coughing|boobs?|breasts?|period|bra|fine after|vaccine|indigestion after)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CHEST_QUIET})(?={_A}{_CHEST_P})(?={_A}{_CHEST_SIGN})", _WHOLE.flags)
+# run18 (own S-279 set 4, NHS gap 3): an indigestion-like burning chest is a heart-attack sign on nhs.uk/conditions/heart-attack/symptoms
+# (reviewed 31 Mar 2026: "a burning feeling in your chest"), but everyday heartburn is common, so it needs a STRONGER second sign
+# (sweating, clammy, grey skin, jaw, arm; "pale" alone is too common); feeling sick alone, Gaviscon/antacid, reflux or after food/coffee stay quiet.
+_CHEST_BURN = r"\b(?:burn\w*|indigestion|heartburn)\b[^.!?;]{0,30}\bchest\b|\bchest\b[^.!?;]{0,20}\bburn\w*"
+_CHEST_BURN_SIGN = r"\b(?:sweat\w*|clammy|grey|gray|jaw|arms?)\b"
+_CHEST_BURN_QUIET = r"\b(?:gaviscon|rennie|antacid|after (?:the |my |a )?(?:curry|food|lunch|dinner|tea|meal|eating|coffee)|spicy|reflux)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CHEST_BURN_QUIET})(?!{_A}{_CHEST_QUIET})(?={_A}{_CHEST_BURN})(?={_A}{_CHEST_BURN_SIGN})", _WHOLE.flags)
+
+# run17 (Safety S-287): a FAST sign that has stopped still counts if it was recent. nhs.uk/conditions/stroke/symptoms (reviewed
+# 12 Sep 2024, fetched 29 Oct 2026): 999 if "you've had signs of a stroke within the last 24 hours even if they've now stopped".
+_FAST_SIGN = (r"\b(?:(?:arm|hand|leg)\b[^.!?;]{0,15}\b(?:went|was|felt|go|gone) (?:weak|heavy|floppy|dead)|(?:couldn'?t|could not|can'?t) (?:lift|raise|grip)\b|"
+              r"(?:couldn'?t|could not) (?:get (?:my |the )?words out|speak|talk)|words? (?:came|coming) out (?:wrong|jumbled)|speech (?:went |was )?slurr\w*|slurr\w* (?:my )?(?:speech|words)|"
+              r"face\b[^.!?;]{0,20}\b(?:droop\w*|dropp\w*|went numb|fell)|mouth (?:droop\w*|dropped(?! open)))")
+_FAST_RECENT = r"\b(?:earlier|this (?:morning|afternoon|evening)|tonight|today|last night|an? (?:hour|few hours) ago|\d{1,2} hours? ago|minutes? ago)\b"
+_FAST_QUIET = r"\b(?:dentist|numbing|anaesthetic|slept on|sleeping on|lying on|pins and needles|nerves|presentation|drunk|wine|years? ago|months? ago|weeks? ago|typing|gym|weights)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_FAST_QUIET})(?={_A}{_FAST_SIGN})(?={_A}{_FAST_RECENT})", _WHOLE.flags)
+
+# run17 (Safety S-286, nosebleed part): nhs.uk/conditions/nosebleed (reviewed 5 Dec 2023, fetched 29 Oct 2026): A&E if it "lasts
+# longer than 10 to 15 minutes", "the bleeding seems excessive", swallowing a lot of blood, weak or dizzy, or difficulty breathing.
+_NOSE = r"\b(?:nose ?bleed\w*|nose (?:has been |is |keeps )?(?:pouring|bleeding|gushing|pissing)(?: (?:with )?blood)?)\b"
+_NOSE_SIGN = (r"\b(?:(?:1[6-9]|[2-9]\d) ?min\w*|half an hour|an hour|hours?|(?:won'?t|will not|isn'?t|not) stop\w*|(?:keeps|still) (?:going|bleeding)|"
+              r"swallow\w* (?:a lot of |loads of )?blood|(?:feel\w* |feeling )?(?:weak|dizzy|faint)|pouring|gushing)\b")
+_NOSE_QUIET = r"\b(?:stopped|eased|settled|went away|fine now|picked|years? ago)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_NOSE_QUIET})(?={_A}{_NOSE})(?={_A}{_NOSE_SIGN})", _WHOLE.flags)
+
+# run17 (Safety S-286, cut part): nhs.uk/conditions/cuts-and-grazes (reviewed 2 Apr 2026, fetched 29 Oct 2026): 999 or A&E if you
+# "cannot stop the bleeding", "the blood comes out in spurts", or "something stuck in the cut, such as a shard of glass".
+_CUT = r"\b(?:cut|gash\w*|wound|slice[dn]?)\b"
+_CUT_SIGN = (r"\b(?:spurt\w*|pumping|(?:can'?t|cannot|won'?t|will not|isn'?t) stop(?:ping)? (?:the )?bleed\w*|blood (?:won'?t|will not|isn'?t) stop\w*|"
+             r"(?:glass|metal|shard)\b[^.!?;]{0,20}\b(?:stuck|still in|in it))\b")
+_CUT_QUIET = r"\b(?:paper cut|plaster|stopped|scab|healed|years? ago|haircut|cut down|cut back|cut out)\b"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^(?!{_A}{_CUT_QUIET})(?={_A}{_CUT})(?={_A}{_CUT_SIGN})", _WHOLE.flags)
+
 _PROC_FEVER_QUIET = r"\b(?:stairs|walk\w*|run\w*|gym|exercis\w*|climb\w*|nerves|panic\w*|when i think|thinking about|only|(?:mon|tues|wednes|thurs|fri|satur|sun)day)\b"
 _PROC_FEVER = re.compile(r"^" + _PROC_NOT + r"(?=[\s\S]*" + _PROC + r")(?=[\s\S]*" + _FEVER + r")", re.I)
 
@@ -895,21 +1437,157 @@ _THIRD_NOW = re.compile(
     r"^(?=.*\bface\b[^.!?;]{0,25}\b(?:droop\w*|fallen|lopsided)\b)(?=.*\b(?:arm|speech|slurr\w*|talk\w*|speak\w*|words)\b)(?!.*\b(?:fine|ok|okay|recovered|better|gone back to normal)\b (?:now|after|since|again|once|when))(?!.*\b(?:dentist|numbing|anaesthetic|wore off|wears off|botox|filler)\b)|"
     r"^(?=.*\bmy (?:daughter|son|mum|mom|mother|dad|father|sister|brother|friend|partner|husband|wife|boyfriend|girlfriend|baby|child|colleague)\b[^.!?;\n]{0,60}\b(?:fainted|collaps\w+|passed out|blacked out)\b)"
     r"(?=.*\b(?:twice|three times|again|grey|gray|pale|clammy|not making sense|confused|not responding|unresponsive|won'?t wake|hit (?:her|his|their) head|chest pain|can'?t breathe|sweating|blue|cold)\b)"
-    r"(?!.*\b(?:fine|ok|okay|recovered|better)\b (?:now|after|since|again|once|when)|.*\b(?:was|is|been) (?:fine|ok|okay)\b)", re.I | re.S)
+    r"(?!.*\b(?:fine|ok|okay|recovered|better)\b (?:now|after|since|again|once|when)|.*\b(?:was|is|been) (?:fine|ok|okay)\b)"
+    # run17 (PM S-271 set 3): someone else says now they will kill, hang or harm themselves or take all their pills. nhs.uk urgent
+    # help for mental health: 999 if "you do not feel you can keep yourself or someone else safe". Medical signpost (999/A&E).
+    r"|^(?=.*\b(?:my|our) (?:\w+ ){0,1}(?:sister|brother|mum|mom|mother|dad|father|friend|flatmate|housemate|roommate|partner|husband|wife|boyfriend|girlfriend|son|daughter|cousin|colleague)\b)"
+    r"(?=.*\b(?:she|he|they)(?:'s|'re| is| are| will| was going to)? (?:going to |gonna |about to |planning to |wants? to )?(?:kill|hang|hurt|harm) (?:her|him|them)sel(?:f|ves)\b"
+    r"|.*\b(?:she|he|they)(?:'s|'re| is| are)? (?:going to |gonna |about to )?(?:tak\w*|swallow\w*) (?:all|every one of) (?:her|his|their) (?:\w+ )?(?:pills|tablets|meds|medication|painkillers)\b(?=[^.!?]{0,40}\b(?:tonight|now|today|can'?t reach|not answering|won'?t answer|goodbye)\b)"
+    r"|.*\b(?:she|he|they)(?:'s|'re| is| are)? (?:going to |gonna |about to )?end (?:her|his|their) (?:own )?life\b)"
+    r"(?!.*\b(?:years? ago|months? ago|when (?:she|he|they) (?:was|were) (?:younger|a teen\w*)|joked|joking|film|book|show|tv|series)\b)", re.I | re.S)
 
+
+# run30 (S-262b, p142 miss): fertility treatment + a swollen tight belly + hardly passing urine, whole note. Each part alone stays quiet.
+_OHSS = (r"^(?=[\s\S]*\b(?:egg (?:collection|retrieval)|ivf|stimulation|fertility (?:injections?|treatment))\b)"
+         r"(?=[\s\S]*\b(?:belly|tummy|stomach|abdomen)\b[^.!?]{0,30}\b(?:huge|massive|enormous|swollen|tight|balloon\w*)\b)"
+         r"(?=[\s\S]*\b(?:hardly|barely|can'?t|struggling to)\s+(?:wee|pee|urinate|pass urine)\b)")
+_WHOLE = re.compile(_WHOLE.pattern + r"|" + _OHSS, _WHOLE.flags)
+
+# run30 (S-256, p149 6/10 missed): NHS sepsis page (nhs.uk/conditions/sepsis, read 2026-10-28): confusion or slurred speech, blue/pale/grey/blotchy
+# skin, very drowsy, with an infection or fever. Whole note; infection word + (confusion | mottled skin), neither alone.
+_INFECT = r"(?:infection|uti|kidney|wee infection|water infection|fever|temperature|burning up|shiver\w*|rigors|shaking|been sick for days|bug)"
+_CONFUSED = r"(?:slurr\w*|confused\b(?! (?:about|by|with|over|as to|why|how|whether))|can'?t think straight|out of it|won'?t wake|(?:can|could) barely stay awake|drifting off|don'?t know where i am)"
+_MOTTLED = r"(?:(?:mottled|blotchy|grey|gone grey|bluish|blue)\b[^.!?]{0,25}\b(?:skin|legs|arms|hands|feet|lips)\b|\b(?:skin|legs|arms|hands|feet)\b[^.!?]{0,25}\b(?:mottled|blotchy|gone grey|gone blue))"
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?![\s\S]*\b(?:no|not|without|never)\s+(?:a\s+)?(?:fever|temperature|confus\w*)\b)(?=[\s\S]*\b" + _INFECT + r"\b)(?=[\s\S]*\b" + _CONFUSED + r"\b)"
+                    + r"|^(?=[\s\S]*" + _MOTTLED + r")(?=[\s\S]*\b(?:freezing|clammy|drowsy|(?:can )?barely stay awake|haven'?t (?:had a )?(?:wee|peed))\b)", _WHOLE.flags)
+
+# run30 (S-261): a burst/ruptured cyst with dizziness, faintness, sweating or sickness, whole note.
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?=[\s\S]*\bcyst\b[^.!?]{0,15}\b(?:burst|ruptur\w*|popped)\b)(?=[\s\S]*\b(?:dizzy|faint\w*|sweat\w*|clammy|being sick|vomit\w*)\b)", _WHOLE.flags)
+# run30 (S-258, S-260a): self-harm. "ending it" + can't cope/take the pain (not "ending it with <x>"), and "not be here" + tablets to hand.
+# S-530: see the S-530 note above _hits
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + (
+    r"|\b(?:can'?t|cannot) (?:take|cope with|bear) (?:the pain|it|this)(?: any ?more| any longer)?\b[^.!?\n]{0,40}\b(?:edge of|top of|standing on|stood on)\b[^.!?\n]{0,20}\b(?:platform|bridge|roof|cliff|balcony|building)\b"
+), _SELF_WHOLE.flags)
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
+                         + r"|^(?=[\s\S]*\b(?:ending|end) it\b(?! with\b)(?! for\b))(?=[\s\S]*\b(?:can'?t (?:take|cope|do this|go on)|tired of (?:the )?(?:pain|everything|this))\b)"
+                         + r"|^(?=[\s\S]*\b(?:want(?:ed)?|wanna|going) to (?:just )?(?:not be here|disappear)\b)(?=[\s\S]*\b(?:any ?more|tonight|at all|for good|forever)\b)(?=[\s\S]*\b(?:(?:load|pile|box|packet|bottle|strip) of (?:tablets|pills|painkillers|meds)|(?:tablets|pills|blade|rope)\b[^.!?]{0,20}\b(?:in front of me|next to me|beside me))\b)", _SELF_WHOLE.flags)
+
+# run16 (Safety S-271, p159 3/10 missed): indirect self-harm = a method or place (vehicle, height, water, stopping food/insulin)
+# x an intent marker, whole note. nhs.uk where-to-get-urgent-help-for-mental-health (via Safety, read 29 Oct 2026): 999 if
+# "you do not feel you can keep yourself ... safe". A method or place alone ("drove past the bridge") or a diet stays quiet.
+_SH_METHOD = (r"\b(?:driv\w* (?:off|into)|crash\w* (?:the|my) car|(?:jump\w*|throw\w* myself) (?:off|from|in front)|step\w* (?:out )?in front of|"
+              r"walk\w* into the (?:sea|river|water|traffic)|swim\w* out|(?:the|a) bridge|roof|multi ?-?stor[e]?y|cliff|train tracks|"
+              r"(?:stop\w*|not taking) my (?:insulin|meds|medication|tablets)|bought (?:a )?rope|(?:not|n'?t|stopped|stop) (?:been )?(?:eat\w*|drink\w*|had a drink)|"
+              r"(?:eaten|drunk) (?:or (?:eaten|drunk) )?anything|(?:razor )?blades?\b[^.!?]{0,30}\b(?:ready|out|next to me|in front of me))\b")
+_SH_INTENT = (r"\b(?:on purpose|so (?:it|that it|this) (?:all )?(?:ends|stops)|so i (?:don'?t|won'?t|never) wake|not (?:com\w*) back|(?:can'?t|cannot) swim back|"
+              r"until i (?:die|can'?t)|want(?:ed)? to die|for good|can'?t (?:do this|go on|keep going|cope|take it)|i'?m done\b|(?:don'?t|do not) want to be here|"
+              r"end (?:it|things\b(?! (?:with|between) (?:my |his |her |their |our |the )?(?:boyfriend|girlfriend|partner|ex|husband|wife|fianc\w+|bf|gf|him|her|them)\b)|my life)|better off without me|it all ends|want it (?:all )?to (?:stop|end)|can'?t keep doing this(?=\s*(?:[.,;!?]|$|any ?more)))")
+_SH_QUIET = r"(?![\s\S]*\b(?:to see if|lose weight|diet\w*|fasting|for lent|ramadan|bloat\w*|done with (?:this|my|the) (?:job|work|course))\b)"
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_SH_QUIET}(?={_A}{_SH_METHOD})(?={_A}{_SH_INTENT})", _SELF_WHOLE.flags)
+
+# run17 (PM S-271 concept set 3, own first contact 7/10 missed): preparation or farewell acts (letters or notes left, tablets
+# saved up, pets or things given away, goodbyes, a will) count only with a finality marker in the same note ("after i'm gone",
+# "the last time", "no point after this"); "won't be a burden ... much longer". Same NHS 999 line as above ("you do not feel
+# you can keep yourself ... safe"); the acts alone ("wrote a letter to my GP", "said goodbye at the station") stay quiet.
+_SH_PREP = (r"\b(?:(?:wrote|written|writing|left) (?:\w+ ){0,2}(?:letters?|notes?)|(?:sav\w*|stockpil\w*|hoard\w*) (?:up )?(?:\w+ ){0,2}(?:tablets|pills|meds|painkillers)(?! (?:questions?|list|receipts?))|"
+            r"g[ai]ve\w* (?:away )?(?:my|all my) (?:cat|dog|pets?|things|stuff|belongings)|g[ai]ve\w* (?:away )?(?:all )?my (?:things|stuff|belongings)|said (?:my )?goodbyes?|saying goodbye|"
+            r"(?:sorted|made|wrote|done|written|updated) (?:out )?my will|cancel\w* everything)\b")
+_SH_FINAL = (r"\b(?:(?:after|when|once) i'?m (?:gone|dead|not here)|for after i|(?:the|my) last time|no point after (?:this|tonight|today|tomorrow)\b|(?:won'?t|will not) be (?:here|around)|"
+             r"enough to end|made my mind up|(?:not|n'?t) (?:be )?(?:here|around) (?:much longer|for long|after))")
+# S-475 (run 57): 'had enough' / 'can't do this any more' with a plan or method word in the same note, first person; a whole-note
+# work, weather, queue, gym or holiday word keeps it quiet ('had enough of this weather, and the plan is a long walk').
+_S475_ENOUGH = (r"\b(?:i(?:'ve| have)? had enough|i can'?t do (?:this|it) any ?more|i'm done with (?:everything|life))\b[^.!?;\n]{0,40}\b(?:plan|method|tablets|pills|tonight|ready|sorted|note)\b")
+_S475_QUIET = r"(?![\s\S]*(?:\b(?:rain|weather|work|job|queue|traffic|exam|homework|essay|school|diet|gym|meeting|cooking|laundry|holiday|haha|lol|office|booked|joking)\b|\bcover is\b|\bplan (?:for|to) (?:the )?(?:weekend|holiday|party|trip|dinner|wedding)\b))"
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^{_S475_QUIET}(?={_A}{_S475_ENOUGH})", _SELF_WHOLE.flags)
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern + rf"|^(?={_A}{_SH_PREP})(?={_A}{_SH_FINAL})"
+                         + r"|\b(?:won'?t|will not|wouldn'?t) be (?:a burden|a problem|in (?:anyone'?s|your|the) way) (?:to|for|on) (?:anyone|anybody|everyone|you all|any of you) (?:for )?(?:much|very|any) longer\b", _SELF_WHOLE.flags)
+# S-516 (run 63, p87): a blade, razor or rope to hand together with feeling there is no point, whole note
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
+                         + r"|^(?=[\s\S]*\b(?:blade|razor|knife|scissors|pills|tablets)\b[^.!?;]{0,25}\b(?:in|holding|holds|held) (?:my |both )?(?:hand|hands)\b|[\s\S]*\b(?:holding|hold|holds|got|have|has) (?:a |my |the )?(?:blade|razor|knife|scissors)\b)(?=[\s\S]*\b(?:pointless|hopeless|worthless|no point|can'?t go on|cannot go on|done with (?:everything|it all|life)|want it (?:all )?to stop)\b)(?![\s\S]*\b(?:shav\w*|crafts?|cooking|recipe|kitchen|haircut|open(?:ing)? a (?:box|parcel))\b)", _SELF_WHOLE.flags)
+# S-517 (run 63, p88): pills or alcohol with wanting to sleep forever; no way out with everything ready, whole note
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
+                         + r"|^(?=[\s\S]*\b(?:pills|tablets|painkillers|meds|medication|wine|vodka|alcohol|bottle)\b)(?=[\s\S]*\b(?:sleep forever|never wake up|not wake up|don'?t want to wake up|go to sleep and not)\b)"
+                         + r"|^(?![\s\S]*\b(?:party|dinner|trip|wedding|holiday|meeting|lease|landlord|traffic|exam|deadline)\b)(?=[\s\S]*\b(?:(?:feel|feeling|think|believe) (?:like |that )?(?:there'?s|there is) no way (?:out|forward)|can'?t see a way out|cannot see a way out)\b)(?=[\s\S]*\b(?:everything|it all|all of it) (?:is |'s )?(?:ready|sorted|in place|prepared)\b|[\s\S]*\bhave everything (?:i need|ready)\b)", _SELF_WHOLE.flags)
+# S-523 (run 63, p92): thoughts of stabbing, cutting, hanging, shooting or drowning myself
+_SELF_WHOLE = re.compile(_SELF_WHOLE.pattern
+                         + r"|\b(?:thoughts?|thinking|urges?|keep thinking) (?:of|about|to) (?:stabbing|cutting|hanging|shooting|drowning|suffocating|burning|poisoning) (?:myself|me)\b", _SELF_WHOLE.flags)
+
+# run16 (Safety S-269, p157 5/10 missed): blood in vomit said with everyday words, and black poo that is sticky/tar-like or
+# comes with weakness or dizziness. nhs.uk/conditions/stomach-ulcer (reviewed 12 Aug 2025, via Safety 29 Oct 2026): 999 or A&E
+# for vomiting bright red blood or vomit like ground coffee, or poo that is black, sticky and very smelly. Black poo after iron
+# tablets, bismuth or liquorice with no other sign, a nosebleed or bleeding gums stay quiet.
+_GI_WEAK = r"(?:faint\w*|dizz\w*|weak|pale|shaky|light ?-?headed|clammy)"
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?![\s\S]*\b(?:nose ?bleed\w*|gums?|teeth|tooth|lolly|wine|beetroot)\b)(?=[\s\S]*\b(?:threw up|thrown up|throwing up|been sick|was sick|vomited|brought up|bringing up|sick)\b[^.!?\n]{0,40}\bblood\b)"
+                    + r"|^(?![\s\S]*\b(?:iron|ferrous|pepto\S*|bismuth|liquorice|blueberr\w*)\b(?![\s\S]*\b" + _GI_WEAK + r"\b))(?=[\s\S]*\b(?:poo|poos|stools?|motions)\b[^.!?\n]{0,25}\b(?:black|tar\w*)\b|[\s\S]*\bblack\b[^.!?\n]{0,10}\b(?:sticky|tar\w*)\b)"
+                    + r"(?=[\s\S]*\b(?:sticky|smell\w*|tar\w*|" + _GI_WEAK[3:-1] + r")\b)", _WHOLE.flags)
+# figures of speech and medicine side effects the lists react to (run16: own S-271 / S-269 quiet lines)
+_IDIOM = re.compile(_IDIOM.pattern + r"|\b(?:commute|deadline|shift|journey|my boss|the kids|this week)\b[^.!?]{0,15}\bkill(?:ing|s)? me\b"
+                    + r"|\bblack (?:poo|poos|stools?|motions?) (?:after|since|from) (?:taking |starting |eating )?(?:pepto\S*|bismuth|iron|ferrous \w+|liquorice)\b(?![\s\S]*\b" + _GI_WEAK + r"\b)", _IDIOM.flags)
+
+# run16 (class k, own first contact 2/10 missed): after the birth, heavy or heavier bleeding x feeling faint, dizzy, a racing or
+# pounding heart, cold and clammy (nhs.uk postpartum haemorrhage; Safety run28 class-k ruling). Settled, lighter, or a period
+# months later stays quiet.
+_K_CTX = (r"\b(?:after (?:the|my) (?:birth|baby|c-?section)|postnatal|post-?partum|had (?:my|the) baby|gave birth|given birth|c-?section|"
+          r"since having (?:my|the) \w+|newborn|baby is (?:\d|one|two|three|a) (?:days?|weeks?))\b")
+_K_BLEED = r"\b(?:bleeding\b[^.!?\n]{0,25}\b(?:heav\w*|pouring|gushing|loads|a lot)|heavier|soak\w*|pouring|gush\w*|clots?|(?:filled|through) (?:\d|two|three|four) pads)\b"
+_K_SIGN = r"\b(?:faint\w*|dizz\w*|(?:heart|pulse)\b[^.!?\n]{0,15}\b(?:racing|pounding|thumping|fast)|clammy|light ?-?headed|shaky|pass out)\b"
+_K_QUIET = r"(?![\s\S]*\b(?:settled|lighter|fine now|months? (?:old|postpartum|after)|periods? (?:are |is )?back|first period|not sleeping)\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^{_K_QUIET}(?={_A}{_K_CTX})(?={_A}{_K_BLEED})(?={_A}{_K_SIGN})", _WHOLE.flags)
+
+# run16 (Safety S-273: "haemorrhaging" is a safe word to add): she says she is haemorrhaging now. Money, players, a past
+# haemorrhage stay quiet.
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*\bhaem?orrhag\w*\s+(?:money|cash|players|staff|customers|subscribers|fans|points|votes)\b)"
+                    r"(?=[\s\S]*\b(?:i'?m|i am|am i|been|still|keep|now|started|i think i'?m|i'?ve been)?\s*(?:haem?orrhaging|hemorrhaging)\b)", _WHOLE.flags)
+
+# run20 S-317 (Safety run36 ruling; nhs.uk/conditions/pelvic-pain, reviewed 24 Nov 2025: 999 for pelvic pain with sudden
+# confusion, or severe pain getting worse that hurts to move or touch). Two concepts, whole note, chronic-day words stay quiet:
+# (1) SUDDEN confusion: an onset word next to confusion / not knowing where or what day / not making sense ("confused about" stays quiet);
+# (2) NEW FAST change (within hours, came on fast, worse every hour, from nothing) AND it hurts to touch/move or she cannot stand/walk/move.
+_ONSET = r"(?:sudden(?:ly)?|all of a sudden|out of nowhere|without warning)"
+_CONFUSE = (r"(?:confus\w*(?! (?:about|by|over|with|as to|whether|which|what|how)\b)|disorient\w*|(?:didn'?t|did not|don'?t|do not) know (?:where i (?:was|am)|what day|who)|"
+            r"(?:not|wasn'?t|isn'?t) making (?:any )?sense)")
+_FAST = (r"(?:(?:in|within|over) (?:the )?(?:last |past )?(?:(?:an?|one|a couple of|a few|two|three|\d) )?hours?\b|came on (?:fast|quickly|suddenly)|"
+         r"(?:worse|worsening) (?:every|by the|each) hour|(?:from|went from) nothing to|(?:started|began|came on) (?:a couple of|a few|two|three|\d) hours ago)")
+_TOUCHMOVE = (r"(?:(?:hurts?|agony|painful|can'?t bear|cannot bear)\b[^.!?]{0,30}\b(?:touch\w*|press\w*|seatbelt|duvet|clothes|move|moving)\b|"
+              r"\btouching (?:it|my)\b|can'?t (?:walk|stand|move)\b|without (?:holding|crying)|can'?t bear (?:the |anyone |anything )?(?:\w+ )?(?:on|touching) it)")
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*(?:\b" + _ONSET + r"\b[^.!?]{0,40}\b" + _CONFUSE + r"|\b" + _CONFUSE + r"[^.!?]{0,20}\b" + _ONSET + r"\b))"
+                    + r"|^(?=[\s\S]*\b(?:pain\w*|ache|aching|hurts?)\b)(?=[\s\S]*" + _FAST + r")(?=[\s\S]*" + _TOUCHMOVE + r")(?![\s\S]*\b(?:as usual|same as always|every (?:month|period)|usual (?:flare|endo))\b)", _WHOLE.flags)
+
+# S-325 prototype: asthma attack in plain words (NHS: getting worse, reliever not helping, no inhaler). Whole-text, because _CLAUSE splits at "and".
+_RELIEVER = r"\b(?:inhaler|reliever|puffs?|blue one)\b"
+_NOHELP = r"\b(?:still|isn'?t (?:helping|touching|working)|not (?:helping|touching|working)|did(?:n'?t| nothing)|did nothing|nothing|no (?:use|help|effect)|empty|ran out|(?:max|maximum))\b"
+_ATTACK = r"\b(?:can'?t (?:get|talk|finish|breathe)|wheez\w*|gasp\w*|clos\w+ up|tighter|worse|barely|struggl\w+ (?:to|with|for))\b"
+_EASED = r"\b(?:eased|helped|settled|sorted|passes|normal for me|controlled|quiet|back to normal|picked up|review)\b"
+_WHOLE = re.compile(_WHOLE.pattern + r"|^(?![\s\S]*" + _EASED + r")(?=[\s\S]*" + _RELIEVER + r")(?=[\s\S]*" + _NOHELP + r")(?=[\s\S]*" + _ATTACK + r")", _WHOLE.flags)
 
 _WHOLE_SCAN_CAP = 20_000  # one record is capped at 20,000 characters (schemas/record.py); the long rule list is linear in length
 
 
 # A lead-in like "I don't know what to do," / "Not sure what's going on:" / "No idea why, but" is not a negation of what follows;
 # it is turned into a sentence break before detection (measured: such lead-ins silenced 14-37% of caught emergency lines).
-_LEADIN = re.compile(r"\b(?:i(?:'m| am)? )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))"
+_LEADIN = re.compile(r"\b(?:i(?:'m| am)? )?(?:don'?t know|do not know|no idea|not sure|can'?t believe|not being funny|not usually (?:one to |a )?\w+)\b(?! how (?:many|much)\b)[^.:;!?\n]{0,40}?(?:[,:]|(?=\bbut\b))"
                      # the same openers said with no punctuation (dictated text, S-226): fixed phrases only
                      r"|\b(?:i(?:'m| am)? )?(?:don'?t know|do not know|not sure) (?:what to do|what'?s (?:going on|happening|wrong)|what is (?:going on|happening|wrong)|why)\b|\bno idea why\b|\bi(?:'m| am) not in a good way\b|\bnothing helps\b|\bdon'?t worry\b|\bwithout my (?:partner|mum|mom|friend|husband|wife) here\b", re.I)
 
 
 _NEG_WINDOW = re.compile(r"[.;:!?\n,]|\bbut\b")  # a negation only counts inside the same clause as the match
 _HEDGE = re.compile(r"\bnothing,? but\b|\bnot being funny,? but\b|\bwithout (?:any )?warning\b|\b(?:never|haven't|hadn't) had (?:this|that|anything like this) before\b", re.I)  # "probably nothing but ..." is a hedge, not a negation
+
+
+# run13 (A54): "Had my baby two weeks ago, swollen face ..." - the birth and its time phrase are context, not the symptom's time,
+# so the sentence past check skips them (same in lib/urgentWording.ts hitWhole).
+_BIRTH_TIME = re.compile(r"\b(?:had (?:the|my) baby|gave birth|given birth|(?:the |my )?baby (?:was )?born)\b(?: (?:\w+ ){0,2}(?:ago|last (?:week|month)|yesterday|on (?:mon|tues|wednes|thurs|fri|satur|sun)day))?", re.I)
+
+
+# run 59 (S-489): another person's present chest sign told in words ("my mum is grey and sweaty and her chest is crushing")
+_S489_BODY = re.compile(r"\bchest\b.{0,35}\b(?:crush\w*|squeez\w*|gripped|vice)\b", re.I)
+
+
+_S489_SIGN = re.compile(r"\b(?:grey|gray|sweaty|clammy|pale|ashen|sweating)\b", re.I)
+_S489_NOT = re.compile(r"\b(?:was|were|last (?:year|month|week)|ago|fine|better|ok|okay|alright|exams?|work|stress\w*)\b", re.I)
 
 
 def _hits_whole(rx, text: str) -> bool:
@@ -922,7 +1600,7 @@ def _hits_whole(rx, text: str) -> bool:
     start = starts[-1] + 1 if starts else 0
     ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
     end = m.end() + ends[0] if ends else len(text)
-    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(text[start:end]) or _OTHER.search(text[:m.start()]))
+    return not (_NEG.search(_HEDGE.sub(' ', _NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1])) or _is_past(_BIRTH_TIME.sub(' ', text[start:end])) or (_OTHER.search(text[:m.start()]) and not (_S489_BODY.search(m.group(0)) and _S489_SIGN.search(text[start:end]) and not _S489_NOT.search(text[start:end]))))
 
 
 _AGAIN = re.compile(r"\b(?:(?:do|doing|try|trying) (?:it|that) again|again (?:tonight|today|now)|urge is back|urges? (?:are|is) back|(?:cut|cutting|hurt|hurting) myself again|thinking about (?:doing )?it again|want to do it again)\b", re.I)
@@ -973,25 +1651,439 @@ def _other_hist_rescue(text: str) -> bool:
     return _hits_whole(_WHOLE, rest) or _proc_fever_hit(rest)
 
 
+_HEAVY_PHRASE = re.compile(r"\b(?:(?:very |really |so |extremely )?heav(?:y|ily) bleeding|bleeding (?:really |very |so )?heav(?:y|ily)|bleeding (?:a )?(?:lot|loads))\b", re.I)
+_HEAVY_USUAL_Q = re.compile(r"\b(?:normal for me|as usual|as expected|same as (?:every|most|always)|always (?:is|does|has been)|like every (?:month|period))\b", re.I)
+_HEAVY_USUAL_CTRL = re.compile(r"\b(?:faint\w*|dizz\w*|light-?headed|pass(?:ed|ing)? out|black(?:ed)? out|pale|vision|racing|pounding|breath\w*|chest|every (?:hour|half|30|20|15)|an hour|nothing like|not like|worse than|never (?:had|been|bled)|first time|scared|frightened|soaking|soaked|flooding|pregnan\w*|can'?t stand|cannot stand|clots? (?:bigger|larger|the size of (?:a|an) (?:egg|fist|orange|lemon|golf|tennis|ball)))\b", re.I)
+
+
+# S-349 proto (run 41): FAST signs phrased as loss of use ("half my face wont move and my left hand is useless";
+# "my right hand is useless and my words are muddled"). Two different parts, or one part plus speech trouble.
+_ST_LOSS = r"(?:useless|dead|won'?t (?:work|move|lift)|wont (?:work|move|lift)|not working|stopped working|gone limp|limp)"
+_ST_PART = r"(?:face|hand|arm|leg|side|mouth)"
+_ST_SPEECH = r"\b(?:words? (?:are |is |came out |coming out )?(?:muddled|jumbled|garbled|wrong|mixed up)|can'?t (?:speak|talk|find (?:my |the )?words)|speech (?:is )?(?:muddled|garbled))\b"
+_ST_QUIET = r"(?![\s\S]*\b(?:slept on|sleeping on|pins and needles|gone after|numb from|fell asleep|after (?:the )?gym|cramp)\b)"
+_ST_F = rf"(?=[\s\S]*\b(?:face|mouth)\b[^.!?\n]{{0,25}}\b{_ST_LOSS}\b)"
+_ST_L = rf"(?=[\s\S]*\b(?:hand|arm|leg)\b[^.!?\n]{{0,25}}\b{_ST_LOSS}\b)"
+# run26 (AI Brain, own set s349-stroke-own-run26): NHS stroke symptoms also name sudden numbness or weakness on ONE side
+# (nhs.uk/conditions/stroke/symptoms, read 2026-10-29): a numb/weak/gave-way limb or side plus a sudden or one-side word.
+_ST_NUMB = r"(?:numb\w*|lost (?:all )?(?:the )?feeling|(?:can'?t|cant|cannot) feel|no feeling|gave way|giving way|gone weak|weak and floppy)"
+_ST_SUDDEN = r"(?=[\s\S]*\b(?:sudden\w*|all of a sudden|out of nowhere|one side|(?:left|right) side|came on (?:suddenly|all at once))\b)"
+_ST_N = rf"(?=[\s\S]*(?:\b(?:face|hand|arm|leg|side|body)\b[^.!?\n]{{0,30}}\b{_ST_NUMB}|\b{_ST_NUMB}\b[^.!?\n]{{0,30}}\b(?:face|hand|arm|leg|side|body)\b))"
+_ST_NQUIET = r"(?![\s\S]*\b(?:dentist|injection|anaesthetic|epidural|sitting|cross[- ]legged|crossed|came back|back to normal|eased|period|every month)\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^{_ST_QUIET}{_ST_F}{_ST_L}|^{_ST_QUIET}{_ST_L}(?=[\s\S]*{_ST_SPEECH})|^{_ST_QUIET}{_ST_NQUIET}{_ST_SUDDEN}{_ST_N}", _WHOLE.flags)
+
+
+# B7 (AI Brain run30): pulmonary embolism signs as nhs.uk/conditions/pulmonary-embolism words them (999 box, page reviewed 15 Oct 2026,
+# fetched 2026-10-30): "difficulty breathing which comes on suddenly", "pain in your chest or upper back", "chest pain that's worse
+# when you breathe in". Fires on a breathing sign plus EITHER a sudden / at-rest word OR pain on breathing in / chest or upper-back
+# pain. Exertion, cough/cold, nose, panic, reflux, period cramp and settled notes stay quiet. Needs Safety GO.
+_PE_BREATH = r"(?:out of breath|breathless|short of breath|struggl\w* (?:to breathe|for (?:air|breath))|(?:difficulty|trouble|problems?) breathing|(?:hard|difficult) to breathe|(?:can'?t|cant|cannot|couldn'?t|could not) (?:breathe|get (?:a |enough )?(?:full |proper )?(?:breath|air)|catch my breath)|gasping|breathing (?:suddenly )?(?:went|is|got|was|became) (?:really |very |so )?(?:hard|shallow|difficult|laboured))"
+_PE_PAIN = r"(?:(?:hurts?|painful|pain|sore|worse)\b[^.!?\n]{0,25}\b(?:breathe? in|breathing in|take a breath|every breath)|breathing in (?:makes|is) [^.!?\n]{0,20}(?:pain|hurt|worse)|(?:every )?breath in is painful|chest (?:pain|hurts|feels tight)|pain (?:in|on) (?:the |my )?(?:left |right )?(?:side of )?(?:my )?(?:chest|upper back)|upper back (?:pain|hurts))"
+_PE_SUDDEN = r"(?:sudden\w*|all of a sudden|out of nowhere|for no reason|at rest|resting|sitting (?:down|on|at)|lying (?:in bed|down)|watching|woke up|came on|started (?:an hour|\w+ minutes) ago|never had this|flew|flight|after my (?:op|operation|c-?section))"
+_PE_QUIET = r"(?![\s\S]*\b(?:stitch|running|run|ran|gym|stairs|hill|treadmill|exercise\w*|work ?out|yoga|cough\w*|cold|flu|nose|laugh\w*|hay ?fever|inhaler|asthma|exam|panic\w*|anxious|anxiety|heartburn|reflux|gaviscon|fell|cramps?|period|heat|coffee|normal for me|normal|went (?:away|after)|calmed|better|eased|eases|gone|fine|no (?:chest pain|breathlessness|shortness of breath|difficulty breathing|trouble breathing)|not (?:breathless|short of breath))\b)"
+_WHOLE = re.compile(_WHOLE.pattern + rf"|^{_PE_QUIET}(?=[\s\S]*\b{_PE_BREATH})(?=[\s\S]*\b(?:{_PE_SUDDEN}|{_PE_PAIN})\b)", _WHOLE.flags)
+
+
+# S-371 (Safety run 44): period pain / heavy-flow words alone are the ordinary bad day, not the 999 block (nhs.uk/symptoms/period-pain has no 999 card).
+# With a period word in the note, those phrases are blanked and the note is judged again; a second sign (faint, dizzy, pregnancy, one-sided, fever...) keeps it.
+_PD_FAMILY = re.compile(r"in agony|agoni[sz]ing|curled up(?: in a ball)?|(?:lying |lay |lie |laying )?on the (?:bathroom |kitchen )?floor|can'?t move|could(?:n'?t| not) (?:walk|move|stand)|pain (?:is|was) (?:really |so |very )?intense|bleeding through\w*(?: to)?(?: my)?(?: \w+)?|agony|doubled over|crying on the (?:bathroom )?floor|screaming|excruciating|unbearable|off the scale|can'?t (?:straighten|stand up straight|stand up|walk)|severe (?:sudden )?(?:pain|belly|abdominal|pelvic)|worst pain|worst (?:I'?ve|i have) ever|pain (?:is|was) (?:10|ten)(?:/| out of )(?:10|ten)|(?:10|ten)(?:/| out of )(?:10|ten)|(?:pads?|tampons?)[^.]{0,20}(?:every|each|an) (?:half )?(?:hour|30 minutes)|(?:every|each) (?:half )?hour|soak\w* (?:through )?(?:a |my |an? )?(?:pads?|tampons?|towel)\w*|(?:very |really |so )?heav(?:y|ily) bleeding|bleeding (?:really |very |so )?heav(?:y|ily)|clots[^.]{0,30}|(?:sick|nauseous)[^.]{0,20}pain|pain[^.]{0,30}(?:sick|sweaty)|feel(?:ing)? (?:sick|nauseous) and (?:sweaty|clammy)", re.I)
+_PD_CTX = re.compile(r"\b(?:period|periods|cramp\w*|menstrua\w+|day [1-5]\b|day (?:one|two|three|four|five)|(?:second|third) day|first day|time of the month|usual for me|same as (?:always|every month|last month)|normal for me|typical day|as always|like always|every month|first (?:two|2|few) days)\b", re.I)
+_PD_SECOND = re.compile(r"pregn\w+|periods? (?:have )?stopped|haven'?t had a period|menopaus\w*|post-?menopaus\w*|sleepy|muddled|wet myself|rock hard|in minutes|spinning|pound\w*|heart|breath\w*|faint\w*|pass(?:ed|ing) out|blacked out|collaps\w+|dizz\w+|light-?headed|grey|gray|clammy|racing|pale|can'?t stand without|room (?:going|goes|went) dark|late|missed period|(?:skipp\w+|miss\w+|overdue|delayed)[^.!?]{0,20}period|period[^.!?]{0,15}(?:late|overdue|missed|skipped)|(?:since|after|following) (?:the |my )?(?:coil|op|operation|procedure|surgery|birth|baby|miscarriage|termination|abortion|scan)|(?:just|recently) had (?:a )?baby|giving birth|post-?partum|post-?natal|after (?:the |my )?(?:delivery|c-?section|caesarean|baby)|(?:days?|weeks?) after (?:the )?birth|(?:room|vision|everything)[^.!?]{0,15}(?:going|goes|went|keeps? going|gone) (?:dark|black|white)|(?:haven'?t|have not|not) (?:had a period|bled|bleed\w*)[^.!?]{0,20}(?:year|months)|worse than (?:I (?:have |ha?ve )?ever|I'?ve ever|usual|normal|my usual)|not (?:normal|usual) for me|weeks? (?:late|pregnant)|positive (?:pregnancy )?test|pregnan\w+|one[- ]sided|right side|left side|shoulder|sudden\w*|out of nowhere|shak\w+|confus\w+|not like (?:my )?usual|different (?:to|from) (?:my )?usual|worse than ever|coil|after (?:the|my) (?:op|operation|birth|miscarriage)", re.I)
+# B6 (AI Brain run30, PM 01:48): being sick with the pain is the usual bad day only with a usual-month marker; fever words
+# (nhs.uk/conditions/pelvic-inflammatory-disease-pid 999 card, reviewed 17 Dec 2025: hot, cold or shivery, very high temperature)
+# stay a second sign unless the note says both that it is usual AND that it settled (PRD help-now R10.4).
+_PD_SICK = re.compile(r"being sick|been sick|throw\w* up|threw up|vomit\w*", re.I)
+_PD_FEVER = re.compile(r"sweat\w*|fever(?!\s+dream)\w*|(?:shiver\w*|chills)(?![^.!?]{0,40}(?:air ?con\w*|cinema|weather|freezing|heating|the rain|outside|walk home|shower|bath\b|pool|swim\w*))|cold and|hot and cold|temperature|(?:feel\w*|felt|so|really|very|burning) hot\b", re.I)
+_PD_USUAL = re.compile(r"like I always (?:get|have)|(?:like|same as) (?:always|every month|most months|last month)|every month|normal for me|usual for me|as (?:usual|always)|like always|happens every (?:month|period)|no worse than (?:normal|usual)|my usual", re.I)
+_PD_RESOLVED = re.compile(r"settled|kick(?:ed|s) in|helped|eased|better (?:after|now|once)|took the edge off|(?:feel|feeling) (?:ok|okay|fine|better) now", re.I)
+
+
+def _pd_second(t: str) -> bool:
+    usual = bool(_PD_USUAL.search(t))
+    return bool(_PD_SECOND.search(t) or (_MS_PREG.search(t) and not _MS_NOT.search(t)) or (_PD_SICK.search(t) and not usual)
+                or (_PD_FEVER.search(t) and not (usual and _PD_RESOLVED.search(t))))
+
+
+# S-349b (Safety run 44): stroke signs said by their effect (nhs.uk/conditions/stroke/symptoms FAST). Standalone; fires only when the engine found nothing.
+_SK_FACE = re.compile(r"\b(?:face|cheek|lip|mouth|smile|grin|eyelid|eye\s*lid)\b", re.I)
+_SK_FACE_FX = re.compile(r"\b(?:sag\w*|droop\w*|lopsided|crooked|uneven|numb\w*|no (?:sensation|feeling)|(?:won'?t|doesn'?t|can'?t|cant)\s+(?:move|lift|smile)|(?:half|side|corner)[^.]{0,25}(?:lifts?|moves?|hangs?|falls?))", re.I)
+_SK_SPEECH = re.compile(r"\b(?:speech|voice|words?|talking|speaking|sentence|tongue)\b", re.I)
+_SK_SPEECH_FX = re.compile(r"\b(?:scrambl\w+|slurr\w+|garbl\w+|mushy|thick|nonsense|(?:came|coming) out (?:wrong|garbled|scrambled)|stopped coming|can'?t find the (?:right )?words|sound\w* (?:drunk|strange|odd|funny|slow))", re.I)
+_SK_LIMB = re.compile(r"\b(?:arm|hand|leg|grip)\b", re.I)
+_SK_LIMB_FX = re.compile(r"\b(?:dead|limp|heavy|weak\w*|buckl\w+|gave way|won'?t (?:take|bear)|can'?t (?:lift|grip|hold|feel)|wouldn'?t grip|dropped|numb\w*)\b", re.I)
+_SK_SIDE = re.compile(r"\b(?:one side|left|right|half|down (?:one|the) side|whole side)\b", re.I)
+_SK_ONSET = re.compile(r"\b(?:sudden\w*|just now|came on|began|minutes? (?:ago|back)|a few minutes|twenty minutes|an hour (?:ago|back)|woke (?:up )?(?:with|and)|mid[- ]sentence|out of nowhere|all of a sudden|was fine)\b", re.I)
+_SK_BENIGN = re.compile(r"\b(?:months?|always|every (?:morning|day|week|night|month)|usual|braces|long shift|shift|crossed|crossing|sat on|sitting on|pins and needles|fine now|back to normal|sleeping on|lying on|normal again|last week|yesterday|months? ago|years? ago|dentist|dental|filling|injection|anaesthe\w+|wearing off|slept on|pins and needles|gym|workout|marathon|run|sore muscles|photo|angle)\b", re.I)
+_SK_NEG = re.compile(r"\b(?:no|not|without|nor|never)\s+(?:\w+\s+){0,2}(?:numb\w*|weak\w*|sensation|feeling|droop\w*|slurr\w*)", re.I)
+_SK_SAG = re.compile(r"\b(?:sag\w*|droop\w*|lopsided)\b", re.I)
+
+
+# S-372 (Safety run 45, nhs.uk/conditions/pelvic-inflammatory-disease-pid 999 card, reviewed 17 Dec 2025): pelvic / lower-belly /
+# period pain with fever words, or with being sick / very unwell and NO period word, is the 999 block. Only when nothing else fired.
+_PF_PAIN = re.compile(r"pelvic|pelvis|lower (?:tummy|belly|abdom\w*)|period pain|cramp\w*|low down|womb|ovar\w*", re.I)
+_PF_FEVER = re.compile(r"(?:high|raised) temperature|(?:running|got|have|has) a temperature|(?:temperature (?:of |is |at )?|temp (?:of |is |at ))(?:3[89]|40)(?:\.\d)?\b|\bfever(?:ish)?\b(?!\s+dream)|burning up|hot and cold|(?:hot|cold),? (?:and|or) (?:cold|hot|shiver\w*)|(?:shiver(?:y|ing)|chills)(?![^.!?]{0,40}(?:air ?con\w*|cinema|weather|freezing|heating|the rain|outside|walk home|shower|bath\b|pool|swim\w*))|shaking (?:all over|uncontrollably|with (?:chills|cold|fever))|(?:whole |my )?body (?:is |was )?shaking", re.I)
+_PF_SICK = re.compile(r"throwing up|vomit\w*|(?:been|being|keep being|keeps? being) sick(?! of| and tired)|very unwell|really unwell", re.I)
+_PF_PERIOD = re.compile(r"period|menstrua\w+|time of the month", re.I)
+_PF_NEG = re.compile(r"hot water bottle|\b(?:no|without|not|zero) (?:\w+ ){0,1}(?:fever\w*|temperature|vomit\w*|chills|shaking|shivering)\b|(?:vomit\w*|been sick|sick|threw up) (?:just )?(?:once|one time|a single time)", re.I)
+
+
+# run31: resolved the same day (saved v33 coil line) -> quiet
+_PF_FINE = re.compile(r"\b(?:fine|ok|okay|better|normal|good) now|otherwise (?:fine|ok|okay|well)|back to normal|all settled|gone by (?:the )?(?:evening|morning|night|bedtime|lunch\w*|tea\w*)"
+    # run35 (plan row 3): the fever is over or the work-up is already done ('the fever went after two days', 'in August, the scan was clear')
+    r"|\bfever (?:went|had gone|has gone|is gone|passed|settled|broke)\b|\b(?:scan|tests?|bloods?|swabs?) (?:was|were|came back) (?:clear|normal|fine|negative)\b"
+    r"|\b(?:was|were) (?:feverish|hot)\b[^.!?]{0,20}\bin (?:january|february|march|april|may|june|july|august|september|october|november|december)\b|\bin (?:january|february|march|april|may|june|july|august|september|october|november|december)\b[^.!?]{0,20}\bwas (?:feverish|hot)\b", re.I)
+_PF_STRICT = re.compile(r"pelvic|pelvis|womb|ovar\w*|period pain", re.I)
+_PF_GASTRO = re.compile(r"stomach bug|food poisoning|dodgy|hungover|hangover|morning sickness|diarrh\w*|gastro|ate something|norovirus|sauna|gym|workout|heat ?wave|vaccin\w+|jab\b|coffee|caffeine|anxious|nervous|\bflu\b|covid|\bcold\b(?! and)|tummy bug|sickness bug|kebab|curry", re.I)
+
+
+_PF_GONE = re.compile(r"\b(?:over now|gone now|(?:has |have |had )?(?:gone|passed|cleared|settled|broke|went down)(?: now| again)?\b|all over|back to normal)", re.I)
+
+
+def _pelvic_fever(t: str) -> bool:
+    if not _PF_PAIN.search(t):
+        return False
+    t = _PF_NEG.sub(" ", t.replace("\u2019", "'"))
+    strict = bool(_PF_STRICT.search(t))
+    if _PF_FINE.search(t):
+        return False
+    if _PF_GASTRO.search(t) and not strict:
+        return False
+    if any(_PF_FEVER.search(c) and not _is_past(c) and not (_PF_GONE.search(c) and not re.search(r"\b(?:back|again|returned|still)\b", c)) for c in re.split(r"[.!?;\n]+", t)):
+        return True
+    return bool(_PF_SICK.search(t) and strict and not _PF_PERIOD.search(t))
+
+
+
+# S-377 (Safety run 45, run43 urgent-card ruling): a heavy-flow phrase with a shock PAIR (cold + shaky, shaky + weak, cold + weak) is the 999 block.
+_FS_FLOW = re.compile(r"(?:pads?|tampons?)[^.!?]{0,25}(?:every|each|an?) (?:half[- ]hour|30 min\w*|hour|15 min\w*)|(?:every|each) (?:half[- ]hour|hour)[^.!?]{0,25}(?:pads?|tampons?)|soak\w* (?:through )?(?:a |my |the )?(?:pads?|tampons?)|bleeding through (?:a |my |the )?(?:pads?|tampons?)|flooding", re.I)
+_FS_COLD = re.compile(r"\bcold\b|clammy|freezing|shiver\w*", re.I)
+_FS_SHAKY = re.compile(r"shak(?:y|ing)|trembl\w+|jittery", re.I)
+_FS_WEAK = re.compile(r"\bweak\b|no energy|can'?t stand|floppy|drained", re.I)
+_FS_BENIGN = re.compile(r"coffee|caffeine|energy drink|too much (?:tea|coffee)|nervous|anxious about|weather|outside|skipped (?:lunch|breakfast|dinner)", re.I)
+
+
+def _flow_shock(t: str) -> bool:
+    if not _FS_FLOW.search(t) or _FS_BENIGN.search(t):
+        return False
+    c, s, w = bool(_FS_COLD.search(t)), bool(_FS_SHAKY.search(t)), bool(_FS_WEAK.search(t))
+    return (c and s) or (s and w) or (c and w)
+
+
+# S-381 (Safety run 45, nhs.uk/conditions/miscarriage 999 card, reviewed 31 Mar 2026): pregnant + vaginal bleeding + shoulder pain.
+# B19 (AI Brain run33, PM 04:11): "I'm 9 weeks", "expecting," count as a pregnancy marker; with one, no period-day/cramps
+# suppressor applies (_pd_second) and pain that stops her standing is the 999 card's "cannot do daily tasks".
+_MS_PREG = re.compile(r"pregnan\w+|weeks (?:along|gone)|\bpositive (?:pregnancy )?test\b|early pregnancy|expecting a baby|\bexpecting\b(?! (?:my|a period|the|it|to|that|him|them|you|me|some|her|an?\b))|\b(?:i'?m|im|i am|about|at|around) (?:\d{1,2}|six|seven|eight|nine|ten|eleven|twelve) (?:\+\d )?weeks?\b(?! (?:post|since|after|ago|into|of|off|on|in|late|overdue|out|now|back|before|and \d))", re.I)
+_MS_BLEED = re.compile(r"bleed\w*|spotting|blood", re.I)
+_MS_SHOULDER = re.compile(r"shoulder[^.!?]{0,25}(?:ach\w*|pain\w*|hurt\w*|sore|throb\w*|stab\w*)|(?:ach\w*|pain\w*|hurt\w*|sore|throb\w*|stab\w*)[^.!?]{0,25}shoulder", re.I)
+_MS_NOT = re.compile(r"not pregnant|no chance|negative|my sister|my friend|my mum|my wife|\bshe\b|\bher\b|gym|lifting|sleep\w* on|gums|nose\w*|tooth|teeth|brush\w*|knee|graz\w+|scratch\w*|\bcut\b|piles|haemorrhoid\w*", re.I)
+
+
+_MS_NEGB = re.compile(r"\b(?:no|without|not|zero|nothing|never) (?:\w+ ){0,2}(?:bleed\w*|spotting|blood)", re.I)
+
+
+# A91 (AI Brain run31, same nhs.uk 999 card): severe pain said by its effect, "cannot do daily tasks or focus on TV or reading a book".
+_MS_FUNC = re.compile(r"(?:can'?t|cannot|couldn'?t|could not|unable to) (?:do (?:anything|a thing|my job|daily)|focus|concentrate|function|watch|read|get dressed|look after)|stops? me (?:doing|from)|too (?:bad|painful) to (?:sit|watch|read|do|focus)|had to leave work|(?:can'?t|cant|cannot|couldn'?t|unable to) (?:even )?(?:stand|finish|get up)|(?:had to |have to )?l(?:ie|ay|ying)(?: down)? on the (?:\w+ )?floor|(?:much|far|way) worse than (?:any|a|my|normal)|but (?:much|far|way) worse|can'?t do anything but", re.I)
+
+
+# B19 / prd/help-now §16 (nhs.uk/conditions/miscarriage, reviewed 31 Mar 2026): pregnant + LIGHT bleeding/spotting + mild or no
+# pain + still doing her day is the "call your maternity unit or NHS 111" box, not 999. Only when every 999 sign is absent and
+# the note is not urgent once the pregnancy and bleeding words are blanked; bare "pregnant and bleeding" stays 999.
+_PB_LIGHT = re.compile(r"\b(?:spott\w*|light(?: pink| brown| red)? (?:bleed\w*|blood)|(?:a )?(?:little|tiny|small amount of|bit of|few drops of|drop of|smear of|touch of)(?: light)?(?: pink| brown| red)? (?:bleed\w*|blood|spotting)|pink (?:blood|discharge)|brown (?:blood|discharge|spotting))", re.I)
+_PB_OK = re.compile(r"\b(?:mild\w*|slight\w*|no pain|not (?:much |really )?painful|(?:little |few )?twinges?|dull ache|bit (?:of a )?(?:crampy|achy|sore)|otherwise (?:fine|normal|ok|okay|well)|feel (?:fine|ok|okay|well)|carrying on|still (?:at work|working|doing|going)|working (?:from home )?(?:fine|as normal|normally)|can do everything|as normal|getting on with)\b", re.I)
+_PB_SEV = re.compile(r"\b(?:severe|heavy|heavier|soak\w*|clots?|gush\w*|pour\w*|faint\w*|dizz\w*|light-?headed|woozy|shoulder|worst|agony|agonising|unbearable|excruciating|intense|so bad|strong|sharp|stabb\w*|one side|one-sided|collaps\w*|pass(?:ed|ing)? out|pale|clammy|grey|vomit\w*|being sick|fever|temperature|shiver\w*|can'?t|cant|cannot|couldn'?t|unable|floor|curl\w*|doubled|worse|getting more|through (?:a |my )?pad)\b", re.I)
+_PB_WORDS = re.compile(_MS_PREG.pattern + r"|" + _PB_LIGHT.pattern + r"|\b(?:bleed\w*|blood|spotting)\b", re.I)
+
+
+def _preg_light_box(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    return bool(_MS_PREG.search(t) and _PB_LIGHT.search(t) and _PB_OK.search(t) and not _PB_SEV.search(t) and not _MS_NOT.search(t)
+                and _emergency_kind(_PB_WORDS.sub(" ", t)) is None)
+
+
+def _preg_shoulder(t: str) -> bool:
+    return bool(_MS_PREG.search(t) and _MS_BLEED.search(_MS_NEGB.sub(" ", t)) and (_MS_SHOULDER.search(t) or _MS_FUNC.search(t))
+                and not _MS_NOT.search(t))
+
+
+def _stroke_lay(t: str) -> bool:
+    t = _SK_NEG.sub(" ", t.replace("\u2019", "'"))
+    n = 0
+    if _SK_FACE.search(t) and _SK_FACE_FX.search(t):
+        n += 1
+    if _SK_SAG.search(t) and _SK_FACE.search(t) and not _SK_BENIGN.search(t):
+        n += 2
+    if _SK_SPEECH.search(t) and _SK_SPEECH_FX.search(t):
+        n += 1
+    if _SK_LIMB.search(t) and _SK_LIMB_FX.search(t):
+        n += 1
+    if n == 0 or (_SK_BENIGN.search(t) and n < 2):
+        return False
+    face = bool(_SK_FACE.search(t) and _SK_FACE_FX.search(t))
+    return n >= 2 or bool(_SK_ONSET.search(t)) or (face and bool(_SK_SIDE.search(t)))
+
+
+# B16 (AI Brain run32): stroke as a slot matcher, body part x deficit in one sentence, either order, any tense or person
+# (nhs.uk/conditions/stroke/symptoms, reviewed 12 Sep 2024, read 30 Oct 2026). One FAST/side/eye pair fires on its own;
+# dizziness / spinning / confusion / falling only count beside another sign. Safety C13 time window: an episode 2-14 days
+# old ("three days ago", "last week", "on Monday") is not the 999 block, so this rule and _stroke_lay stay quiet for it.
+_SL_PART = r"(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|arms?|hands?|fingers?|legs?|grip|(?:left|right|one|whole|that|other) side|half (?:of )?(?:my|his|her|their|the) (?:body|face))"
+_SL_DEF = r"(?:numb\w*|weak\w*|dead(?! tired)|heavy|floppy|flops?|flopp\w+|limp|useless|droop\w*|sag\w*|hang\w*|lopsided|crooked|lower on (?:one|that|the|his|her|my) side|(?:looks?|is|was) lower|drained|clumsy|dragg\w*|gave way|gave out|(?:has |'s |just |suddenly )?stopped working(?![^.!?;]{0,25}\b(?:legs?|arms?|hands?|face|side)\b)|like lead|not mine|(?:won'?t|wouldn'?t|can'?t|couldn'?t|cannot|doesn'?t|didn'?t|did not|would not|will not|could not) (?:move|lift|stay up|hold|grip|feel|do what|work|go up|raise|smile)|only (?:goes|went|lifts?|moves?) (?:up )?on one side)"
+_SL_FACEPART = r"(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|half (?:of )?(?:my|his|her|their|the) face)"
+_SL_FACE = re.compile(r"\b" + _SL_FACEPART + r"\b[^.!?;]{0,40}?\b" + _SL_DEF + r"|\b" + _SL_DEF + r"\b[^.!?;]{0,25}?\b" + _SL_FACEPART + r"\b", re.I)
+_SL_SIDEW = re.compile(r"\b(?:left|right|one side|one arm|one leg|one hand|half|whole side|that side|the other)\b", re.I)
+_SL_MOTOR = re.compile(r"\b" + _SL_PART + r"\b[^.!?;]{0,40}?\b" + _SL_DEF + r"|\b" + _SL_DEF + r"\b[^.!?;]{0,25}?\b" + _SL_PART + r"\b", re.I)
+_SL_EYE = re.compile(r"\b(?:eyes?|sight|vision)\b[^.!?;]{0,30}?\b(?:went|gone|go|going|turned) (?:black|dark|blind|grey|gray)|\b(?:black|dark|blind|grey)\b[^.!?;]{0,20}\b(?:in|over|across) (?:my |his |her |their |one )?(?:right |left )?eye|\b(?:lost|lose|losing) (?:the |all |my |his |her )?(?:sight|vision)\b[^.!?;]{0,20}?\beyes?\b|\b(?:couldn'?t|can'?t|could not|cannot) see (?:out of|with|from) (?:my |his |her |their |one )?(?:right |left )?eye|\bblind (?:being |was |got )?(?:pulled|came|coming) down|\bcurtain (?:came |coming |went |over)", re.I)
+_SL_SPEECH = re.compile(r"\b(?:speech|voice|words?|talk\w*|speak\w*|sentences?|tongue)\b[^.!?;]{0,40}?\b(?:slurr\w*|jumbl\w*|mixed up|muddl\w*|scrambl\w*|garbl\w*|gibberish|nonsense|no sense|mumbl\w*|thick|wrong (?:words?|ones|things)|like (?:he|she|I|they|you)(?:'?d|'?s|'?m| had| was| has| were)? (?:been )?(?:drinking|drunk))|\b(?:slurr\w*|gibberish|talk\w* nonsense|mumbling)\b|\b(?:wouldn'?t|won'?t|couldn'?t|can'?t|could not|cannot) (?:get (?:\w+ )?words out|find (?:the |my |his |her )?(?:right )?words|say what (?:I|he|she|they) mean\w*)|\b(?:words|they) (?:wouldn'?t|won'?t|didn'?t|did not) come\b|\blos\w+ (?:my|his|her|their|the) words\b", re.I)
+_SL_HEAD = re.compile(r"\b(?:worst|most severe|most painful) headache (?:of (?:my|his|her|their) li(?:fe|ves)|ever|I'?ve ever had)|\bsudden(?:ly)? (?:severe|terrible|blinding|awful|agonising|excruciating) headache", re.I)
+_SL_OTHER = re.compile(r"\b(?:dizz\w*|spinning|fell over|falling (?:over|to one side)|lean\w* (?:over )?(?:to|towards) (?:one side|the left|the right|the side)|keeps? (?:leaning|falling)|confused|muddled|vomit\w*|being sick)\b", re.I)
+_SL_ONSET = re.compile(r"\b(?:sudden\w*|out of (?:nowhere|the blue)|all of a sudden|just now|came on|minutes? ago|this morning|last night|woke (?:up )?with)\b", re.I)
+# B44 (run37): a limb that 'gave way / gave out / stopped working' is itself a sudden change (nhs.uk/conditions/stroke/symptoms, read 30 Oct 2026)
+_SL_ONSET = re.compile(_SL_ONSET.pattern + r"|\b(?:legs?|arms?|hands?|side)\b[^.!?;]{0,25}\b(?:gave (?:way|out)|stopped working)\b", re.I)
+_SL_BENIGN = re.compile(r"\b(?:dentist|dental|injection|anaesthe\w*|wearing off|wear off|slept on|sleeping on|fell asleep on|lying on|sat on|pins and needles|always|usual\w*|years? ago|months? ago|bell'?s palsy|gym|leg day|workout|carrying|shopping|sprain\w*|physio\w*|vaccin\w*|jab|cramp|had (?:a few|some|too many|two|three|four|five|six|\d+) (?:drinks|pints|beers|glasses of wine)|after (?:a few |some )?drinks|nervous|anxious|exhausted|crying|migraine|aura|neurologist|screens?|contacts|stood up too fast|period|cold|typ\w+|crossed|cross-legged|sitting|tired|run|on my feet|moving house|shaking it|game|last (?:year|month)|imagination|joking|lol|haha|stress\w*|for (?:months|years|weeks)|every (?:morning|day|night)|GP knows|toddler|cute|chill?i\w*|spicy|since (?:I|he|she|they) (?:broke|hurt|injured|had|sprained)|since (?:my|his|her|their) (?:op|operation|surgery|accident|injury|fall|break)|in the (?:summer|spring|autumn|winter)|(?:from|after) the (?:jab|vaccine|flu jab|chilli|cold|op|operation|walk|train))\b", re.I)
+_SL_OLD = re.compile(r"\b(?:(?:\d+|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|a few|few|couple of|a couple of) days? (?:ago|back|before)|last week|(?:a|one|two) weeks? ago|a week ago|on (?:mon|tues|wednes|thurs|fri|satur|sun)day|the other day|at the weekend|last weekend)\b", re.I)
+
+
+# B16c (AI Brain run33, prd/help-now R15.7, nhs.uk/conditions/bells-palsy 999 box): one arm that can't be lifted or kept up
+# is a sign whatever cause she gives; eyelids / eyes / both cheeks heavy or puffy on BOTH sides are not the one-sided droop.
+_SL_ARMUP = re.compile(r"\b(?:can'?t|cant|cannot|couldn'?t|could not|unable to|won'?t|wouldn'?t|doesn'?t|didn'?t) (?:even )?(?:lift|raise|keep|hold|get|put)(?: (?:up|my|his|her|their|the|left|right|one))* arm\b(?! (?:and|or) (?:my |his |her )?(?:other|left|right) arm)|\b(?:my|his|her|their|left|right|one) arm\b[^.!?;]{0,15}\b(?:won'?t|wouldn'?t|doesn'?t|didn'?t|can'?t) (?:stay|go|lift|raise|keep) (?:up|in the air)\b", re.I)
+_SL_BILAT = re.compile(r"\bboth (?:eyelids|eyes|cheeks|sides of (?:my|his|her|their|the) face)\b|\b(?:eyelids|eyes)\b"
+                       r"|\b(?:smile|face|mouth)(?: is| looks?| looked| was| seems?)? (?:the same|normal\w*|fine|ok|okay|even|symmetrical)\b|\bcan smile (?:normally|fine|ok)\b", re.I)
+
+
+def _stroke_old(t: str) -> bool:
+    return bool(_SL_OLD.search(t.replace("’", "'")))
+
+
+# B24 (run34): one leg only, lasting more than a day, with a stated back / sciatica cause and no sudden-onset word is the nhs.uk
+# sciatica 'see a GP' box, not the stroke block (stroke signs count 'within the last 24 hours'). Never for a face, arm, hand, speech or eye sign (R15.7).
+_SL_LEGONLY = re.compile(r"\b(?:legs?|foot|feet|toes?|thigh|calf|knee)\b", re.I)
+_SL_UPPER = re.compile(r"\b(?:face|cheeks?|lips?|mouth|smile|grin|eyelids?|eyes?|vision|sight|arms?|hands?|fingers?|grip|speech|voice|words?|talk\w*|speak\w*|both legs)\b", re.I)
+_SL_LONG = re.compile(r"\b(?:(?:\d+|two|three|four|five|six|seven|eight|nine|ten|a few|few|couple of|a couple of) (?:days|weeks?|months?)|for (?:days|weeks|months|a week|a month|ages)|(?:a )?fortnight|since (?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|the weekend|last (?:week|month)|my (?:back|disc)\b[^.!?;]{0,15}))\b", re.I)
+_SL_BACKCAUSE = re.compile(r"\b(?:sciatica|slipped disc|disc|bad back|back pain|lower back|my back (?:went|is|has)|back(?:'s| is)? (?:\w+ ){0,2}(?:pain|killing|bad|went)|lifting|nerve from my back|physio)\b", re.I)
+
+
+def _leg_long_back(t: str) -> bool:
+    return bool(_SL_LEGONLY.search(t) and not _SL_UPPER.search(t) and _SL_LONG.search(t) and _SL_BACKCAUSE.search(t) and not _SL_ONSET.search(t))
+
+
+def _stroke_slot(t: str) -> bool:
+    t = _SK_NEG.sub(" ", t.replace("’", "'"))
+    if _leg_long_back(t):
+        return False
+    rest = sum(bool(r.search(t)) for r in (_SL_EYE, _SL_SPEECH, _SL_HEAD))
+    other = len({m.group(0).lower()[:4] for m in _SL_OTHER.finditer(t)})
+    if _SL_ARMUP.search(t) and not _SL_OLD.search(t):
+        return True
+    motor = bool(_SL_FACE.search(_SL_BILAT.sub(" ", t)) or (_SL_MOTOR.search(_SL_BILAT.sub(" ", t)) and (_SL_SIDEW.search(t) or _SL_ONSET.search(t) or rest or other)))
+    core = rest + motor
+    if _SL_OLD.search(t) or (_SL_BENIGN.search(t) and core + min(other, 1) < 2):
+        return False
+    return core >= 1 or (other >= 2 and bool(_SL_ONSET.search(t)))
+
+
+# B23 (run34): plain 999 words said about anyone now (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious, not breathing,
+# choking, having a stroke or heart attack, a seizure lasting more than 5 minutes). Built as subject x state in one clause, so the
+# same words fire for "I'm", "she's", "my mum is", "the baby's"; idioms, hypotheticals, history, sleep pauses and pets stay quiet.
+_PL_STATE = re.compile(
+    r"\b(?:(?:is|was|am|are|'s|'re|'m) )?(?:(?:not|isn'?t|aren'?t|wasn'?t|barely|hardly) (?:really |properly )?breathing|stopped breathing|(?:has|have|'s|'ve) stopped breathing|can'?t breathe at all"
+    r"|having (?:a|another) (?:stroke|heart attack|seizure|fit)\b(?! of)(?! (?:assessment|scan|test|check|review|clinic|appointment|risk|follow))(?! (?:about|over) (?!(?:the |a )?(?:last|past|weekend|night|morning|day|hour|few|\d+|ten|five|half)\b))(?! because (?:i|we|you)\b)"
+    r"|choking\b(?! (?:up|back|on (?:my|his|her|their|the) words|laugh\w*|on (?:all )?(?:this|the|my|these) (?:paperwork|work|admin|emails?|bills?|debt|deadlines?|stress)))"
+    r"|(?:is|was|went|gone|found (?:him|her|them|my \w+)|knocked|lying|still|'s) unconscious|unresponsive|(?:isn'?t|not) responding\b(?! to)|wo?n'?t wake(?: up)?|can'?t wake (?:him|her|them)(?: up)?"
+    r"|(?:fit|seizure|fitting|convuls\w+)\b[^.!?;]{0,30}\b(?:won'?t stop|wo?n'?t stop|hasn'?t stopped|not stopp\w+|still going|(?:over |more than |for )?(?:5|five|6|six|7|seven|8|eight|9|nine|10|ten|fifteen|15) (?:minutes|mins))"
+    r"|been (?:fitting|seizing|convulsing) for"
+    # B34 (run35): carer wordings for the same 999 states (nhs.uk when-to-call-999, read 30 Oct 2026: unconscious / not
+    # responding, cannot stay awake, chest pain, severe difficulty breathing)
+    r"|(?:isn'?t|is not|not|won'?t|wo?n'?t|can'?t) (?:answering|responding|answer|respond) (?:me|us)\b"
+    r"|(?:floppy|drowsy|banged (?:his|her|their|my) head|hit (?:his|her|their|my) head|head injury)\b[^.!?;]{0,50}\b(?:can'?t|cannot|won'?t|wo?n'?t) (?:stay awake|keep (?:his|her|their) eyes open)"
+    r"|clutching (?:his|her|their) chest\b(?! (?:laugh\w*|in (?:mock|fake)))"
+    r"|can'?t catch (?:his|her|their) breath\b(?! (?:after|from|when|laugh\w*))"
+    # B43 (run37): carer wordings (nhs.uk when-to-call-999, read 30 Oct 2026: a child's ribs or tummy sucking in as they
+    # breathe = severe difficulty breathing; someone who has fallen or collapsed and is not moving = not responding)
+    r"|sucking in (?:under |between |around )?(?:his |her |their |the )?(?:ribs|tummy|stomach|chest)|(?:ribs|tummy|stomach|chest) (?:is |are |keeps? |keep )?(?:sucking|being sucked|pulling|caving) in"
+    r"|(?:side of (?:her|his|their) (?:mouth|face)|(?:her|his|their) (?:mouth|face)) (?:has |is |'s )?(?:dropped|drooping|drooped|sagging)\b(?! open)|(?:fell|fallen|collapsed|keeled over|on the floor|at the bottom of the stairs)\b[^.!?;]{0,50}\b(?:not|isn'?t|is not|won'?t|wo?n'?t|hasn'?t|stopped) (?:moving|moved)\b)", re.I)
+_PL_SUBJ = re.compile(r"\b(?:i|i'?m|she|he|they|it|we|you|my \w+(?: \w+)?|the (?:baby|child|kid|boy|girl|man|woman|toddler)|(?:mum|mom|dad|nan|gran|grandad|grandma|baby|husband|wife|partner)|[a-z]+'s)\b", re.I)
+_PL_NEG = re.compile(r"\b(?:not|n'?t|never|no)\s*(?:really\s+|actually\s+)?$", re.I)   # "she's not having a heart attack"
+_PL_HYPO = re.compile(r"\b(?:nearly|almost|like|as if|as though|worried|scared|afraid|fear\w*|risk|chance|in case|one day|might|could|would|if|give me|gave me|giving me|dream\w*|pretend\w*)\b", re.I)
+_PL_QUIET = re.compile(r"\b(?:in (?:his|her|my|their) sleep|at night|snor\w*|apnoea|apnea|sleep study|exercises?|anaesthe\w*|general anaesthetic|under the|plant|cat|dog|puppy|kitten|hamster|lol|joke|joking|film|show|tv|episode|video game|game|book|my words|tears|said my|you'?ll give|paramedics? (?:checked|said)|(?:health visitor|midwife|gp|doctor|nurse) (?:said|says|checked)|said (?:it'?s|it is|that'?s) normal|was indigestion|in hospital|on the ward|recovered|doing well|phone|laptop|computer|tablet|ipad|app|screen|website|wifi|router|printer|engine|server)\b", re.I)
+
+
+def _plain999(t: str) -> bool:
+    t = t.replace("\u2019", "'")
+    for clause in re.split(r"[.!?;\n]+", t):
+        m = _PL_STATE.search(clause)
+        if not m or _PL_QUIET.search(clause) or _is_past(clause):
+            continue
+        before = clause[: m.start()]
+        if _PL_NEG.search(before) or _PL_HYPO.search(before) or not _PL_SUBJ.search(before + " " + m.group(0)):
+            continue
+        return True
+    return False
+
+
+# run 53: plain-word urgent rules that need the whole note (a sign may sit in another comma clause)
+# S-453/S-454/S-455 (run 53): see agents notes; worsening belly pain+fever+sign, no wee+floppy+sick, explosive headache
+# S-446 (diabetes danger signs) and S-448 (reduced baby movements, nhs.uk/pregnancy/finding-out/reduced-movements read 2026-10-30), run 53
+# S-447 (run 53): sudden tearing/ripping pain in chest or back (nhs.uk/conditions/chest-pain: pain spreading to the back, read 2026-10-30)
+_WHOLE = re.compile(_WHOLE.pattern + "|" + r"^(?![\s\S]{0,160}?\b(?:stored|high cupboard|away from the kids|locked|child ?proof|safe to|ask the pharmacist|swallowed (?:one|a|my) (?:tablet|pill) (?:with|without|dry))\b)(?=[\s\S]{0,160}?(?:\b(?:swallowed|ate|eaten|chewed|drank)\b[^.!?,]{0,25}\b(?:handful|packet|pack|bottle|box|whole strip|loads?|lot) of (?:my |his |her |the |mum'?s |dad'?s )?(?:tablets?|pills?|painkillers?|paracetamol|ibuprofen|co-?codamol|codeine|medicine|medication|capsules?|antidepressants?|sleeping pills?)\b|\b(?:toddler|baby|child|kid|son|daughter|little one)\b[^.!?]{0,25}\b(?:got into|got hold of|found) (?:my |his |her |the )?(?:tablets?|pills?|painkillers?|paracetamol|ibuprofen|co-?codamol|codeine|medicine|medication|capsules?|antidepressants?|sleeping pills?)\b))" + "|" + r"^(?![\s\S]{0,160}?\b(?:hay ?fever|cold|flu|allerg\w*|swimming)\b)(?=[\s\S]{0,160}?(?:(?:hit|hits|banged|bumped|knocked|bashed|fell on|smacked|cracked|whacked) (?:my|his|her|their|the)? ?(?:head|skull)|(?:head injury|head knock|knock to the head|blow to the head)))(?=[\s\S]{0,160}?(?:(?:clear|watery|runny) (?:fluid|liquid)[^.!?]{0,30}\b(?:nose|nostril|ear|ears)\b|\b(?:nose|nostril|ear|ears)\b[^.!?]{0,30}(?:clear|watery) (?:fluid|liquid)|(?:fluid|liquid|blood) (?:is )?(?:coming|dripping|leaking|running) (?:out )?(?:of|from) (?:my|his|her|their)? ?(?:ear|ears)))" + "|" + r"^(?![\s\S]{0,200}?(?:\b(?:no inhaler needed|used my inhaler and (?:it )?(?:worked|helped)|fine now|settled|eased|better now|asking|stairs)\b|used my (?:inhaler|reliever|ventolin)[^.!?]{0,20}(?:and|,) (?:(?:it )?(?:helped|worked|settled|eased)|now fine)))(?=[\s\S]{0,200}?(?:(?:breathing (?:is )?getting (?:tighter|harder|more difficult) (?:every minute|by the minute|fast)|every breath is a struggle|struggling to breathe|struggle to breathe|can'?t (?:get|catch) my breath|going to stop breathing|can'?t breathe|wheez\w* (?:badly|so much|and can'?t))))(?=[\s\S]{0,200}?(?:(?:inhaler|reliever|ventolin|salbutamol|(?<!no )asthma|wheez\w*|puffer)))" + "|" + r"^(?![\s\S]{0,200}?(?:\b(?:planning|thinking about|considering|appointment next|asking|booked)\b))(?:(?=[\s\S]{0,200}?(?:baby arrived|since (?:the birth|i gave birth|having the baby|she was born|he was born)|gave birth|postnatal|days? (?:since|after) (?:the )?(?:birth|delivery)|pregnan\w*))(?=[\s\S]{0,200}?(?:flashing lights|seeing spots|blurr\w* vision|zigzag\w*|sparkl\w*))(?=[\s\S]{0,200}?(?:splitting|severe|terrible|awful|worst|pounding|banging) headache)|(?=[\s\S]{0,200}?(?:egg collection|egg retrieval|ivf|fertility injections|stimulation|trigger shot|embryo transfer))(?=[\s\S]{0,200}?(?:ballooned|belly (?:is )?(?:huge|swollen|massive|tight)|tummy (?:is )?(?:huge|swollen|massive|tight)|bloated and tight|swollen belly))(?=[\s\S]{0,200}?(?:struggling to (?:breathe|catch my breath)|short of breath|can'?t breathe|barely passed|hardly (?:passed|peed|weed)|(?:dark|very dark) (?:wee|urine)|not (?:peed|weed|passed))))" + "|" + r"^(?![\s\S]{0,160}?\b(?:never had a (?:fit|seizure)|just asking|read an article|article about|epilepsy|like usual|giggles|plan)\b)(?=[^.!?]{0,120}?(?:\b(?:fit|fits|seizure|seizures|convuls\w*)\b|\bshaking on the floor\b|\bbody is jerking\b|\bwhole body\b[^.!?]{0,20}\bjerk\w*|\bwent stiff\b[^.!?]{0,30}\btwitch\w*))(?=[^.!?]{0,120}?(?:\b(?:having|had|has had|have had|is having|are having|was having|keeps having|woke up on the floor|collapsed)\b|\bshaking\b|\bjerking\b))(?=[^.!?]{0,120}?(?:first (?:ever )?(?:time|fit|seizure)|for the first time|never (?:had|happened)\b|never happened before|\bstill (?:going|having|fitting)|won'?t stop|wont stop|(?:for|been|over) (?:\w+ )?(?:five|5|six|seven|eight|nine|ten|\d{2}) (?:min|minutes)|another (?:fit|seizure)|keeps? having (?:fits|seizures)|(?:isn'?t|won'?t|wont|not|can'?t be|cant be|cannot be) (?:waking|come round|woken|wake|coming round)|doesn'?t come round|bitten my tongue))" + "|" + r"^(?![\s\S]{0,200}?(?:\b(?:no fever|not feverish|without a fever|no temperature)\b))(?=[\s\S]{0,200}?(?:(?:tummy|belly|stomach|abdomen|abdominal|side) (?:pain|ache)|(?:pain|ache) in my (?:tummy|belly|stomach|abdomen)))(?=[\s\S]{0,200}?(?:(?:getting|gets|got) (?:worse|worse and worse)|keeps getting worse|worsening|unbearable))(?=[\s\S]{0,200}?(?:(?:feverish|fever|temperature|burning up|shivering|shaking|rigors?|hot and cold)))(?=[\s\S]{0,200}?(?:(?:pale|blotchy|mottled|grey|clammy|muddled|confused|drowsy|disorientated|disoriented|can'?t think straight)))" + "|" + r"^(?![\s\S]{0,200}?(?:\b(?:playing happily|drinking well|no fever and happy|fine now)\b))(?=[\s\S]{0,200}?(?:(?:no wet nappy|nappy (?:is |has been )?dry|dry nappy|(?:hasn'?t|has not|haven'?t|have not|not|hadn'?t) (?:passed (?:any )?urine|had a wee|weed|peed)|no (?:wee|urine))))(?=[\s\S]{0,200}?(?:(?:today|all day|since (?:yesterday|morning|last night)|(?:for|in|past) (?:the last )?(?:\d+|six|seven|eight|nine|ten|twelve|twelve|a day|24) ?(?:hours|hrs|h)|12 hours)))(?=[\s\S]{0,200}?(?:(?:floppy|drowsy|limp|won'?t wake|hard to wake|very sleepy|won'?t drink|wont drink|can'?t keep (?:any )?(?:water|fluids?) down|sunken|confused)))(?=[\s\S]{0,200}?(?:(?:sick|vomit\w*|diarrh\w*|runny tummy)))" + "|" + r"^(?![\s\S]{0,200}?(?:\b(?:explosive (?:laughter|laugh|giggles)|cinema|film|movie|show|game|book|joke|migraine|usual|period|cramps)\b))(?=[\s\S]{0,200}?\bheadache\b)(?=[\s\S]{0,200}?(?:explosive (?:headache|pain|onset)|headache[^.!?]{0,15}explosive|thunderclap|exploded|full (?:pain|strength) in (?:seconds|a second|an instant)|came on in (?:a second|seconds|an instant)|hit me (?:out of nowhere|like a hammer)|like being hit (?:on|in) the (?:back of the )?head))" + "|" + r"^(?![\s\S]{0,200}?(?:\b(?:all normal|moved after|moving again|kicking again|kicked all|so active|very active|not pregnant|moving (?:house|home|in|out|day|flat)|baby shower)\b))(?=[\s\S]{0,200}?(?:(?:baby|weeks|pregnan\w*|bump|kick\w*)))(?=[\s\S]{0,200}?(?:(?:hardly (?:moved|moving|kicked|kicking)|(?:has |have |hasn'?t |haven'?t |not |isn'?t |stopped |barely )(?:been )?(?:moved|moving|kicked|kicking)|stopped (?:moving|kicking)|barely mov\w+|quieter than (?:usual|normal)|moving (?:much )?less|less (?:movement|kicking)|fewer movements|not (?:felt|feeling) (?:my |the |any )?(?:baby|movements?|kicks?)|haven'?t felt (?:my |the )?(?:baby|her|him|any movements?|a kick|(?:my )?baby kick|kick)\w*)))" + "|" + r"^(?![\s\S]{0,200}?(?:\b(?:no diabetes|fine now|asking my gp|read that|checks her sugar|checks his sugar|twice a day|booked a blood test|banana|biscuit|had a snack|shower gel)\b))(?=[\s\S]{0,200}?(?:\b(?:diabet\w*|type (?:1|one|2|two)|insulin|blood sugar|sugar (?:level|reading)|ketones?)\b))(?=[\s\S]{0,200}?(?:(?:fruity|breath smells|breathing (?:really |very )?(?:fast|deeply)|drowsy|very sleepy|confus\w+|slurr\w+|unconscious|passed out|had a fit|keep being sick|vomiting|sick all day|won'?t drink|wont drink|can'?t think straight|cant think straight|not working|arent working|aren'?t working|\bHI\b|sky high|ketones (?:are |is )?high|high ketones)))" + "|" + r"^(?![\s\S]{0,160}?\b(?:stretch\w*|desk|sitting|gym|rugby|paper|muscle|cramp)\b)(?=[\s\S]{0,160}?\b(?:tearing|ripping|ripped|torn|being torn)\b)(?=[\s\S]{0,160}?\b(?:pain|ache|feeling|sensation)\b)(?=[\s\S]{0,160}?\b(?:chest|back|between my shoulder blades|shoulder blades|through to my back)\b)(?=[\s\S]{0,160}?\b(?:sudden\w*|out of nowhere|all of a sudden|just now|right now|suddenly|started)\b)", _WHOLE.flags)
+
+# S-483: a child who swallowed tablets, medicine or a cleaning product is the nhs.uk poisoning case with no quantity word needed
+_WHOLE = re.compile(_WHOLE.pattern + "|" + r"^(?![\s\S]{0,160}?\b(?:stored|high cupboard|locked|child ?proof|safe to|ask the pharmacist|vitamin|gummy|gummies|calpol|as prescribed|by the nurse|by the doctor|(?:nurse|pharmacist|doctor|gp) (?:said|says|told)|pharmacist|cake|themed|toy)\b)(?=[\s\S]{0,120}?\b(?:daughter|son|baby|toddler|child|kid|little (?:one|boy|girl)|\d+ ?(?:year|yr|month)s? old)\b)(?=[\s\S]{0,160}?\b(?:swallowed|ate|eaten|chewed|drank|drunk)\b[^.!?]{0,30}\b(?:tablets?|pills?|medicine|medication|painkillers?|capsules?|bleach|detergent|cleaning (?:product|fluid|spray)|dishwasher (?:tablet|pod)|batter(?:y|ies))\b)", re.I)
+
 def emergency_kind(user_text: str):
     """None, 'self_harm' or 'medical'. Negated, past or third-person mentions do not count."""
+    # run 60: the later whole-note rules below read this text too, so the same spelling corrections apply to them
+    user_text = _FUZZ_RX.sub(_fuzz, _TYPO_RX.sub(lambda m: _TYPOS[m.group(0).lower()], user_text))
     kind = _emergency_kind(user_text)
+    # S-347 proto: a usual-heavy-period note ("bleeding a lot today, normal for me") is not urgent on those words alone;
+    # the heavy phrase is blanked and the rest of the note is judged as before. Any faint / pale / hourly-pad / worse-than-usual word keeps it urgent.
+    if kind == "medical" and _HEAVY_USUAL_Q.search(user_text) and not _HEAVY_USUAL_CTRL.search(user_text):
+        kind = _emergency_kind(_HEAVY_PHRASE.sub("bleeding", user_text))
     # run11 (S-240 follow-up): a line break between clauses must not hide a self-harm plan ("Better off without me on the
     # team,\nand I've got a plan for tonight"): the note is re-read with line breaks as commas, for self-harm only.
     if kind is None and "\n" in user_text and _emergency_kind(user_text.replace("\n", ", ")) == "self_harm":
         return "self_harm"
+    if kind == "medical" and _preg_light_box(user_text):
+        return None
+    if kind == "medical" and _PD_CTX.search(user_text) and not _pd_second(user_text) \
+            and _emergency_kind(_PD_FAMILY.sub(" ", user_text)) != "medical":
+        return None
+    if kind is None and (((_stroke_lay(user_text) or _stroke_slot(user_text)) and not _stroke_old(user_text)) or _pelvic_fever(user_text) or _flow_shock(user_text) or _preg_shoulder(user_text) or _plain999(_norm(user_text))):
+        return "medical"
     return kind
+
+
+_BLOOD346 = re.compile(r"\b(?:massive|huge|big|heavy|loads of|lots of|a lot of|so much|gushing)\s+(?:bright red\s+)?(?:bleed\w*|blood)\b|\bbright red blood\b", re.I)
+_SIGN346 = re.compile(r"\b(?:dizzy|faint|light ?headed|shaky|cold|clammy|white|pale|sweaty|passing out|pass out|scared|weak)\b", re.I)
+_PAST_Q346 = re.compile(r"\b(?:passed|eased|gone|years? ago|last (?:week|month|year)|usual|normal for me|my period|nose\w*|cut|graze)\b", re.I)
+_BAD346 = re.compile(r"\bso bad\b.{0,25}\b(?:can'?t|cant|cannot)\s+(?:even\s+)?(?:stand|walk|move|breathe)\b", re.I)
+_CANTSTAND346 = re.compile(r"\b(?:can'?t|cant|cannot)\s+(?:even\s+)?stand(?:\s+up)?\b", re.I)
+
+_WAKE342 = re.compile(r"\b(?:(?:hard|difficult|impossible|struggl\w+)\s+to\s+(?:wake|rouse)|(?:wo?n'?t|will\s*not|not|can'?t|cant|cannot|unable\s+to|barely)\s+(?:be\s+)?(?:wak\w+|wake|rouse\w*)|(?:wo?n'?t|not|barely)\s+(?:respond\w*|answer\w*))\b", re.I)
+_EYES342 = re.compile(r"\b(?:can'?t|cant|barely)\s+keep\s+(?:his|her|my|their)\s+eyes\s+open\b", re.I)
+_HOT342 = re.compile(r"\b(?:burning|boiling|very hot|high temperature|fever|floppy|blue|confused|slurr\w+)\b", re.I)
+_SIGN342 = re.compile(r"\b(?:burning|boiling|very hot|high temperature|fever|floppy|blue|confused|slurr\w+|breathing|respond\w*|drowsy|sleepy|barely)\b", re.I)
+_NEG342 = re.compile(r"\b(?:no|without|not|never)\s+(?:a\s+)?(?:fever|temperature)\b", re.I)
+_MORN342 = re.compile(r"\b(?:alarm|snooz\w+|school|morning|refresh\w+|shift|overslept|baby|slept badly|kept waking|teenager|groggy)\b", re.I)
+
+def _hard_to_wake342(t):
+    t = t.replace("’", "'")
+    if _EYES342.search(t) and _HOT342.search(_NEG342.sub("", t)):
+        return True
+    if not _WAKE342.search(t):
+        return False
+    if _SIGN342.search(_NEG342.sub("", t)):
+        return True
+    return not _MORN342.search(t) and not re.search(r"refresh", t, re.I)
+
+_S343 = re.compile(r"\b(?:temperature (?:of |is |was |has dropped to )?(?:3[0-5](?:\.\d)?)\b|(?:not|n'?t|haven'?t|hasn'?t)\s+(?:had|done|passed)\s+(?:a\s+)?(?:wee|pee|urine)\b[^.!?;]{0,40}\b(?:12|twelve|all day|since yesterday)\b|(?:talking|talks) nonsense|not making sense|(?:weak|thin|high[- ]pitched|wrong)\b[^.!?;]{0,20}\bcry\b|cry\b[^.!?;]{0,30}\b(?:high and thin|sounds wrong|high[- ]pitched)\b|(?:hardly|barely) respond\w*)", re.I)
+_S343_SIGN = re.compile(r"\b(?:shak\w+|shiver\w*|freezing|cold|sleepy|drowsy|hot|burning|breathing|fast|might die|floppy|feeding|temperature|operation|baby|toddler|daughter|son|she|he|mum|dad)\b", re.I)
+
+_QUIET347 = re.compile(r"\b(?:thermometer|broken|texts?|messages?|phone|up early|for nursery|for school|mondays?|any more|anymore|retired|dinosaurs?|imagination|smell|teething|for long|stand the)\b", re.I)
+
+_S364_CTX = re.compile(r"\b(?:miscarriage|lost the pregnancy|lost my pregnancy|pregnancy loss|medical management|post-?partum|post-?natal|since (?:the )?delivery|after (?:the )?(?:delivery|birth)|(?:weeks?|days?) after having (?:my|the) (?:baby|son|daughter)|had the baby)\b", re.I)
+_S364_HEAVY = re.compile(r"\b(?:(?:pad|towel)s?\b[^.;!?]{0,25}\b(?:each|every|per) (?:thirty|30|twenty|20|fifteen|15|ten|10|forty|40)\b[^.;!?]{0,12}\bmin\w*|(?:pad|towel)s?\b[^.;!?]{0,25}\b(?:each|every|per) half[- ](?:an[- ])?hour\b|(?:plum|orange|lemon|golf ball|egg|fist)[- ]sized (?:lumps?|clots?)|(?:much|a lot|far) heavier\b[^.;!?]{0,60}\b(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b|(?:woozy|dizz\w+|sweaty|faint\w*|clammy|grey|gray)\b[^.;!?]{0,60}\b(?:much|a lot|far) heavier\b|gushing[^.;!?]{0,60}\b(?:grey|gray|dizz\w+|woozy|faint\w*))", re.I)
+_S364_QUIET = re.compile(r"\b(?:no clots?|not heavy|stopped|used to|last year|years? ago)\b", re.I)
+
+_S365 = re.compile(
+    r"^(?=[\s\S]*\b(?:(?:weeks?|days?) late|missed (?:a |my )?period|late period|test (?:came up |was |came back )?positive)\b)(?=[\s\S]*\b(?:one side|one-sided|stabb\w*|sharp)\b)(?=[\s\S]*\b(?:shoulder|arm meets (?:my )?neck|tip of (?:my )?shoulder)\b)"
+    r"|^(?=[\s\S]*\b(?:unable to stand|can'?t stand|cannot stand|stuck on the (?:floor|tiles|toilet|bathroom))\b)(?=[\s\S]*\b(?:stabb\w*|agony|severe|not easing|won'?t ease)\b)"
+    r"|^(?=[\s\S]*\b(?:heart (?:is )?(?:going like|racing|pounding)|racing heart)\b)(?=[\s\S]*\b(?:sweaty|clammy|chilly|cold sweat)\b)(?=[\s\S]*\b(?:bleeding|blood)\b[^.;!?]{0,40}\b(?:hasn'?t slowed|not slowing|won'?t stop|still)\b)"
+    r"|^(?=[\s\S]*\b(?:can'?t (?:tell|say) (?:me )?what day|same question (?:again|over)|(?:asks|asked) me [\w ]{0,20}again and again|doesn'?t know where)\b)(?=[\s\S]*\b(?:burning up|fever|hot to touch|shiver\w*|shaking)\b)"
+    r"|^(?=[\s\S]*\b(?:through (?:the |my )?(?:night )?pads?)\b)(?=[\s\S]*\b(?:jeans|trousers|clothes|skirt|sheets)\b)(?=[\s\S]*\b(?:can'?t stop|won'?t stop|an hour|hour)\b)", re.I)
+_S365_QUIET = re.compile(r"\b(?:negative|not pregnant|no fever|nothing sharp|not sharp|for years|sometimes|stiff|since (?:her|his) (?:stroke|operation)|last year)\b", re.I)
+
+# PM-B66 (run42): someone else's suicidal words in reported speech ("my son says everyone would be better off without him", "my
+# sister told me she doesn't want to be here anymore") are read back in the first person, so the self-harm lists see them;
+# past / 'used to' / years-ago reports stay quiet through _hits. nhs.uk help-for-suicidal-thoughts ('Worried about someone
+# else?'), read 31 Oct 2026. Mirror: lib/urgentWording.ts relaySwap (same list, same order).
+_RELAY_SH = re.compile(r"\b(?:says?|said|told me|tells me|is telling me|keeps saying|kept saying|texted me|messaged me|wrote)\b(?: that)?[ ,]+([^.!?\n]+)", re.I)
+_RELAY_SWAP = [
+    (r"\b(?:she|he|they)'s\b", "I'm"), (r"\b(?:she|he|they)'re\b", "I'm"), (r"\b(?:she|he|they) (?:is|are)\b", "I am"),
+    (r"\b(?:she|he|they) (?:has|have)\b", "I have"), (r"\b(?:she|he|they) (?:doesn'?t|don'?t|does not|do not)\b", "I don't"),
+    (r"\b(?:she|he|they) (?:wants|want)\b", "I want"), (r"\b(?:she|he|they) (?:was|were)\b", "I was"),
+    (r"\b(?:she|he|they) (?:feels|feel)\b", "I feel"), (r"\b(?:she|he|they) (?:thinks|think)\b", "I think"),
+    (r"\b(?:she|he|they)\b", "I"), (r"\b(?:herself|himself|themselves|themself)\b", "myself"), (r"\b(?:him|them)\b", "me"),
+    (r"\bher\b(?= *(?:[,;]|$|any ?more|now|tonight|today|and\b))", "me"), (r"\b(?:her|his|their)\b", "my")]
+_RELAY_SWAP = [(re.compile(a, re.I), b) for a, b in _RELAY_SWAP]
+_RELAY_JOKE = re.compile(r"\b(?:laugh\w*|joking|kidding|embarrass\w*|lol)\b", re.I)
+
+
+def _relay_swap(text: str) -> str:
+    out = []
+    for m in _RELAY_SH.finditer(text[:20000]):
+        c = m.group(1)
+        if _RELAY_JOKE.search(c):
+            continue  # a relayed joke ('she'd kill herself laughing') is not read back as her own words
+        for rx, rep in _RELAY_SWAP:
+            c = rx.sub(rep, c)
+        out.append(c)
+    return _IDIOM.sub(" ", ". ".join(out))  # 'she'd kill herself laughing' -> the first-person idiom, blanked as for her own words
+
+
+# run 59 (p71): common misspellings are corrected before the lists run (dictated and thumb-typed notes). Mirror: lib/urgentWording.ts TYPOS.
+_TYPOS = {"swallowd": "swallowed", "swalowd": "swallowed", "soked": "soaked", "sudenly": "suddenly", "speek": "speak", "stif": "stiff", "fevr": "fever", "temprature": "temperature", "breathin": "breathing", "sweatin": "sweating", "purpl": "purple", "breakfst": "breakfast", "bleding": "bleeding", "blleeding": "bleeding", "blod": "blood", "blooding": "bleeding", "bloood": "blood", "brathe": "breathe", "breif": "brief", "brethe": "breathe", "brething": "breathing", "colapse": "collapse", "colapsed": "collapsed", "dizy": "dizzy", "dizzey": "dizzy", "dizzi": "dizzy", "evrything": "everything", "evrywhere": "everywhere", "gunna": "gonna", "lfe": "life", "miscariage": "miscarriage", "miscarrage": "miscarriage", "miscarrige": "miscarriage", "myelf": "myself", "mysefl": "myself", "myslf": "myself", "pian": "pain", "pregant": "pregnant", "pregnat": "pregnant", "pregnent": "pregnant", "pregnet": "pregnant", "prenant": "pregnant", "seizer": "seizure", "seizeure": "seizure", "seziure": "seizure", "sezure": "seizure", "shortnes": "shortness", "shortnss": "shortness", "shotness": "shortness", "siezure": "seizure", "sucide": "suicide", "suicid": "suicide", "suiside": "suicide", "swalllowed": "swallowed", "swalowed": "swallowed", "swollowed": "swallowed", "unconcious": "unconscious", "unconsious": "unconscious", "vomitting": "vomiting", "vommiting": "vomiting"}
+# "seizer of the keys" is the noun, not a misspelling of seizure
+_TYPO_RX = re.compile(r"\b(?:" + "|".join(sorted((k + r"(?! of\b)" if k == "seizer" else k for k in _TYPOS), key=len, reverse=True)) + r")\b", re.I)
+
+
+# S-495 (run 60): one-letter slips of a few urgent words that the fixed map above does not list.
+# Only tokens that are not real words (stoplist computed offline from word frequencies) are corrected.
+_FUZZ_TARGETS = ("bleeding", "breathe", "breathing", "pregnant", "collapsed", "seizure", "vomiting", "unconscious", "miscarriage", "suicide")
+_FUZZ_REAL = frozenset("bleedings bleeping blending breaching breath breathed breather breathes breathings breaths breathy breeding collapse collapses miscarriages pregnane regnant seizures suicida suicided suicides wreathe wreathing".split())
+_FUZZ_RX = re.compile(r"\b[a-z]{6,12}\b", re.I)
+
+
+def _d1(a: str, b: str) -> bool:
+    """True when a and b differ by exactly one insertion, deletion, substitution or adjacent swap."""
+    la, lb = len(a), len(b)
+    if abs(la - lb) > 1 or a == b:
+        return False
+    if la == lb:
+        diff = [i for i in range(la) if a[i] != b[i]]
+        return len(diff) == 1 or (len(diff) == 2 and diff[1] == diff[0] + 1 and a[diff[0]] == b[diff[1]] and a[diff[1]] == b[diff[0]])
+    if la > lb:
+        a, b = b, a
+    i = 0
+    while i < len(a) and a[i] == b[i]:
+        i += 1
+    return a[i:] == b[i + 1:]
+
+
+def _fuzz(m):
+    w = m.group(0).lower()
+    if w in _FUZZ_REAL or w in _TYPOS or w in _FUZZ_TARGETS:
+        return m.group(0)
+    for t in _FUZZ_TARGETS:
+        if _d1(w, t):
+            return t
+    return m.group(0)
+
+
+_S492_NO = re.compile(r"\b(?:chest pain|chest tightness)\s*\?+\s*no\b[,.:;]?", re.I)
 
 
 def _emergency_kind(user_text: str):
     user_text = _norm(user_text)
     # a swollen/ballooned leg with breathlessness is never explained away by the exertion idiom (S-222)
-    if not _LEG_BREATH.search(user_text):
+    # S-522 (run 64): the idiom list removes "pins and needles"; face + arm + speech together keep it (NHS stroke signs)
+    _s522 = all(re.search(x, user_text, re.I) for x in (_S522, _S522_ARM, _S522_SPEECH)) and not re.search(_S522_QUIET, user_text, re.I)
+    if not _LEG_BREATH.search(user_text) and not _s522:
         user_text = _IDIOM.sub(" ", user_text)
     # a lead-in at the very start leaves ". " there; strip it so a whole-note rule anchored at ^ still sees her first sentence
     user_text = _LEADIN.sub(". ", user_text).lstrip(" .")
-    if _hits(_SELF_RX, user_text) or _hits(_SELF_HARM_RX, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
+    user_text = _TYPO_RX.sub(lambda m: _TYPOS[m.group(0).lower()], user_text)
+    user_text = _FUZZ_RX.sub(_fuzz, user_text)
+    user_text = _S492_NO.sub(" ", user_text)  # run 59: a question the writer answers herself ("Chest pain? No, it's heartburn")
+    if _ADHERENCE.search(user_text):
+        user_text = _ADH_PHRASE.sub(" ", user_text)  # B62 (run41)
+    if _hits(_SELF_RX, user_text, True) or _hits(_SELF_HARM_RX, user_text, True) or _hits_whole(_SH_CTX_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text) or _hits_whole(_SELF_WHOLE, user_text.replace("\n", ", ")):
         return "self_harm"
+    if (_relayed := _relay_swap(user_text)) and (_hits(_SELF_RX, _relayed) or _hits(_SELF_HARM_RX, _relayed)):
+        return "self_harm"  # PM-B66 (run42)
+    if _sh_act(user_text):
+        return "self_harm"  # B52 (run39): an overdose taken, self-injury bleeding, a plan for tonight, a relayed threat; any subject
+    if _sh_class(user_text):
+        return "self_harm"  # B61 (run41): PM 23:5x self-harm classes (cut + bleeding, overdose + sick, saved-up tablets + tonight, goodbye, ...)
     # draft run 22 (Safety to review): a PAST self-harm mention plus present intent anywhere in the note
     # ("i tried to kill myself last year and i want to do it again") is the highest-risk case, not history.
     if (_SELF_RX.search(user_text) or _SELF_HARM_RX.search(user_text)) and _AGAIN.search(user_text):
@@ -1002,10 +2094,27 @@ def _emergency_kind(user_text: str):
     # present fever signs past. The past check looks at the fever clause only.
     if _proc_fever_hit(user_text) or _other_hist_rescue(user_text):
         return "medical"
+    if _cauda(user_text):
+        return "medical"  # B55 (run39): cauda signs in lay words, any subject
     if (_THIRD_NOW.search(user_text[:_WHOLE_SCAN_CAP]) or _THIRD_CHILD.search(user_text[:_WHOLE_SCAN_CAP])) and not _is_past(user_text):
         return "medical"
-    if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I):
+    if _S364_CTX.search(user_text) and _S364_HEAVY.search(user_text) and not _S364_QUIET.search(user_text):
+        return "medical"  # S-364 prototype: after a loss or birth, bleeding heavy again with a shock sign or big clots
+    if _S365.search(user_text) and not _S364_QUIET.search(user_text) and not _S365_QUIET.search(user_text):
+        return "medical"  # S-365 prototype
+    if _PREG_WHOLE.search(user_text) and _hits(_PREG_SYMPTOM, user_text) and not re.search(r"\bnot pregnant\b|\bpregnancy test\b", user_text, re.I) \
+            and not (re.search(r"\b(?:lost|ended) (?:the|my) pregnancy\b|\bpregnancy (?:loss|ended)\b", user_text, re.I)
+                     and not re.search(r"\b(?:severe|sharp|one-sided|worse|stabbing|soaking|gushing|heavy|dizz\w+|faint\w*)\b", user_text, re.I)):
         return "medical"
+    if not _QUIET347.search(user_text) and _S343.search(user_text) and _S343_SIGN.search(user_text) and not _PAST_Q346.search(user_text):
+        return "medical"  # S-343/S-344 prototype
+    if not _QUIET347.search(user_text) and _hard_to_wake342(user_text):
+        return "medical"  # S-342 prototype (Safety run 40)
+    # S-346 prototype (Safety run 40): heavy blood in plain words with a sign word; "so bad I can't stand"; pain with can't stand/walk
+    _t = user_text
+    if not _PAST_Q346.search(_t):
+        if (_BLOOD346.search(_t) and _SIGN346.search(_t)) or _BAD346.search(_t) or (not _QUIET347.search(_t) and _CANTSTAND346.search(_t) and re.search(r"\bpain\b|\bhurts?\b|\bbleed\w*", _t, re.I)):
+            return "medical"
     return None
 
 
@@ -1102,3 +2211,129 @@ def reply_shape(text: str) -> list[str]:
     if not sents:
         tags.append("empty")
     return tags
+
+
+# B52 (run39, PM 21:5x selfharm-blind 9/10 missed): an ACT, not a thought, said by anyone (first person or relayed): an
+# overdose already taken (verb + amount word + medicine), self-injury that is bleeding and not stopping, a plan for
+# tonight, a relayed threat ('she says she's going to kill herself'). nhs.uk 'Help for suicidal thoughts' (reviewed
+# 26 Apr 2024, read 2026-10-30): call 999 or go to A&E 'if you have seriously harmed yourself, for example by taking a
+# drug overdose'. Sentence-level, any subject; negation / past / accident / routine dose in the same sentence stay quiet.
+_SH_MEDS = r"(?:" + _MEDS[3:-1] + r"|ibuprofen|antidepressants?|sertraline|citalopram|fluoxetine|diazepam|zopiclone|aspirin|tabs|anti-?depressants?|(?:his|her|their|my) (?:\w+ )?(?:pills|tablets|meds))"
+_SH_AMOUNT = (r"(?:a (?:whole |full |entire )?(?:box|packet|pack|bottle|strip|tub|blister)s?|(?:two|three|four|several|a few|[2-9]) (?:whole )?(?:boxes|packets|packs|bottles|strips)|"
+              r"half (?:a|the) (?:box|packet|bottle|strip|pack)|(?:about |around |over |like |maybe )?(?:[1-9]\d|\d{3})(?! ?(?:mg|ml|g|mcg)\b)|(?:twenty|thirty|forty|fifty|fifteen|a hundred)|"
+              r"loads? of|a load of|(?<!\d )lots of|a lot of|a handful|handfuls|too many|all (?:of )?(?:his|her|their|my|the|them|these)|every (?:one|single one|pill|tablet)|the (?:whole|entire|rest of the) (?:lot|box|packet|bottle|pack))")
+_SH_ACT = re.compile(
+    r"\b(?:(?:took|taken|swallowed|downed|necked|had|has had|'s had)\b[^.!?\n]{0,12}?\b" + _SH_AMOUNT + r"\b(?:(?!\bwith\b)[^.!?\n]){0,35}?\b" + _SH_MEDS + r"\b"
+    r"|(?:has|have|'s|'ve|just|had|i)\s+overdosed\b|(?:took|taken|had) an overdose\b"
+    r"|(?:took|taken|swallowed|downed)\s+every (?:single )?(?:pill|tablet|painkiller|sleeping (?:pill|tablet)|med|medicine)s?\b[^.!?\n]{0,10}?\b(?:(?:i|he|she|they) could find|in the (?:house|cupboard|bathroom|drawer|box|packet|cabinet)|(?:i|he|she|they) (?:had|'?d got)(?: left)?|left|there was)\b"  # B59
+    r"|(?:cut|slashed|sliced|slit)\b[^.!?\n]{0,20}\b(?:arms?|wrists?|thighs?|legs?|deep|deeper|myself|himself|herself|themselves)\b[^.!?\n]{0,40}\b(?:(?:won'?t|will not|isn'?t|hasn'?t|has not|not|can'?t) (?:stop\w*)|blood everywhere|bleeding (?:heavily|badly|loads|a lot)|pouring)"
+    r"|(?:says?|said|told (?:me|us)|texted|messaged|keeps saying|threaten\w*)\b[^.!?\n]{0,30}\b(?:he|she|they)(?:'s|'re| is| are| was)? (?:going to|gonna|wants? to|will|'ll|is about to|about to|wants to) (?:kill (?:himself|herself|themselves)|end (?:it|his life|her life|their life|things\b(?! (?:with|between) (?:my |his |her |their |our |the )?(?:boyfriend|girlfriend|partner|ex|husband|wife|fianc\w+|bf|gf|him|her|them)\b))|take (?:his|her|their) (?:own )?life|hurt (?:himself|herself|themselves)|die\b(?! of| laughing| for)|jump\b(?! in| on| at| for))"
+    r"|\b(?:he|she|they|my (?:\w+ ){0,2}(?:sister|brother|mum|mom|dad|son|daughter|friend|partner|boyfriend|girlfriend|husband|wife|flatmate))(?:'s|'re| is| are) (?:going to|gonna|about to|threatening to) (?:kill (?:himself|herself|themselves)|take (?:his|her|their) (?:own )?life|end (?:his|her|their) life)\b"
+    r"|\b(?:he|she|they|my (?:\w+ ){0,2}(?:sister|brother|mum|mom|dad|son|daughter|friend|partner|boyfriend|girlfriend|husband|wife|flatmate))\b[^.!?\n]{0,15}\bwants? to die\b(?! of| laughing| for)(?=[^.!?\n]{0,40}\b(?:rope|tablets|pills|knife|blade|tonight|bridge|plan|note|goodbye)\b)"
+    r"|\b(?:tonight|this evening)\b[^.!?\n]{0,20}\b(?:i'?m|i am|going to|gonna|i'?ll|i will)\s+(?:going to |gonna )?(?:do it|end it|go through with it)\b(?=[\s\S]{0,60}\b(?:made up my mind|decided|for good|no going back|goodbye|ready|nobody can stop|can'?t stop me)\b)"
+    r"|\b(?:planned|planning) (?:it|to do it|my death|my suicide) for (?:tonight|this evening)\b|(?:do|doing) it tonight when (?:everyone|everybody|they)(?:'s| is| are|'re) (?:asleep|out|gone|in bed))", re.I)
+_SH_ACT_QUIET = re.compile(
+    r"\b(?:by (?:mistake|accident)|accidental\w*|chopping|cooking|shaving|slipped|fell|falling|off (?:his|her|my) bike|broken glass|"
+    r"for the (?:week|month|day|course)|(?:new|repeat|next) prescription|as (?:prescribed|directed)|(?:like|as) the (?:gp|doctor|pharmacist|nurse)|the (?:gp|doctor|pharmacist|nurse) (?:said|told|gave|prescribed)|"
+    r"over the (?:week|month|year|course)|in (?:a|one|the) (?:week|month|year)|this (?:week|month|year)|since (?:march|april|may|june|july|august|september|october|november|december|january|february)|per day|a day\b|each day|every day|daily|"
+    r"essay|homework|laundry|washing|ironing|revision|project|marathon|run\b|workout|jigsaw|exam|homework|presentation)\b", re.I)
+
+
+# B62 (run41, PM): adherence said with 'all' / 'every' ('took all my tablets today', 'took every tablet on time', 'with breakfast')
+# is not an act: the phrase is blanked before the lists run, only when no risk word and no amount word is in the note.
+_ADHERENCE = re.compile(r"^(?![\s\S]*\b(?:sick|vomit\w*|throwing up|drowsy|sorry|note|goodbye|tonight|die|end it|kill|on purpose|deliberately|overdose|hospital|a&e|999|wake|scared|want(?:ed)? to|at once|in one go)\b)(?![\s\S]*\b(?:\d+|box|packet|bottle|strip|load|loads|lots|handful)\b)[\s\S]*\b(?:today|on time|supposed to|as normal|as usual|with (?:my )?(?:breakfast|lunch|dinner|tea|food|meal|water)|remembered|before (?:work|bed|school))\b", re.I)
+_ADH_PHRASE = re.compile(r"\b(?:took|taken|take|taking)\s+(?:all|every)\s+(?:(?:of\s+)?(?:my|the|her|his|their)\s+)?(?:\w+\s+)?(?:pills?|tablets?|meds|medication|medicines?)\b(?:\s+on time)?", re.I)
+
+
+def _sh_act(text: str) -> bool:
+    text = text[:_WHOLE_SCAN_CAP]
+    for m in _SH_ACT.finditer(text):
+        starts = [i for i, c in enumerate(text[: m.start()]) if c in ".;!?\n"]
+        start = starts[-1] + 1 if starts else 0
+        ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
+        sentence = text[start:(m.end() + ends[0] if ends else len(text))]
+        if _NEG.search(_NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1]) or _is_past(sentence) or _SH_ACT_QUIET.search(sentence):
+            continue
+        return True
+    return False
+
+
+
+# B61 (run41, PM 23:5x class names for the self-harm misses; own lines in hq sets/b61-selfharm-classes-run41.json, written
+# before this code). nhs.uk 'Help for suicidal thoughts' (reviewed 26 Apr 2024, read 2026-10-30): 999 / A&E if someone has
+# seriously harmed themselves or may act now. Whole-note co-occurrence, any subject (writer or relayed); each branch needs an
+# act or a place/plan word AND a now/intent word. Adherence, safe disposal, accidental double dose, cooking cuts, a pool edge stay quiet.
+_SH_PILLS = r"(?:pills?|tablets?|meds|medication|medicines?|painkillers?|paracetamol|ibuprofen|tramadol|codeine|co-?codamol|oxycodone|morphine|antidepressants?|sertraline|citalopram|insulin)"
+_SH_CLASS = re.compile(
+    r"^(?=[\s\S]*\b(?:cut|cuts|slashed|sliced|slit|stabbed)\b)(?=[\s\S]*\b(?:on purpose|deliberately|myself|himself|herself|themselves)\b)(?=[\s\S]*\b(?:still bleeding|keeps? (?:on )?(?:bleeding|coming)|won'?t stop|can'?t (?:make it |get it to )?stop|bleeding through|soak\w* through|blood everywhere|pouring)\b)"
+    r"|^(?=[\s\S]*\b(?:took|taken|swallowed|downed|necked)\b[^.!?\n]{0,25}\b(?:a lot|loads|lots|a pile|piles|a heap|heaps|a stack|a bunch|a fistful|a handful|handfuls|too many|all|a load|every|whole|box|packet|bottle|strip)\b[^.!?\n]{0,25}\b" + _SH_PILLS + r")(?=[\s\S]*\b(?:being sick|throwing up|vomit\w*|puking|sick everywhere|can'?t stay awake|passing out)\b)"
+    r"|^(?=[\s\S]*\b(?:saving|saved|stockpil\w*|hoard\w*|stash\w*|been keeping|collecting)\b[^.!?\n]{0,30}\b" + _SH_PILLS + r"|[\s\S]*\b" + _SH_PILLS + r"\b[^.!?\n]{0,20}\b(?:saved|stockpiled|hoarded|stashed)\b)(?=[\s\S]*\b(?:tonight|this evening|later|the night|when (?:everyone|everybody|they)(?:'s| is| are|'re) asleep|take them all|doing it|do it)\b)"
+    r"|^(?=[\s\S]*\b(?:won'?t|will not|not going to) be (?:around|here)\b)(?=[\s\S]*\b(?:thank\w*[^.!?\n]{0,20}for everything|goodbye|said bye|saying bye|bye to everyone|look after (?:the|my|mum|dad|everyone|yourself|the kids|the dog|the cat)|love you all|sorry for everything|tell \w+ (?:i|that i) love)\b)"
+    r"|^(?=[\s\S]*\b(?:drowsy|barely awake|half asleep|won'?t wake|can'?t wake|not waking|out of it|unresponsive|slumped|unconscious|not responding|hard to wake)\b)(?=[\s\S]*\b(?:empty (?:\w+ ){0,2}(?:packs?|packets?|boxes|bottles?|strips?|blisters?|tubs?)|(?:pills|tablets) (?:everywhere|all over|scattered))\b)"
+    r"|^(?=[\s\S]*\b(?:locked|shut|barricaded)\s+(?:(?:him|her|them|my)sel(?:f|ves)\s+)?in\b[^.!?\n]{0,40}\bwith\b[^.!?\n]{0,25}\b(?:" + _SH_PILLS[3:-1] + r"|knife|knives|blade|razor|rope)\b)"
+    r"|^(?=[\s\S]*\b(?:took|taken|swallowed|has had|stole|nicked)\b[^.!?\n]{0,30}\b(?:strong painkillers|tramadol|oxycodone|morphine|codeine|co-?codamol|fentanyl|dihydrocodeine|oramorph|methadone|(?:\w+'s|someone else'?s) (?:pills|tablets|meds|painkillers))\b)(?=[\s\S]*\b(?:sorry|note|apolog\w*|goodbye|forgive)\b)"
+    r"|^(?=[\s\S]*(?:\b(?:edge|ledge|railings?|wrong side|parapet)\b[^.!?\n]{0,40}\b(?:bridge|roof\w*|cliff|car park|multi-?storey|building|balcony|tracks|platform|tower)\b|\b(?:bridge|roof\w*|cliff|car park|multi-?storey|building|balcony|tracks|platform|tower)\b[^.!?\n]{0,40}\b(?:edge|ledge|railings?|wrong side|parapet)\b))(?=[\s\S]*\b(?:right now|want to jump|wants to jump|going to jump|gonna jump|about to jump|won'?t come (?:down|back|away)|refus\w* to come|thinking (?:of|about) jumping|end it|can'?t (?:do this|go on)|saying goodbye|kill)\b)"
+    r"|^(?=[\s\S]*(?:\b(?:lined up|laid out|laid|lay|counted|set out|ready)\b[^.!?\n]{0,25}\b" + _SH_PILLS + r"|\b" + _SH_PILLS + r"\b[^.!?\n]{0,25}\b(?:lined up|laid out|counted out|set out|out ready|ready)\b|\blaid (?:\w+ ){0,3}out\b))(?=[\s\S]*\b(?:after tonight|tonight|it'?s (?:all )?over|none of (?:this|it) (?:will )?matter|won'?t be a (?:problem|burden)|when (?:everyone|everybody|they)(?:'s| is| are|'re) asleep|goodbye|take them all|going to take them)\b)"
+    r"|^(?=[\s\S]*\bafter tonight\b(?!'s)[^.!?\n]{0,40}\b(?:none of (?:this|it) (?:will )?matter|it'?s (?:all )?over|(?:i|he|she|they) won'?t be (?:here|around|a problem|a burden)|it ends|done with (?:life|everything|it all))\b)", re.I)
+_SH_CLASS_QUIET = re.compile(
+    r"\b(?:by (?:mistake|accident)|accidental\w*|double dose|(?:111|pharmacist|chemist|gp|doctor) said|safe disposal|get rid of them|dosette|pill organi[sz]er|for the week|"
+    r"chopping|cooking|shaving|vitamins|swim\w*|photo|view|wedding|holiday|visiting|shift|this weekend|exams?|revis\w*|hay fever|antihistamine|would never|i'?d never|not going to (?:take|do|jump))\b", re.I)
+
+
+def _sh_class(text: str) -> bool:
+    # B67 (run41): judged on windows of up to 3 sentences, so a quiet word elsewhere in a long note does not mute an act
+    parts = re.split(r"[.;!?\n]", text[:_WHOLE_SCAN_CAP])
+    for size in (1, 2, 3):
+        for i in range(len(parts) - size + 1):
+            window = ". ".join(parts[i:i + size])
+            if _SH_CLASS.search(window) and not _SH_CLASS_QUIET.search(window):
+                return True
+    return False
+
+# B55 (run39, PM cauda classes; nhs.uk sciatica 999 box, read 2026-10-30): numbness around the bottom / genitals (saddle) in
+# lay words, sciatica or weakness in BOTH legs that is new or getting worse, a bladder or bowel accident not felt, sex sensation
+# lost with a back word. Sentence-level, any subject (carer reports too); sitting / exercise / period / long-standing stay quiet.
+_CAUDA = re.compile(
+    r"\b(?:(?:bum|bottom|backside|buttocks?|anus|between (?:my|her|his|their) legs|down there|genitals?|vagina|vulva|inner thighs?|saddle area|toilet seat)\b[^.!?;\n]{0,40}\b(?:numb\w*|no feeling|(?:can'?t|cannot|couldn'?t) feel|lost (?:the |all )?feeling)"
+    r"|(?:numb\w*|no feeling|(?:can'?t|cannot|couldn'?t) feel(?: anything)?)\b[^.!?;\n]{0,30}\b(?:bum|bottom|backside|buttocks?|between (?:my|her|his|their) legs|down there|genitals?|toilet seat|when (?:i|she|he) wipes?|wiping)"
+    r"|(?:both (?:my |her |his |their )?legs|down both legs|sciatica on both sides)\b[^.!?;\n]{0,40}\b(?:weak\w*|numb\w*|giving way|gave way|shooting|sciatica|pain)"
+    r"|(?:weak\w*|numb\w*|shooting|sciatica|pain)\b[^.!?;\n]{0,40}\b(?:both (?:my |her |his |their )?legs|down both legs|sciatica on both sides)\b"
+    r"|(?:wet (?:myself|herself|himself)|(?:wee'?d|peed|pooed|soiled) (?:myself|herself|himself)|(?:an )?accident with (?:my|her|his) (?:bowels?|bladder))\b[^.!?;\n]{0,40}\b(?:(?:didn'?t|did not|without|not) (?:even )?(?:feel|felt|notic\w*|realis\w*|realiz\w*|know)\w*)"
+    r"|(?:(?:can'?t|cannot) feel (?:anything )?|numb\w* )(?:during|when (?:we |i )?(?:have|having)) sex)\b", re.I)
+_CAUDA_QUIET = re.compile(
+    r"\b(?:sitting (?:on (?:the |a )?(?:hard|chairs?|floor|bike|toilet for)|cross|for (?:ages|hours|long|too long))|from sitting|sitting on (?:the |a )?\w+ for|hard chairs?|cross-?legged|cycling|bike|spin class|fine when|goes away when|after sitting|"
+    r"ache\w*|tired|after (?:the |my |a )?(?:run|10k|5k|gym|squats|workout|walk|hike|class|match)|squats|period|day \d|cramps?|restless|sneez\w*|cough\w*|laugh\w*|since having the baby|"
+    r"for (?:years|months|ages)|always|like always|as usual|physio|stretches|anaesthetic|epidural|dentist)\b", re.I)
+_CAUDA_NEW = re.compile(r"\b(?:now|getting|worse|since|today|this morning|tonight|new|suddenly|weaker|spreading|back|backs|spine)\b", re.I)
+
+
+def _cauda(text: str) -> bool:
+    text = text[:_WHOLE_SCAN_CAP]
+    for m in _CAUDA.finditer(text):
+        starts = [i for i, c in enumerate(text[: m.start()]) if c in ".;!?\n"]
+        start = starts[-1] + 1 if starts else 0
+        ends = [i for i, c in enumerate(text[m.end():]) if c in ".;!?\n"]
+        sentence = text[start:(m.end() + ends[0] if ends else len(text))]
+        if _NEG.search(_NEG_WINDOW.split(text[max(0, m.start() - 40):m.start()])[-1]) or _is_past(sentence) or _CAUDA_QUIET.search(sentence):
+            continue
+        g = m.group(0).lower()
+        if ("both" in g or "sex" in g) and not _CAUDA_NEW.search(sentence):
+            continue  # both legs / sex sensation count only when new or with a back word
+        return True
+    return False
+
+
+# run 59 (p66, first contact): urgent wordings told in everyday words that no earlier rule held. Each needs both halves.
+_WHOLE = re.compile(_WHOLE.pattern
+                    + r"|\b(?:toddler|baby|child|kid|son|daughter|little one)\b.{0,60}\b(?:whole|entire|full|packet|bottle|box)\b.{0,30}\b(?:calpol|paracetamol|ibuprofen|medicine|tablets|pills|nurofen)\b(?![^.!?]{0,40}\b(?:as (?:advised|directed|the (?:doctor|pharmacist|nurse) said)|correct dose)\b)"
+                    + r"|\b(?:pain|ache|tightness|burning)\b.{0,50}\b(?:spreading|spreads|radiat\w+|going) (?:to|into|down) (?:my )?(?:left |right )?(?:shoulder|jaw|arm)\b.{0,60}\b(?:sweat\w*|clammy|cold and clammy)\b"
+                    + r"|\bchest\b.{0,25}\b(?:burning|tight|heavy)\b.{0,40}\bjaw\b.{0,40}\b(?:clammy|sweat\w*|cold and sweaty)\b"
+                    + r"|\b(?:burns|stings|burning) (?:when|as) (?:i|you) (?:wee|pee|urinate)\b.{0,80}\b(?:back|side|loin)\b.{0,60}\b(?:shaking chills|chills|rigors|shivering|fever\w*)\b"
+                    + r"|\b(?:eyes|skin)\b.{0,15}\b(?:went|turned|are|look\w*|gone) yellow\b.{0,80}\b(?:dark (?:brown )?(?:wee|urine|pee)|itch\w*|pale (?:poo|stools?))\b"
+                    + r"|\b(?:cough\w*|coughed) up\b.{0,20}\b(?:pink|frothy|foamy)\b"
+                    + r"|^(?![\s\S]*\b(?:sunburn\w*|holiday|dry|flaky|eczema)\b)[\s\S]*?(?:\b(?:tablets|pills|medicine|medication|antibiotics?|new meds)\b[^.!?]{0,80}\bskin\b[^.!?]{0,20}\b(?:peeling|blister\w*|coming off)\b|\bskin\b[^.!?]{0,20}\b(?:peeling|blister\w*|coming off)\b[^.!?]{0,60}\b(?:tablets|pills|medicine|medication|antibiotics?|new meds)\b)"
+                    + r"|\b(?:vomiting|being sick|throwing up)\b[^.!?]{0,15}\b(?:non[- ]?stop|all day|constantly)\b[^.!?]{0,60}\b(?:breathing (?:really |very )?fast|fast breathing|rapid breathing|can'?t get my breath)\b|\b(?:breathing (?:really |very )?fast|fast breathing|rapid breathing)\b[^.!?]{0,60}\b(?:vomiting|being sick|throwing up)\b[^.!?]{0,15}\b(?:non[- ]?stop|all day|constantly)\b"
+                    + r"|\bstabbing\b.{0,25}\b(?:stomach|belly|tummy)\b.{0,60}\b(?:high temp\w*|fever\w*|shivering)\b"
+                    + r"|^(?=[\s\S]*\b(?:pregnan\w+|\d+ weeks)\b)[\s\S]*\b(?:fell|fall|knock\w*|hit)\b[\s\S]{0,60}\b(?:belly|bump|stomach)\b.{0,30}\b(?:hard|rock|tight|painful|bleed\w*)\b"
+                    + r"|\b(?:knock|bang|bump|blow|hit)\w*\b.{0,30}\bhead\b.{0,80}\b(?:confus\w+|can'?t remember|cant remember|don'?t know where|keep vomiting|repeatedly sick)\b|\b(?:confus\w+|can'?t remember where|cant remember where)\b.{0,60}\b(?:knock|bang|blow|hit)\w*\b.{0,15}\bhead\b",
+                    _WHOLE.flags)
