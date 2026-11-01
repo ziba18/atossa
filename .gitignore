@@ -52,3 +52,12 @@ google-play-service-account.json
 
 # Supabase CLI local state
 supabase/.temp
+
+# More local-only files that must never be committed
+.env.*
+!.env.example
+*.keystore
+*.dump
+*.sql.gz
+backend/*.db
+backend/backups/
