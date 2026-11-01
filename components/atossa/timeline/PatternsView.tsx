@@ -6,13 +6,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, PixelRatio, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
-import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
+import { Button, Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
 import { colors, fonts, heights, severityRamp, space } from '../../../constants/atossaUI';
 import { fatigueLine, untaggedLine } from '../../../lib/records/counts';
 import { Icon } from '../../ui/Icon';
 import { UrgentNote } from '../UrgentNote';
 import { openCapture } from '../../../lib/captureStore';
-import { formatDate, todayKey } from '../../../lib/records/dates';
+import { WEEKDAY_LETTERS, formatDate, parseKey, todayKey } from '../../../lib/records/dates';
 import {
   MIN_NOTE_DAYS, PATTERNS_RANGES, STRONG_FROM, bleedingText, buildPatterns, noteDaysText, weeksText, type PatternsModel, type PatternsRange,
 } from '../../../lib/records/patterns';
@@ -49,24 +49,26 @@ function Bars({ rows, total, onRow }: { rows: { label: string; days: number; dat
   );
 }
 
-/** The 28 days as one bar: days with bleeding logged, other days with a note, days with nothing logged. Counts add to the range. */
+/** The 28 days as one bar. Four parts that add up to the range: note + bleeding, note only, bleeding only, nothing. The hero's "days with a note" is the first two. */
 function SplitDays({ m, onOpen, onOpenDays }: { m: PatternsModel; onOpen: (f: TimelineFilter) => void; onOpenDays?: (label: string, dates: string[], kind?: 'symptom' | 'bleeding') => void }) {
-  const withB = m.days.filter((d) => d.bleeding).length; // same count as the 'days of bleeding' tile
-  const without = m.days.filter((d) => d.logged && !d.bleeding).length;
-  const both = m.days.filter((d) => d.logged && d.bleeding).length; // bleeding days that also have a note
-  const none = m.totalDays - withB - without;
-  const parts: { key: string; label: string; n: number; color: string; opens?: TimelineFilter; hint?: string }[] = [
-    { key: 'with', label: 'Bleeding logged', n: withB, color: colors.clay, opens: 'Bleeding', hint: 'Opens your bleeding days.' },
-    { key: 'without', label: 'Note, no bleeding', n: without, color: colors.plum, opens: 'Symptoms', hint: 'Opens your notes.' },
+  const dates = (pick: (d: PatternsModel['days'][number]) => boolean) => m.days.filter(pick).map((d) => d.date);
+  const noteOnly = dates((d) => d.logged && !d.bleeding);
+  const both = dates((d) => d.logged && d.bleeding);
+  const bleedOnly = dates((d) => !d.logged && d.bleeding);
+  const none = m.totalDays - noteOnly.length - both.length - bleedOnly.length;
+  const parts: { key: string; label: string; n: number; color: string; dates?: string[]; kind?: 'symptom' | 'bleeding'; hint?: string; opens?: TimelineFilter }[] = [
+    { key: 'note', label: 'Note, no bleeding', n: noteOnly.length, color: colors.plum, dates: noteOnly, kind: 'symptom', opens: 'Symptoms', hint: 'Opens your notes.' },
+    { key: 'both', label: 'Note and bleeding', n: both.length, color: colors.ink, dates: both, kind: 'bleeding', opens: 'Bleeding', hint: 'Opens those days.' },
+    { key: 'bleed', label: 'Bleeding, no note', n: bleedOnly.length, color: colors.clay, dates: bleedOnly, kind: 'bleeding', opens: 'Bleeding', hint: 'Opens those days.' },
     { key: 'none', label: 'Nothing logged', n: none, color: colors.sunken },
   ];
   return (
     <Card>
-      {/* The rows below carry the three counts; the title only names the window (one statement, not three). */}
-      <Txt variant="groupLabel">{`Your ${m.totalDays} days`}</Txt>
-      <View style={{ flexDirection: 'row', height: 28, borderRadius: 8, overflow: 'hidden', marginTop: space.sm, gap: 2 }} accessibilityLabel={`${noteDaysText(m)}.`} role="img">
+      {/* The rows carry the four counts; they add up to the window (the hero is note, no bleeding + note and bleeding). */}
+      <Txt variant="groupLabel">{`Your ${m.totalDays} days, added up`}</Txt>
+      <View style={{ flexDirection: 'row', height: 28, borderRadius: 8, overflow: 'hidden', marginTop: space.sm, gap: 2 }} accessibilityLabel={`${parts.map((x) => `${x.n} ${x.label.toLowerCase()}`).join(', ')}.`} role="img">
         {parts.filter((x) => x.n > 0).map((x) => (
-          <View key={x.key} style={{ flexGrow: x.n, flexBasis: 0, backgroundColor: x.color, alignItems: 'center', justifyContent: 'center', borderWidth: x.key === 'none' ? 1 : 0, borderColor: colors.borderStrong, ...(x.key === 'none' ? { borderTopRightRadius: 8, borderBottomRightRadius: 8 } : null) }}>
+          <View key={x.key} style={{ flexGrow: x.n, flexBasis: 0, backgroundColor: x.color, alignItems: 'center', justifyContent: 'center', borderWidth: x.key === 'none' ? 1 : 0, borderColor: colors.borderStrong }}>
             {x.n >= 2 ? <Txt variant="caption" color={x.key === 'none' ? colors.ink : '#FFFFFF'} style={{ fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'] }}>{x.n}</Txt> : null}
           </View>
         ))}
@@ -84,17 +86,56 @@ function SplitDays({ m, onOpen, onOpenDays }: { m: PatternsModel; onOpen: (f: Ti
           );
           const rowStyle = { flexDirection: 'row' as const, alignItems: 'center' as const, gap: space.sm, minHeight: heights.minHit };
           return tappable ? (
-            <Pressable key={x.key} accessibilityRole="button" accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}. ${x.hint}`} onPress={() => (onOpenDays ? onOpenDays(x.label, m.days.filter((d) => (x.key === 'with' ? d.bleeding : d.logged && !d.bleeding)).map((d) => d.date), x.key === 'with' ? 'bleeding' : 'symptom') : onOpen(x.opens!))} style={({ pressed }) => [rowStyle, { opacity: pressed ? 0.7 : 1 }]}>{row}</Pressable>
+            <Pressable key={x.key} accessibilityRole="button" accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}. ${x.hint}`} onPress={() => (onOpenDays ? onOpenDays(x.label, x.dates ?? [], x.kind) : onOpen(x.opens!))} style={({ pressed }) => [rowStyle, { opacity: pressed ? 0.7 : 1 }]}>{row}</Pressable>
           ) : (
             <View key={x.key} accessible accessibilityLabel={`${x.label}, ${plural(x.n, 'day')}`} style={rowStyle}>{row}</View>
           );
         })}
       </View>
-      {m.noteDays !== without ? (
-        <Txt variant="caption" style={{ marginTop: space.xs }}>
-          {`${plural(m.noteDays, 'day')} with a note: ${without} with no bleeding, ${both} on bleeding days.`}
-        </Txt>
-      ) : null}
+    </Card>
+  );
+}
+
+/** The window day by day, Monday first: the strongest number she gave each day (blank = none), a dash = nothing logged. Her numbers only; no colour carries a meaning. */
+function DayGrid({ m, onOpenDays }: { m: PatternsModel; onOpenDays?: (label: string, dates: string[], kind?: 'symptom' | 'bleeding') => void }) {
+  const first = parseKey(m.days[0].date);
+  const lead = (new Date(Date.UTC(first.y, first.m0, first.d)).getUTCDay() + 6) % 7;
+  const cells: (PatternsModel['days'][number] | null)[] = [...Array(lead).fill(null), ...m.days];
+  while (cells.length % 7) cells.push(null);
+  const rows = Array.from({ length: cells.length / 7 }, (_, i) => cells.slice(i * 7, i * 7 + 7));
+  const rated = m.days.filter((d) => d.value != null).length;
+  return (
+    <Card>
+      <Txt variant="groupLabel">Strongest rating each day, out of 10</Txt>
+      <View style={{ flexDirection: 'row', marginTop: space.sm, gap: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {WEEKDAY_LETTERS.map((w, i) => <Txt key={i} variant="caption" style={{ flex: 1, textAlign: 'center' }}>{w}</Txt>)}
+      </View>
+      <View style={{ gap: 4, marginTop: 4 }} accessibilityLabel={`${rated} of ${m.totalDays} days have a rating. Each day shows the strongest number you gave.`}>
+        {rows.map((r, ri) => (
+          <View key={ri} style={{ flexDirection: 'row', gap: 4 }}>
+            {r.map((d, ci) => {
+              if (!d) return <View key={ci} style={{ flex: 1, height: 36 }} />;
+              const logged = d.logged || d.bleeding;
+              return (
+                <Pressable
+                  key={ci}
+                  disabled={!logged || !onOpenDays}
+                  accessibilityRole={logged && onOpenDays ? 'button' : undefined}
+                  accessibilityLabel={`${formatDate(d.date, true)}: ${d.value != null ? `strongest rating ${d.value} out of 10` : logged ? 'logged, no number' : 'nothing logged'}${d.bleeding ? ', bleeding' : ''}`}
+                  onPress={() => onOpenDays?.(formatDate(d.date, true), [d.date], d.logged ? 'symptom' : 'bleeding')}
+                  style={{ flex: 1, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: logged ? colors.white : colors.sunken, borderWidth: 1, borderColor: logged ? colors.borderStrong : 'transparent', overflow: 'hidden' }}
+                >
+                  {d.value == null && logged
+                    ? <View aria-hidden style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: colors.ink }} />
+                    : <Txt variant="caption" color={colors.ink} style={{ fontFamily: fonts.semibold, fontVariant: ['tabular-nums', 'lining-nums'], opacity: d.value != null ? 1 : 0.5 }}>{d.value != null ? d.value : '–'}</Txt>}
+                  {d.bleeding ? <View aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 4, backgroundColor: colors.clay }} /> : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        ))}
+      </View>
+      <Txt variant="caption" style={{ marginTop: space.xs }}>Number: strongest rating that day. Dot: logged, no number. Dash: nothing logged. Red edge: bleeding logged.</Txt>
     </Card>
   );
 }
@@ -160,6 +201,7 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
   const [range, setRange] = useState<PatternsRange>('4w');
   const [chartW, setChartW] = useState(0);
   const [stack, setStack] = useState(false);
+  const [showDays, setShowDays] = useState(false); // 12 weeks: the day-by-day grid is behind a button (13 rows)
   // On a narrow phone at normal text size the two small tiles share one row under the hero; at large text they stack.
   const pairTiles = stack && PixelRatio.getFontScale() < 1.3;
   const symptom = useRecordsStore((s) => s.records.symptom);
@@ -171,10 +213,6 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
   const m = useMemo(
     () => buildPatterns({ symptoms: symptom, periodDays: periodDay, medicines: medicine, history, appointments: appointment }, todayKey(), range),
     [symptom, periodDay, medicine, history, appointment, range],
-  );
-
-  const toggle = (
-    <SegmentedControl accessibilityLabel="Patterns range" options={PATTERNS_RANGES.map((r) => ({ value: r.value, label: r.label }))} value={range} onChange={setRange} />
   );
 
   if (m.tooEarly) {
@@ -211,21 +249,26 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
 
   return (
     <View style={{ gap: space.md, marginTop: space.lg }}>
-      {toggle}
-      <Txt variant="secondary" style={{ fontWeight: '600', color: colors.ink }}>Your notes, {rangeText}</Txt>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', columnGap: space.sm, rowGap: space.xs }}>
+        <Txt variant="hero" accessibilityRole="header" style={{ fontSize: 24, lineHeight: 30, flexShrink: 1 }}>{rangeText}</Txt>
+        <SegmentedControl accessibilityLabel="Patterns range" style={{ width: 168, maxWidth: '100%' }} options={PATTERNS_RANGES.map((r) => ({ value: r.value, label: r.label }))} value={range} onChange={setRange} />
+      </View>
 
       <FadeIn index={0}>
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
         <View style={[styles.tiles, stack && (pairTiles ? { flexWrap: 'wrap' } : { flexDirection: 'column' })]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
           <StatTile hero wide={stack} full={pairTiles} value={m.noteDays} label={`of ${m.totalDays} days with a note`} onPress={() => (onOpenDays ? onOpenDays('Days with a note', m.days.filter((d) => d.logged).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
-          <StatTile wide={stack && !pairTiles} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days at ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
+          <StatTile wide={stack && !pairTiles} value={m.strongDays} label={`days you rated ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days you rated ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
           <StatTile wide={stack && !pairTiles} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => (onOpenDays ? onOpenDays('Days of bleeding', m.bleedingDates, 'bleeding') : onOpen('Bleeding'))} hint="Opens your bleeding days." />
         </View>
       </FadeIn>
 
       {range === '4w' ? (
         <FadeIn index={1}>
+          <View style={{ gap: space.md }}>
+          <DayGrid m={m} onOpenDays={onOpenDays} />
           <SplitDays m={m} onOpen={onOpen} onOpenDays={onOpenDays} />
+          </View>
         </FadeIn>
       ) : (
       <FadeIn index={1}>
@@ -280,6 +323,14 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
         </PressableCard>
       </FadeIn>
       )}
+      {range === '12w' ? (
+        <FadeIn index={1}>
+          <View style={{ gap: space.md }}>
+            <Button label={showDays ? 'Hide each day' : 'Show each day'} variant="secondary" onPress={() => setShowDays((v) => !v)} accessibilityHint="Shows or hides the strongest rating for each of the 84 days" />
+            {showDays ? <DayGrid m={m} onOpenDays={onOpenDays} /> : null}
+          </View>
+        </FadeIn>
+      ) : null}
 
       {m.zones.length ? (
         <FadeIn index={2}>

@@ -5,9 +5,9 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { space } from '../../../constants/atossaUI';
 import { Button, InlineError, ScreenLarge, TextField, showToast } from '../../../components/atossa/kit';
-import { Group, GroupRow } from '../../../components/atossa/records/GroupedRows';
 import { ApiError, changePassword } from '../../../lib/api';
 import { haptics } from '../../../lib/haptics';
+import { IS_PREVIEW } from '../../../lib/preview/flag';
 import { usePageTitle } from '../../../lib/usePageTitle';
 
 export function plainError(e: unknown): string {
@@ -33,8 +33,10 @@ export default function ChangePasswordScreen() {
       next: !next ? 'Choose a new password.' : next.length < 8 ? 'Use at least 8 characters.' : '',
     };
     setErrors(e);
-    setError('');
+    // At 320 pt the second field's own message can sit under the Save bar, so its message is repeated above the button.
+    setError(e.next);
     if (e.current || e.next) return;
+    if (IS_PREVIEW) { showToast('Preview only: nothing was changed.'); router.back(); return; }
     setSaving(true);
     try {
       await changePassword(current, next);
@@ -49,15 +51,10 @@ export default function ChangePasswordScreen() {
   }
 
   return (
-    <ScreenLarge title="Change password" back={{ label: 'Profile' }}>
-      <View style={{ gap: space.xl }}>
-        <Group>
-          <GroupRow icon="heart-pulse" label="Help now" onPress={() => router.push('/(tabs)/profile/help-now' as any)} />
-        </Group>
+    <ScreenLarge title="Change password" back={{ label: 'Profile' }} footer={<><InlineError message={error} /><Button label="Save new password" icon="check" loading={saving} onPress={save} /></>}>
+      <View style={{ gap: space.md }}>
         <TextField label="Current password" secret value={current} onChangeText={(v) => { setCurrent(v); setErrors((x) => ({ ...x, current: '' })); }} autoComplete="current-password" textContentType="password" error={errors.current} />
         <TextField label="New password" hint="At least 8 characters" secret value={next} onChangeText={(v) => { setNext(v); setErrors((x) => ({ ...x, next: '' })); }} autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={save} error={errors.next} />
-        <InlineError message={error} />
-        <Button label="Save new password" icon="check" loading={saving} onPress={save} />
       </View>
     </ScreenLarge>
   );

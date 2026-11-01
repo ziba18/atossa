@@ -11,10 +11,11 @@ import { usePageTitle } from '../../lib/usePageTitle';
 const SUPPORT_EMAIL: string = process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? '';
 
 // Safety C154 wording A. The web build has no Apple or Google button, so it leaves that sentence out.
-const BODY = (Platform.OS === 'web'
-  ? 'You can’t reset your password in the app yet. '
-  : 'You can’t reset your password in the app yet. If you signed up with Apple or Google, use that button on the sign-in screen. ')
-  + 'Otherwise, email us from the address you signed up with and tell us what happened. Your saved notes are not deleted.';
+const BODY = 'You can’t reset your password in the app yet. '
+  + (Platform.OS === 'web'
+    ? 'Email us from the address you signed up with and tell us what happened. '
+    : 'If you signed up with Apple or Google, use that button on the sign-in screen. Otherwise, email us from the address you signed up with and tell us what happened. ')
+  + 'Your saved notes are not deleted.';
 
 export default function ForgotPasswordScreen() {
   usePageTitle('Forgot password');

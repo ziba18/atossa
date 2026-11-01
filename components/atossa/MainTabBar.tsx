@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Pressable, Keyboard, Platform, StyleSheet } from 'react-native';
+import { View, Pressable, Keyboard, Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, heights, type as typeScale } from '../../constants/atossaUI';
@@ -28,9 +28,13 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
     return () => { show.remove(); hide.remove(); };
   }, []);
 
-  if (keyboard) return null;
+  const short = useWindowDimensions().height < 700;
 
   const active = state.routes[state.index] as AnyRoute | undefined;
+  // A record form (add / edit a medicine, appointment…) is a task with Back in its header, like an iOS modal form: on a short phone
+  // the tab bar is hidden so the Save button and its reason line stay on the first screens (PM D-s104-8). Help now stays in the page header.
+  const nestedTop = active?.state?.routes?.[active.state.index ?? 0];
+  if (keyboard || (short && active?.name === 'profile' && nestedTop?.name === 'records/[kind]/[id]')) return null;
   // Profile and its records (opened from the avatar) are not a tab: no tab is active there (PM rule, blueprint §4); Back returns to where the avatar was tapped.
   const activeName = active && VISIBLE_TABS.includes(active.name) ? active.name : undefined;
   const routes = state.routes.filter((r) => VISIBLE_TABS.includes(r.name));

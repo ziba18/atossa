@@ -67,7 +67,7 @@ function startAuthInit() {
   // Design preview: signed in as "Sam" immediately, no tokens, no network.
   if (IS_PREVIEW) {
     const { setSession, setUser, setProfile } = useAuthStore.getState();
-    setUser({ id: PREVIEW_USER_ID, email: PREVIEW_EMAIL });
+    setUser({ id: PREVIEW_USER_ID, email: PREVIEW_EMAIL, has_password: true });
     setProfile(PREVIEW_PROFILE);
     setSession({ access_token: 'design-preview' });
     return;
