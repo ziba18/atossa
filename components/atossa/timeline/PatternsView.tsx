@@ -258,7 +258,7 @@ export function PatternsView({ onOpen, onOpenDays, onOpenWeek }: { onOpen: (filt
         {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
         <View style={[styles.tiles, stack && (pairTiles ? { flexWrap: 'wrap' } : { flexDirection: 'column' })]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 300)}>
           <StatTile hero wide={stack} full={pairTiles} value={m.noteDays} label={`of ${m.totalDays} days with a note`} onPress={() => (onOpenDays ? onOpenDays('Days with a note', m.days.filter((d) => d.logged).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
-          <StatTile wide={stack && !pairTiles} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days at ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
+          <StatTile wide={stack && !pairTiles} value={m.strongDays} label={`days you rated ${STRONG_FROM}+ out of 10`} onPress={() => (onOpenDays ? onOpenDays(`Days you rated ${STRONG_FROM}+ out of 10`, m.days.filter((d) => d.value != null && d.value >= STRONG_FROM).map((d) => d.date)) : onOpen('Symptoms'))} hint="Opens those days." />
           <StatTile wide={stack && !pairTiles} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => (onOpenDays ? onOpenDays('Days of bleeding', m.bleedingDates, 'bleeding') : onOpen('Bleeding'))} hint="Opens your bleeding days." />
         </View>
       </FadeIn>
