@@ -12,6 +12,8 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 const ORDER: OnsetGroup[] = ['pain', 'bleeding', 'bowelBladder', 'fatigue', 'mood', 'skinHair'];
 const YEARS_BACK = 30;
 const RECENT_YEARS = 10;
+/** Value of the 'Earlier years…' chip: never a saved year, it only opens the older ones. */
+const EARLIER = '__earlier__';
 
 /**
  * Step 4: "When did you first notice this?" once for each area she ticked. A year she picks (or "Not sure")
@@ -39,16 +41,20 @@ export default function OnboardingOnset() {
   // The last ten years first; "Earlier years…" opens the older ones (also open when an older year is already picked).
   const [showEarlier, setShowEarlier] = useState(false);
 
+  const short = useWindowDimensions().height < 640; // 320x568 class
   const group = list[i];
   if (!group) return <Redirect href="/(auth)/onboarding/reminders" />;
   const year = years[group] ?? null;
   const older = year !== null && /^\d{4}$/.test(year) && thisYear - Number(year) >= RECENT_YEARS;
   const expanded = showEarlier || older;
+  // Short phones: nine recent years (three full rows) and "Earlier years…" as the last chip beside "Not sure", so the way to an older year is on the first screen.
+  const earlierChip = short && !expanded;
   const options: ChipOption[] = [
-    ...Array.from({ length: expanded ? YEARS_BACK + 1 : RECENT_YEARS }, (_, k) => String(thisYear - k)),
+    ...Array.from({ length: expanded ? YEARS_BACK + 1 : earlierChip ? RECENT_YEARS - 1 : RECENT_YEARS }, (_, k) => String(thisYear - k)),
     { value: 'Not sure', ghost: true },
+    ...(earlierChip ? [{ value: EARLIER, ghost: true, label: 'Earlier years…' } as ChipOption] : []),
   ];
-  const setYear = (v: string | null) => setYears((y) => ({ ...y, [group]: v }));
+  const setYear = (v: string | null) => (v === EARLIER ? setShowEarlier(true) : setYears((y) => ({ ...y, [group]: v })));
   const area = ONSET_GROUP_LABEL[group];
   const last = i === list.length - 1;
 
@@ -75,7 +81,6 @@ export default function OnboardingOnset() {
   };
 
   // 320x568 class: Next stays pinned under the years so it is on the first screen; Skip follows the years.
-  const short = useWindowDimensions().height < 640;
   const nextButton = <Button label={busy ? 'Saving…' : last ? 'Next' : 'Next area'} loading={busy} disabled={!year} onPress={save} />;
 
   return (
@@ -90,13 +95,13 @@ export default function OnboardingOnset() {
     >
       <ChipGroup
         options={options}
-        ghosts={['Not sure']}
+        ghosts={['Not sure', EARLIER]}
         value={year}
         onChange={setYear}
         accessibilityLabel={`Year you first noticed ${area}`}
       />
       {/* A button outside the year group, so arrow keys never trigger it; it stays on screen and toggles, so keyboard focus is not lost. */}
-      {older ? null : (
+      {older || earlierChip ? null : (
         <Button
           label={showEarlier ? 'Show fewer years' : 'Earlier years…'}
           variant="text"
