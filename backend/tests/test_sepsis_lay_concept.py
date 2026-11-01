@@ -14,3 +14,14 @@ def test_sepsis_lay_quiet():
                  "shaking with nerves before my interview, heart racing",
                  "wound from my op is a bit itchy and pink, healing well, no fever"]:
         assert not g.is_emergency(line), line
+
+
+def test_sepsis_lay_very_unwell_word():
+    for line in ["fever and shaking, feel very unwell, chest infection",
+                 "fever and shaking, i am really unwell, water infection",
+                 "shaking with a temperature, feeling so unwell, wound is weeping"]:
+        assert g.is_emergency(line), line
+    for line in ["a bit unwell with a cold, shivery tonight, fever 37.8",
+                 "feeling unwell after the jab, chills, achy, no infection",
+                 "very unwell with a hangover, shaking, heart racing"]:
+        assert not g.is_emergency(line), line

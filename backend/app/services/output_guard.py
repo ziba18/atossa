@@ -1920,7 +1920,7 @@ def _eye_sudden(t: str) -> bool:
 # temperature (nhs.uk/conditions/sepsis 999 box, page last reviewed 14 May 2026, read 1 Nov 2026). Colds and flu with a normal-sounding picture,
 # nerves, exercise and "settled / feel better / ok now" stay quiet.
 _SP_TEMP = re.compile(r"\b(?:fever\w*|chills|shaking|shaky|shivering|shivery|rigors?|burning up|high temp\w*|temp\w* (?:of |is |was )?(?:39|40|41)\b|39(?:\.\d)?\b)", re.I)
-_SP_ILL = re.compile(r"\b(?:feel(?:ing)? (?:so |really |very |absolutely )?(?:awful|terrible|ill|dreadful)|so ill|very ill|really ill|something (?:is |feels )?(?:very |really )?wrong|dizzy|faint\w*|confus\w+|not making sense|breathing (?:really |very )?fast|can'?t stand|too weak|drowsy|mottled)\b", re.I)
+_SP_ILL = re.compile(r"\b(?:feel(?:ing)? (?:so |really |very |absolutely )?(?:awful|terrible|ill|dreadful)|so ill|very ill|really ill|(?:very|really|so|extremely) unwell|something (?:is |feels )?(?:very |really )?wrong|dizzy|faint\w*|confus\w+|not making sense|breathing (?:really |very )?fast|can'?t stand|too weak|drowsy|mottled)\b", re.I)
 _SP_SRC = re.compile(r"\b(?:wound|c-?section|stitches|cut|uti|water infection|chest infection|pus|weeping|leaking|line up my (?:leg|arm)|red and hot|hot and red|hot and weeping|since the operation|after the operation|mottled)\b", re.I)
 _SP_HIGH = re.compile(r"\b(?:high temp\w*|temp\w* (?:of |is |was )?(?:39|40|41)\b|39(?:\.\d)?\b|burning up)", re.I)
 _SP_QUIET = re.compile(r"\b(?:settled|feel(?:ing)? (?:better|ok|okay|fine)|nerves|interview|coffee|running|bus|swimming|pool|flu\b|(?:a|got a|common|just a) cold\b|jab|vaccin\w+|period|hot flush|no fever|healing well|itchy)\b", re.I)
