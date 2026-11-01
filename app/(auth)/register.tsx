@@ -21,7 +21,6 @@ export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,7 +34,6 @@ export default function RegisterScreen() {
       name: trimmedName ? '' : 'Enter your name.',
       email: !trimmedEmail ? 'Enter your email.' : !EMAIL_RE.test(trimmedEmail) ? 'That email doesn’t look right.' : '',
       password: !password ? 'Choose a password.' : password.length < 8 ? 'Use at least 8 characters.' : '',
-      confirm: password && confirm !== password ? 'The two passwords are different.' : '',
     };
     setErrors(next);
     setError('');
@@ -59,8 +57,7 @@ export default function RegisterScreen() {
       <View style={{ gap: short ? space.sm : space.xl }}>
         <TextField label="Your name" value={name} onChangeText={(v) => { setName(v); clear('name'); }} autoCapitalize="words" autoComplete="name" textContentType="name" error={errors.name} />
         <TextField label="Email" value={email} onChangeText={(v) => { setEmail(v); clear('email'); }} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" placeholder="you@example.com" error={errors.email} />
-        <TextField label="Password" hint="At least 8 characters" secret value={password} onChangeText={(v) => { setPassword(v); clear('password'); }} autoComplete="new-password" textContentType="newPassword" error={errors.password} />
-        <TextField label="Type the password again" secret value={confirm} onChangeText={(v) => { setConfirm(v); clear('confirm'); }} autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={handleRegister} error={errors.confirm} />
+        <TextField label="Password" hint="At least 8 characters" secret value={password} onChangeText={(v) => { setPassword(v); clear('password'); }} autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={handleRegister} error={errors.password} />
       </View>
 
       <View style={{ marginTop: short ? space.md : space.xxl, gap: space.xs }}>
