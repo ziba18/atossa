@@ -1,4 +1,4 @@
-"""Owner-only: give an Atossa account a one-time password when the patient has forgotten hers.
+"""Owner-only: give an Atossa account a temporary password when the patient has forgotten hers.
 
 Run on the owner's own machine against the production database (DATABASE_URL in backend/.env):
 
@@ -9,9 +9,12 @@ What it does (gate 11, pm/before-first-patient.md):
 - looks the email up in Atossa's own `users` table only (Basket Buddy accounts live in a separate
   auth project and are never touched); an unknown email changes nothing and exits 1;
 - refuses accounts with no password (Apple/Google sign-in only), so no new way in is added;
-- sets a random one-time password hashed with the app's own `hash_password` (current scheme),
+- sets a random temporary password hashed with the app's own `hash_password` (current scheme),
   bumps `token_version` so every old session on a lost phone ends, and prints the password ONCE
-  to this terminal. Tell it to the patient by phone, not by email; she changes it in Profile.
+  to this terminal. Say it only on a call-back YOU start to the number on the pilot sign-up sheet;
+  she changes it in Profile (not enforced yet: Safety S-544).
+
+Full owner runbook (who to trust, exact steps, what to log): backend/scripts/FORGOTTEN_PASSWORD.md.
 - writes an audit line with the account id only (no email, no password) to the `atossa.security` log.
 
 Agents never run or deploy this; it is not imported by the app.
@@ -75,9 +78,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     finally:
         db.close()
-    print("One-time password (shown once, not saved anywhere):")
+    print("Temporary password (shown once, not saved anywhere):")
     print(f"    {temp}")
-    print("Read it to her by phone. She signs in with it, then changes it in Profile.")
+    print("Say it only on a call-back you start to the number on the pilot sign-up sheet. She signs in, then changes it in Profile.")
     return 0
 
 
