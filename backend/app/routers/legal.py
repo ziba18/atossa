@@ -97,7 +97,8 @@ you across other apps or websites.</p>
 Your sign-in is kept in your phone's secure storage. Only the account that created a record
 can read it through the app. If you are offline, a note waits on your phone until it can be
 sent, and a copy of your records is kept on your phone; both are removed when you sign out
-or delete your account.</p>
+yourself or delete your account. If your session ends on its own, notes that were not sent
+stay on your phone until you sign in again.</p>
 
 <h2>Why we use it</h2>
 <p>We keep your notes and records because you ask us to: that is the service. Because they
