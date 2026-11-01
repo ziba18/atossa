@@ -8,18 +8,18 @@
       }
     },
     {
-      "id": "periods",
-      "title": "Periods logged",
-      "rows": {
-        "runs": 4
-      }
-    },
-    {
       "id": "impacts",
       "title": "What it got in the way of",
       "rows": {
         "quotes": 3,
         "items": 1
+      }
+    },
+    {
+      "id": "periods",
+      "title": "Periods logged",
+      "rows": {
+        "runs": 4
       }
     },
     {
@@ -137,8 +137,8 @@
     "Symptom summary",
     "How often and how strong",
     "Other areas",
-    "Periods logged",
     "What it got in the way of",
+    "Periods logged",
     "What I’ve tried",
     "Health history",
     "Appointments",

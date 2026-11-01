@@ -9,18 +9,18 @@
    }
   },
   {
-   "id": "periods",
-   "title": "Periods logged",
-   "rows": {
-    "runs": 4
-   }
-  },
-  {
    "id": "impacts",
    "title": "What it got in the way of",
    "rows": {
     "items": 1,
     "quotes": 3
+   }
+  },
+  {
+   "id": "periods",
+   "title": "Periods logged",
+   "rows": {
+    "runs": 4
    }
   },
   {
