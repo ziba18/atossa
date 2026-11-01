@@ -22,6 +22,8 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
   const pair = narrow && winW >= 300;
   // 568 pt phones: slightly tighter card so the first area row reaches above the tab bar.
   const tight = useWindowDimensions().height < 600;
+  // 600-830 pt phones (360x800 class): the stacked Save bar is tall, so 'First note' is left out to bring the first area row above it.
+  const mid = useWindowDimensions().height < 830;
   const router = useRouter();
   // Every count opens the dated days behind it: Timeline list, exactly those days.
   const openDays = (label: string, dates?: string[], kind?: 'symptom' | 'bleeding') => { if (!dates?.length) return; useTimelineSession.getState().setDayFilter({ label, dates, kind }); router.push('/(tabs)/timeline' as any); };
@@ -60,7 +62,7 @@ export function PageOneCards({ doc, showAgenda = true }: { doc: DoctorDoc; showA
         <Txt variant="groupLabel">{freq.title}</Txt>
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>{thin.thin && thin.line ? thin.line : freq.windowLabel}</Txt>
         {/* 'Since when': the day of her first note in this window, from the same dates the count uses (not the window start). */}
-        {!thin.thin && !tight && all?.dates?.length ? (
+        {!thin.thin && !tight && !mid && all?.dates?.length ? (
           <Txt variant="secondary" style={{ marginTop: space.xxs }}>{`First note ${formatDay([...all.dates].sort()[0]).replace(/ /g, '\u00a0')}`}</Txt>
         ) : null}
         {all ? (
