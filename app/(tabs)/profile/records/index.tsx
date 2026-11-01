@@ -68,7 +68,7 @@ export default function RecordsIndexScreen() {
               <View style={compact ? { flex: 1, minWidth: 0 } : undefined}>
                 <Txt variant="headline" style={compact ? undefined : { marginTop: space.xs }}>{title}</Txt>
                 <Txt variant="secondary" color={colors.ink2}>{status}</Txt>
-                <Txt variant="secondary" color={colors.ink2} numberOfLines={2} style={{ marginTop: space.xs }}>{count ? latest : INVITE[kind]}</Txt>
+                <Txt variant="secondary" color={colors.ink2} numberOfLines={3} style={{ marginTop: space.xs }}>{count ? latest : INVITE[kind]}</Txt>
               </View>
             </Pressable>
           );
