@@ -424,3 +424,11 @@ def test_pregnant_bleeding_with_clots_and_pale_s540():
     for line in ["period cramps for 6 weeks and a bit pale, bleeding with clots normal for me",
                  "i am 12 weeks, no clots, only spotting, a bit pale from the winter"]:
         assert not g.is_emergency(line), line
+
+
+def test_relayed_blue_lips_and_pale_sweaty_jaw_s541():
+    from app.services import output_guard as g
+    for line in ["my daughter says her tummy hurts so much and her lips are blue"]:
+        assert g.is_emergency(line), line
+    for line in ["my daughter swam for an hour and her lips are blue from the cold, she is warming up and laughing"]:
+        assert not g.is_emergency(line), line
