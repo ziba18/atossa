@@ -268,8 +268,9 @@ export function RecordDetail({
         <View style={{ gap: space.xs }}>
           {rangeError ? <InlineError message={rangeError} /> : null}
           <InlineError message={error} />
-          <Button label="Save" onPress={save} disabled={!canSave} loading={busy && !confirming} />
+          {/* The reason Save is off sits directly above it, so it is read before the disabled button. */}
           {need ? <Txt variant="secondary">{need}</Txt> : null}
+          <Button label="Save" onPress={save} disabled={!canSave} loading={busy && !confirming} />
         </View>
       </View>
 
